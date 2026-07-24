@@ -1,0 +1,6 @@
+import { BrandWordmark } from "@/components/brand/brand-marks";
+import { cn } from "@/lib/utils";
+
+export function SiteFooter({ className }: { className?: string }) {
+  return <footer className={cn("border border-border bg-foreground px-6 py-10 text-background md:px-10 md:py-14", className)}><div className="grid gap-10 md:grid-cols-[1.3fr_repeat(2,0.7fr)]"><div><BrandWordmark reversed className="min-h-0 justify-start bg-transparent p-0 text-left [&_p:first-child]:text-3xl" /><p className="mt-4 max-w-sm text-sm leading-relaxed opacity-65">A wellness concierge for a more connected Bali stay.</p></div><div><p className="text-[10px] uppercase tracking-[0.18em] opacity-50">Plan your stay</p><div className="mt-4 grid gap-3 text-sm"><a href="#">Practitioners</a><a href="#">Venues</a><a href="#">Workshops & events</a></div></div><div><p className="text-[10px] uppercase tracking-[0.18em] opacity-50">The Solas Guide</p><div className="mt-4 grid gap-3 text-sm"><a href="#">How it works</a><a href="#">Become a practitioner</a><a href="#">Contact</a></div></div></div><div className="mt-12 flex flex-col gap-3 border-t border-background/20 pt-5 text-[11px] opacity-55 sm:flex-row sm:justify-between"><p>© The Solas Guide</p><div className="flex gap-5"><a href="#">Privacy</a><a href="#">Terms</a></div></div></footer>;
+}

@@ -1,26 +1,261 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Relume type scale — their sections use text-h1..h6 / text-small|medium|large.
+ * Mapped here to The Solas Guide editorial scale so the sections render without the
+ * Relume Tailwind preset (which is v3-only and conflicts with CSS variables).
+ */
+@theme {
+  --text-small: 0.875rem;
+  --text-small--line-height: 1.5;
+  --text-medium: 1rem;
+  --text-medium--line-height: 1.6;
+  --text-large: 1.125rem;
+  --text-large--line-height: 1.5;
+  --text-h1: 3.5rem;
+  --text-h1--line-height: 1.05;
+  --text-h2: 3rem;
+  --text-h2--line-height: 1.1;
+  --text-h3: 2.5rem;
+  --text-h3--line-height: 1.15;
+  --text-h4: 2rem;
+  --text-h4--line-height: 1.2;
+  --text-h5: 1.5rem;
+  --text-h5--line-height: 1.3;
+  --text-h6: 1.25rem;
+  --text-h6--line-height: 1.4;
 }
+
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-body);
+  --font-display: var(--font-display);
   --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-display);
+  --color-accent-2: var(--accent-2);
+  --color-accent-2-foreground: var(--accent-2-foreground);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/*
+ * The Solas Guide themes
+ * Three candidate registers derived from the client design brief.
+ * Switch by setting data-theme="aman|bambu|chanel" on <html>.
+ * After the client picks one, delete the losing blocks and inline the winner.
+ */
+
+/* Theme 1 — "Aman": quiet minimal, warm ivory, deep green accent */
+:root,
+[data-theme="aman"] {
+  --background: #f7f4ee;
+  --foreground: #1c1a17;
+  --card: #fcfaf6;
+  --card-foreground: #1c1a17;
+  --popover: #fcfaf6;
+  --popover-foreground: #1c1a17;
+  --primary: #1c1a17;
+  --primary-foreground: #f7f4ee;
+  --secondary: #ede8de;
+  --secondary-foreground: #1c1a17;
+  --muted: #efeae1;
+  --muted-foreground: #6e675c;
+  --accent: #2e4238;
+  --accent-foreground: #f5f2ea;
+  --accent-2: #c9c0af;
+  --accent-2-foreground: #1c1a17;
+  --destructive: #7a2e2e;
+  --border: #ddd6c8;
+  --input: #ddd6c8;
+  --ring: #2e4238;
+  --chart-1: #2e4238;
+  --chart-2: #c9c0af;
+  --chart-3: #6e675c;
+  --chart-4: #ddd6c8;
+  --chart-5: #1c1a17;
+  --radius: 0.25rem;
+  --sidebar: #f7f4ee;
+  --sidebar-foreground: #1c1a17;
+  --sidebar-primary: #1c1a17;
+  --sidebar-primary-foreground: #f7f4ee;
+  --sidebar-accent: #efeae1;
+  --sidebar-accent-foreground: #1c1a17;
+  --sidebar-border: #ddd6c8;
+  --sidebar-ring: #2e4238;
+}
+
+/* Theme 2 — "Bambu": earth and material, sand base, terracotta + forest */
+[data-theme="bambu"] {
+  --background: #f1ebe0;
+  --foreground: #221c14;
+  --card: #f8f4ea;
+  --card-foreground: #221c14;
+  --popover: #f8f4ea;
+  --popover-foreground: #221c14;
+  --primary: #221c14;
+  --primary-foreground: #f1ebe0;
+  --secondary: #e6dcc9;
+  --secondary-foreground: #221c14;
+  --muted: #eae2d2;
+  --muted-foreground: #75664f;
+  --accent: #a8562f;
+  --accent-foreground: #fbf7ee;
+  --accent-2: #33452f;
+  --accent-2-foreground: #f1ebe0;
+  --destructive: #7a2e2e;
+  --border: #d9cdb6;
+  --input: #d9cdb6;
+  --ring: #a8562f;
+  --chart-1: #a8562f;
+  --chart-2: #33452f;
+  --chart-3: #75664f;
+  --chart-4: #d9cdb6;
+  --chart-5: #221c14;
+  --radius: 0.375rem;
+  --sidebar: #f1ebe0;
+  --sidebar-foreground: #221c14;
+  --sidebar-primary: #221c14;
+  --sidebar-primary-foreground: #f1ebe0;
+  --sidebar-accent: #eae2d2;
+  --sidebar-accent-foreground: #221c14;
+  --sidebar-border: #d9cdb6;
+  --sidebar-ring: #a8562f;
+}
+
+/* Theme 3 — "Chanel": editorial contrast, black / white / cream / bronze */
+[data-theme="chanel"] {
+  --background: #ffffff;
+  --foreground: #0a0a0a;
+  --card: #f6f3ec;
+  --card-foreground: #0a0a0a;
+  --popover: #ffffff;
+  --popover-foreground: #0a0a0a;
+  --primary: #0a0a0a;
+  --primary-foreground: #ffffff;
+  --secondary: #efeae0;
+  --secondary-foreground: #0a0a0a;
+  --muted: #f4f3f0;
+  --muted-foreground: #55524c;
+  --accent: #8c6f3f;
+  --accent-foreground: #ffffff;
+  --accent-2: #f6f3ec;
+  --accent-2-foreground: #0a0a0a;
+  --destructive: #7a2e2e;
+  --border: #d8d6d0;
+  --input: #d8d6d0;
+  --ring: #8c6f3f;
+  --chart-1: #0a0a0a;
+  --chart-2: #8c6f3f;
+  --chart-3: #55524c;
+  --chart-4: #d8d6d0;
+  --chart-5: #f6f3ec;
+  --radius: 0rem;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #0a0a0a;
+  --sidebar-primary: #0a0a0a;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f4f3f0;
+  --sidebar-accent-foreground: #0a0a0a;
+  --sidebar-border: #d8d6d0;
+  --sidebar-ring: #8c6f3f;
+}
+
+/* Client review controls — temporary presentation tooling. */
+[data-type="classical"] {
+  --font-display: Georgia, "Times New Roman", serif !important;
+}
+
+[data-type="modern"] {
+  --font-display: var(--font-inter), system-ui, sans-serif !important;
+}
+
+[data-corners="square"] {
+  --radius: 0rem !important;
+}
+
+[data-corners="restrained"] {
+  --radius: 0.25rem !important;
+}
+
+[data-corners="soft"] {
+  --radius: 0.875rem !important;
+}
+
+[data-density="compact"] .ds-section {
+  padding-top: 3.5rem;
+  padding-bottom: 3.5rem;
+}
+
+[data-accent="expressive"] {
+  --primary: var(--accent);
+  --primary-foreground: var(--accent-foreground);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
   }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+  html {
+    @apply font-sans;
+  }
+  /* Editorial display type: unhurried, tighter leading on the serif */
+  .font-display {
+    letter-spacing: -0.01em;
+  }
 }
