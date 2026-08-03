@@ -53,7 +53,7 @@ cp .env.example .env.local
 npm run dev
 ```
 
-Use `supabase status` to retrieve the local publishable key and add it to `.env.local`. Open the app at <http://localhost:3000/web>, Supabase Studio at <http://127.0.0.1:55323>, and Mailpit at <http://127.0.0.1:55324>.
+Use `supabase status` to retrieve the local publishable key and add it to `.env.local`. Open the app at <http://localhost:3000>, Supabase Studio at <http://127.0.0.1:55323>, and Mailpit at <http://127.0.0.1:55324>.
 
 The local Supabase configuration uses project-specific ports so it can run alongside other Supabase projects. Migrations and deterministic seed data are applied by `supabase start` or `supabase db reset`. Generated database types live in `src/types/database.ts`.
 

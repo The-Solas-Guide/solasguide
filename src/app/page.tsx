@@ -2,17 +2,15 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowDown, ArrowRight } from "lucide-react";
-import { ThemeReviewControl } from "@/components/design-system/theme-review-control";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "Website design review | The Solas Guide",
+  title: "The Solas Guide | A considered wellness guide for Bali",
   description:
-    "Representative homepage direction for The Solas Guide MVP.",
-  robots: { index: false, follow: false },
+    "A considered guide to practitioners and restorative experiences for a more personal Bali stay.",
 };
 
 const practiceGroups = [
@@ -43,12 +41,6 @@ export default function WebPage() {
       >
         Skip to main content
       </a>
-      <ThemeReviewControl />
-      <div className="border-b border-border bg-foreground px-4 py-2 text-center text-background">
-        <p className="review-label">
-          Internal design review · provisional copy and imagery
-        </p>
-      </div>
       <div className="mx-auto w-full max-w-[1440px] px-3 py-3 md:px-5 md:py-5">
         <SiteHeader />
 
@@ -77,7 +69,7 @@ export default function WebPage() {
                 </p>
                 <div className="mt-9 flex flex-wrap items-center gap-3">
                   <a
-                    href="#start"
+                    href="/find-a-match"
                     className={cn(
                       buttonVariants(),
                       "border-background bg-background text-foreground hover:bg-background/85",
@@ -270,11 +262,10 @@ export default function WebPage() {
                 Tell us what would make your Bali stay more considered.
               </h2>
               <p className="mx-auto mt-6 max-w-xl text-sm leading-7 text-muted-foreground">
-                The guided enquiry form will be the next production journey
-                built from this approved visual direction.
+                Share a little context about your timing, interests, location, and group. The Solas Guide will review your enquiry personally.
               </p>
-              <Link href="/design-system" className={cn(buttonVariants(), "mt-8")}>
-                Review the design system <ArrowRight />
+              <Link href="/find-a-match" className={cn(buttonVariants(), "mt-8")}>
+                Start an enquiry <ArrowRight />
               </Link>
             </div>
           </section>
@@ -285,3 +276,4 @@ export default function WebPage() {
     </>
   );
 }
+

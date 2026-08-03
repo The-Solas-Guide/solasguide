@@ -71,7 +71,7 @@ export function DesignSystemReview() {
             A visual language tested through real page composition, editorial
             imagery, controls, forms, and the focused MVP journeys.
           </p>
-          <Link href="/web" className={cn(buttonVariants(), "mt-8 border-white bg-white text-black hover:bg-white/85")}>
+          <Link href="/" className={cn(buttonVariants(), "mt-8 border-white bg-white text-black hover:bg-white/85")}>
             View the representative homepage <ArrowRight />
           </Link>
         </div>
@@ -249,8 +249,8 @@ export function DesignSystemReview() {
               ))}
             </div>
             <div className="mt-8 border-l-2 border-accent bg-muted/35 p-6 text-sm leading-7 text-muted-foreground">
-              <p className="font-semibold text-foreground">Not migrated from the pitch prototype</p>
-              <p className="mt-2">Public directories and profiles, venue and event listings, search and filters, accounts, admin pages, automated matching, booking, payments, and phase-labelled routes remain archived internal reference only.</p>
+              <p className="font-semibold text-foreground">Prototype boundaries</p>
+              <p className="mt-2">The practitioner directory and profiles are available at their intended routes for unlinked, noindex client review only. Venue and event listings, accounts, admin pages, automated matching, booking, payments, and phase-labelled routes remain outside the application.</p>
             </div>
             <div className="mt-10 border-t border-border pt-10">
               <SiteHeader />

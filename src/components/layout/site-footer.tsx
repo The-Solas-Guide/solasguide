@@ -17,16 +17,15 @@ export function SiteFooter() {
         <div>
           <p className="review-label opacity-50">Explore</p>
           <div className="mt-4 grid gap-3 text-sm">
-            <a href="/web#about">About the guide</a>
-            <a href="/web#how-it-works">How it works</a>
-            <a href="/web#start">Start an enquiry</a>
+            <Link href="/#about">About the guide</Link>
+            <Link href="/#how-it-works">How it works</Link>
+            <Link href="/find-a-match">Start an enquiry</Link>
           </div>
         </div>
         <div>
           <p className="review-label opacity-50">The Solas Guide</p>
           <div className="mt-4 grid gap-3 text-sm">
-            <a href="/web#practitioners">For practitioners</a>
-            <Link href="/design-system">Design review</Link>
+            <Link href="/#practitioners">For practitioners</Link>
           </div>
         </div>
       </div>

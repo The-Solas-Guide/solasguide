@@ -7,9 +7,9 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const links = [
-  { label: "About", href: "/web#about" },
-  { label: "How it works", href: "/web#how-it-works" },
-  { label: "For practitioners", href: "/web#practitioners" },
+  { label: "About", href: "/#about" },
+  { label: "How it works", href: "/#how-it-works" },
+  { label: "For practitioners", href: "/#practitioners" },
 ];
 
 export function SiteHeader({ className }: { className?: string }) {
@@ -18,7 +18,7 @@ export function SiteHeader({ className }: { className?: string }) {
   return (
     <header className={cn("relative border border-border bg-background", className)}>
       <div className="flex min-h-20 items-center justify-between gap-6 px-5 md:px-7">
-        <Link href="/web" className="font-display text-2xl leading-none">
+        <Link href="/" className="font-display text-2xl leading-none">
           The Solas Guide
         </Link>
         <nav aria-label="Primary navigation" className="hidden items-center gap-7 lg:flex">
@@ -34,7 +34,7 @@ export function SiteHeader({ className }: { className?: string }) {
         </nav>
         <div className="hidden lg:block">
           <Button asChild>
-            <a href="/web#start">Start an enquiry</a>
+            <Link href="/find-a-match">Start an enquiry</Link>
           </Button>
         </div>
         <button
@@ -60,9 +60,9 @@ export function SiteHeader({ className }: { className?: string }) {
             </a>
           ))}
           <Button asChild className="mt-3">
-            <a href="/web#start" onClick={() => setOpen(false)}>
+            <Link href="/find-a-match" onClick={() => setOpen(false)}>
               Start an enquiry
-            </a>
+            </Link>
           </Button>
         </nav>
       )}
