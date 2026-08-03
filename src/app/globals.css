@@ -1,22 +1,202 @@
 @import "tailwindcss";
 
-:root {
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-destructive: var(--destructive);
+  --font-sans: var(--font-body);
+  --font-display: var(--font-display);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.5);
+}
+
+:root,
+:root[data-theme="aman"] {
+  --background: #f7f4ee;
+  --foreground: #1c1a17;
+  --card: #fcfaf6;
+  --card-foreground: #1c1a17;
+  --popover: #fcfaf6;
+  --popover-foreground: #1c1a17;
+  --primary: #1c1a17;
+  --primary-foreground: #f7f4ee;
+  --secondary: #ede8de;
+  --secondary-foreground: #1c1a17;
+  --muted: #efeae1;
+  --muted-foreground: #6e675c;
+  --accent: #2e4238;
+  --accent-foreground: #f5f2ea;
+  --destructive: #7a2e2e;
+  --border: #ddd6c8;
+  --input: #cfc6b7;
+  --ring: #2e4238;
+  --radius: 0.25rem;
+  --review-section-space: clamp(5rem, 9vw, 8rem);
+}
+
+:root[data-theme="bambu"] {
+  --background: #f1ebe0;
+  --foreground: #221c14;
+  --card: #f8f4ea;
+  --card-foreground: #221c14;
+  --popover: #f8f4ea;
+  --popover-foreground: #221c14;
+  --primary: #221c14;
+  --primary-foreground: #f1ebe0;
+  --secondary: #e6dcc9;
+  --secondary-foreground: #221c14;
+  --muted: #eae2d2;
+  --muted-foreground: #75664f;
+  --accent: #a8562f;
+  --accent-foreground: #fbf7ee;
+  --destructive: #7a2e2e;
+  --border: #d9cdb6;
+  --input: #cbbda4;
+  --ring: #a8562f;
+  --radius: 0.375rem;
+  --review-section-space: clamp(4.5rem, 8vw, 7rem);
+}
+
+:root[data-theme="chanel"] {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #0a0a0a;
+  --card: #f6f3ec;
+  --card-foreground: #0a0a0a;
+  --popover: #ffffff;
+  --popover-foreground: #0a0a0a;
+  --primary: #0a0a0a;
+  --primary-foreground: #ffffff;
+  --secondary: #efeae0;
+  --secondary-foreground: #0a0a0a;
+  --muted: #f4f3f0;
+  --muted-foreground: #55524c;
+  --accent: #8c6f3f;
+  --accent-foreground: #ffffff;
+  --destructive: #7a2e2e;
+  --border: #d8d6d0;
+  --input: #c8c5bd;
+  --ring: #8c6f3f;
+  --radius: 0;
+  --review-section-space: clamp(4.5rem, 8vw, 7rem);
+}
+
+:root[data-type="classical"] {
+  --font-display: Georgia, "Times New Roman", serif !important;
+}
+
+:root[data-type="modern"] {
+  --font-display: var(--font-inter), system-ui, sans-serif !important;
+}
+
+:root[data-corners="square"] {
+  --radius: 0 !important;
+}
+
+:root[data-corners="soft"] {
+  --radius: 0.875rem !important;
+}
+
+:root[data-density="compact"] {
+  --review-section-space: 3.75rem;
+}
+
+:root[data-accent="expressive"] {
+  --primary: var(--accent);
+  --primary-foreground: var(--accent-foreground);
 }
 
 * {
   box-sizing: border-box;
+  border-color: var(--border);
 }
 
-html,
-body {
-  margin: 0;
+html {
   min-height: 100%;
+  scroll-behavior: smooth;
 }
 
 body {
+  min-height: 100%;
+  margin: 0;
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
+  text-rendering: optimizeLegibility;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+@layer base {
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
+}
+
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+}
+
+.review-section {
+  padding-block: var(--review-section-space);
+}
+
+.review-label {
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.review-shell {
+  width: min(calc(100% - 2rem), 88rem);
+  margin-inline: auto;
+}
+
+.review-prose {
+  max-width: 42rem;
+  color: var(--muted-foreground);
+  font-size: 0.95rem;
+  line-height: 1.8;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+@media (min-width: 768px) {
+  .review-shell {
+    width: min(calc(100% - 3rem), 88rem);
+  }
 }
