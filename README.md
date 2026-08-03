@@ -1,36 +1,104 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# The Solas Guide
 
-## Getting Started
+The Solas Guide is a curated wellness discovery product. This repository contains the Next.js application and technical configuration for its first production release.
 
-First, run the development server:
+## MVP scope
+
+The current release is focused on:
+
+- A public introduction to The Solas Guide and its editorial approach.
+- A guided Find a Match enquiry journey.
+- A practitioner expression-of-interest journey.
+- Structured submission storage in Supabase.
+- Customer confirmations and internal notifications through MailerSend.
+- Responsive, accessible public pages and form states.
+
+The MVP does not include a public practitioner directory, public practitioner profiles, customer or practitioner accounts, payments, automated matching, direct messaging, or a custom administration portal.
+
+The detailed delivery scope and acceptance criteria are maintained in [`docs/source-of-truth/mvp-scope.md`](docs/source-of-truth/mvp-scope.md). Commercial agreements, pricing, transcripts, private research, and internal planning do not belong in this repository.
+
+## Technology
+
+Currently installed:
+
+- Next.js 16 and React 19
+- TypeScript
+- Tailwind CSS 4
+- Radix UI and shadcn component patterns
+- Motion
+
+Approved integration direction:
+
+- Supabase for application data and local development services
+- Vercel for preview and production deployments
+- MailerSend for transactional email
+- Google Analytics 4 when the analytics property is available
+
+Supabase is the application runtime data store. Airtable is not a runtime dependency.
+
+## Local development
+
+Prerequisites:
+
+- Node.js 22.22.1 and npm 10.9.4 (see `.nvmrc` and `package.json`)
+- Docker Desktop when running Supabase locally
+- Supabase CLI or `npx supabase`
+
+Install dependencies, start Supabase, and create your local environment file:
 
 ```bash
+npm ci
+supabase start
+cp .env.example .env.local
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Use `supabase status` to retrieve the local publishable key and add it to `.env.local`. Open the app at <http://localhost:3000/web>, Supabase Studio at <http://127.0.0.1:55323>, and Mailpit at <http://127.0.0.1:55324>.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+The local Supabase configuration uses project-specific ports so it can run alongside other Supabase projects. Migrations and deterministic seed data are applied by `supabase start` or `supabase db reset`. Generated database types live in `src/types/database.ts`.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Checks
 
-## Learn More
+```bash
+npm run lint
+npm run type-check
+npm run build
+# or run all three:
+npm run check
+```
 
-To learn more about Next.js, take a look at the following resources:
+Only report a check as passing when it has been run against the current working tree.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Environments
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **Local:** Next.js locally with Supabase Docker.
+- **Preview:** Vercel preview deployments using non-production configuration.
+- **Production:** Vercel production with the production Supabase project and production provider settings.
 
-## Deploy on Vercel
+Do not commit credentials or environment files. MailerSend must remain in a safe development mode until production sending is explicitly approved.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Repository structure
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `src/` — Next.js application code.
+- `public/` — static application assets.
+- `supabase/` — local Supabase configuration, migrations, and seed data.
+- `docs/` — technical documentation and approved implementation references.
+- `.github/workflows/` — continuous integration and changelog automation.
+- `.agents/skills/` — repository-local Agent Skills.
+- `.codex/agents/` — project-specific Codex agent definitions.
+- `AGENTS.md` — durable project rules, scope boundaries, and model routing.
+- `docs/source-of-truth/mvp-scope.md` — active delivery boundary and acceptance summary.
+- `CHANGELOG.md` — automatically updated record of pull requests merged into `main`.
+
+## Agent workflows
+
+- Use `solas-designer` for UI, UX, editorial copy, art direction, imagery, and visual review.
+- Use the installed official Supabase skills for schema, migration, RLS, query, and integration work.
+- Use `solas-reviewer` for independent scope, correctness, security, and regression review.
+- Use `solas-qa` for browser, responsive, persistence, build, and preview verification.
+
+Read `AGENTS.md` before making changes. Keep detailed agent procedures in their skill or agent definitions rather than duplicating them here.
+
+## Documentation boundary
+
+Keep contracts, commercial terms, transcripts, client-private material, internal planning, follow-ups, and generated working artifacts in the separate internal project workspace. Do not commit secrets, provider credentials, personal data, or production exports.
