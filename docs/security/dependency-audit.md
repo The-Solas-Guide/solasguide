@@ -2,7 +2,7 @@
 
 Last reviewed: 2026-08-03
 
-`npm audit` currently reports advisories inherited through Next.js 16.2.11 for its bundled PostCSS and Sharp versions. npm proposes Next.js 9.3.3 as the automated resolution, which is not a safe or compatible fix for this Next.js 16 application.
+`npm audit` currently reports advisories inherited through Next.js 16.2.11 for its bundled PostCSS and Sharp versions. npm proposes Next.js 9.3.3 as the automated resolution, which is not a safe or compatible fix for this Next.js 16 application. The separately fixable `brace-expansion` development advisory was resolved with npm's non-breaking audit fix.
 
 The application does not accept user-provided CSS or image files in the current MVP scope. This lowers exposure to the reported PostCSS and Sharp paths, but does not resolve the upstream advisories.
 

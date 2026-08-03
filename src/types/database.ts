@@ -11,6 +11,7 @@ export type Database = {
     Tables: {
       buyer_enquiries: {
         Row: {
+          consent_confirmed: boolean
           consent_given_at: string
           contact_preference: string
           created_at: string
@@ -27,6 +28,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          consent_confirmed: boolean
           consent_given_at?: string
           contact_preference?: string
           created_at?: string
@@ -43,6 +45,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          consent_confirmed?: boolean
           consent_given_at?: string
           contact_preference?: string
           created_at?: string
@@ -62,6 +65,7 @@ export type Database = {
       }
       practitioner_expressions_of_interest: {
         Row: {
+          consent_confirmed: boolean
           consent_given_at: string
           contact_preference: string
           created_at: string
@@ -81,6 +85,7 @@ export type Database = {
           website_url: string | null
         }
         Insert: {
+          consent_confirmed: boolean
           consent_given_at?: string
           contact_preference?: string
           created_at?: string
@@ -100,6 +105,7 @@ export type Database = {
           website_url?: string | null
         }
         Update: {
+          consent_confirmed?: boolean
           consent_given_at?: string
           contact_preference?: string
           created_at?: string

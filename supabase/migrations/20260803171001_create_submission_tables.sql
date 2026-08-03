@@ -8,6 +8,7 @@ create table public.buyer_enquiries (
   email text not null,
   phone text,
   contact_preference text not null default 'email',
+  consent_confirmed boolean not null,
   consent_given_at timestamptz not null default now(),
   questionnaire_answers jsonb not null default '{}'::jsonb,
   source text not null default 'website',
@@ -27,6 +28,8 @@ create table public.buyer_enquiries (
     check (contact_preference in ('email', 'phone', 'whatsapp')),
   constraint buyer_enquiries_contact_details_check
     check (contact_preference = 'email' or phone is not null),
+  constraint buyer_enquiries_consent_confirmed_check
+    check (consent_confirmed),
   constraint buyer_enquiries_answers_object_check
     check (jsonb_typeof(questionnaire_answers) = 'object'),
   constraint buyer_enquiries_source_check
@@ -44,6 +47,7 @@ create table public.practitioner_expressions_of_interest (
   practice_name text,
   location text,
   website_url text,
+  consent_confirmed boolean not null,
   consent_given_at timestamptz not null default now(),
   questionnaire_answers jsonb not null default '{}'::jsonb,
   source text not null default 'website',
@@ -69,6 +73,8 @@ create table public.practitioner_expressions_of_interest (
     check (location is null or length(location) between 1 and 200),
   constraint practitioner_eoi_website_url_check
     check (website_url is null or length(website_url) between 1 and 2048),
+  constraint practitioner_eoi_consent_confirmed_check
+    check (consent_confirmed),
   constraint practitioner_eoi_answers_object_check
     check (jsonb_typeof(questionnaire_answers) = 'object'),
   constraint practitioner_eoi_source_check
@@ -119,6 +125,7 @@ grant insert (
   email,
   phone,
   contact_preference,
+  consent_confirmed,
   questionnaire_answers
 ) on table public.buyer_enquiries to anon, authenticated;
 grant insert (
@@ -129,6 +136,7 @@ grant insert (
   practice_name,
   location,
   website_url,
+  consent_confirmed,
   questionnaire_answers
 ) on table public.practitioner_expressions_of_interest to anon, authenticated;
 
@@ -145,6 +153,7 @@ to anon, authenticated
 with check (
   source = 'website'
   and status = 'new'
+  and consent_confirmed
   and internal_notes is null
   and customer_confirmation_sent_at is null
   and internal_notification_sent_at is null
@@ -157,6 +166,7 @@ to anon, authenticated
 with check (
   source = 'website'
   and status = 'new'
+  and consent_confirmed
   and internal_notes is null
   and customer_confirmation_sent_at is null
   and internal_notification_sent_at is null
