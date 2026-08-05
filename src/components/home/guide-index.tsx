@@ -278,22 +278,23 @@ export function GuideIndex() {
       >
         <div className="grid grid-cols-2 gap-px overflow-hidden border border-border bg-border lg:grid-cols-4">
           {guideItems[activeCategory].map((item) => (
-            <article key={item.title} className="min-w-0 bg-card">
+            <article key={item.title} className="group relative min-w-0 overflow-hidden bg-foreground">
               <div className="relative aspect-[4/5] overflow-hidden sm:aspect-[5/4] lg:aspect-[4/5]">
                 <Image
                   src={item.image}
                   alt={item.imageAlt ?? ""}
                   fill
-                  className={cn("object-cover", item.imagePosition)}
+                  className={cn("object-cover transition-transform duration-500 ease-out group-hover:scale-[1.025]", item.imagePosition)}
                   sizes="(max-width: 1023px) 50vw, 25vw"
                 />
-                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-foreground/75 to-transparent px-3 pt-10 pb-3 text-background sm:px-4">
-                  <p className="text-[0.6rem] font-semibold uppercase tracking-[0.16em]">{item.location}</p>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-black/5" />
+                <div className="absolute inset-x-0 bottom-0 p-3 text-white sm:p-4">
+                  <p className="text-[0.58rem] font-semibold uppercase tracking-[0.16em] text-white/80 sm:text-[0.62rem]">
+                    {item.location}
+                  </p>
+                  <h3 className="mt-1.5 font-display text-base leading-[1.05] text-balance sm:text-xl">{item.title}</h3>
+                  <p className="mt-2 text-[0.66rem] leading-[1.45] text-white/80 sm:text-xs sm:leading-5">{item.description}</p>
                 </div>
-              </div>
-              <div className="min-h-32 p-3 sm:p-4">
-                <h3 className="font-display text-lg leading-tight sm:text-xl">{item.title}</h3>
-                <p className="mt-2 text-xs leading-5 text-muted-foreground sm:text-sm">{item.description}</p>
               </div>
             </article>
           ))}
