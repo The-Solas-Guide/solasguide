@@ -8,27 +8,27 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "The Solas Guide | A considered wellness guide for Bali",
+  title: "The Solas Guide | Personal wellness introductions in Bali",
   description:
-    "A considered guide to practitioners and restorative experiences for a more personal Bali stay.",
+    "Tell us what you need in Bali. The Solas Guide personally reviews your enquiry, recommends relevant wellness practitioners, and helps make the introduction.",
 };
 
 const practiceGroups = [
   {
-    title: "Grounding and presence",
-    items: ["Yoga", "Breathwork", "Meditation", "Sound practices"],
+    title: "Mindfulness and rest",
+    items: ["Meditation", "Breathwork", "Sound practices", "Restorative experiences"],
   },
   {
-    title: "Mind and nervous system",
-    items: ["Somatic practice", "Hypnotherapy", "Counselling", "Facilitation"],
+    title: "Personal support",
+    items: ["Somatic practice", "Counselling", "Facilitation", "Private sessions"],
   },
   {
     title: "Body and movement",
-    items: ["Bodywork", "Movement", "Women’s health", "Physical practice"],
+    items: ["Yoga", "Bodywork", "Movement", "Physical practice"],
   },
   {
-    title: "Tradition and ceremony",
-    items: ["Balinese traditions", "Energy practice", "Ceremony", "Contemplative work"],
+    title: "Local practices",
+    items: ["Balinese traditions", "Ceremony", "Energy practice", "Contemplative work"],
   },
 ] as const;
 
@@ -58,14 +58,16 @@ export default function WebPage() {
             <div className="relative flex min-h-[min(720px,calc(100svh-2rem))] items-end px-7 pt-7 pb-24 text-background md:p-14 lg:p-20">
               <div className="max-w-3xl">
                 <p className="review-label text-background/70">
-                  A considered wellness guide for Bali
+                  Human wellness guidance in Bali
                 </p>
                 <h1 className="mt-6 max-w-3xl font-display text-5xl leading-[0.96] tracking-tight md:text-7xl lg:text-8xl">
-                  Your Bali wellness stay, shaped around what matters to you.
+                  Tell us what you need. We’ll help you find trusted people in Bali.
                 </h1>
                 <p className="mt-7 max-w-xl text-base leading-7 text-background/82 md:text-lg">
-                  Tell The Solas Guide what you are looking for. We review the
-                  context, identify relevant directions, and follow up personally.
+                  The Solas Guide is a curated wellness network and concierge
+                  service for Bali. Share your plans and priorities, and we will
+                  personally recommend relevant practitioners and help make the
+                  introduction.
                 </p>
                 <div className="mt-9 flex flex-wrap items-center gap-3">
                   <a
@@ -75,7 +77,7 @@ export default function WebPage() {
                       "border-background bg-background text-foreground hover:bg-background/85",
                     )}
                   >
-                    Start an enquiry <ArrowRight />
+                    Tell us what you need <ArrowRight />
                   </a>
                   <a
                     href="#how-it-works"
@@ -97,20 +99,22 @@ export default function WebPage() {
                 What The Solas Guide does
               </p>
               <h2 className="mt-5 max-w-xl font-display text-4xl leading-tight md:text-5xl">
-                A thoughtful starting point for a more personal stay.
+                A human alternative to hours of searching.
               </h2>
               <p className="mt-7 max-w-lg text-base leading-8 text-muted-foreground">
-                Bali offers an enormous range of practitioners and practices.
-                The Solas Guide helps you begin with your circumstances rather
-                than asking you to search through an unrestricted directory.
+                Finding credible wellness support in Bali can mean comparing
+                websites, social accounts, and recommendations without knowing
+                who is relevant to you. The Solas Guide starts with your needs,
+                then draws on our local knowledge and practitioner network.
               </p>
               <div className="mt-7 border-l-2 border-accent pl-5">
                 <p className="font-display text-xl leading-snug">
-                  Context before recommendations.
+                  Your context comes first.
                 </p>
                 <p className="mt-3 max-w-lg text-sm leading-7 text-muted-foreground">
-                  Your dates, location, interests, group, and practical needs
-                  give us a clearer basis for a useful personal follow-up.
+                  Whether you are travelling alone, planning a retreat, or
+                  organising support for a group, your timing, location,
+                  interests, and practical needs shape the recommendation.
                 </p>
               </div>
             </div>
@@ -128,14 +132,14 @@ export default function WebPage() {
           <section className="border-t border-border py-16 md:py-24">
             <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
               <div>
-                <p className="review-label text-muted-foreground">What people explore</p>
+                <p className="review-label text-muted-foreground">What you can ask about</p>
                 <h2 className="mt-5 max-w-2xl font-display text-4xl leading-tight md:text-5xl">
-                  Practices considered in context, not as a catalogue.
+                  Start with what you want help with—not a list of names.
                 </h2>
               </div>
               <p className="max-w-sm text-sm leading-relaxed text-muted-foreground">
-                You do not need to know the right terminology before making an
-                enquiry. A useful brief gives us a place to begin.
+                These are examples, not a fixed catalogue. You do not need to
+                know the right terminology before making an enquiry.
               </p>
             </div>
             <div className="mt-10 grid gap-px border border-border bg-border md:grid-cols-2 lg:grid-cols-4">
@@ -159,11 +163,12 @@ export default function WebPage() {
             <div className="mx-auto max-w-3xl text-center">
               <p className="review-label text-muted-foreground">How it works</p>
               <h2 className="mt-5 font-display text-4xl leading-tight md:text-5xl">
-                A personal process in three clear steps.
+                One enquiry. A human review. A considered introduction.
               </h2>
               <p className="mx-auto mt-5 max-w-xl text-sm leading-relaxed text-muted-foreground">
-                The first release captures a structured brief and supports a
-                considered follow-up. It does not automate matching or booking.
+                Solas does not use automated matching. We review each enquiry
+                and use our knowledge of the network to decide which
+                direction may be most relevant.
               </p>
             </div>
             <div className="mx-auto mt-12 grid max-w-5xl gap-px overflow-hidden border border-border bg-border lg:grid-cols-[0.75fr_1.25fr]">
@@ -178,9 +183,9 @@ export default function WebPage() {
               </div>
               <div className="grid gap-px bg-border lg:grid-rows-3">
                 {[
-                  ["01", "Share what you are looking for", "Tell us about your dates, location, interests, group, and anything that would help us understand the stay."],
-                  ["02", "We review the context", "The Solas Guide considers the brief and identifies the most relevant direction for a personal follow-up."],
-                  ["03", "Continue the conversation", "We get in touch to clarify the details and explain the most useful next step."],
+                  ["01", "Tell us what you need", "Share your dates, location, interests, group, budget, and anything else that will help us understand what you are planning."],
+                  ["02", "We review your enquiry", "We consider your circumstances and draw on the Solas network to identify practitioners or experiences that may be relevant."],
+                  ["03", "Solas helps make the introduction", "We follow up to clarify the next step and, where there is a suitable direction, connect you with the relevant people."],
                 ].map(([number, title, copy]) => (
                   <article
                     key={number}
@@ -219,12 +224,13 @@ export default function WebPage() {
             <div className="flex flex-col justify-end border border-border bg-muted/35 p-8 md:p-10">
               <p className="review-label text-muted-foreground">Why the guide exists</p>
               <h2 className="mt-6 max-w-md font-display text-4xl leading-tight">
-                Knowing where to begin is often the hardest part.
+                A name is not the same as a useful recommendation.
               </h2>
               <p className="mt-6 max-w-md text-sm leading-7 text-muted-foreground">
-                The Solas Guide is designed to make the first step feel clearer:
-                a structured enquiry, a personal review, and an honest explanation
-                of what comes next.
+                The right choice depends on why you are coming, what kind of
+                support you want, and who you feel comfortable working with.
+                Solas adds human judgement and local context before making an
+                introduction.
               </p>
             </div>
           </section>
@@ -233,7 +239,7 @@ export default function WebPage() {
             <div className="relative min-h-[28rem] overflow-hidden">
               <Image
                 src="/images/solas-imagery/journey-practitioner.png"
-                alt="A practitioner preparing a quiet working space"
+                alt="A person arranging cushions in a quiet open-air space"
                 fill
                 className="object-cover"
                 sizes="(max-width: 768px) 100vw, 50vw"
@@ -242,30 +248,33 @@ export default function WebPage() {
             <div className="flex flex-col justify-center p-8 md:p-12 lg:p-16">
               <p className="review-label text-muted-foreground">For practitioners</p>
               <h2 className="mt-5 font-display text-4xl leading-tight md:text-5xl">
-                Interested in being considered for The Solas Guide?
+                Interested in joining the Solas practitioner network?
               </h2>
               <p className="mt-6 max-w-lg text-sm leading-7 text-muted-foreground">
-                Share your practice, experience, professional context, and the
-                kind of work you do. Submitting an expression of interest does
-                not imply approval or publication.
+                Tell us about your practice, experience, and the people you are
+                best placed to support. This is an expression of interest in the
+                curated network, not an application for a public profile or a
+                guarantee of referrals.
               </p>
               <Button variant="outline" disabled className="mt-8 w-fit">
-                Practitioner form coming next
+                Practitioner enquiries coming soon
               </Button>
             </div>
           </section>
 
           <section id="start" className="review-section border-t border-border text-center">
             <div className="mx-auto max-w-3xl px-6">
-              <p className="review-label text-muted-foreground">Your starting point</p>
+              <p className="review-label text-muted-foreground">Begin with your needs</p>
               <h2 className="mt-5 font-display text-5xl leading-tight md:text-6xl">
-                Tell us what would make your Bali stay more considered.
+                Planning wellness support in Bali?
               </h2>
               <p className="mx-auto mt-6 max-w-xl text-sm leading-7 text-muted-foreground">
-                Share a little context about your timing, interests, location, and group. The Solas Guide will review your enquiry personally.
+                Tell us what you are planning, who it is for, and what matters
+                most. We will review your enquiry and follow up with a clear
+                next step.
               </p>
               <Link href="/find-a-match" className={cn(buttonVariants(), "mt-8")}>
-                Start an enquiry <ArrowRight />
+                Tell us what you need <ArrowRight />
               </Link>
             </div>
           </section>

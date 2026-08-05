@@ -6,6 +6,8 @@
 
 Deliver the first production release of The Solas Guide as a focused public website that explains the service, captures buyer demand, and builds the practitioner pipeline.
 
+The service uses human judgement and the trusted Solas network to review buyer context, recommend an appropriate direction, and make curated introductions. The application supports this manual concierge process; it does not automate it.
+
 ## Included
 
 - Public website introduction and editorial positioning.

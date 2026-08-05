@@ -1,5 +1,5 @@
 ---
-last_updated: "2026-08-05T12:52:37-04:00"
+last_updated: "2026-08-05T13:08:39-04:00"
 ---
 
 # Solas voice and brand direction
@@ -12,6 +12,8 @@ This is distilled implementation guidance. Private transcripts and client conver
 - Make trust the central promise. Demonstrate it through a clear process, careful language, and specific evidence.
 - Lead with the visitor's context and desired outcome, then explain the considered next step.
 - Communicate selectivity without status theatre. Prefer `considered` and `selected with care` over `elite` or `exclusive` when the operating process supports the claim.
+- Explain the manual service plainly in the organisational voice: a customer shares what they need, we review the context, recommend an appropriate fit from the trusted Solas network, and help make the introduction. Do not name individuals in customer-facing process copy.
+- Treat human judgement as the value being tested. Do not describe the software itself as performing the match.
 
 ## Audience
 
@@ -59,9 +61,13 @@ Avoid:
 - Do not call something accredited or verified unless the operating process supports that exact claim.
 - Never present provisional or unreviewed information as approved fact.
 
+## Current operating model
+
+- Human review, recommendations, and curated introductions are part of the MVP service delivered manually by The Solas Guide.
+- The application explains the service and captures structured buyer and practitioner enquiries; it does not automate matching, verification, booking, profiles, or direct messaging.
+
 ## Open client decisions
 
-- Future operating decision: curated introductions versus direct practitioner contact. This is not an active MVP capability or a choice to resolve in current copy.
 - Bali-first positioning versus global positioning from launch.
 - The exact vetting process supporting any public verification claims.
 - Final logo, colours, and typography.
