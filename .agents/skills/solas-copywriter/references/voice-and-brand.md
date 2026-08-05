@@ -1,5 +1,5 @@
 ---
-last_updated: "2026-08-05T12:45:54-04:00"
+last_updated: "2026-08-05T12:52:37-04:00"
 ---
 
 # Solas voice and brand direction
@@ -11,7 +11,7 @@ This is distilled implementation guidance. Private transcripts and client conver
 - Present The Solas Guide as a knowledgeable human guide and curator, not a directory, booking marketplace, or automated matching service.
 - Make trust the central promise. Demonstrate it through a clear process, careful language, and specific evidence.
 - Lead with the visitor's context and desired outcome, then explain the considered next step.
-- Communicate selectivity without status theatre. Prefer `considered`, `personally reviewed`, and `selected with care` over `elite` or `exclusive`.
+- Communicate selectivity without status theatre. Prefer `considered` and `selected with care` over `elite` or `exclusive` when the operating process supports the claim.
 
 ## Audience
 
@@ -61,9 +61,11 @@ Avoid:
 
 ## Open client decisions
 
-- Curated introductions versus direct practitioner contact.
+- Future operating decision: curated introductions versus direct practitioner contact. This is not an active MVP capability or a choice to resolve in current copy.
 - Bali-first positioning versus global positioning from launch.
 - The exact vetting process supporting any public verification claims.
 - Final logo, colours, and typography.
 
 Keep copy reversible when one of these decisions affects the journey, and flag the decision rather than resolving it by inference.
+
+Use `personally reviewed` only when the specific content or enquiry has actually been reviewed by a person through an established operating process. Otherwise describe the concrete current action without implying review.

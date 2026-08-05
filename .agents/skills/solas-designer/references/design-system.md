@@ -1,3 +1,7 @@
+---
+last_updated: "2026-08-05T12:54:15-04:00"
+---
+
 # The Solas Guide design system
 
 ## Starting point
@@ -18,9 +22,16 @@
 
 ## Product presentation
 
-- Treat The Solas Guide as a curated guide, not an unrestricted public directory.
-- Lead with practitioner, place, lineage, years, modality, and editorial context.
+- Treat The Solas Guide as a knowledgeable guide and curator, not a public directory or marketplace.
+- Lead with the visitor's context, the enquiry process, and a clear account of what happens next.
+- Do not introduce practitioner profiles, browseable listings, filters, or direct-contact affordances unless they enter the approved MVP scope.
 - Treat identity marks and placeholder imagery as provisional until final artwork or content is approved.
+
+## Copy integration
+
+- The designer owns hierarchy, placement, wrapping, legibility, and responsive behaviour.
+- Use `solas-copywriter` for customer-facing wording, calls to action, claims, voice, and terminology decisions.
+- Do not silently rewrite approved copy to solve a layout issue; adjust the composition or request a bounded copy revision.
 
 ## Visual validation
 

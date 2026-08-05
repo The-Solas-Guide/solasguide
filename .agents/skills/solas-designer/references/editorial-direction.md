@@ -1,18 +1,17 @@
+---
+last_updated: "2026-08-05T12:54:15-04:00"
+---
+
 # The Solas Guide editorial direction
 
-## Voice
+This reference governs how copy is integrated into a design. For writing, editing, calls to action, claims, voice, or terminology, invoke `solas-copywriter` and use its references as the source of truth.
 
-Write with quiet authority. Be specific rather than spiritual, warm without assuming intimacy, and editorial rather than promotional.
+## Design ownership
 
-## Rules
+- Own hierarchy, placement, wrapping, line length, contrast, and responsive behaviour.
+- Preserve the meaning and claim strength of approved copy.
+- If copy cannot fit clearly, adjust the composition first or ask `solas-copywriter` for a bounded revision.
+- Keep calls to action aligned with the real MVP enquiry journey; do not create directory, profile, booking, payment, or direct-contact affordances.
+- Mark provisional copy visibly during review and do not present it as client-approved.
 
-- Distinguish reviewed facts from practitioner-supplied statements.
-- Attribute teachers, traditions, lineages, qualifications, years, and places precisely.
-- Do not imply medical outcomes, guaranteed suitability, transformation, or endorsement without evidence.
-- Write `The Solas Guide` in full in customer-facing copy.
-- Prefer practitioner, practice, experience, specific, introduce, explore, and may support.
-- Avoid healer, guru, transformation journey, exclusive, elite, perfect match, and cure.
-- Name the real next step in calls to action: Explore practitioners, View the profile, Start an enquiry, or Begin your application.
-- Use sentence case, active voice, short paragraphs, concrete nouns and verbs, and restrained punctuation.
-- Preserve local names and terminology. Do not exoticise people or places or flatten distinct traditions into generic wellness language.
-- Never present provisional, unreviewed, or practitioner-supplied information as independently verified.
+Keep detailed voice, terminology, evidence, and claims guidance in `solas-copywriter`; do not duplicate it here.

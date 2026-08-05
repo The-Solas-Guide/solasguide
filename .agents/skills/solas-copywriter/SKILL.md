@@ -22,10 +22,17 @@ Write with quiet authority while keeping every claim accurate to the active prod
 5. Review the copy in its interface context for hierarchy, wrapping, repetition, and consistency.
 6. Mark provisional copy and unresolved client decisions clearly in the handoff.
 
+## Output contract
+
+1. Present the final, ready-to-use copy first.
+2. List unresolved decisions separately only when they materially affect the copy.
+3. List unsupported or conditional claims separately; do not leave them embedded in final copy.
+
 ## Boundaries
 
 - Do not treat private transcripts, conversations, archived prototypes, or commercial material as repository content.
 - Do not invent credentials, practitioner facts, testimonials, verification processes, availability, or outcomes.
 - Do not restore directory, public profile, booking, account, or automated matching language outside the active MVP scope.
+- Treat curated introductions versus direct practitioner contact as a future operating decision, not a current MVP journey or copy choice.
 - Do not use luxury or spiritual language as a substitute for specific, useful information.
 - Preserve local names and terminology without exoticising people, places, or traditions.

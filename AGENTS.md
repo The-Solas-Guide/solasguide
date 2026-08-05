@@ -30,6 +30,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 - Invoke the `solas-designer` skill for The Solas Guide UI, UX, visual design, art direction, image generation, or visual QA work.
 - Invoke the `solas-copywriter` skill when the primary task is customer-facing copy, interface language, calls to action, editorial voice, or terminology review.
+- For combined work, let `solas-copywriter` own wording and claims, then let `solas-designer` own hierarchy, placement, wrapping, and responsive visual integration.
 - Load only the reference files relevant to the task.
 - The archived pitch prototype is a reference, not a production design system or component source of truth.
 - Establish the active visual direction through an approved representative MVP page, then document only the reusable patterns that are actually implemented.

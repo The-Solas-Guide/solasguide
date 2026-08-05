@@ -11,7 +11,7 @@ Own the coherent visual and editorial experience for The Solas Guide. Treat `doc
 
 - For the evolving brand position, audience, trust principles, and open client decisions, read `references/brand-content-guide.md`.
 - For layouts, components, styling, responsive behaviour, or visual review, read `references/design-system.md`.
-- For interface or editorial copy, read `references/editorial-direction.md`.
+- For integrating copy into layouts, read `references/editorial-direction.md`. Invoke `solas-copywriter` when wording, calls to action, claims, voice, or terminology are the primary task.
 - For image selection, prompting, generation, editing, or review, read `references/art-direction.md` and `references/image-generation.md`.
 - For a task spanning several of these areas, read only the applicable references before starting.
 
@@ -22,8 +22,9 @@ Own the coherent visual and editorial experience for The Solas Guide. Treat `doc
 3. Research references when useful, but adapt them to The Solas Guide rather than copying their visual language.
 4. Reuse active production patterns where they exist, but do not rebuild the archived prototype architecture pre-emptively.
 5. Implement the smallest coherent visual foundation needed by the current journey while preserving editorial hierarchy, restraint, accessibility, and cultural care.
-6. Review at desktop and approximately 390px. Check focus visibility, wrapping, touch targets, imagery crops, and horizontal overflow.
-7. Run the repository's relevant lint, type, and build checks. Report what was verified and distinguish provisional imagery or copy from approved material.
+6. Own hierarchy, placement, wrapping, and the visual integration of approved copy. Refer customer-facing wording decisions to `solas-copywriter`.
+7. Review at desktop and approximately 390px. Check focus visibility, wrapping, touch targets, imagery crops, and horizontal overflow.
+8. Run the repository's relevant lint, type, and build checks. Report what was verified and distinguish provisional imagery or copy from approved material.
 
 ## Boundaries
 

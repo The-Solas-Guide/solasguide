@@ -1,3 +1,7 @@
+---
+last_updated: "2026-08-05T12:52:37-04:00"
+---
+
 # Solas copy patterns
 
 ## Page sections
@@ -33,6 +37,12 @@ Avoid unless the product changes:
 - State what the visitor should do next when action is required.
 - Avoid blame, technical implementation details, and vague reassurance.
 - Do not promise a response time unless operations can consistently meet it.
+
+## Handoff format
+
+1. Final copy
+2. Unresolved decisions, when they materially affect the wording
+3. Unsupported or conditional claims that must not appear as approved copy
 
 ## Final review
 
