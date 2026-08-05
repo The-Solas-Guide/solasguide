@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/internal/enquiries/retry-delivery",
+      "schedule": "15 1 * * *"
+    }
+  ]
+}
