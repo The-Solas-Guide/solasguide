@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowDown, ArrowRight } from "lucide-react";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
+import { GuideIndex } from "@/components/home/guide-index";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -89,6 +90,8 @@ export default function WebPage() {
               </div>
             </div>
           </section>
+
+          <GuideIndex />
 
           <section
             id="about"
