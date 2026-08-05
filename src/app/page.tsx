@@ -144,8 +144,8 @@ export default function WebPage() {
             <div className="mx-auto mt-12 grid max-w-5xl gap-px overflow-hidden border border-border bg-border lg:grid-cols-[0.75fr_1.25fr]">
               <div className="relative min-h-[30rem] bg-card sm:min-h-[34rem] lg:min-h-0">
                 <Image
-                  src="/images/solas-imagery/how-it-works-brief.png"
-                  alt="A planning table in a shaded Balinese pavilion"
+                  src="/images/experiences/leadership-offsite.jpg"
+                  alt="A facilitated group session overlooking the ocean in Bali"
                   fill
                   className="object-cover"
                   sizes="(max-width: 1024px) 100vw, 32vw"
