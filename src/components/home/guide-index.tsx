@@ -230,7 +230,7 @@ export function GuideIndex() {
   }
 
   return (
-    <section aria-labelledby="guide-index-heading" className="border-x border-b border-border bg-card px-5 py-14 sm:px-8 md:px-12 md:py-20 lg:px-16">
+    <section id="explore" aria-labelledby="guide-index-heading" className="border-x border-b border-border bg-card px-5 py-14 sm:px-8 md:px-12 md:py-20 lg:px-16">
       <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
         <div>
           <p className="review-label text-accent">Explore the guide</p>
@@ -239,7 +239,8 @@ export function GuideIndex() {
           </h2>
         </div>
         <p className="max-w-sm text-sm leading-7 text-muted-foreground">
-          Explore what you might ask us about. Share what you need, and we will recommend a relevant direction.
+          A glimpse of the network we draw from to shape recommendations around
+          your trip, retreat or group experience.
         </p>
       </div>
 
@@ -302,7 +303,7 @@ export function GuideIndex() {
 
         <div className="mt-5 flex justify-end">
           <Link href="/find-a-match" className={cn(buttonVariants(), "shrink-0")}>
-            Tell us what you need <ArrowRight />
+            Tell us about your trip <ArrowRight />
           </Link>
         </div>
       </div>

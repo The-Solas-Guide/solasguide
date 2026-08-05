@@ -11,21 +11,21 @@ export function SiteFooter() {
             className="min-h-0 justify-start bg-transparent p-0 text-left [&_p:first-child]:text-3xl"
           />
           <p className="mt-4 max-w-sm text-sm leading-relaxed opacity-65">
-            A considered guide to practitioners and restorative experiences in Bali.
+            A curated network of practitioners, places and experiences in Bali.
           </p>
         </div>
         <div>
           <p className="review-label opacity-50">Explore</p>
           <div className="mt-4 grid gap-3 text-sm">
-            <Link href="/#about">About the guide</Link>
+            <Link href="/#explore">Explore the guide</Link>
             <Link href="/#how-it-works">How it works</Link>
-            <Link href="/find-a-match">Start an enquiry</Link>
+            <Link href="/find-a-match">Tell us about your trip</Link>
           </div>
         </div>
         <div>
-          <p className="review-label opacity-50">The Solas Guide</p>
+          <p className="review-label opacity-50">Contact</p>
           <div className="mt-4 grid gap-3 text-sm">
-            <Link href="/#practitioners">For practitioners</Link>
+            <Link href="/#start">Begin your enquiry</Link>
           </div>
         </div>
       </div>

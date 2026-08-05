@@ -7,9 +7,8 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const links = [
-  { label: "About", href: "/#about" },
+  { label: "Explore", href: "/#explore" },
   { label: "How it works", href: "/#how-it-works" },
-  { label: "For practitioners", href: "/#practitioners" },
 ];
 
 export function SiteHeader({ className }: { className?: string }) {
@@ -34,7 +33,7 @@ export function SiteHeader({ className }: { className?: string }) {
         </nav>
         <div className="hidden lg:block">
           <Button asChild>
-            <Link href="/find-a-match">Start an enquiry</Link>
+            <Link href="/find-a-match">Tell us about your trip</Link>
           </Button>
         </div>
         <button
@@ -61,7 +60,7 @@ export function SiteHeader({ className }: { className?: string }) {
           ))}
           <Button asChild className="mt-3">
             <Link href="/find-a-match" onClick={() => setOpen(false)}>
-              Start an enquiry
+              Tell us about your trip
             </Link>
           </Button>
         </nav>
