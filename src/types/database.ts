@@ -9,7 +9,7 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      buyer_enquiries: {
+      customer_enquiries: {
         Row: {
           consent_confirmed: boolean
           consent_given_at: string

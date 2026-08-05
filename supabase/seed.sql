@@ -1,7 +1,7 @@
 -- Synthetic local-only records. These values are deterministic and contain no
 -- personal or production data.
 
-insert into public.buyer_enquiries (
+insert into public.customer_enquiries (
   id,
   full_name,
   email,
