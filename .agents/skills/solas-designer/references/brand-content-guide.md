@@ -1,3 +1,7 @@
+---
+last_updated: "2026-08-05T12:45:54-04:00"
+---
+
 # The Solas Guide brand and content guide
 
 This is a living implementation guide. It contains distilled direction only; private transcripts, client conversations, commercial material, and research remain outside the application repository.

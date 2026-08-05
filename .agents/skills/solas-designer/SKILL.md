@@ -1,6 +1,6 @@
 ---
 name: solas-designer
-description: Design, implement, review, and refine The Solas Guide user experience, including page composition, components, responsive behaviour, editorial copy, art direction, and provisional image generation. Use for any Solas UI, UX, visual design, frontend styling, component, design-system, copywriting, imagery, or visual QA task.
+description: Design, implement, review, and refine The Solas Guide user experience, including page composition, components, responsive behaviour, art direction, imagery, and visual QA. Use for Solas UI, UX, visual design, frontend styling, component, design-system, imagery, or visual QA work; use solas-copywriter when the primary task is customer-facing copy.
 ---
 
 # Solas Designer
