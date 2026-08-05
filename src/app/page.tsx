@@ -166,8 +166,8 @@ export default function WebPage() {
                 considered follow-up. It does not automate matching or booking.
               </p>
             </div>
-            <div className="mx-auto mt-12 grid max-w-5xl gap-10 lg:grid-cols-[0.75fr_1.25fr] lg:items-center">
-              <div className="relative mx-auto min-h-[30rem] w-full max-w-sm overflow-hidden border border-border sm:min-h-[34rem]">
+            <div className="mx-auto mt-12 grid max-w-5xl gap-px overflow-hidden border border-border bg-border lg:grid-cols-[0.75fr_1.25fr]">
+              <div className="relative min-h-[30rem] bg-card sm:min-h-[34rem] lg:min-h-0">
                 <Image
                   src="/images/solas-imagery/how-it-works-brief.png"
                   alt="A planning table in a shaded Balinese pavilion"
@@ -176,15 +176,15 @@ export default function WebPage() {
                   sizes="(max-width: 1024px) 100vw, 32vw"
                 />
               </div>
-              <div className="space-y-1">
+              <div className="grid gap-px bg-border lg:grid-rows-3">
                 {[
                   ["01", "Share what you are looking for", "Tell us about your dates, location, interests, group, and anything that would help us understand the stay."],
                   ["02", "We review the context", "The Solas Guide considers the brief and identifies the most relevant direction for a personal follow-up."],
                   ["03", "Continue the conversation", "We get in touch to clarify the details and explain the most useful next step."],
-                ].map(([number, title, copy], index) => (
+                ].map(([number, title, copy]) => (
                   <article
                     key={number}
-                    className={index === 0 ? "border border-border bg-card p-7 sm:p-8" : "border-l border-border px-7 py-6 sm:px-8"}
+                    className="bg-card p-7 sm:p-8 lg:flex lg:flex-col lg:justify-center"
                   >
                     <div className="flex items-baseline gap-4">
                       <span className="review-label text-accent">{number}</span>
