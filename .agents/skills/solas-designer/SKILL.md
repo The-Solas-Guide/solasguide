@@ -9,6 +9,7 @@ Own the coherent visual and editorial experience for The Solas Guide. Treat `doc
 
 ## Select the relevant references
 
+- For the evolving brand position, audience, trust principles, and open client decisions, read `references/brand-content-guide.md`.
 - For layouts, components, styling, responsive behaviour, or visual review, read `references/design-system.md`.
 - For interface or editorial copy, read `references/editorial-direction.md`.
 - For image selection, prompting, generation, editing, or review, read `references/art-direction.md` and `references/image-generation.md`.
