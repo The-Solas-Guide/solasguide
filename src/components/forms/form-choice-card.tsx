@@ -23,5 +23,3 @@ export function FormChoiceCard({ label, description, selected = false, compact =
     </button>
   );
 }
-
-

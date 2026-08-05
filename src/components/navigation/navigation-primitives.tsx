@@ -10,5 +10,3 @@ export function Breadcrumbs({ items, className }: { items: readonly BreadcrumbIt
 export function Pagination({ current = 1, total = 5, className }: { current?: number; total?: number; className?: string }) {
   return <nav aria-label="Pagination" className={cn("flex items-center justify-between border-y border-border py-4", className)}><a href="#" className="flex min-h-11 items-center gap-2 text-xs"><ChevronLeft className="size-4" />Previous</a><div className="hidden items-center gap-1 sm:flex">{Array.from({ length: total }).map((_, index) => { const page = index + 1; return <a key={page} href="#" aria-current={page === current ? "page" : undefined} className={cn("grid size-10 place-items-center text-xs", page === current ? "bg-foreground text-background" : "hover:bg-muted")}>{page}</a>; })}</div><a href="#" className="flex min-h-11 items-center gap-2 text-xs">Next<ChevronRight className="size-4" /></a></nav>;
 }
-
-

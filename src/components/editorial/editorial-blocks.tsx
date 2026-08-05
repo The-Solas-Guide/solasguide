@@ -20,5 +20,3 @@ export function FaqList({ items, className }: { items: readonly { question: stri
 export function DisclosurePanel({ title, children, className }: { title: string; children: ReactNode; className?: string }) {
   return <aside className={cn("border border-border bg-muted/35 p-6", className)}><p className="text-xs font-medium uppercase tracking-[0.16em]">{title}</p><div className="mt-4 text-sm leading-relaxed text-muted-foreground">{children}</div></aside>;
 }
-
-

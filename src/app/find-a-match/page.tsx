@@ -8,5 +8,3 @@ export const metadata = {
 export default function FindAPractitionerPage() {
   return <CustomerEnquiryForm />;
 }
-
-
