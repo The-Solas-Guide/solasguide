@@ -95,7 +95,7 @@ export default function WebPage() {
 
           <section
             id="about"
-            className="mt-10 grid border border-border bg-card md:mt-16 md:grid-cols-[0.95fr_1.05fr]"
+            className="grid border border-border bg-card md:grid-cols-[0.95fr_1.05fr]"
           >
             <div className="flex flex-col justify-center px-7 py-16 md:px-10 md:py-24 lg:pr-16">
               <p className="review-label text-muted-foreground">
