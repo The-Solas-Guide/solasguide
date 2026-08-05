@@ -2,8 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, Check, Mail, MessageCircle, Users } from "lucide-react";
-import { useState, type FormEvent } from "react";
+import { ArrowLeft, ArrowRight, Mail, MessageCircle, Users } from "lucide-react";
+import { useState } from "react";
 import { FormChoiceCard } from "@/components/forms/form-choice-card";
 import { FormFeedback } from "@/components/forms/form-feedback";
 import { Button } from "@/components/ui/button";
@@ -12,10 +12,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 
-type JourneyStep = "brief" | "modalities" | "timing" | "location" | "group" | "budget" | "fits" | "contact" | "complete";
+type JourneyStep = "brief" | "modalities" | "timing" | "location" | "group" | "budget" | "review" | "contact";
 type Choice = { value: string; label: string; description?: string };
 
-const questionSteps: { key: Exclude<JourneyStep, "fits" | "contact" | "complete">; label: string }[] = [
+const questionSteps: { key: Exclude<JourneyStep, "review" | "contact">; label: string }[] = [
   { key: "brief", label: "Your brief" },
   { key: "modalities", label: "Practices" },
   { key: "timing", label: "Timing" },
@@ -75,12 +75,6 @@ const modalityGroups: { title: string; choices: Choice[] }[] = [
 
 const unsureModalityChoice: Choice = { value: "unsure", label: "I’m not sure yet" };
 
-const previewPractitioners = [
-  { index: "01", name: "Elena Marchetti", location: "London · Bali", modality: "Somatic therapy", descriptor: "A body-led practice grounded in clinical training and long-term client work.", experience: "14 years active practice", imageSrc: "/images/solas-imagery/practitioner-elena.png", imageAlt: "Elena Marchetti in a natural-light timber practice room" },
-  { index: "02", name: "Made Wirawan", location: "Ubud · Bali", modality: "Balinese traditional healing", descriptor: "Practises Usada Bali in a family lineage taught by his grandfather in Payangan.", experience: "22 years active practice", imageSrc: "/images/solas-imagery/practitioner-made.png", imageAlt: "Made Wirawan seated in an open-air pavilion surrounded by greenery" },
-  { index: "03", name: "Sofia Lindqvist", location: "Stockholm · Bali", modality: "Breathwork", descriptor: "Facilitates small, focused sessions with an emphasis on integration and safety.", experience: "9 years active practice", imageSrc: "/images/solas-imagery/practitioner-sofia.png", imageAlt: "Sofia Lindqvist walking beside a shaded retreat building" },
-];
-
 const stepCopy: Record<JourneyStep, { eyebrow: string; title: string }> = {
   brief: { eyebrow: "Your brief", title: "What would be most useful for your Bali stay?" },
   modalities: { eyebrow: "Your preferences", title: "Which practices interest you?" },
@@ -88,9 +82,8 @@ const stepCopy: Record<JourneyStep, { eyebrow: string; title: string }> = {
   location: { eyebrow: "The setting", title: "Where will you be based?" },
   group: { eyebrow: "The people involved", title: "Who is this experience for?" },
   budget: { eyebrow: "One final question", title: "What level of investment are you considering?" },
-  fits: { eyebrow: "4 possible matches", title: "Based on your selections, we’ve identified 4 practitioners who might be a good fit for you." },
+  review: { eyebrow: "What happens next", title: "Your brief will be reviewed personally by The Solas Guide." },
   contact: { eyebrow: "A few details", title: "Where should we send the next step?" },
-  complete: { eyebrow: "Enquiry received", title: "Thank you. We’ll review your brief." },
 };
 
 function ChoiceGrid({ choices, value, onChange, columns = "md:grid-cols-2", compact = false }: { choices: Choice[]; value: string; onChange: (value: string) => void; columns?: string; compact?: boolean }) {
@@ -118,10 +111,10 @@ export function CustomerEnquiryForm() {
   const [error, setError] = useState("");
 
   const stepIndex = questionSteps.findIndex((item) => item.key === step);
-  const progressIndex = step === "fits" || step === "contact" || step === "complete" ? questionSteps.length : Math.max(0, stepIndex);
+  const totalSteps = questionSteps.length + 2;
+  const progressIndex = step === "review" ? questionSteps.length : step === "contact" ? questionSteps.length + 1 : Math.max(0, stepIndex);
   const currentCopy = stepCopy[step];
   const requiresGroupSize = ["small-group", "retreat", "team"].includes(group);
-  const contactReady = Boolean(name.trim() && email.trim() && consent && (contactPreference === "email" || phone.trim()));
 
   function toggleModality(value: string) {
     setModalities((current) => {
@@ -147,28 +140,15 @@ export function CustomerEnquiryForm() {
       return;
     }
     const nextIndex = stepIndex + 1;
-    setStep(nextIndex < questionSteps.length ? questionSteps[nextIndex].key : "fits");
+    setStep(nextIndex < questionSteps.length ? questionSteps[nextIndex].key : "review");
   }
 
   function goBack() {
     setError("");
-    if (step === "fits") return setStep("budget");
-    if (step === "contact") return setStep("fits");
-    if (step === "complete") return;
+    if (step === "review") return setStep("budget");
+    if (step === "contact") return setStep("review");
     if (stepIndex > 0) setStep(questionSteps[stepIndex - 1].key);
   }
-
-  function submitEnquiry(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setError("");
-    if (!contactReady) {
-      setError("Add your name, email address, consent, and a phone number if you choose phone or WhatsApp.");
-      return;
-    }
-    setStep("complete");
-  }
-
-  const showActions = step !== "complete";
 
   return <main className="min-h-screen bg-muted/40 px-3 py-3 md:px-5 md:py-8">
     <div className="mx-auto w-full max-w-[1240px]">
@@ -182,9 +162,9 @@ export function CustomerEnquiryForm() {
           <div className="flex items-center justify-between gap-5">
             <h1 className="font-display text-3xl leading-none md:text-4xl">Tell us about your stay</h1>
           </div>
-          <div className="mt-5" aria-label={`Progress: ${Math.min(progressIndex + 1, questionSteps.length)} of ${questionSteps.length}`}>
-            <div className="h-1 bg-muted"><div className="h-full bg-accent transition-[width] duration-500" style={{ width: `${(Math.min(progressIndex + 1, questionSteps.length) / questionSteps.length) * 100}%` }} /></div>
-            <div className="mt-3 flex items-center justify-between text-[10px] uppercase tracking-[0.16em] text-muted-foreground"><span>Step {Math.min(progressIndex + 1, questionSteps.length)} of {questionSteps.length}</span><span>{currentCopy.eyebrow}</span></div>
+          <div className="mt-5" role="progressbar" aria-label="Enquiry progress" aria-valuemin={1} aria-valuemax={totalSteps} aria-valuenow={progressIndex + 1}>
+            <div className="h-1 bg-muted"><div className="h-full bg-accent transition-[width] duration-500" style={{ width: `${((progressIndex + 1) / totalSteps) * 100}%` }} /></div>
+            <div className="mt-3 flex items-center justify-between text-[10px] uppercase tracking-[0.16em] text-muted-foreground"><span>Step {progressIndex + 1} of {totalSteps}</span><span>{currentCopy.eyebrow}</span></div>
           </div>
         </div>
 
@@ -212,13 +192,11 @@ export function CustomerEnquiryForm() {
 
             {step === "budget" && <div className="mt-9"><ChoiceGrid choices={budgetChoices} value={budget} onChange={setBudget} /></div>}
 
-            {step === "fits" && <div className="mt-7"><div className="border-b border-border">{previewPractitioners.map(({ index, name, location, modality, descriptor, experience, imageSrc, imageAlt }) => <div key={name} className="grid grid-cols-[1.5rem_3.5rem_minmax(0,1fr)] items-center gap-3 border-t border-border py-3 md:grid-cols-[1.5rem_3.5rem_minmax(9rem,0.8fr)_minmax(10rem,1.2fr)] md:gap-4"><span className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">{index}</span><div className="relative size-14 overflow-hidden bg-muted"><Image src={imageSrc} alt={imageAlt} fill sizes="3.5rem" className="object-cover" /></div><div className="min-w-0"><p className="font-display text-lg leading-tight">{name}</p><p className="mt-1 text-xs font-medium">{modality}</p><p className="mt-1 text-[10px] uppercase tracking-[0.12em] text-muted-foreground">{location} · {experience}</p></div><p className="hidden text-xs leading-relaxed text-muted-foreground md:block">{descriptor}</p></div>)}</div><p className="mt-4 text-xs leading-relaxed text-muted-foreground">To get a finalized list of recommendations, continue by submitting your details.</p></div>}
+            {step === "review" && <div className="mt-7 border border-border bg-card p-6 md:p-8"><p className="font-display text-2xl">A considered, human review</p><div className="mt-5 space-y-4 text-sm leading-7 text-muted-foreground"><p>Submitting your details does not generate an automatic match or guarantee an introduction.</p><p>The Solas Guide will consider your timing, location, interests, group, and practical context before following up personally about a suitable next step.</p></div></div>}
 
-            {step === "contact" && <form id="customer-enquiry-form" onSubmit={submitEnquiry} className="mt-9 space-y-6"><div className="grid gap-5 sm:grid-cols-2"><div><Label htmlFor="name">Your name</Label><Input id="name" autoComplete="name" required value={name} onChange={(event) => setName(event.target.value)} className="mt-2 h-11 bg-card" /></div><div><Label htmlFor="email">Email address</Label><Input id="email" type="email" autoComplete="email" required value={email} onChange={(event) => setEmail(event.target.value)} className="mt-2 h-11 bg-card" /></div></div><div><Label htmlFor="phone">Phone or WhatsApp <span className="font-normal text-muted-foreground">(optional)</span></Label><Input id="phone" type="tel" autoComplete="tel" value={phone} onChange={(event) => setPhone(event.target.value)} className="mt-2 h-11 bg-card" /></div><fieldset><legend className="text-sm font-medium">How should we follow up?</legend><div className="mt-3 grid gap-3 sm:grid-cols-3">{[{ value: "email", label: "Email", icon: Mail }, { value: "whatsapp", label: "WhatsApp", icon: MessageCircle }, { value: "phone", label: "Phone", icon: Users }].map(({ value, label, icon: Icon }) => <button key={value} type="button" aria-pressed={contactPreference === value} onClick={() => setContactPreference(value)} className={cn("flex min-h-16 items-center gap-3 border px-4 text-left text-sm transition-colors", contactPreference === value ? "border-accent bg-accent text-accent-foreground" : "border-border bg-card hover:border-foreground/40")}><Icon className="size-4" /><span>{label}</span></button>)}</div></fieldset><label className="flex items-start gap-3 border-t border-border pt-5 text-xs leading-relaxed text-muted-foreground"><input type="checkbox" checked={consent} onChange={(event) => setConsent(event.target.checked)} className="mt-0.5 size-4 accent-[var(--accent)]" /> <span>I agree that The Solas Guide may use these details to respond to my enquiry. Please do not include medical records or sensitive personal information.</span></label></form>}
+            {step === "contact" && <div className="mt-9 space-y-6"><div className="grid gap-5 sm:grid-cols-2"><div><Label htmlFor="name">Your name</Label><Input id="name" autoComplete="name" required value={name} onChange={(event) => setName(event.target.value)} className="mt-2 h-11 bg-card" /></div><div><Label htmlFor="email">Email address</Label><Input id="email" type="email" autoComplete="email" required value={email} onChange={(event) => setEmail(event.target.value)} className="mt-2 h-11 bg-card" /></div></div><div><Label htmlFor="phone">Phone or WhatsApp <span className="font-normal text-muted-foreground">(optional)</span></Label><Input id="phone" type="tel" autoComplete="tel" value={phone} onChange={(event) => setPhone(event.target.value)} className="mt-2 h-11 bg-card" /></div><fieldset><legend className="text-sm font-medium">How should we follow up?</legend><div className="mt-3 grid gap-3 sm:grid-cols-3">{[{ value: "email", label: "Email", icon: Mail }, { value: "whatsapp", label: "WhatsApp", icon: MessageCircle }, { value: "phone", label: "Phone", icon: Users }].map(({ value, label, icon: Icon }) => <button key={value} type="button" aria-pressed={contactPreference === value} onClick={() => setContactPreference(value)} className={cn("flex min-h-16 items-center gap-3 border px-4 text-left text-sm transition-colors", contactPreference === value ? "border-accent bg-accent text-accent-foreground" : "border-border bg-card hover:border-foreground/40")}><Icon className="size-4" /><span>{label}</span></button>)}</div></fieldset><label className="flex items-start gap-3 border-t border-border pt-5 text-xs leading-relaxed text-muted-foreground"><input type="checkbox" checked={consent} onChange={(event) => setConsent(event.target.checked)} className="mt-0.5 size-4 accent-[var(--accent)]" /> <span>I agree that The Solas Guide may use these details to respond to my enquiry. Please do not include medical records or sensitive personal information.</span></label><p className="border-l-2 border-accent pl-4 text-xs leading-6 text-muted-foreground">Submission will be enabled when Supabase storage and confirmation emails are connected. No details entered on this preview are sent or saved.</p></div>}
 
-            {step === "complete" && <div className="flex flex-1 items-center"><div className="max-w-xl"><div className="flex size-14 items-center justify-center border border-accent text-accent"><Check className="size-6" /></div><p className="mt-7 text-sm leading-relaxed text-muted-foreground">Thanks for sharing the details of your stay. We’ll review your brief and follow up personally to discuss the practitioners, places, or experiences that may be relevant.</p><div className="mt-6 border-l-2 border-accent pl-5 text-sm leading-7 text-muted-foreground">The next step is a personal conversation. We may ask a few follow-up questions before making any introductions.</div><Button asChild className="mt-8"><Link href="/">Back to the Solas Guide <ArrowRight /></Link></Button></div></div>}
-
-            {showActions && <div className="mt-auto flex flex-col-reverse items-start justify-between gap-5 border-t border-border pt-7 sm:flex-row sm:items-center">{step !== "brief" ? <button type="button" onClick={goBack} className="inline-flex h-10 items-center gap-2 px-0 text-xs uppercase tracking-[0.14em] text-muted-foreground transition-colors hover:text-foreground"><ArrowLeft className="size-4" /> Back</button> : <span className="text-xs text-muted-foreground">Takes about two minutes</span>}{step === "contact" ? <Button type="submit" form="customer-enquiry-form" disabled={!contactReady}>Send enquiry <ArrowRight /></Button> : <Button type="button" onClick={step === "fits" ? () => setStep("contact") : continueJourney} disabled={step !== "fits" && !canContinue()}>{step === "fits" ? "Continue to your details" : step === "budget" ? "See possible directions" : "Continue"}<ArrowRight /></Button>}</div>}
+            <div className="mt-auto flex flex-col-reverse items-start justify-between gap-5 border-t border-border pt-7 sm:flex-row sm:items-center">{step !== "brief" ? <button type="button" onClick={goBack} className="inline-flex h-10 items-center gap-2 px-0 text-xs uppercase tracking-[0.14em] text-muted-foreground transition-colors hover:text-foreground"><ArrowLeft className="size-4" /> Back</button> : <span className="text-xs text-muted-foreground">Takes about two minutes</span>}{step === "contact" ? <Button type="button" disabled>Submission coming next <ArrowRight /></Button> : <Button type="button" onClick={step === "review" ? () => setStep("contact") : continueJourney}>{step === "review" ? "Continue to your details" : step === "budget" ? "Review the next step" : "Continue"}<ArrowRight /></Button>}</div>
           </div>
         </div>
       </section>

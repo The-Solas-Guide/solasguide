@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Fraunces, Inter, Geist_Mono } from "next/font/google";
+import { Fraunces, Inter } from "next/font/google";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -13,15 +13,10 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
 export const metadata: Metadata = {
   title: "The Solas Guide",
   description:
-    "An independently verified register of accredited wellness practitioners and retreat venues.",
+    "A considered guide to wellness practitioners and restorative experiences in Bali.",
 };
 
 export default function RootLayout({
@@ -33,7 +28,8 @@ export default function RootLayout({
     <html
       lang="en"
       data-theme="aman"
-      className={`${fraunces.variable} ${inter.variable} ${geistMono.variable} h-full antialiased`}
+      data-scroll-behavior="smooth"
+      className={`${fraunces.variable} ${inter.variable}`}
       style={
         {
           "--font-display": "var(--font-fraunces), Georgia, serif",
@@ -41,7 +37,7 @@ export default function RootLayout({
         } as React.CSSProperties
       }
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body>{children}</body>
     </html>
   );
 }

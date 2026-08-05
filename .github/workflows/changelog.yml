@@ -1,0 +1,50 @@
+name: Update changelog
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - closed
+
+permissions:
+  contents: write
+
+concurrency:
+  group: changelog-main
+  cancel-in-progress: false
+
+jobs:
+  update:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Add merged pull request
+        env:
+          MERGED_AT: ${{ github.event.pull_request.merged_at }}
+          MERGE_COMMIT: ${{ github.event.pull_request.merge_commit_sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+        run: |
+          merge_date="${MERGED_AT%%T*}"
+          clean_title="$(printf '%s' "$PR_TITLE" | tr '\r\n' '  ')"
+          printf -- '- %s — %s ([#%s](%s)) — `%s`\n' \
+            "$merge_date" "$clean_title" "$PR_NUMBER" "$PR_URL" "$MERGE_COMMIT" \
+            >> CHANGELOG.md
+
+      - name: Commit changelog entry
+        env:
+          MERGE_COMMIT: ${{ github.event.pull_request.merge_commit_sha }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add CHANGELOG.md
+          git commit -m "docs: record merge ${MERGE_COMMIT} [skip ci]"
+          git push origin main
