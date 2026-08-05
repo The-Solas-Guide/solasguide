@@ -110,16 +110,9 @@ export default function WebPage() {
                 who is relevant to you. The Solas Guide starts with your needs,
                 then draws on our local knowledge and practitioner network.
               </p>
-              <div className="mt-7 border-l-2 border-accent pl-5">
-                <p className="font-display text-xl leading-snug">
-                  Your context comes first.
-                </p>
-                <p className="mt-3 max-w-lg text-sm leading-7 text-muted-foreground">
-                  Whether you are travelling alone, planning a retreat, or
-                  organising support for a group, your timing, location,
-                  interests, and practical needs shape the recommendation.
-                </p>
-              </div>
+              <Link href="/find-a-match" className={cn(buttonVariants(), "mt-8 w-fit")}>
+                Get started <ArrowRight />
+              </Link>
             </div>
             <div className="relative min-h-[28rem] overflow-hidden md:min-h-full">
               <Image
