@@ -16,25 +16,71 @@ type GuideItem = {
   location: string;
   description: string;
   image: string;
+  imageAlt?: string;
   imagePosition?: string;
 };
 
 const guideItems: Record<GuideCategory, readonly GuideItem[]> = {
   people: [
-    ["Maya S.", "Ubud", "Somatic practice · Breathwork · Private sessions", "journey-practitioner.png"],
-    ["Adi W.", "Canggu", "Movement · Bodywork · Retreat support", "exec-1430506b-6ab6-4bc3-8f24-b0a816abc9a3.png"],
-    ["Leila R.", "Sanur", "Meditation · Sound practice · Group facilitation", "how-it-works-brief.png"],
-    ["Sam K.", "Uluwatu", "Yoga · Mindfulness · Private guidance", "exec-02d0c4f5-376a-4a94-8501-b88ac59a9932.png"],
-    ["Ayu P.", "Gianyar", "Balinese practice · Ceremony · Small groups", "why-solas-pavilion.png"],
-    ["Niko T.", "Pererenan", "Breathwork · Movement · Group sessions", "exec-0d9fb98c-c711-4865-bdba-64d9d5bb91d3.png"],
-    ["Sari D.", "North Bali", "Meditation · Restorative practice · Retreats", "why-solas-planning.png"],
-    ["Ravi M.", "Central Bali", "Bodywork · Mobility · Personal sessions", "solas-guide-hero.png"],
-  ].map(([title, location, description, image]) => ({
-    title,
-    location,
-    description,
-    image: `/images/solas-imagery/${image}`,
-  })),
+    {
+      title: "Riza Sukman",
+      location: "Ubud",
+      description: "Somatic Experiencing · Bodywork · Breathwork",
+      image: "/images/people/riza-sukman.jpg",
+      imageAlt: "Portrait of Riza Sukman",
+    },
+    {
+      title: "Pablo Castro",
+      location: "Ubud",
+      description: "Breathwork · Water work · Water therapy",
+      image: "/images/people/pablo-castro.jpg",
+      imageAlt: "Portrait of Pablo Castro",
+    },
+    {
+      title: "Wayan Marcus Wistika",
+      location: "Ubud",
+      description: "Vinyasa · Power yoga · Hatha",
+      image: "/images/people/marcus-wistika.jpg",
+      imageAlt: "Wayan Marcus Wistika practising yoga outdoors",
+      imagePosition: "object-[72%_center]",
+    },
+    {
+      title: "Pak Merta Ada",
+      location: "Sanur",
+      description: "Bali Usada health meditation",
+      image: "/images/people/pak-merta-ada.jpg",
+      imageAlt: "Portrait of Pak Merta Ada",
+    },
+    {
+      title: "Cat Wheeler",
+      location: "Ubud",
+      description: "Usui Reiki · Teaching · Private sessions",
+      image: "/images/people/cat-wheeler.jpg",
+      imageAlt: "Cat Wheeler seated with her dog",
+      imagePosition: "object-left",
+    },
+    {
+      title: "Ibu Jero",
+      location: "Jimbaran · Denpasar",
+      description: "Balinese traditional practice · High priestess",
+      image: "/images/people/ibu-jero.jpg",
+      imageAlt: "Ibu Jero standing at a Balinese water temple",
+    },
+    {
+      title: "Sook Fun Chen",
+      location: "Seminyak · Ubud",
+      description: "Pilates · Gyrotonic · Rolfing",
+      image: "/images/people/sook-fun-chen.jpg",
+      imageAlt: "Portrait of Sook Fun Chen",
+    },
+    {
+      title: "Rachel Ellery",
+      location: "Ubud",
+      description: "Osteopathy · Functional anatomy · Pilates",
+      image: "/images/people/rachel-ellery.jpg",
+      imageAlt: "Rachel Ellery holding an anatomical spine model",
+    },
+  ],
   places: [
     ["Fivelements Retreat Bali", "Mambal", "Riverside retreat setting · Wellness programmes", "why-solas-pavilion.png"],
     ["COMO Shambhala Estate", "Near Ubud", "Wellness estate · Personal programmes", "solas-guide-hero.png"],
@@ -150,7 +196,7 @@ export function GuideIndex() {
               <div className="relative aspect-[4/5] overflow-hidden sm:aspect-[5/4] lg:aspect-[4/5]">
                 <Image
                   src={item.image}
-                  alt=""
+                  alt={item.imageAlt ?? ""}
                   fill
                   className={cn("object-cover", item.imagePosition)}
                   sizes="(max-width: 1023px) 50vw, 25vw"
