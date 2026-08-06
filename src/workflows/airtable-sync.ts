@@ -2,8 +2,15 @@ import { sleep } from "workflow";
 import {
   claimAirtableSyncEvent,
   performAirtableSync,
+  syncAirtableSubmission,
   type AirtableSyncEvent,
+  type AirtableSubmission,
 } from "@/lib/airtable-sync";
+
+export async function airtableSubmissionWorkflow(input: AirtableSubmission) {
+  "use workflow";
+  return syncAirtableSubmission(input);
+}
 
 export async function airtableSyncWorkflow(input: { eventId: string }) {
   "use workflow";

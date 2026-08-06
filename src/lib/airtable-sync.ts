@@ -26,6 +26,11 @@ export type AirtableSyncEvent = {
   operation: "upsert" | "delete";
 };
 
+export type AirtableSubmission = Pick<
+  AirtableSyncEvent,
+  "source" | "sourceId" | "sourceSubmissionId" | "isTestRecord"
+>;
+
 type ClaimedSyncEvent = Omit<AirtableSyncEvent, "id"> & {
   claimed: boolean;
   currentStatus: "pending" | "processing" | "succeeded" | "failed";
@@ -355,6 +360,27 @@ export async function performAirtableSync(event: AirtableSyncEvent) {
 }
 
 performAirtableSync.maxRetries = MAX_AIRTABLE_RETRIES;
+
+export async function syncAirtableSubmission(submission: AirtableSubmission) {
+  "use step";
+  const event: AirtableSyncEvent = { ...submission, id: "direct", operation: "upsert" };
+
+  try {
+    const fields = await loadFields(event);
+    if (!fields) throw new FatalError("airtable_source_submission_not_found");
+    await upsertAirtableRecord(event, fields);
+    return { status: "succeeded" as const };
+  } catch (error) {
+    const { attempt } = getStepMetadata();
+    if (error instanceof FatalError || attempt >= MAX_AIRTABLE_RETRIES) throw error;
+    if (error instanceof RetryableError) throw error;
+    throw new RetryableError("airtable_submission_sync_transient_failure", {
+      retryAfter: Math.min(60_000, (attempt + 1) ** 2 * 2_000),
+    });
+  }
+}
+
+syncAirtableSubmission.maxRetries = MAX_AIRTABLE_RETRIES;
 
 export async function recordWorkflowRun(eventId: string, workflowRunId: string) {
   const supabase = createAdminClient();
