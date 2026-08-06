@@ -1,5 +1,6 @@
 "use client";
 
+import { track } from "@vercel/analytics";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, Check, Mail, MessageCircle, Pencil, Users } from "lucide-react";
@@ -85,9 +86,6 @@ function initialDraft(): Draft {
     localStorage.removeItem(DRAFT_KEY);
   } catch { /* Start fresh when a browser draft cannot be read. */ }
   return emptyDraft();
-}
-function track(eventName: string, params?: Record<string, string | number | boolean>) {
-  window.gtag?.("event", eventName, params);
 }
 function ChoiceGrid({ choices, selected, onToggle }: { choices: Choice[]; selected: string[]; onToggle: (value: string) => void }) {
   return <div className="grid gap-3 sm:grid-cols-2" role="group">{choices.map((choice) => <FormChoiceCard key={choice.value} label={choice.label} description={choice.description} selected={selected.includes(choice.value)} onClick={() => onToggle(choice.value)} />)}</div>;
