@@ -90,6 +90,7 @@ export type Database = {
           questionnaire_answers: Json
           source: string
           status: string
+          submission_token: string
           updated_at: string
           website_url: string | null
         }
@@ -110,6 +111,7 @@ export type Database = {
           questionnaire_answers?: Json
           source?: string
           status?: string
+          submission_token?: string
           updated_at?: string
           website_url?: string | null
         }
@@ -130,6 +132,7 @@ export type Database = {
           questionnaire_answers?: Json
           source?: string
           status?: string
+          submission_token?: string
           updated_at?: string
           website_url?: string | null
         }
@@ -142,7 +145,10 @@ export type Database = {
     Functions: {
       claim_customer_enquiry_delivery: {
         Args: { p_enquiry_id: string }
-        Returns: { send_customer: boolean; send_internal: boolean }[]
+        Returns: {
+          send_customer: boolean
+          send_internal: boolean
+        }[]
       }
     }
     Enums: {

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { TrackedPractitionerLink } from "@/components/analytics/tracked-practitioner-link";
 import { cn } from "@/lib/utils";
 
 const links = [
@@ -30,6 +31,9 @@ export function SiteHeader({ className }: { className?: string }) {
               {link.label}
             </a>
           ))}
+          <TrackedPractitionerLink source="header" href="/become-a-practitioner" className="text-xs text-muted-foreground transition-colors hover:text-foreground">
+            For practitioners
+          </TrackedPractitionerLink>
         </nav>
         <div className="hidden lg:block">
           <Button asChild>
@@ -58,6 +62,14 @@ export function SiteHeader({ className }: { className?: string }) {
               {link.label}
             </a>
           ))}
+          <TrackedPractitionerLink
+            source="mobile-header"
+            href="/become-a-practitioner"
+            onClickCapture={() => setOpen(false)}
+            className="flex min-h-12 items-center border-b border-border px-3 text-sm"
+          >
+            For practitioners
+          </TrackedPractitionerLink>
           <Button asChild className="mt-3">
             <Link href="/find-a-match" onClick={() => setOpen(false)}>
               Tell us about your trip

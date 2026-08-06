@@ -7,6 +7,7 @@ import { SiteHeader } from "@/components/layout/site-header";
 import { GuideIndex } from "@/components/home/guide-index";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { TrackedPractitionerLink } from "@/components/analytics/tracked-practitioner-link";
 
 export const metadata: Metadata = {
   title: "The Solas Guide | Curated Bali experiences",
@@ -206,6 +207,23 @@ export default function WebPage() {
                 shaped around you.
               </p>
             </div>
+            </div>
+          </section>
+
+          <section className="border-x border-b border-border bg-card px-5 py-16 sm:px-8 md:px-12 md:py-24 lg:px-16">
+            <div className="grid items-end gap-8 lg:grid-cols-[1fr_auto]">
+              <div>
+                <p className="review-label text-muted-foreground">For practitioners in Bali</p>
+                <h2 className="mt-5 max-w-2xl font-display text-4xl leading-tight md:text-5xl">
+                  Let us know about your practice.
+                </h2>
+                <p className="mt-5 max-w-2xl text-sm leading-7 text-muted-foreground">
+                  If you are based in Bali or work here regularly, share a short professional introduction for The Solas Guide to consider for relevant future conversations.
+                </p>
+              </div>
+              <TrackedPractitionerLink source="homepage" href="/become-a-practitioner" className={buttonVariants()}>
+                Become a practitioner <ArrowRight />
+              </TrackedPractitionerLink>
             </div>
           </section>
 
