@@ -10,10 +10,55 @@ const AIRTABLE = {
   customer_enquiry: {
     tableId: "tbl5dq4uV5D1slrUe",
     sourceName: "Website enquiry",
+    sourceSubmissionIdFieldName: "Source submission ID",
+    fields: {
+      enquiry: "fld2fImnmsiTB08t9",
+      sourceSubmissionId: "fldRP8toFgdJeCeVM",
+      submittedAt: "fldMy9ZnSlVRphsV4",
+      source: "fldUi0FIp19ZBfG9k",
+      email: "fldettKhboWJLMLZI",
+      phone: "fld4DMMWfVy9X0oA2",
+      contactPreference: "fldsKjxRIb5qd14D9",
+      contactBasis: "fldW85hHxJpu58BA1",
+      enquiryType: "fldyfyJ7hoApBBNJb",
+      outcomes: "fldc7VCFABFbqkkRH",
+      additionalNeeds: "fldaod62qqsr8fJ9t",
+      timing: "fldwVlLxRkjwCiU8e",
+      location: "fldPOBRl9ieG2LYz1",
+      locationDetail: "fld30IWyrkcBPXY7A",
+      group: "fldHleW4GTz7CgfF9",
+      groupSize: "fldMRzqkZQZbtNeVM",
+      organisation: "fldMO6cEh8zwmkAFy",
+      practices: "fldU2iJgWyQe9wqN3",
+      budget: "fldpJLzOrO8HEzmZe",
+      additionalContext: "fld7eU2fiIYsbgFKn",
+      testRecord: "fldEN7U0OR9bF1e2s",
+    },
   },
   practitioner_expression: {
     tableId: "tbl90Q1NoiAnbEI6c",
     sourceName: "Website application",
+    sourceSubmissionIdFieldName: "Source submission ID",
+    fields: {
+      practitioner: "fldnbgdhPg6RsqcSA",
+      sourceSubmissionId: "fld3H9o3BthckLUte",
+      source: "fldL0zDMxM4bNWmDI",
+      email: "fldOBIAc16h4swvvx",
+      phone: "fldVuk3YZPvGJsYMo",
+      contactPreference: "flduXUD3EECxqhUdV",
+      contactBasis: "fldNfY3UD6fCZYC1Y",
+      practiceName: "fldwwSRHfX6E65ieu",
+      professionalRole: "fld0HUxa4Zcrs3VT0",
+      baliRelationship: "fldv5bJcsRzxXvLfB",
+      area: "fldSaMEGJTeOnCEbG",
+      locationDetail: "fldUtyzBEBkxaPNHO",
+      practiceAreas: "fldWLUgMlf1q2r0rZ",
+      otherPractice: "fldRhiwRPsgT5x3Xg",
+      experienceSummary: "fldQLyf3atmj36wc9",
+      websiteUrl: "fldkJdFUDkcGZu5Ak",
+      additionalLinks: "fldpsfJwp0ISwhK17",
+      testRecord: "fld09slG4dal3PjYs",
+    },
   },
 } as const;
 
@@ -75,22 +120,23 @@ function customerFields(row: Database["public"]["Tables"]["customer_enquiries"][
   const answers = row.questionnaire_answers;
   const groupSize = answerString(answers, "groupSize");
   const groupSizeNumber = groupSize && /^\d+$/.test(groupSize) ? Number(groupSize) : undefined;
+  const fields = AIRTABLE.customer_enquiry.fields;
   return compactFields({
-    Enquiry: row.full_name,
-    "Source submission ID": row.submission_token,
-    "Submitted at": row.created_at,
-    Source: AIRTABLE.customer_enquiry.sourceName,
-    Email: row.email,
-    Phone: row.phone ?? undefined,
-    "Contact preference": contactPreference(row.contact_preference),
-    "Contact basis": row.consent_confirmed ? "Inbound response consent" : undefined,
-    "Enquiry type": label(answerString(answers, "primaryNeed"), {
+    [fields.enquiry]: row.full_name,
+    [fields.sourceSubmissionId]: row.submission_token,
+    [fields.submittedAt]: row.created_at,
+    [fields.source]: AIRTABLE.customer_enquiry.sourceName,
+    [fields.email]: row.email,
+    [fields.phone]: row.phone ?? undefined,
+    [fields.contactPreference]: contactPreference(row.contact_preference),
+    [fields.contactBasis]: row.consent_confirmed ? "Inbound response consent" : undefined,
+    [fields.enquiryType]: label(answerString(answers, "primaryNeed"), {
       practitioner: "Find a practitioner",
       venue: "Find a venue",
       experience: "Find an experience",
       event: "Plan an event",
     }),
-    Outcomes: answerStrings(answers, "outcomes")?.map((item) => label(item, {
+    [fields.outcomes]: answerStrings(answers, "outcomes")?.map((item) => label(item, {
       "rest-reset": "Rest/reset",
       "physical-wellbeing": "Physical wellbeing",
       "personal-support": "Personal support",
@@ -99,20 +145,20 @@ function customerFields(row: Database["public"]["Tables"]["customer_enquiries"][
       "retreat-team": "Retreat/team",
       exploring: "Exploring",
     }) ?? item).filter(Boolean),
-    "Additional needs": answerStrings(answers, "extras")?.map((item) => label(item, {
+    [fields.additionalNeeds]: answerStrings(answers, "extras")?.map((item) => label(item, {
       practitioner: "Practitioner",
       venue: "Venue",
       experience: "Experience",
       event: "Event",
     }) ?? item).filter(Boolean),
-    Timing: label(answerString(answers, "timing"), {
+    [fields.timing]: label(answerString(answers, "timing"), {
       "dates-known": "Dates known",
       month: "Month",
       season: "Season",
       later: "Later",
       planning: "Planning",
     }),
-    Location: label(answerString(answers, "location"), {
+    [fields.location]: label(answerString(answers, "location"), {
       ubud: "Ubud",
       canggu: "Canggu",
       south: "South Bali",
@@ -120,8 +166,8 @@ function customerFields(row: Database["public"]["Tables"]["customer_enquiries"][
       moving: "Moving",
       undecided: "Undecided",
     }),
-    "Location detail": answerString(answers, "locationDetail"),
-    Group: label(answerString(answers, "group"), {
+    [fields.locationDetail]: answerString(answers, "locationDetail"),
+    [fields.group]: label(answerString(answers, "group"), {
       solo: "Solo",
       pair: "Pair",
       "small-group": "Small group",
@@ -129,9 +175,9 @@ function customerFields(row: Database["public"]["Tables"]["customer_enquiries"][
       business: "Business",
       unsure: "Unsure",
     }),
-    "Group size": groupSizeNumber,
-    Organisation: answerString(answers, "organizationName"),
-    Practices: answerStrings(answers, "modalities")?.map((item) => label(item, {
+    [fields.groupSize]: groupSizeNumber,
+    [fields.organisation]: answerString(answers, "organizationName"),
+    [fields.practices]: answerStrings(answers, "modalities")?.map((item) => label(item, {
       yoga: "Yoga",
       breathwork: "Breathwork",
       meditation: "Meditation",
@@ -141,43 +187,44 @@ function customerFields(row: Database["public"]["Tables"]["customer_enquiries"][
       "balinese-practices": "Balinese practices",
       "retreat-facilitation": "Retreat facilitation",
     }) ?? item).filter(Boolean),
-    Budget: label(answerString(answers, "budget"), {
+    [fields.budget]: label(answerString(answers, "budget"), {
       considered: "Considered",
       flexible: "Flexible",
       substantial: "Substantial",
       unsure: "Unsure",
       discuss: "Discuss",
     }),
-    "Additional context": answerString(answers, "notes"),
-    "Test Record": isTestRecord,
+    [fields.additionalContext]: answerString(answers, "notes"),
+    [fields.testRecord]: isTestRecord,
   });
 }
 
 function practitionerFields(row: Database["public"]["Tables"]["practitioner_expressions_of_interest"]["Row"], isTestRecord: boolean) {
   const answers = row.questionnaire_answers;
+  const fields = AIRTABLE.practitioner_expression.fields;
   return compactFields({
-    Practitioner: row.full_name,
-    "Source submission ID": row.submission_token,
-    Source: AIRTABLE.practitioner_expression.sourceName,
-    Email: row.email,
-    Phone: row.phone ?? undefined,
-    "Contact preference": contactPreference(row.contact_preference),
-    "Contact basis": row.consent_confirmed ? "Inbound response consent" : undefined,
-    "Practice name": row.practice_name ?? undefined,
-    "Professional role": answerString(answers, "professionalRole"),
-    "Bali relationship": label(answerString(answers, "baliRelationship"), {
+    [fields.practitioner]: row.full_name,
+    [fields.sourceSubmissionId]: row.submission_token,
+    [fields.source]: AIRTABLE.practitioner_expression.sourceName,
+    [fields.email]: row.email,
+    [fields.phone]: row.phone ?? undefined,
+    [fields.contactPreference]: contactPreference(row.contact_preference),
+    [fields.contactBasis]: row.consent_confirmed ? "Inbound response consent" : undefined,
+    [fields.practiceName]: row.practice_name ?? undefined,
+    [fields.professionalRole]: answerString(answers, "professionalRole"),
+    [fields.baliRelationship]: label(answerString(answers, "baliRelationship"), {
       "based-in-bali": "Based in Bali",
       "works-in-bali-regularly": "Works in Bali regularly",
     }),
-    Area: label(answerString(answers, "area"), {
+    [fields.area]: label(answerString(answers, "area"), {
       ubud: "Ubud",
       "canggu-seminyak": "Canggu/Seminyak",
       "south-bali": "South Bali",
       "east-north-bali": "East/North Bali",
       "elsewhere-bali": "Elsewhere Bali",
     }),
-    "Location detail": answerString(answers, "locationDetail"),
-    "Practice areas": answerStrings(answers, "practiceAreas")?.map((item) => label(item, {
+    [fields.locationDetail]: answerString(answers, "locationDetail"),
+    [fields.practiceAreas]: answerStrings(answers, "practiceAreas")?.map((item) => label(item, {
       yoga: "Yoga",
       breathwork: "Breathwork",
       meditation: "Meditation",
@@ -188,11 +235,11 @@ function practitionerFields(row: Database["public"]["Tables"]["practitioner_expr
       "retreat-facilitation": "Retreat facilitation",
       other: "Other",
     }) ?? item).filter(Boolean),
-    "Other practice": answerString(answers, "otherPractice"),
-    "Experience summary": answerString(answers, "experienceSummary"),
-    "Website URL": row.website_url ?? undefined,
-    "Additional links": answerStrings(answers, "additionalLinks")?.join("\n"),
-    "Test Record": isTestRecord,
+    [fields.otherPractice]: answerString(answers, "otherPractice"),
+    [fields.experienceSummary]: answerString(answers, "experienceSummary"),
+    [fields.websiteUrl]: row.website_url ?? undefined,
+    [fields.additionalLinks]: answerStrings(answers, "additionalLinks")?.join("\n"),
+    [fields.testRecord]: isTestRecord,
   });
 }
 
@@ -238,19 +285,20 @@ async function airtableRequest(url: string, init: RequestInit) {
   throw new FatalError(`airtable_http_${response.status}`);
 }
 
-function sourceSubmissionFormula(sourceSubmissionId: string) {
+function sourceSubmissionFormula(sourceSubmissionId: string, sourceSubmissionIdFieldName: string) {
   if (!/^[0-9a-f]{8}-[0-9a-f-]{27}$/i.test(sourceSubmissionId)) {
     throw new FatalError("invalid_source_submission_id");
   }
-  return `({Source submission ID} = '${sourceSubmissionId}')`;
+  return `({${sourceSubmissionIdFieldName}} = '${sourceSubmissionId}')`;
 }
 
 async function findAirtableRecords(source: AirtableSyncEvent["source"], sourceSubmissionId: string) {
+  const table = sourceTable(source);
   const params = new URLSearchParams({
-    filterByFormula: sourceSubmissionFormula(sourceSubmissionId),
+    filterByFormula: sourceSubmissionFormula(sourceSubmissionId, table.sourceSubmissionIdFieldName),
     maxRecords: "2",
   });
-  const response = await airtableRequest(`${airtableUrl(sourceTable(source).tableId)}?${params.toString()}`, { method: "GET" });
+  const response = await airtableRequest(`${airtableUrl(table.tableId)}?${params.toString()}`, { method: "GET" });
   const payload = await response.json() as AirtableResponse;
   return payload.records ?? [];
 }

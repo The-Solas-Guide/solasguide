@@ -41,17 +41,19 @@ describe("Airtable CRM field mapping", () => {
     } satisfies Database["public"]["Tables"]["customer_enquiries"]["Row"], true);
 
     expect(fields).toMatchObject({
-      Enquiry: "Maya Test",
-      "Source submission ID": "22222222-2222-4222-8222-222222222222",
-      Source: "Website enquiry",
-      "Contact preference": "WhatsApp",
-      "Contact basis": "Inbound response consent",
-      "Enquiry type": "Find a practitioner",
-      Outcomes: ["Rest/reset", "Connection"],
-      Location: "Ubud",
-      Practices: ["Yoga", "Sound practice"],
-      "Test Record": true,
+      fld2fImnmsiTB08t9: "Maya Test",
+      fldRP8toFgdJeCeVM: "22222222-2222-4222-8222-222222222222",
+      fldUi0FIp19ZBfG9k: "Website enquiry",
+      fldsKjxRIb5qd14D9: "WhatsApp",
+      fldW85hHxJpu58BA1: "Inbound response consent",
+      fldyfyJ7hoApBBNJb: "Find a practitioner",
+      fldc7VCFABFbqkkRH: ["Rest/reset", "Connection"],
+      fldPOBRl9ieG2LYz1: "Ubud",
+      fldU2iJgWyQe9wqN3: ["Yoga", "Sound practice"],
+      fldEN7U0OR9bF1e2s: true,
     });
+    expect(fields).not.toHaveProperty("Enquiry");
+    expect(fields).not.toHaveProperty("Source submission ID");
     expect(fields).not.toHaveProperty("Status");
     expect(fields).not.toHaveProperty("Owner");
     expect(fields).not.toHaveProperty("Internal notes");
@@ -91,14 +93,16 @@ describe("Airtable CRM field mapping", () => {
     } satisfies Database["public"]["Tables"]["practitioner_expressions_of_interest"]["Row"], true);
 
     expect(fields).toMatchObject({
-      Practitioner: "Arya Test",
-      Source: "Website application",
-      "Bali relationship": "Based in Bali",
-      Area: "Ubud",
-      "Practice areas": ["Bodywork", "Other"],
-      "Additional links": "https://example.test/profile",
-      "Test Record": true,
+      fldnbgdhPg6RsqcSA: "Arya Test",
+      fldL0zDMxM4bNWmDI: "Website application",
+      fldv5bJcsRzxXvLfB: "Based in Bali",
+      fldSaMEGJTeOnCEbG: "Ubud",
+      fldWLUgMlf1q2r0rZ: ["Bodywork", "Other"],
+      fldpsfJwp0ISwhK17: "https://example.test/profile",
+      fld09slG4dal3PjYs: true,
     });
+    expect(fields).not.toHaveProperty("Practitioner");
+    expect(fields).not.toHaveProperty("Source submission ID");
     expect(fields).not.toHaveProperty("Status");
     expect(fields).not.toHaveProperty("Owner");
     expect(fields).not.toHaveProperty("Internal notes");
