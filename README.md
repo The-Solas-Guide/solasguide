@@ -25,7 +25,6 @@ Currently installed:
 - TypeScript
 - Tailwind CSS 4
 - Radix UI and shadcn component patterns
-- Motion
 
 Approved integration direction:
 

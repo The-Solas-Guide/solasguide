@@ -28,10 +28,16 @@ const DEFAULT_SETTINGS: Settings = {
 const isTheme = (value: string | null): value is ThemeId =>
   THEMES.some((theme) => theme.id === value);
 
-export function ThemeReviewControl({ full = false }: { full?: boolean }) {
+export function ThemeReviewControl({
+  full = false,
+  defaultOpen = false,
+}: {
+  full?: boolean;
+  defaultOpen?: boolean;
+}) {
   const [theme, setTheme] = useState<ThemeId>("aman");
   const [settings, setSettings] = useState(DEFAULT_SETTINGS);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(defaultOpen);
   const [hasRestoredTheme, setHasRestoredTheme] = useState(false);
 
   useEffect(() => {

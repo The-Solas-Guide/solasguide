@@ -1,6 +1,8 @@
 import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
 import { Fraunces, Inter } from "next/font/google";
+import { Suspense } from "react";
+import { DesignReviewGate } from "@/components/design-system/design-review-gate";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -40,6 +42,9 @@ export default function RootLayout({
     >
       <body>
         {children}
+        <Suspense fallback={null}>
+          <DesignReviewGate />
+        </Suspense>
         <Analytics />
       </body>
     </html>

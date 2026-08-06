@@ -20,11 +20,11 @@ export default function WebPage() {
     <>
       <a
         href="#main-content"
-        className="sr-only fixed top-3 left-3 z-[60] bg-background px-4 py-3 text-sm text-foreground focus:not-sr-only"
+        className="sr-only fixed top-3 left-3 z-[60] border border-border bg-background px-4 py-3 text-sm text-foreground focus:not-sr-only focus-visible:ring-2 focus-visible:ring-ring/40"
       >
         Skip to main content
       </a>
-      <div className="mx-auto w-full max-w-[1440px] px-3 py-3 md:px-5 md:py-5">
+      <div className="mx-auto w-full max-w-[1440px] overflow-x-hidden px-3 py-3 md:px-5 md:py-5">
         <SiteHeader />
 
         <main id="main-content">
@@ -38,35 +38,35 @@ export default function WebPage() {
               sizes="(max-width: 768px) 100vw, 1400px"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-foreground/40 to-foreground/10" />
-            <div className="relative flex min-h-[min(720px,calc(100svh-2rem))] items-end px-7 pt-7 pb-24 text-background md:p-14 lg:p-20">
+            <div className="relative flex min-h-[min(720px,calc(100svh-2rem))] items-end px-5 pt-7 pb-20 text-background sm:px-7 sm:pb-24 md:p-14 lg:p-20">
               <div className="max-w-3xl">
                 <p className="review-label text-background/70">
                   A curated network for Bali
                 </p>
-                <h1 className="mt-6 max-w-3xl font-display text-5xl leading-[0.96] tracking-tight md:text-7xl lg:text-8xl">
+                <h1 className="mt-5 max-w-3xl font-display text-[2.75rem] leading-[0.98] tracking-tight text-balance sm:mt-6 sm:text-5xl md:text-7xl lg:text-8xl lg:leading-[0.96]">
                   Your time in Bali, shaped around what matters to you.
                 </h1>
-                <p className="mt-7 max-w-2xl text-base leading-7 text-background/82 md:text-lg">
+                <p className="mt-6 max-w-2xl text-sm leading-7 text-background/82 sm:mt-7 sm:text-base md:text-lg">
                   The Solas Guide is an online network of curated practitioners,
                   venues, experiences and events. Tell us about your trip, and we
                   will review your plans, recommend relevant options and help make
                   the introductions.
                 </p>
-                <div className="mt-9 flex flex-wrap items-center gap-3">
+                <div className="mt-8 flex flex-col items-stretch gap-3 sm:mt-9 sm:flex-row sm:flex-wrap sm:items-center">
                   <a
                     href="/find-a-match"
                     className={cn(
                       buttonVariants(),
-                      "border-background bg-background text-foreground hover:bg-background/85",
+                      "w-full border-background bg-background text-foreground hover:bg-background/85 sm:w-auto",
                     )}
                   >
                     Tell us about your trip <ArrowRight />
                   </a>
                   <a
                     href="#how-it-works"
-                    className="inline-flex min-h-11 items-center gap-2 border-b border-transparent px-4 text-xs font-semibold uppercase tracking-[0.13em] text-background/85 transition-colors hover:border-background/40 hover:text-background"
+                    className="inline-flex min-h-11 items-center justify-center gap-2 border-b border-transparent px-4 text-xs font-semibold uppercase tracking-[0.13em] text-background/85 transition-colors hover:border-background/40 hover:text-background sm:justify-start"
                   >
-                    How it works <ArrowDown className="size-4" />
+                    How it works <ArrowDown className="size-4" aria-hidden="true" />
                   </a>
                 </div>
               </div>
@@ -82,7 +82,7 @@ export default function WebPage() {
             <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
               <div>
                 <p className="review-label text-muted-foreground">Who it is for</p>
-                <h2 className="mt-5 max-w-2xl font-display text-4xl leading-tight md:text-5xl">
+                <h2 className="mt-5 max-w-2xl font-display text-3xl leading-tight text-balance sm:text-4xl md:text-5xl">
                   A more personal way to experience Bali.
                 </h2>
               </div>
@@ -134,7 +134,7 @@ export default function WebPage() {
           >
             <div className="mx-auto max-w-3xl text-center">
               <p className="review-label text-muted-foreground">How it works</p>
-              <h2 className="mt-5 font-display text-4xl leading-tight md:text-5xl">
+              <h2 className="mt-5 font-display text-3xl leading-tight text-balance sm:text-4xl md:text-5xl">
                 Tell us about your trip. We shape the recommendations.
               </h2>
               <p className="mx-auto mt-5 max-w-xl text-sm leading-relaxed text-muted-foreground">
@@ -230,7 +230,7 @@ export default function WebPage() {
           <section id="start" className="review-section border-x border-b border-border text-center">
             <div className="mx-auto max-w-3xl px-6">
               <p className="review-label text-muted-foreground">Begin with your trip</p>
-              <h2 className="mt-5 font-display text-5xl leading-tight md:text-6xl">
+              <h2 className="mt-5 font-display text-3xl leading-tight text-balance sm:text-5xl md:text-6xl">
                 What do you want from your time in Bali?
               </h2>
               <p className="mx-auto mt-6 max-w-xl text-sm leading-7 text-muted-foreground">
@@ -238,7 +238,7 @@ export default function WebPage() {
                 most. We will review your answers, shape personalised
                 recommendations and help make the introductions.
               </p>
-              <Link href="/find-a-match" className={cn(buttonVariants(), "mt-8")}>
+              <Link href="/find-a-match" className={cn(buttonVariants(), "mt-8 w-full sm:w-auto")}>
                 Tell us about your trip <ArrowRight />
               </Link>
             </div>
