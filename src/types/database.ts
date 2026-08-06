@@ -16,15 +16,18 @@ export type Database = {
           contact_preference: string
           created_at: string
           customer_confirmation_sent_at: string | null
+          customer_confirmation_status: string
           email: string
           full_name: string
           id: string
           internal_notes: string | null
           internal_notification_sent_at: string | null
+          internal_notification_status: string
           phone: string | null
           questionnaire_answers: Json
           source: string
           status: string
+          submission_token: string
           updated_at: string
         }
         Insert: {
@@ -33,15 +36,18 @@ export type Database = {
           contact_preference?: string
           created_at?: string
           customer_confirmation_sent_at?: string | null
+          customer_confirmation_status?: string
           email: string
           full_name: string
           id?: string
           internal_notes?: string | null
           internal_notification_sent_at?: string | null
+          internal_notification_status?: string
           phone?: string | null
           questionnaire_answers?: Json
           source?: string
           status?: string
+          submission_token?: string
           updated_at?: string
         }
         Update: {
@@ -50,15 +56,18 @@ export type Database = {
           contact_preference?: string
           created_at?: string
           customer_confirmation_sent_at?: string | null
+          customer_confirmation_status?: string
           email?: string
           full_name?: string
           id?: string
           internal_notes?: string | null
           internal_notification_sent_at?: string | null
+          internal_notification_status?: string
           phone?: string | null
           questionnaire_answers?: Json
           source?: string
           status?: string
+          submission_token?: string
           updated_at?: string
         }
         Relationships: []
@@ -131,7 +140,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      claim_customer_enquiry_delivery: {
+        Args: { p_enquiry_id: string }
+        Returns: { send_customer: boolean; send_internal: boolean }[]
+      }
     }
     Enums: {
       [_ in never]: never
