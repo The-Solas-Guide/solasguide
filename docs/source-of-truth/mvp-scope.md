@@ -41,7 +41,7 @@ The service uses human judgement and the trusted Solas network to review buyer c
 - Use MailerSend for transactional email unless the provider decision is explicitly revisited.
 - Use Vercel for preview and production deployments.
 - Use a one-way Supabase-to-Airtable CRM projection for submitted enquiries and practitioner expressions of interest. Supabase remains authoritative; Airtable owns CRM status, owners, outreach activity, follow-up, and notes. This approved change supersedes the earlier Supabase-only operational handoff direction.
-- A Supabase privacy or retention deletion also deletes the matching Airtable CRM record. Do not enable live sync until the Airtable/Vercel processor, retention, and deletion wording is included in client-approved privacy material.
+- A privacy or retention deletion must remove the authoritative Supabase record and its matching Airtable CRM record. For the MVP, the Airtable removal is a documented manual operational step.
 - Keep the application simple and MVP-focused. Record non-critical edge cases instead of expanding scope automatically.
 
 ## Acceptance summary
