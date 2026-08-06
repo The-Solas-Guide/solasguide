@@ -160,6 +160,10 @@ select {
   outline-offset: 3px;
 }
 
+footer a:focus-visible {
+  outline-color: var(--background);
+}
+
 .font-display {
   font-family: var(--font-display);
   letter-spacing: -0.02em;
