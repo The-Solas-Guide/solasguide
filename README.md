@@ -34,7 +34,7 @@ Approved integration direction:
 - MailerSend for transactional email
 - Google Analytics 4 when the analytics property is available
 
-Supabase is the application runtime data store. Airtable is not a runtime dependency.
+Supabase is the application runtime data store and source of truth. Airtable receives a one-way CRM projection through a Vercel Workflow; it is never read by the public application and never syncs operational CRM changes back to Supabase.
 
 ## Local development
 

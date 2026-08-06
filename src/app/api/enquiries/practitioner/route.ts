@@ -147,6 +147,7 @@ export async function POST(request: Request) {
   const locationDetail = String(submission.answers.locationDetail || "");
   const location = `${allowedAreas.get(area)}${locationDetail ? ` — ${locationDetail}` : ""}`;
   const insert = await supabase.from("practitioner_expressions_of_interest").insert({
+    airtable_test_record: process.env.VERCEL_ENV !== "production",
     submission_token: submission.submissionToken,
     full_name: submission.fullName,
     email: submission.email,

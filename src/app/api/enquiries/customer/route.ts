@@ -110,6 +110,7 @@ export async function POST(request: Request) {
   const supabase = createClient<Database>(url, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
   const submission = result.data;
   const insert = await supabase.from("customer_enquiries").insert({
+    airtable_test_record: process.env.VERCEL_ENV !== "production",
     submission_token: submission.submissionToken,
     full_name: submission.fullName,
     email: submission.email,

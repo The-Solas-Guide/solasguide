@@ -31,7 +31,7 @@ The service uses human judgement and the trusted Solas network to review buyer c
 - Booking, payments, subscriptions, billing, or ticketing.
 - Direct customer-to-practitioner messaging.
 - Venue or event directories.
-- Airtable as an application runtime dependency.
+- Airtable as a source of truth, public-application read dependency, or reverse-sync destination.
 
 ## Technical decisions
 
@@ -40,6 +40,8 @@ The service uses human judgement and the trusted Solas network to review buyer c
 - Develop against local Supabase Docker and manage schema changes through committed migrations.
 - Use MailerSend for transactional email unless the provider decision is explicitly revisited.
 - Use Vercel for preview and production deployments.
+- Use a one-way Supabase-to-Airtable CRM projection for submitted enquiries and practitioner expressions of interest. Supabase remains authoritative; Airtable owns CRM status, owners, outreach activity, follow-up, and notes. This approved change supersedes the earlier Supabase-only operational handoff direction.
+- A Supabase privacy or retention deletion also deletes the matching Airtable CRM record. Do not enable live sync until the Airtable/Vercel processor, retention, and deletion wording is included in client-approved privacy material.
 - Keep the application simple and MVP-focused. Record non-critical edge cases instead of expanding scope automatically.
 
 ## Acceptance summary

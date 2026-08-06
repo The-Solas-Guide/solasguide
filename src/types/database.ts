@@ -11,6 +11,7 @@ export type Database = {
     Tables: {
       customer_enquiries: {
         Row: {
+          airtable_test_record: boolean
           consent_confirmed: boolean
           consent_given_at: string
           contact_preference: string
@@ -31,6 +32,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          airtable_test_record?: boolean
           consent_confirmed: boolean
           consent_given_at?: string
           contact_preference?: string
@@ -51,6 +53,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          airtable_test_record?: boolean
           consent_confirmed?: boolean
           consent_given_at?: string
           contact_preference?: string
@@ -74,6 +77,7 @@ export type Database = {
       }
       practitioner_expressions_of_interest: {
         Row: {
+          airtable_test_record: boolean
           consent_confirmed: boolean
           consent_given_at: string
           contact_preference: string
@@ -95,6 +99,7 @@ export type Database = {
           website_url: string | null
         }
         Insert: {
+          airtable_test_record?: boolean
           consent_confirmed: boolean
           consent_given_at?: string
           contact_preference?: string
@@ -116,6 +121,7 @@ export type Database = {
           website_url?: string | null
         }
         Update: {
+          airtable_test_record?: boolean
           consent_confirmed?: boolean
           consent_given_at?: string
           contact_preference?: string
@@ -138,6 +144,87 @@ export type Database = {
         }
         Relationships: []
       }
+      airtable_sync_events: {
+        Row: {
+          attempt_count: number
+          completed_at: string | null
+          created_at: string
+          id: string
+          is_test_record: boolean
+          last_error: string | null
+          last_error_code: string | null
+          operation: "upsert" | "delete"
+          source: "customer_enquiry" | "practitioner_expression"
+          source_id: string
+          source_submission_id: string
+          started_at: string | null
+          status: "pending" | "processing" | "succeeded" | "failed"
+          updated_at: string
+          webhook_request_id: number | null
+          workflow_run_id: string | null
+        }
+        Insert: {
+          attempt_count?: number
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          is_test_record?: boolean
+          last_error?: string | null
+          last_error_code?: string | null
+          operation: "upsert" | "delete"
+          source: "customer_enquiry" | "practitioner_expression"
+          source_id: string
+          source_submission_id: string
+          started_at?: string | null
+          status?: "pending" | "processing" | "succeeded" | "failed"
+          updated_at?: string
+          webhook_request_id?: number | null
+          workflow_run_id?: string | null
+        }
+        Update: {
+          attempt_count?: number
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          is_test_record?: boolean
+          last_error?: string | null
+          last_error_code?: string | null
+          operation?: "upsert" | "delete"
+          source?: "customer_enquiry" | "practitioner_expression"
+          source_id?: string
+          source_submission_id?: string
+          started_at?: string | null
+          status?: "pending" | "processing" | "succeeded" | "failed"
+          updated_at?: string
+          webhook_request_id?: number | null
+          workflow_run_id?: string | null
+        }
+        Relationships: []
+      }
+      airtable_sync_leases: {
+        Row: {
+          event_id: string
+          lease_expires_at: string
+          source: "customer_enquiry" | "practitioner_expression"
+          source_id: string
+          updated_at: string
+        }
+        Insert: {
+          event_id: string
+          lease_expires_at: string
+          source: "customer_enquiry" | "practitioner_expression"
+          source_id: string
+          updated_at?: string
+        }
+        Update: {
+          event_id?: string
+          lease_expires_at?: string
+          source?: "customer_enquiry" | "practitioner_expression"
+          source_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -150,9 +237,36 @@ export type Database = {
           send_internal: boolean
         }[]
       }
+      claim_airtable_sync_event: {
+        Args: { p_event_id: string }
+        Returns: {
+          claimed: boolean
+          current_status: "pending" | "processing" | "succeeded" | "failed" | null
+          operation: "upsert" | "delete" | null
+          is_test_record: boolean | null
+          source: "customer_enquiry" | "practitioner_expression" | null
+          source_id: string | null
+          source_submission_id: string | null
+        }[]
+      }
+      complete_airtable_sync_event: {
+        Args: {
+          p_error?: string | null
+          p_error_code?: string | null
+          p_event_id: string
+          p_status: "succeeded" | "failed"
+        }
+        Returns: undefined
+      }
+      reset_airtable_sync_event: {
+        Args: { p_event_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      airtable_sync_operation: "upsert" | "delete"
+      airtable_sync_source: "customer_enquiry" | "practitioner_expression"
+      airtable_sync_status: "pending" | "processing" | "succeeded" | "failed"
     }
     CompositeTypes: {
       [_ in never]: never
