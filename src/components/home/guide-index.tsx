@@ -234,7 +234,7 @@ export function GuideIndex() {
       <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
         <div>
           <p className="review-label text-accent">Explore the guide</p>
-          <h2 id="guide-index-heading" className="mt-4 max-w-3xl font-display text-4xl leading-[1.05] md:text-5xl">
+          <h2 id="guide-index-heading" className="mt-4 max-w-3xl font-display text-3xl leading-[1.08] text-balance sm:text-4xl md:text-5xl md:leading-[1.05]">
             People, places and experiences that can shape your time in Bali.
           </h2>
         </div>
@@ -285,24 +285,31 @@ export function GuideIndex() {
                   src={item.image}
                   alt={item.imageAlt ?? ""}
                   fill
-                  className={cn("object-cover transition-transform duration-500 ease-out group-hover:scale-[1.025]", item.imagePosition)}
+                  className={cn(
+                    "object-cover motion-safe:transition-transform motion-safe:duration-500 motion-safe:ease-out motion-safe:group-hover:scale-[1.025]",
+                    item.imagePosition,
+                  )}
                   sizes="(max-width: 1023px) 50vw, 25vw"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-black/5" />
-                <div className="absolute inset-x-0 bottom-0 p-3 text-white sm:p-4">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-black/5" />
+                <div className="absolute inset-x-0 bottom-0 p-2.5 text-white sm:p-4">
                   <p className="text-[0.58rem] font-semibold uppercase tracking-[0.16em] text-white/80 sm:text-[0.62rem]">
                     {item.location}
                   </p>
-                  <h3 className="mt-1.5 font-display text-base leading-[1.05] text-balance sm:text-xl">{item.title}</h3>
-                  <p className="mt-2 text-[0.66rem] leading-[1.45] text-white/80 sm:text-xs sm:leading-5">{item.description}</p>
+                  <h3 className="mt-1.5 font-display text-[0.95rem] leading-[1.1] text-balance sm:text-xl sm:leading-[1.05]">
+                    {item.title}
+                  </h3>
+                  <p className="mt-1.5 line-clamp-3 text-[0.66rem] leading-[1.45] text-white/80 sm:mt-2 sm:line-clamp-none sm:text-xs sm:leading-5">
+                    {item.description}
+                  </p>
                 </div>
               </div>
             </article>
           ))}
         </div>
 
-        <div className="mt-5 flex justify-end">
-          <Link href="/find-a-match" className={cn(buttonVariants(), "shrink-0")}>
+        <div className="mt-5 flex justify-stretch sm:justify-end">
+          <Link href="/find-a-match" className={cn(buttonVariants(), "w-full shrink-0 sm:w-auto")}>
             Tell us about your trip <ArrowRight />
           </Link>
         </div>

@@ -311,8 +311,8 @@ export function PractitionerInterestForm() {
 
   if (submitted) {
     return (
-      <main className="flex min-h-screen items-center bg-muted/40 px-5 py-16">
-        <section className="mx-auto w-full max-w-2xl border border-border bg-card p-8 md:p-12" role="status">
+      <main className="flex min-h-screen items-center overflow-x-hidden bg-muted/40 px-5 py-16">
+        <section className="mx-auto w-full max-w-2xl rounded-md border border-border bg-card p-8 md:p-12" role="status">
           <Check className="size-8 text-accent" />
           <p className="mt-8 text-xs uppercase tracking-[0.18em] text-muted-foreground">Expression of interest received</p>
           <h1 className="mt-4 font-display text-4xl leading-tight md:text-5xl">Thank you. Your expression of interest has been received.</h1>
@@ -349,32 +349,34 @@ export function PractitionerInterestForm() {
   ];
 
   return (
-    <main className="min-h-screen bg-muted/40 px-3 py-3 md:px-5 md:py-8">
+    <main className="min-h-screen overflow-x-hidden bg-muted/40 px-3 py-3 md:px-5 md:py-8">
       <div className="mx-auto w-full max-w-[1240px]">
-        <div className="flex items-center justify-between gap-4 border-b border-border px-1 pb-5">
-          <Link href="/" className="font-display text-2xl tracking-tight">The Solas Guide</Link>
-          <Link href="/become-a-practitioner" className="inline-flex min-h-11 items-center gap-2 text-xs uppercase tracking-[0.14em] text-muted-foreground hover:text-foreground">
-            <ArrowLeft className="size-4" /> About practitioner interest
+        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 border-b border-border px-1 pb-5 md:px-0">
+          <Link href="/" className="font-display text-xl tracking-tight sm:text-2xl">The Solas Guide</Link>
+          <Link href="/become-a-practitioner" className="inline-flex min-h-11 items-center gap-2 text-xs uppercase tracking-[0.14em] text-muted-foreground transition-colors hover:text-foreground">
+            <ArrowLeft className="size-4 shrink-0" /> About practitioner interest
           </Link>
         </div>
-        <section className="flex min-h-[700px] flex-col border-b border-border md:h-[min(920px,calc(100vh-128px))]">
-          <div className="py-4">
-            <h1 className="font-display text-2xl md:text-3xl">Introduce your practice</h1>
+        <section className="mt-3 flex min-h-[700px] flex-col border border-border bg-background md:mt-0 md:h-[min(920px,calc(100vh-128px))] md:border-0 md:border-b">
+          <div className="px-5 py-5 sm:px-6 md:px-8 md:py-6">
+            <h1 className="font-display text-2xl leading-tight tracking-tight sm:text-3xl">Introduce your practice</h1>
             <div className="mt-3" role="progressbar" aria-label="Expression of interest progress" aria-valuemin={1} aria-valuemax={steps.length} aria-valuenow={index + 1}>
-              <div className="h-0.5 bg-muted"><div className="h-full bg-accent transition-[width]" style={{ width: `${((index + 1) / steps.length) * 100}%` }} /></div>
-              <div className="mt-2 flex justify-between text-[9px] uppercase tracking-[0.16em] text-muted-foreground"><span>Step {index + 1} of {steps.length}</span><span>{copy.eyebrow}</span></div>
+              <div className="h-1 overflow-hidden rounded-full bg-muted"><div className="h-full bg-accent transition-[width] duration-500 motion-reduce:transition-none" style={{ width: `${((index + 1) / steps.length) * 100}%` }} /></div>
+              <div className="mt-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-[10px] uppercase tracking-[0.16em] text-muted-foreground"><span>Step {index + 1} of {steps.length}</span><span className="text-right">{copy.eyebrow}</span></div>
             </div>
           </div>
           <div className="grid min-h-0 flex-1 border-t border-border md:grid-cols-[minmax(260px,0.78fr)_minmax(0,1.22fr)]">
-            <aside className={cn("relative min-h-64 overflow-hidden bg-foreground text-background", step !== "practice" && "hidden md:block")}>
+            <aside className={cn("relative min-h-56 overflow-hidden bg-foreground text-background sm:min-h-64 md:min-h-0", step !== "practice" && "hidden md:block")}>
               <Image src="/images/solas-imagery/why-solas-pavilion.png" alt="A quiet open-air pavilion surrounded by tropical greenery in Bali" fill loading="eager" className="object-cover opacity-55" sizes="(max-width: 768px) 100vw, 40vw" />
               <div className="absolute inset-0 bg-foreground/45" />
-              <div className="relative flex min-h-64 p-6 md:min-h-full md:p-8">
-                <div><p className="text-[10px] uppercase tracking-[0.2em] text-background/65">Your work in Bali</p><p className="mt-5 max-w-xs font-display text-3xl leading-tight md:text-4xl">Share a clear professional introduction.</p></div>
+              <div className="relative flex min-h-56 flex-col justify-end p-5 sm:min-h-64 sm:p-6 md:min-h-0 md:justify-start md:p-8">
+                <div><p className="text-[10px] uppercase tracking-[0.2em] text-background/65">Your work in Bali</p><p className="mt-4 max-w-xs font-display text-2xl leading-[1.05] text-balance sm:mt-5 sm:text-3xl md:text-4xl md:leading-[1.02]">Share a clear professional introduction.</p></div>
               </div>
             </aside>
-            <div className="scrollbar-none flex min-h-0 flex-col overflow-y-auto p-6 md:p-8 lg:p-10">
-              <h2 ref={headingRef} tabIndex={-1} className="max-w-xl font-display text-2xl leading-tight outline-none md:text-3xl">{copy.title}</h2>
+            <div className="scrollbar-none flex min-h-0 flex-col overflow-y-auto p-5 sm:p-6 md:p-8 lg:p-10">
+              <div className="max-w-2xl">
+                <h2 ref={headingRef} tabIndex={-1} className="max-w-xl font-display text-xl leading-[1.15] text-balance outline-none md:text-2xl md:leading-[1.1]">{copy.title}</h2>
+              </div>
               {error && <div ref={errorRef} tabIndex={-1} className="outline-none"><FormFeedback tone="error" title="A little more detail is needed" description={error} className="mt-6" />{tokenConflict && <Button type="button" variant="outline" onClick={startNewExpression} className="mt-3 w-full sm:w-auto">Start a new expression</Button>}</div>}
               <div className="mt-7">
                 {step === "practice" && (
@@ -397,18 +399,18 @@ export function PractitionerInterestForm() {
                   </div>
                 )}
                 {step === "contact" && (
-                  <div className="space-y-6"><div className="grid gap-5 sm:grid-cols-2"><div><Label htmlFor="full-name">Full name</Label><Input id="full-name" autoComplete="name" value={fullName} onChange={(event) => setFullName(event.target.value)} className="mt-2 h-11 bg-card" /></div><div><Label htmlFor="email">Email address</Label><Input id="email" type="email" autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} className="mt-2 h-11 bg-card" /></div></div><fieldset><legend className="text-sm font-medium">Preferred contact</legend><div className="mt-3 grid gap-3 sm:grid-cols-3">{([{ value: "email", label: "Email", icon: Mail }, { value: "whatsapp", label: "WhatsApp", icon: MessageCircle }, { value: "phone", label: "Phone", icon: Phone }] as const).map(({ value, label, icon: Icon }) => <button key={value} type="button" aria-pressed={contactPreference === value} onClick={() => { if (value === "email") setPhone(""); setContactPreference(value); }} className={cn("flex min-h-16 items-center gap-3 border px-4 text-left text-sm", contactPreference === value ? "border-accent bg-accent text-accent-foreground" : "border-border bg-card")}><Icon className="size-4" />{label}</button>)}</div></fieldset>{contactPreference !== "email" && <div><Label htmlFor="phone">Phone or WhatsApp number</Label><Input id="phone" type="tel" autoComplete="tel" value={phone} onChange={(event) => setPhone(event.target.value)} className="mt-2 h-11 bg-card" /></div>}</div>
+                  <div className="space-y-6"><div className="grid gap-5 sm:grid-cols-2"><div><Label htmlFor="full-name">Full name</Label><Input id="full-name" autoComplete="name" value={fullName} onChange={(event) => setFullName(event.target.value)} className="mt-2 bg-card" /></div><div><Label htmlFor="email">Email address</Label><Input id="email" type="email" autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} className="mt-2 bg-card" /></div></div><fieldset><legend className="text-sm font-medium">Preferred contact</legend><div className="mt-3 grid gap-3 sm:grid-cols-3">{([{ value: "email", label: "Email", icon: Mail }, { value: "whatsapp", label: "WhatsApp", icon: MessageCircle }, { value: "phone", label: "Phone", icon: Phone }] as const).map(({ value, label, icon: Icon }) => <button key={value} type="button" aria-pressed={contactPreference === value} onClick={() => { if (value === "email") setPhone(""); setContactPreference(value); }} className={cn("flex min-h-14 items-center gap-3 rounded-md border px-4 text-left text-sm transition-colors focus-visible:ring-2 focus-visible:ring-ring/40", contactPreference === value ? "border-accent bg-accent text-accent-foreground" : "border-border bg-card hover:border-foreground/40")}><Icon className="size-4 shrink-0" aria-hidden="true" />{label}</button>)}</div></fieldset>{contactPreference !== "email" && <div><Label htmlFor="phone">Phone or WhatsApp number</Label><Input id="phone" type="tel" autoComplete="tel" value={phone} onChange={(event) => setPhone(event.target.value)} className="mt-2 bg-card" /></div>}</div>
                 )}
                 {step === "review" && (
-                  <div className="divide-y divide-border border border-border bg-card">
+                  <div className="divide-y divide-border rounded-md border border-border bg-card">
                     {reviewRows.map((row) => <div key={row.label} className="flex items-start justify-between gap-5 p-4 md:p-5"><div className="min-w-0"><p className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground">{row.label}</p><p className="mt-2 break-words text-sm leading-6">{row.value}</p></div><button type="button" aria-label={`Edit ${row.label.toLowerCase()}`} onClick={() => { setError(""); setReturnToReview(true); setStep(row.edit); }} className="inline-flex min-h-11 shrink-0 items-center gap-1 text-xs uppercase tracking-[0.12em] text-muted-foreground hover:text-foreground"><Pencil className="size-3" /> Edit</button></div>)}
                     <div className="absolute -left-[9999px]" aria-hidden="true"><Label htmlFor="website">Website</Label><Input id="website" name="website" tabIndex={-1} autoComplete="off" value={website} onChange={(event) => setWebsite(event.target.value)} /></div>
-                    <label className="flex min-h-11 items-start gap-3 p-5 text-xs leading-relaxed text-muted-foreground"><input type="checkbox" checked={consent} onChange={(event) => setConsent(event.target.checked)} className="mt-0.5 size-4 accent-[var(--accent)]" /><span>I agree that The Solas Guide may use these details to respond to my expression of interest.</span></label>
+                    <label className="flex min-h-11 items-start gap-3 p-5 text-xs leading-relaxed text-muted-foreground"><input type="checkbox" checked={consent} onChange={(event) => setConsent(event.target.checked)} className="mt-0.5 size-5 shrink-0 accent-[var(--accent)]" /><span>I agree that The Solas Guide may use these details to respond to my expression of interest.</span></label>
                   </div>
                 )}
               </div>
-              <div className="mt-auto flex flex-col-reverse items-stretch justify-between gap-5 border-t border-border pt-7 sm:flex-row sm:items-center">
-                {index > 0 ? <button type="button" onClick={goBack} className="inline-flex min-h-11 items-center gap-2 text-xs uppercase tracking-[0.14em] text-muted-foreground hover:text-foreground"><ArrowLeft className="size-4" /> Back</button> : <span className="text-xs text-muted-foreground">Takes a few minutes</span>}
+              <div className="mt-auto flex flex-col-reverse items-stretch justify-between gap-4 border-t border-border pt-6 sm:flex-row sm:items-center sm:gap-5 sm:pt-7">
+                {index > 0 ? <button type="button" onClick={goBack} className="inline-flex min-h-11 items-center gap-2 px-0 text-xs uppercase tracking-[0.14em] text-muted-foreground transition-colors hover:text-foreground"><ArrowLeft className="size-4" /> Back</button> : <span className="inline-flex min-h-11 items-center text-xs text-muted-foreground">Takes a few minutes</span>}
                 {step === "review" ? <Button type="button" onClick={submit} disabled={submitting} className="w-full sm:w-auto">{submitting ? "Sending…" : "Send expression of interest"}<ArrowRight /></Button> : <Button type="button" onClick={continueJourney} className="w-full sm:w-auto">{returnToReview ? "Return to review" : step === "contact" ? "Review your expression of interest" : "Continue"}<ArrowRight /></Button>}
               </div>
             </div>

@@ -3,9 +3,14 @@ import Link from "next/link";
 import { ArrowRight, LoaderCircle } from "lucide-react";
 import { BrandWordmark } from "@/components/brand/brand-wordmark";
 import { ThemeReviewControl } from "@/components/design-system/theme-review-control";
+import { FormChoiceCard } from "@/components/forms/form-choice-card";
+import { FormFeedback } from "@/components/forms/form-feedback";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 
 const sections = [
@@ -71,7 +76,13 @@ export function DesignSystemReview() {
             A visual language tested through real page composition, editorial
             imagery, controls, forms, and the focused MVP journeys.
           </p>
-          <Link href="/" className={cn(buttonVariants(), "mt-8 border-white bg-white text-black hover:bg-white/85")}>
+          <Link
+            href="/"
+            className={cn(
+              buttonVariants(),
+              "mt-8 w-full border-white bg-white text-black hover:bg-white/85 sm:w-auto",
+            )}
+          >
             View the representative homepage <ArrowRight />
           </Link>
         </div>
@@ -181,7 +192,7 @@ export function DesignSystemReview() {
           <section id="components" className="review-section scroll-mt-16 border-t border-border px-6 md:px-12 lg:px-[7vw]">
             <SectionHeading index="05 — Components" title="The interface should feel as considered as the editorial page" note="These are the minimum controls needed for the active MVP journeys: navigation, actions, fields, choices, progress, and honest feedback." />
             <div className="mt-12 grid gap-6 lg:grid-cols-2">
-              <div className="border border-border bg-card p-6 md:p-8">
+              <div className="rounded-md border border-border bg-card p-6 md:p-8">
                 <p className="review-label text-muted-foreground">Actions</p>
                 <div className="mt-8 flex flex-wrap gap-3">
                   <Button>Start an enquiry <ArrowRight /></Button>
@@ -189,30 +200,50 @@ export function DesignSystemReview() {
                   <Button variant="ghost">Back</Button>
                 </div>
                 <div className="mt-8 flex flex-wrap gap-3 border-t border-border pt-6">
-                  <Button disabled><LoaderCircle className="animate-spin" />Saving</Button>
+                  <Button disabled>
+                    <LoaderCircle className="animate-spin motion-reduce:animate-none" aria-hidden="true" />
+                    Saving
+                  </Button>
                   <Button variant="outline" disabled>Unavailable</Button>
                 </div>
               </div>
-              <div className="border border-border bg-card p-6 md:p-8">
+              <div className="rounded-md border border-border bg-card p-6 md:p-8">
                 <p className="review-label text-muted-foreground">Form fields</p>
-                <label htmlFor="review-email" className="mt-8 block text-sm font-semibold">Email address</label>
-                <input id="review-email" type="email" placeholder="you@example.com" className="mt-3 min-h-12 w-full border border-input bg-background px-4 outline-none placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/30" />
-                <label htmlFor="review-note" className="mt-6 block text-sm font-semibold">What would be useful for us to know?</label>
-                <textarea id="review-note" placeholder="A sentence or two about your plans." className="mt-3 min-h-28 w-full resize-y border border-input bg-background p-4 text-sm outline-none placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/30" />
+                <Label htmlFor="review-email" className="mt-8">Email address</Label>
+                <Input id="review-email" type="email" placeholder="you@example.com" className="mt-3 bg-background" />
+                <Label htmlFor="review-note" className="mt-6">What would be useful for us to know?</Label>
+                <Textarea id="review-note" placeholder="A sentence or two about your plans." className="mt-3 bg-background" />
               </div>
             </div>
+            <div className="mt-6 grid gap-3 md:grid-cols-2">
+              <FormChoiceCard
+                label="Find a practitioner"
+                description="Explore a practice or person who may suit what you need."
+                selected
+              />
+              <FormChoiceCard
+                label="I’m still exploring"
+                description="Start with the feeling and we will help shape the next step."
+              />
+            </div>
             <div className="mt-6 grid gap-3 md:grid-cols-3">
-              {[
-                ["Success", "Your enquiry has been received.", "We will review the details and explain the next step."],
-                ["Error", "Something needs attention.", "Check the highlighted fields and try again."],
-                ["Loading", "Saving your enquiry…", "Completion is only shown after the submission is confirmed."],
-              ].map(([label, title, copy]) => (
-                <article key={label} className="border border-border bg-card p-6">
-                  <p className="review-label text-accent">{label}</p>
-                  <h3 className="mt-8 font-display text-2xl">{title}</h3>
-                  <p className="mt-3 text-sm leading-7 text-muted-foreground">{copy}</p>
-                </article>
-              ))}
+              <FormFeedback
+                tone="success"
+                title="Your enquiry has been received."
+                description="We will review the details and explain the next step."
+              />
+              <FormFeedback
+                tone="error"
+                title="Something needs attention."
+                description="Check the highlighted fields and try again."
+              />
+              <article className="rounded-md border border-border bg-card p-5 md:p-6">
+                <p className="review-label text-accent">Loading</p>
+                <h3 className="mt-6 font-display text-xl leading-snug md:text-2xl">Saving your enquiry…</h3>
+                <p className="mt-2 text-xs leading-relaxed text-muted-foreground md:text-sm md:leading-7">
+                  Completion is only shown after the submission is confirmed.
+                </p>
+              </article>
             </div>
           </section>
 

@@ -17,8 +17,11 @@ export function SiteHeader({ className }: { className?: string }) {
 
   return (
     <header className={cn("relative border border-border bg-background", className)}>
-      <div className="flex min-h-20 items-center justify-between gap-6 px-5 md:px-7">
-        <Link href="/" className="font-display text-2xl leading-none">
+      <div className="flex min-h-20 items-center justify-between gap-4 px-5 md:gap-6 md:px-7">
+        <Link
+          href="/"
+          className="min-w-0 font-display text-xl leading-none tracking-tight sm:text-2xl"
+        >
           The Solas Guide
         </Link>
         <nav aria-label="Primary navigation" className="hidden items-center gap-7 lg:flex">
@@ -26,12 +29,16 @@ export function SiteHeader({ className }: { className?: string }) {
             <a
               key={link.label}
               href={link.href}
-              className="text-xs text-muted-foreground transition-colors hover:text-foreground"
+              className="inline-flex min-h-11 items-center text-xs font-semibold uppercase tracking-[0.13em] text-muted-foreground transition-colors hover:text-foreground"
             >
               {link.label}
             </a>
           ))}
-          <TrackedPractitionerLink source="header" href="/become-a-practitioner" className="text-xs text-muted-foreground transition-colors hover:text-foreground">
+          <TrackedPractitionerLink
+            source="header"
+            href="/become-a-practitioner"
+            className="inline-flex min-h-11 items-center text-xs font-semibold uppercase tracking-[0.13em] text-muted-foreground transition-colors hover:text-foreground"
+          >
             For practitioners
           </TrackedPractitionerLink>
         </nav>
@@ -42,16 +49,21 @@ export function SiteHeader({ className }: { className?: string }) {
         </div>
         <button
           type="button"
-          className="grid size-11 place-items-center lg:hidden"
+          className="grid size-11 shrink-0 place-items-center rounded-md text-foreground transition-colors hover:bg-muted lg:hidden"
           onClick={() => setOpen((value) => !value)}
           aria-expanded={open}
+          aria-controls="mobile-navigation"
           aria-label="Toggle navigation"
         >
-          {open ? <X className="size-5" /> : <Menu className="size-5" />}
+          {open ? <X className="size-5" aria-hidden="true" /> : <Menu className="size-5" aria-hidden="true" />}
         </button>
       </div>
       {open && (
-        <nav aria-label="Mobile navigation" className="grid border-t border-border p-3 lg:hidden">
+        <nav
+          id="mobile-navigation"
+          aria-label="Mobile navigation"
+          className="grid border-t border-border p-3 lg:hidden"
+        >
           {links.map((link) => (
             <a
               key={link.label}
@@ -70,7 +82,7 @@ export function SiteHeader({ className }: { className?: string }) {
           >
             For practitioners
           </TrackedPractitionerLink>
-          <Button asChild className="mt-3">
+          <Button asChild className="mt-3 w-full">
             <Link href="/find-a-match" onClick={() => setOpen(false)}>
               Tell us about your trip
             </Link>
