@@ -29,11 +29,18 @@ export function SiteFooter() {
           <div className="mt-4 grid gap-3 text-sm">
             <Link href="/#start">Begin your enquiry</Link>
           </div>
+          <div className="mt-6 border-t border-background/20 pt-4">
+            <p className="review-label opacity-50">Legal</p>
+            <div className="mt-3 grid gap-3 text-sm">
+              <Link href="/privacy">Privacy</Link>
+              <Link href="/terms">Website terms</Link>
+            </div>
+          </div>
         </div>
       </div>
       <div className="mt-12 flex flex-col gap-3 border-t border-background/20 pt-5 text-[11px] opacity-55 sm:flex-row sm:justify-between">
         <p>© The Solas Guide</p>
-        <p>Privacy and terms content pending client approval.</p>
+        <p>Draft legal placeholders · client approval pending.</p>
       </div>
     </footer>
   );
