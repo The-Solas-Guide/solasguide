@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { BrandWordmark } from "@/components/brand/brand-wordmark";
+import { TrackedPractitionerLink } from "@/components/analytics/tracked-practitioner-link";
 
 export function SiteFooter() {
   return (
@@ -20,6 +21,7 @@ export function SiteFooter() {
             <Link href="/#explore">Explore the guide</Link>
             <Link href="/#how-it-works">How it works</Link>
             <Link href="/find-a-match">Tell us about your trip</Link>
+            <TrackedPractitionerLink source="footer" href="/become-a-practitioner">Become a practitioner</TrackedPractitionerLink>
           </div>
         </div>
         <div>
