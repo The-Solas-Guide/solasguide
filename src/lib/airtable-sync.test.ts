@@ -50,7 +50,7 @@ describe("Airtable CRM field mapping", () => {
       Outcomes: ["Rest/reset", "Connection"],
       Location: "Ubud",
       Practices: ["Yoga", "Sound practice"],
-      "Test record": true,
+      "Test Record": true,
     });
     expect(fields).not.toHaveProperty("Status");
     expect(fields).not.toHaveProperty("Owner");
@@ -97,7 +97,7 @@ describe("Airtable CRM field mapping", () => {
       Area: "Ubud",
       "Practice areas": ["Bodywork", "Other"],
       "Additional links": "https://example.test/profile",
-      "Test record": true,
+      "Test Record": true,
     });
     expect(fields).not.toHaveProperty("Status");
     expect(fields).not.toHaveProperty("Owner");

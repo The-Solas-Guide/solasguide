@@ -149,7 +149,7 @@ function customerFields(row: Database["public"]["Tables"]["customer_enquiries"][
       discuss: "Discuss",
     }),
     "Additional context": answerString(answers, "notes"),
-    "Test record": isTestRecord,
+    "Test Record": isTestRecord,
   });
 }
 
@@ -192,7 +192,7 @@ function practitionerFields(row: Database["public"]["Tables"]["practitioner_expr
     "Experience summary": answerString(answers, "experienceSummary"),
     "Website URL": row.website_url ?? undefined,
     "Additional links": answerStrings(answers, "additionalLinks")?.join("\n"),
-    "Test record": isTestRecord,
+    "Test Record": isTestRecord,
   });
 }
 
