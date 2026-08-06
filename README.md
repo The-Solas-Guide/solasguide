@@ -31,8 +31,8 @@ Approved integration direction:
 
 - Supabase for application data and local development services
 - Vercel for preview and production deployments
+- Vercel Web Analytics for page views and custom events
 - MailerSend for transactional email
-- Google Analytics 4 when the analytics property is available
 
 Supabase is the application runtime data store and source of truth. Airtable receives a one-way CRM projection through a Vercel Workflow; it is never read by the public application and never syncs operational CRM changes back to Supabase.
 

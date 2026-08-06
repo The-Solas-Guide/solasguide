@@ -1,6 +1,6 @@
+import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
 import { Fraunces, Inter } from "next/font/google";
-import Script from "next/script";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -25,8 +25,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const gaMeasurementId = process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID;
-
   return (
     <html
       lang="en"
@@ -42,14 +40,7 @@ export default function RootLayout({
     >
       <body>
         {children}
-        {gaMeasurementId && (
-          <>
-            <Script src={`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`} strategy="afterInteractive" />
-            <Script id="solas-ga4" strategy="afterInteractive">
-              {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}window.gtag=gtag;gtag('js',new Date());gtag('config','${gaMeasurementId}',{send_page_view:true});`}
-            </Script>
-          </>
-        )}
+        <Analytics />
       </body>
     </html>
   );

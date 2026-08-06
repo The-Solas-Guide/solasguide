@@ -4,16 +4,17 @@ test("submits and reviews a practitioner expression of interest", async ({ page 
   let submittedBody: Record<string, unknown> | undefined;
   const analyticsEvents: unknown[][] = [];
 
-  await page.exposeFunction("capturePractitionerEvent", (...args: unknown[]) => {
+  await page.exposeFunction("captureAnalyticsEvent", (...args: unknown[]) => {
     analyticsEvents.push(args);
   });
   await page.addInitScript(() => {
     const analyticsWindow = window as typeof window & {
-      capturePractitionerEvent: (...args: unknown[]) => void;
-      gtag: (...args: unknown[]) => void;
+      captureAnalyticsEvent: (...args: unknown[]) => void;
+      va: (...args: unknown[]) => void;
     };
-    analyticsWindow.gtag = (...args: unknown[]) => analyticsWindow.capturePractitionerEvent(...args);
+    analyticsWindow.va = (...args: unknown[]) => analyticsWindow.captureAnalyticsEvent(...args);
   });
+  await page.route("**/script.debug.js", (route) => route.abort());
 
   await page.route("**/api/enquiries/practitioner", async (route) => {
     submittedBody = route.request().postDataJSON() as Record<string, unknown>;
@@ -102,7 +103,9 @@ test("submits and reviews a practitioner expression of interest", async ({ page 
     },
   });
 
-  const eventNames = analyticsEvents.map((event) => event[1]);
+  const eventNames = analyticsEvents
+    .filter(([eventType]) => eventType === "event")
+    .map(([, event]) => (event as { name?: unknown }).name);
   expect(eventNames).toEqual(expect.arrayContaining([
     "practitioner_interest_cta_clicked",
     "practitioner_interest_started",

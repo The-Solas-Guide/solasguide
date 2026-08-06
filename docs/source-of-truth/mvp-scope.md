@@ -17,7 +17,7 @@ The service uses human judgement and the trusted Solas network to review buyer c
 - Supabase storage for buyer and practitioner submissions.
 - On-screen confirmation, one customer confirmation email, and one internal notification for each submission journey.
 - MailerSend transactional email integration.
-- Agreed GA4 events once the analytics property is available.
+- Vercel Web Analytics page views and agreed custom events.
 - Responsive implementation and critical-path quality assurance.
 - Vercel preview and production deployment configuration.
 
@@ -49,7 +49,7 @@ The service uses human judgement and the trusted Solas network to review buyer c
 - Included pages and journeys are responsive and usable in current desktop Chrome and Safari and at approximately 390px width.
 - Both forms validate input, persist the expected structured submission, and show clear success and error states.
 - Confirmations and internal notifications are verified through the configured provider evidence.
-- Required analytics events are verified when GA4 is available.
+- Required analytics events are verified through Vercel Web Analytics when it is enabled for the project.
 - Production configuration contains no committed credentials or private customer data.
 - The production release and client-owned provider access are verified before handover.
 

@@ -1,5 +1,6 @@
 "use client";
 
+import { track } from "@vercel/analytics";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, Check, Mail, MessageCircle, Pencil, Phone } from "lucide-react";
@@ -72,10 +73,6 @@ function initialDraft(): StoredDraft {
     // The form remains usable when browser storage is unavailable.
   }
   return { draft: emptyDraft(), expiresAt: Date.now() + DRAFT_TTL };
-}
-
-function track(eventName: string, params?: Record<string, string | number | boolean>) {
-  window.gtag?.("event", eventName, params);
 }
 
 function labelFor(value: string, choices: Choice[]) {
