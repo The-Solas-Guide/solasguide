@@ -2,6 +2,19 @@ import { expect, test } from "@playwright/test";
 
 test("submits a complete business enquiry", async ({ page }) => {
   let submittedBody: Record<string, unknown> | undefined;
+  const analyticsEvents: unknown[][] = [];
+
+  await page.exposeFunction("captureAnalyticsEvent", (...args: unknown[]) => {
+    analyticsEvents.push(args);
+  });
+  await page.addInitScript(() => {
+    const analyticsWindow = window as typeof window & {
+      captureAnalyticsEvent: (...args: unknown[]) => void;
+      va: (...args: unknown[]) => void;
+    };
+    analyticsWindow.va = (...args: unknown[]) => analyticsWindow.captureAnalyticsEvent(...args);
+  });
+  await page.route("**/script.debug.js", (route) => route.abort());
 
   await page.route("**/api/enquiries/customer", async (route) => {
     submittedBody = route.request().postDataJSON() as Record<string, unknown>;
@@ -79,4 +92,14 @@ test("submits a complete business enquiry", async ({ page }) => {
       notes: "We are planning a restorative leadership retreat.",
     },
   });
+
+  const eventNames = analyticsEvents
+    .filter(([eventType]) => eventType === "event")
+    .map(([, event]) => (event as { name?: unknown }).name);
+  expect(eventNames).toEqual(expect.arrayContaining([
+    "enquiry_started",
+    "enquiry_step_completed",
+    "enquiry_submitted",
+  ]));
+  expect(JSON.stringify(analyticsEvents)).not.toContain("alex@example.com");
 });
