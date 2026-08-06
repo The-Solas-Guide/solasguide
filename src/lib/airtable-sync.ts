@@ -10,7 +10,6 @@ const AIRTABLE = {
   customer_enquiry: {
     tableId: "tbl5dq4uV5D1slrUe",
     sourceName: "Website enquiry",
-    sourceSubmissionIdFieldName: "Source submission ID",
     fields: {
       enquiry: "fld2fImnmsiTB08t9",
       sourceSubmissionId: "fldRP8toFgdJeCeVM",
@@ -38,7 +37,6 @@ const AIRTABLE = {
   practitioner_expression: {
     tableId: "tbl90Q1NoiAnbEI6c",
     sourceName: "Website application",
-    sourceSubmissionIdFieldName: "Source submission ID",
     fields: {
       practitioner: "fldnbgdhPg6RsqcSA",
       sourceSubmissionId: "fld3H9o3BthckLUte",
@@ -68,9 +66,6 @@ export type AirtableSubmission = {
   sourceSubmissionId: string;
   isTestRecord: boolean;
 };
-type AirtableRecord = { id: string };
-type AirtableResponse = { records?: AirtableRecord[] };
-
 function createAdminClient(): SupabaseClient<Database> {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -247,9 +242,9 @@ function sourceTable(source: AirtableSubmission["source"]) {
   return AIRTABLE[source];
 }
 
-function airtableUrl(tableId: string, suffix = "") {
+function airtableUrl(tableId: string) {
   const { baseId } = requireAirtableConfiguration();
-  return `https://api.airtable.com/v0/${encodeURIComponent(baseId)}/${encodeURIComponent(tableId)}${suffix}`;
+  return `https://api.airtable.com/v0/${encodeURIComponent(baseId)}/${encodeURIComponent(tableId)}`;
 }
 
 async function airtableRequest(url: string, init: RequestInit) {
@@ -273,24 +268,6 @@ async function airtableRequest(url: string, init: RequestInit) {
   throw new FatalError(`airtable_http_${response.status}`);
 }
 
-function sourceSubmissionFormula(sourceSubmissionId: string, sourceSubmissionIdFieldName: string) {
-  if (!/^[0-9a-f]{8}-[0-9a-f-]{27}$/i.test(sourceSubmissionId)) {
-    throw new FatalError("invalid_source_submission_id");
-  }
-  return `({${sourceSubmissionIdFieldName}} = '${sourceSubmissionId}')`;
-}
-
-async function findAirtableRecords(source: AirtableSubmission["source"], sourceSubmissionId: string) {
-  const table = sourceTable(source);
-  const params = new URLSearchParams({
-    filterByFormula: sourceSubmissionFormula(sourceSubmissionId, table.sourceSubmissionIdFieldName),
-    maxRecords: "2",
-  });
-  const response = await airtableRequest(`${airtableUrl(table.tableId)}?${params.toString()}`, { method: "GET" });
-  const payload = await response.json() as AirtableResponse;
-  return payload.records ?? [];
-}
-
 async function loadFields(submission: AirtableSubmission) {
   const supabase = createAdminClient();
   if (submission.source === "customer_enquiry") {
@@ -305,21 +282,14 @@ async function loadFields(submission: AirtableSubmission) {
 }
 
 async function upsertAirtableRecord(submission: AirtableSubmission, fields: Record<string, string | number | boolean | string[]>) {
-  const records = await findAirtableRecords(submission.source, submission.sourceSubmissionId);
-  if (records.length > 1) throw new FatalError("duplicate_airtable_source_submission_id");
-
-  const tableId = sourceTable(submission.source).tableId;
-  if (records.length === 1) {
-    await airtableRequest(airtableUrl(tableId, `/${encodeURIComponent(records[0].id)}`), {
-      method: "PATCH",
-      body: JSON.stringify({ fields, typecast: false }),
-    });
-    return;
-  }
-
-  await airtableRequest(airtableUrl(tableId), {
-    method: "POST",
-    body: JSON.stringify({ fields, typecast: false }),
+  const table = sourceTable(submission.source);
+  await airtableRequest(airtableUrl(table.tableId), {
+    method: "PATCH",
+    body: JSON.stringify({
+      performUpsert: { fieldsToMergeOn: [table.fields.sourceSubmissionId] },
+      records: [{ fields }],
+      typecast: false,
+    }),
   });
 }
 

@@ -11,7 +11,6 @@ export type Database = {
     Tables: {
       customer_enquiries: {
         Row: {
-          airtable_test_record: boolean
           consent_confirmed: boolean
           consent_given_at: string
           contact_preference: string
@@ -32,7 +31,6 @@ export type Database = {
           updated_at: string
         }
         Insert: {
-          airtable_test_record?: boolean
           consent_confirmed: boolean
           consent_given_at?: string
           contact_preference?: string
@@ -53,7 +51,6 @@ export type Database = {
           updated_at?: string
         }
         Update: {
-          airtable_test_record?: boolean
           consent_confirmed?: boolean
           consent_given_at?: string
           contact_preference?: string
@@ -77,7 +74,6 @@ export type Database = {
       }
       practitioner_expressions_of_interest: {
         Row: {
-          airtable_test_record: boolean
           consent_confirmed: boolean
           consent_given_at: string
           contact_preference: string
@@ -99,7 +95,6 @@ export type Database = {
           website_url: string | null
         }
         Insert: {
-          airtable_test_record?: boolean
           consent_confirmed: boolean
           consent_given_at?: string
           contact_preference?: string
@@ -121,7 +116,6 @@ export type Database = {
           website_url?: string | null
         }
         Update: {
-          airtable_test_record?: boolean
           consent_confirmed?: boolean
           consent_given_at?: string
           contact_preference?: string

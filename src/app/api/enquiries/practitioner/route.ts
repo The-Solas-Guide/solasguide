@@ -1,5 +1,4 @@
 import { createClient } from "@supabase/supabase-js";
-import { after } from "next/server";
 import { start } from "workflow/api";
 import type { Database, Json } from "@/types/database";
 import { airtableSubmissionWorkflow } from "@/workflows/airtable-sync";
@@ -169,35 +168,33 @@ export async function POST(request: Request) {
         .eq("submission_token", submission.submissionToken)
         .single();
       if (existing.error || existing.data.email !== submission.email) return Response.json({ error: "This expression of interest could not be retried." }, { status: 409 });
-      after(async () => {
-        try {
-          await start(airtableSubmissionWorkflow, [{
-            source: "practitioner_expression",
-            sourceId: existing.data.id,
-            sourceSubmissionId: submission.submissionToken,
-            isTestRecord: process.env.VERCEL_ENV !== "production",
-          }]);
-        } catch (error) {
-          console.error("Practitioner Airtable workflow failed to start", error instanceof Error ? error.message : "unknown");
-        }
-      });
+      try {
+        await start(airtableSubmissionWorkflow, [{
+          source: "practitioner_expression",
+          sourceId: existing.data.id,
+          sourceSubmissionId: submission.submissionToken,
+          isTestRecord: process.env.VERCEL_ENV !== "production",
+        }]);
+      } catch (error) {
+        console.error("Practitioner Airtable workflow failed to start", error instanceof Error ? error.message : "unknown");
+        return Response.json({ error: "Your expression of interest was saved, but processing could not start. Please try again." }, { status: 503 });
+      }
       return Response.json({ ok: true, duplicate: true });
     }
     console.error("Practitioner expression of interest insert failed", insert.error.code);
     return Response.json({ error: "We could not save your expression of interest. Please try again." }, { status: 500 });
   }
 
-  after(async () => {
-    try {
-      await start(airtableSubmissionWorkflow, [{
-        source: "practitioner_expression",
-        sourceId: insert.data.id,
-        sourceSubmissionId: submission.submissionToken,
-        isTestRecord: process.env.VERCEL_ENV !== "production",
-      }]);
-    } catch (error) {
-      console.error("Practitioner Airtable workflow failed to start", error instanceof Error ? error.message : "unknown");
-    }
-  });
+  try {
+    await start(airtableSubmissionWorkflow, [{
+      source: "practitioner_expression",
+      sourceId: insert.data.id,
+      sourceSubmissionId: submission.submissionToken,
+      isTestRecord: process.env.VERCEL_ENV !== "production",
+    }]);
+  } catch (error) {
+    console.error("Practitioner Airtable workflow failed to start", error instanceof Error ? error.message : "unknown");
+    return Response.json({ error: "Your expression of interest was saved, but processing could not start. Please try again." }, { status: 503 });
+  }
   return Response.json({ ok: true, duplicate: false });
 }

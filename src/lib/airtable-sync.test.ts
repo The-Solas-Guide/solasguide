@@ -8,7 +8,6 @@ import type { Database } from "@/types/database";
 describe("Airtable CRM field mapping", () => {
   it("maps a customer enquiry without CRM-owned fields", () => {
     const fields = mapCustomerEnquiryToAirtableFields({
-      airtable_test_record: true,
       consent_confirmed: true,
       consent_given_at: "2026-08-06T00:00:00.000Z",
       contact_preference: "whatsapp",
@@ -61,7 +60,6 @@ describe("Airtable CRM field mapping", () => {
 
   it("maps a practitioner expression and marks preview data as test data", () => {
     const fields = mapPractitionerExpressionToAirtableFields({
-      airtable_test_record: true,
       consent_confirmed: true,
       consent_given_at: "2026-08-06T00:00:00.000Z",
       contact_preference: "email",

@@ -1,5 +1,4 @@
 import { createClient } from "@supabase/supabase-js";
-import { after } from "next/server";
 import { start } from "workflow/api";
 import { processCustomerEnquiryDelivery } from "@/lib/enquiries/customer-delivery";
 import type { Database, Json } from "@/types/database";
@@ -139,18 +138,17 @@ export async function POST(request: Request) {
   }
 
   if (!enquiryId) return Response.json({ error: "We could not save your enquiry. Please try again." }, { status: 500 });
-  after(async () => {
-    try {
-      await start(airtableSubmissionWorkflow, [{
-        source: "customer_enquiry",
-        sourceId: enquiryId,
-        sourceSubmissionId: submission.submissionToken,
-        isTestRecord: process.env.VERCEL_ENV !== "production",
-      }]);
-    } catch (error) {
-      console.error("Customer enquiry Airtable workflow failed to start", error instanceof Error ? error.message : "unknown");
-    }
-  });
+  try {
+    await start(airtableSubmissionWorkflow, [{
+      source: "customer_enquiry",
+      sourceId: enquiryId,
+      sourceSubmissionId: submission.submissionToken,
+      isTestRecord: process.env.VERCEL_ENV !== "production",
+    }]);
+  } catch (error) {
+    console.error("Customer enquiry Airtable workflow failed to start", error instanceof Error ? error.message : "unknown");
+    return Response.json({ error: "Your enquiry was saved, but processing could not start. Please try again." }, { status: 503 });
+  }
   const delivery = await processCustomerEnquiryDelivery(supabase, enquiryId);
   return Response.json({ ok: true, duplicate, deliveryPending: delivery.deliveryPending });
 }
