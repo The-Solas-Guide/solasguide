@@ -57,7 +57,6 @@ export function SiteFooter() {
       </div>
       <div className="mt-12 flex flex-col gap-3 border-t border-background/20 pt-5 text-[11px] leading-relaxed text-background/55 sm:flex-row sm:items-center sm:justify-between">
         <p>© The Solas Guide</p>
-        <p>Draft legal placeholders · client approval pending.</p>
       </div>
     </footer>
   );
