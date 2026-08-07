@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
@@ -22,7 +23,16 @@ export function SiteHeader({ className }: { className?: string }) {
           href="/"
           className="min-w-0 font-display text-xl leading-none tracking-tight sm:text-2xl"
         >
-          The Solas Guide
+          <span className="flex items-center gap-2">
+            <Image
+              src="/brand/solas-mark-pebble.png"
+              alt=""
+              width={32}
+              height={30}
+              className="h-7 w-8 shrink-0 object-contain"
+            />
+            <span>The Solas Guide</span>
+          </span>
         </Link>
         <nav aria-label="Primary navigation" className="hidden items-center gap-7 lg:flex">
           {links.map((link) => (

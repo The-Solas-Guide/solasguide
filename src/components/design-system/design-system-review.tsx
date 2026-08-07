@@ -137,12 +137,13 @@ export function DesignSystemReview() {
           </section>
 
           <section id="directions" className="review-section scroll-mt-16 border-t border-border px-6 md:px-12 lg:px-[7vw]">
-            <SectionHeading index="02 — Candidate directions" title="Three registers, one real page" note="Use the floating controls to review each direction across this system and the representative homepage. These are candidates, not three production themes." />
-            <div className="mt-12 grid gap-4 lg:grid-cols-3">
+            <SectionHeading index="02 — Candidate directions" title="Four registers, one real page" note="Use the floating controls to review each direction across this system and the representative homepage. These are candidates, not four production themes." />
+            <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
               {[
                 ["Aman", "Quiet minimal", "#f7f4ee", "#1c1a17", "#2e4238"],
                 ["Bambu", "Earth and material", "#f1ebe0", "#221c14", "#a8562f"],
                 ["Chanel", "Editorial contrast", "#ffffff", "#0a0a0a", "#8c6f3f"],
+                ["Solas", "Warm restraint", "#f9f8f7", "#444444", "#716d64"],
               ].map(([name, note, background, ink, accent]) => (
                 <article key={name} className="border p-6" style={{ background, color: ink, borderColor: `${ink}22` }}>
                   <div className="review-label flex justify-between" style={{ color: accent }}>

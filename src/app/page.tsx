@@ -10,7 +10,6 @@ import { cn } from "@/lib/utils";
 import { TrackedPractitionerLink } from "@/components/analytics/tracked-practitioner-link";
 
 export const metadata: Metadata = {
-  title: "The Solas Guide | Curated Bali experiences",
   description:
     "Tell us about your Bali trip. The Solas Guide recommends relevant practitioners, venues, experiences and events, then helps make the introductions.",
 };
@@ -30,8 +29,8 @@ export default function WebPage() {
         <main id="main-content">
           <section className="relative mt-3 min-h-[min(720px,calc(100svh-2rem))] overflow-hidden border border-border bg-card">
             <Image
-              src="/images/solas-imagery/solas-guide-hero.png"
-              alt="A quiet garden pavilion in Bali with space for reflection"
+              src="/images/solas-imagery/solas-guide-hero-pavilion.jpg"
+              alt="An open-air pavilion beside a reflecting pool in a tropical garden"
               fill
               preload
               className="object-cover object-center"
@@ -77,54 +76,73 @@ export default function WebPage() {
 
           <section
             id="who-its-for"
-            className="border-x border-b border-border bg-muted/25 px-5 py-16 sm:px-8 md:px-12 md:py-24 lg:px-16"
+            className="relative isolate overflow-hidden border-x border-b border-border bg-muted/25 px-5 py-16 sm:px-8 md:px-12 md:py-24 lg:px-16"
           >
-            <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
-              <div>
-                <p className="review-label text-muted-foreground">Who it is for</p>
-                <h2 className="mt-5 max-w-2xl font-display text-3xl leading-tight text-balance sm:text-4xl md:text-5xl">
-                  A more personal way to experience Bali.
-                </h2>
-              </div>
-              <p className="max-w-sm text-sm leading-7 text-muted-foreground">
-                Start with what you want from the trip. We will use that context
-                to shape the recommendations around you or your group.
-              </p>
-            </div>
+            <Image
+              src="/images/solas-imagery/solas-guide-hero.png"
+              alt=""
+              fill
+              sizes="100vw"
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 z-0 object-cover object-center opacity-[0.28] grayscale-[0.2] saturate-75"
+            />
+            <div
+              className="pointer-events-none absolute inset-0 z-0 bg-muted/65"
+              aria-hidden="true"
+            />
 
-            <div className="mt-10 grid gap-px overflow-hidden border border-border bg-border md:grid-cols-2">
-              {[
-                {
-                  label: "For your trip",
-                  title: "For travellers looking for something more personal.",
-                  copy: "Whether you are travelling alone, as a couple or with friends, tell us how you want your time in Bali to feel and what you hope to get from it.",
-                  items: ["Personal wellness support", "Distinctive places to stay", "Experiences shaped around your interests"],
-                },
-                {
-                  label: "For your team",
-                  title: "For businesses planning meaningful time together.",
-                  copy: "Bring us the purpose, group, timing and budget for your retreat or offsite. We will help shape the people, setting and experiences around it.",
-                  items: ["Company and leadership retreats", "Venues for private groups", "Practitioners and guided experiences"],
-                },
-              ].map((audience) => (
-                <article key={audience.label} className="bg-card p-7 sm:p-9 lg:p-12">
-                  <p className="review-label text-accent">{audience.label}</p>
-                  <h3 className="mt-5 max-w-lg font-display text-3xl leading-tight md:text-4xl">
-                    {audience.title}
-                  </h3>
-                  <p className="mt-5 max-w-lg text-sm leading-7 text-muted-foreground">
-                    {audience.copy}
-                  </p>
-                  <ul className="mt-8 space-y-3 border-t border-border pt-6">
-                    {audience.items.map((item) => (
-                      <li key={item} className="flex items-start gap-3 text-sm leading-6">
-                        <span className="mt-2 size-1.5 shrink-0 rounded-full bg-accent" aria-hidden="true" />
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </article>
-              ))}
+            <div className="relative z-10">
+              <div
+                className="flex flex-col justify-between gap-6 md:flex-row md:items-end"
+              >
+                <div>
+                  <p className="review-label text-muted-foreground">Who it is for</p>
+                  <h2 className="mt-5 max-w-2xl font-display text-3xl leading-tight text-balance sm:text-4xl md:text-5xl">
+                    A more personal way to experience Bali.
+                  </h2>
+                </div>
+                <p className="max-w-sm text-sm leading-7 text-muted-foreground">
+                  Start with what you want from the trip. We will use that context
+                  to shape the recommendations around you or your group.
+                </p>
+              </div>
+
+              <div
+                className="mt-10 grid gap-px overflow-hidden border border-border bg-border md:grid-cols-2"
+              >
+                {[
+                  {
+                    label: "For your trip",
+                    title: "For travellers looking for something more personal.",
+                    copy: "Whether you are travelling alone, as a couple or with friends, tell us how you want your time in Bali to feel and what you hope to get from it.",
+                    items: ["Personal wellness support", "Distinctive places to stay", "Experiences shaped around your interests"],
+                  },
+                  {
+                    label: "For your team",
+                    title: "For businesses planning meaningful time together.",
+                    copy: "Bring us the purpose, group, timing and budget for your retreat or offsite. We will help shape the people, setting and experiences around it.",
+                    items: ["Company and leadership retreats", "Venues for private groups", "Practitioners and guided experiences"],
+                  },
+                ].map((audience) => (
+                  <article key={audience.label} className="bg-card p-7 sm:p-9 lg:p-12">
+                    <p className="review-label text-accent">{audience.label}</p>
+                    <h3 className="mt-5 max-w-lg font-display text-3xl leading-tight md:text-4xl">
+                      {audience.title}
+                    </h3>
+                    <p className="mt-5 max-w-lg text-sm leading-7 text-muted-foreground">
+                      {audience.copy}
+                    </p>
+                    <ul className="mt-8 space-y-3 border-t border-border pt-6">
+                      {audience.items.map((item) => (
+                        <li key={item} className="flex items-start gap-3 text-sm leading-6">
+                          <span className="mt-2 size-1.5 shrink-0 rounded-full bg-accent" aria-hidden="true" />
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </article>
+                ))}
+              </div>
             </div>
           </section>
 

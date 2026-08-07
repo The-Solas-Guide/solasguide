@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 export function BrandWordmark({
@@ -18,9 +19,21 @@ export function BrandWordmark({
       )}
     >
       <div>
-        <p className="font-display text-4xl leading-none md:text-5xl">
-          The Solas Guide
-        </p>
+        <div className="flex items-center justify-center gap-3">
+          <Image
+            src="/brand/solas-mark-pebble.png"
+            alt=""
+            width={44}
+            height={42}
+            className={cn(
+              "h-10 w-11 shrink-0 object-contain",
+              reversed && "brightness-0 invert",
+            )}
+          />
+          <p className="font-display text-4xl leading-none md:text-5xl">
+            The Solas Guide
+          </p>
+        </div>
         {caption && (
           <p
             className={cn(

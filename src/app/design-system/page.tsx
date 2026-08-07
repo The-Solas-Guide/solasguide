@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { DesignSystemReview } from "@/components/design-system/design-system-review";
 
 export const metadata: Metadata = {
-  title: "Design system review | The Solas Guide",
+  title: "Design system review",
   description: "Internal design-system review surface for The Solas Guide.",
   robots: { index: false, follow: false },
 };
