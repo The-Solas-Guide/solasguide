@@ -230,7 +230,12 @@ export function GuideIndex() {
   }
 
   return (
-    <section id="explore" aria-labelledby="guide-index-heading" className="border-x border-b border-border bg-card px-5 py-14 sm:px-8 md:px-12 md:py-20 lg:px-16">
+    <section
+      id="explore"
+      aria-labelledby="guide-index-heading"
+      className="border-x border-b border-border bg-card px-5 py-14 sm:px-8 md:px-12 md:py-20 lg:px-16"
+      data-reveal
+    >
       <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
         <div>
           <p className="review-label text-accent">Explore the guide</p>
