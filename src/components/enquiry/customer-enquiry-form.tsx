@@ -409,8 +409,8 @@ export function CustomerEnquiryForm() {
           </Link>
         </div>
 
-        <section className="mt-3 flex min-h-[700px] flex-col border border-border bg-background md:mt-0 md:h-[min(920px,calc(100vh-128px))] md:border-0 md:border-b">
-          <div className="px-5 py-4 sm:px-6 md:px-0">
+        <section className="mt-3 flex min-h-[700px] flex-col border border-border bg-background md:mt-0 md:h-[min(920px,calc(100vh-128px))]">
+          <div className="bg-transparent px-5 py-4 sm:px-6 md:px-0">
             <h1 className="font-display text-2xl leading-tight tracking-tight md:text-3xl">Tell us about your stay</h1>
             <div
               className="mt-3"
