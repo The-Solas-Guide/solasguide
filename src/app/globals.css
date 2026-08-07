@@ -97,6 +97,29 @@
   --review-section-space: clamp(4.5rem, 8vw, 7rem);
 }
 
+:root[data-theme="solas"] {
+  --background: #f9f8f7;
+  --foreground: #444444;
+  --card: #ffffff;
+  --card-foreground: #444444;
+  --popover: #f9f8f7;
+  --popover-foreground: #444444;
+  --primary: #444444;
+  --primary-foreground: #f9f8f7;
+  --secondary: #e0d0c9;
+  --secondary-foreground: #444444;
+  --muted: #e0d0c9;
+  --muted-foreground: #444444;
+  --accent: #716d64;
+  --accent-foreground: #f9f8f7;
+  --destructive: #7a2e2e;
+  --border: #d1b9b3;
+  --input: #716d64;
+  --ring: #716d64;
+  --radius: 0.125rem;
+  --review-section-space: clamp(5rem, 9vw, 8rem);
+}
+
 :root[data-type="classical"] {
   --font-display: Georgia, "Times New Roman", serif !important;
 }

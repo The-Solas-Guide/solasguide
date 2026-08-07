@@ -8,6 +8,7 @@ const THEMES = [
   { id: "aman", label: "Aman" },
   { id: "bambu", label: "Bambu" },
   { id: "chanel", label: "Chanel" },
+  { id: "solas", label: "Solas" },
 ] as const;
 
 type ThemeId = (typeof THEMES)[number]["id"];
@@ -91,7 +92,7 @@ export function ThemeReviewControl({
             <div>
               <p className="review-label">Review controls</p>
               <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-                Compare the same page across three candidate visual registers.
+                Compare the same page across four candidate visual registers.
               </p>
             </div>
             <button type="button" onClick={() => setOpen(false)} aria-label="Close review controls">

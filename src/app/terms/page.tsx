@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { LegalPage } from "@/components/layout/legal-page";
 
 export const metadata: Metadata = {
-  title: "Website terms (draft) | The Solas Guide",
+  title: "Website terms (draft)",
   description:
     "Draft placeholder website terms page for The Solas Guide. Client-approved content is pending.",
   robots: { index: false, follow: false },

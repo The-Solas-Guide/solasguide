@@ -8,7 +8,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "Become a practitioner | The Solas Guide",
+  title: "Become a practitioner",
   description: "Share a short introduction to your Bali practice with The Solas Guide.",
 };
 
