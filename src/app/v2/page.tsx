@@ -150,9 +150,9 @@ export default function HomePageV2() {
             </div>
           </section>
 
-          <RegistryStandards />
-
           <RegistryPreview />
+
+          <RegistryStandards />
 
           <section id="why-solas" className="border-x border-b border-border">
             <div className="grid gap-px bg-border md:grid-cols-[0.72fr_0.48fr_0.8fr]">
