@@ -28,7 +28,7 @@ export function SiteFooter() {
               How it works
             </Link>
             <Link href="/find-a-match" className={linkClassName}>
-              Tell us about your trip
+              Build Your Retreat
             </Link>
             <TrackedPractitionerLink
               source="footer"

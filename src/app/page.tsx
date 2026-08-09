@@ -73,7 +73,7 @@ export default function WebPage() {
                       "w-full border-background bg-background text-foreground hover:bg-background/85 sm:w-auto",
                     )}
                   >
-                    Tell us about your trip <ArrowRight />
+                    Build Your Retreat <ArrowRight />
                   </a>
                   <a
                     href="#how-it-works"
@@ -294,7 +294,7 @@ export default function WebPage() {
                 data-reveal
                 data-reveal-delay="1"
               >
-                Tell us about your trip <ArrowRight />
+                Build Your Retreat <ArrowRight />
               </Link>
             </div>
           </section>

@@ -8,12 +8,23 @@ import { Button } from "@/components/ui/button";
 import { TrackedPractitionerLink } from "@/components/analytics/tracked-practitioner-link";
 import { cn } from "@/lib/utils";
 
-const links = [
+const defaultLinks = [
   { label: "Explore", href: "/#explore" },
   { label: "How it works", href: "/#how-it-works" },
 ];
 
-export function SiteHeader({ className }: { className?: string }) {
+type NavLink = {
+  label: string;
+  href: string;
+};
+
+export function SiteHeader({
+  className,
+  links = defaultLinks,
+}: {
+  className?: string;
+  links?: readonly NavLink[];
+}) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -54,7 +65,7 @@ export function SiteHeader({ className }: { className?: string }) {
         </nav>
         <div className="hidden lg:block">
           <Button asChild>
-            <Link href="/find-a-match">Tell us about your trip</Link>
+            <Link href="/find-a-match">Build Your Retreat</Link>
           </Button>
         </div>
         <button
@@ -94,7 +105,7 @@ export function SiteHeader({ className }: { className?: string }) {
           </TrackedPractitionerLink>
           <Button asChild className="mt-3 w-full">
             <Link href="/find-a-match" onClick={() => setOpen(false)}>
-              Tell us about your trip
+              Build Your Retreat
             </Link>
           </Button>
         </nav>

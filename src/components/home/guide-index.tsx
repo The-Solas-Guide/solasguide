@@ -315,7 +315,7 @@ export function GuideIndex() {
 
         <div className="mt-5 flex justify-stretch sm:justify-end">
           <Link href="/find-a-match" className={cn(buttonVariants(), "w-full shrink-0 sm:w-auto")}>
-            Tell us about your trip <ArrowRight />
+            Build Your Retreat <ArrowRight />
           </Link>
         </div>
       </div>
