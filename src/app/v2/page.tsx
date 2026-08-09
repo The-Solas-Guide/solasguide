@@ -262,8 +262,23 @@ export default function HomePageV2() {
             </div>
           </section>
 
-          <section id="start" className="review-section border-x border-b border-border text-center">
-            <div className="mx-auto max-w-3xl px-6">
+          <section
+            id="start"
+            className="review-section relative isolate overflow-hidden border-x border-b border-border text-center"
+          >
+            <Image
+              src="/images/editorial/bali-rice-field-pavilion.webp"
+              alt=""
+              fill
+              sizes="100vw"
+              aria-hidden="true"
+              className="pointer-events-none -z-20 object-cover object-center opacity-[0.16] grayscale-[0.15] saturate-75"
+            />
+            <div
+              className="pointer-events-none absolute inset-0 -z-10 bg-background/82"
+              aria-hidden="true"
+            />
+            <div className="relative mx-auto max-w-3xl px-6">
               <p className="review-label text-muted-foreground">Begin with what you need</p>
               <h2 className="mt-5 font-display text-3xl leading-tight text-balance sm:text-5xl md:text-6xl">
                 Who are you hoping to find?
