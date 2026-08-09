@@ -17,39 +17,6 @@ export const metadata: Metadata = {
     "The Solas Guide is a trusted way to discover independently recognised, editorially profiled wellness practitioners in Bali — then make thoughtful introductions.",
 };
 
-const heroFacilitators = [
-  {
-    name: "Riza Sukman",
-    image: "/images/people/riza-sukman.jpg",
-    position: "object-[50%_20%]",
-  },
-  {
-    name: "Pablo Castro",
-    image: "/images/people/pablo-castro.jpg",
-    position: "object-[50%_18%]",
-  },
-  {
-    name: "Wayan Marcus Wistika",
-    image: "/images/people/marcus-wistika.jpg",
-    position: "object-[72%_center]",
-  },
-  {
-    name: "Pak Merta Ada",
-    image: "/images/people/pak-merta-ada.jpg",
-    position: "object-[50%_22%]",
-  },
-  {
-    name: "Cat Wheeler",
-    image: "/images/people/cat-wheeler.jpg",
-    position: "object-left",
-  },
-  {
-    name: "Ibu Jero",
-    image: "/images/people/ibu-jero.jpg",
-    position: "object-[50%_18%]",
-  },
-] as const;
-
 const v2NavLinks = [
   { label: "The Registry", href: "#registry" },
   { label: "Recognition", href: "#recognition" },
@@ -73,26 +40,14 @@ export default function HomePageV2() {
             aria-labelledby="v2-hero-heading"
             className="relative mt-3 min-h-[min(760px,calc(100svh-2rem))] overflow-hidden border border-border bg-card"
           >
-            <div
-              className="absolute inset-0 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6"
-              aria-hidden="true"
-            >
-              {heroFacilitators.map((facilitator, index) => (
-                <div key={facilitator.name} className="relative min-h-0 overflow-hidden">
-                  <Image
-                    src={facilitator.image}
-                    alt=""
-                    fill
-                    preload={index < 2}
-                    className={cn(
-                      "object-cover motion-safe:scale-[1.02] motion-safe:transition-transform motion-safe:duration-[1.4s] motion-safe:ease-out",
-                      facilitator.position,
-                    )}
-                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 17vw"
-                  />
-                </div>
-              ))}
-            </div>
+            <Image
+              src="/images/editorial/solas-hero-pavilion.webp"
+              alt=""
+              fill
+              preload
+              className="object-cover object-[68%_center] motion-safe:scale-[1.01] motion-safe:transition-transform motion-safe:duration-[1.4s] motion-safe:ease-out md:object-center"
+              sizes="100vw"
+            />
             <div
               className="absolute inset-0 bg-foreground/25"
               aria-hidden="true"
@@ -161,10 +116,10 @@ export default function HomePageV2() {
                 data-reveal
               >
                 <Image
-                  src="/images/people/riza-sukman.jpg"
-                  alt="Portrait of a Solas facilitator"
+                  src="/images/editorial/weathered-threshold.webp"
+                  alt="A rain-darkened teak doorway opening onto a stone threshold"
                   fill
-                  className="object-cover object-[50%_20%]"
+                  className="object-cover object-center"
                   sizes="(max-width: 768px) 100vw, 33vw"
                 />
               </div>
@@ -174,10 +129,10 @@ export default function HomePageV2() {
                 data-reveal-delay="1"
               >
                 <Image
-                  src="/images/people/ibu-jero.jpg"
-                  alt="Portrait of a Solas facilitator"
+                  src="/images/editorial/practice-preparation.webp"
+                  alt="Hands preparing a notebook and natural materials on a teak table"
                   fill
-                  className="object-cover object-[50%_18%]"
+                  className="object-cover object-center"
                   sizes="(max-width: 768px) 100vw, 25vw"
                 />
               </div>
@@ -235,6 +190,8 @@ export default function HomePageV2() {
                   label: "For your time in Bali",
                   title: "Looking for someone whose work fits what you need.",
                   copy: "Whether you are travelling alone, as a couple or with friends, share the kind of support or practice you are hoping to find. We will recommend from the recognised Solas register.",
+                  image: "/images/editorial/guided-introduction.webp",
+                  imageAlt: "Two people walking towards an open-air pavilion",
                   items: [
                     "Recognised facilitators across modalities",
                     "Clear context before you decide",
@@ -245,6 +202,8 @@ export default function HomePageV2() {
                   label: "For your group or retreat",
                   title: "Planning meaningful time around the right people.",
                   copy: "Share the purpose, group and timing. We will help you consider the facilitators first — then the places and experiences that can support what you are creating.",
+                  image: "/images/editorial/bali-rice-field-pavilion.webp",
+                  imageAlt: "A timber pavilion beside a rain-fed rice field",
                   items: [
                     "Facilitators suited to your group",
                     "Settings that can hold the work",
@@ -253,6 +212,15 @@ export default function HomePageV2() {
                 },
               ].map((audience) => (
                 <article key={audience.label} className="bg-background p-7 sm:p-9 lg:p-12">
+                  <div className="relative mb-8 aspect-[16/10] overflow-hidden bg-muted">
+                    <Image
+                      src={audience.image}
+                      alt={audience.imageAlt}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 767px) calc(100vw - 68px), 50vw"
+                    />
+                  </div>
                   <p className="review-label text-accent">{audience.label}</p>
                   <h3 className="mt-5 max-w-lg font-display text-3xl leading-tight md:text-4xl">
                     {audience.title}
