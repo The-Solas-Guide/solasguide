@@ -272,10 +272,10 @@ export default function HomePageV2() {
               fill
               sizes="100vw"
               aria-hidden="true"
-              className="pointer-events-none -z-20 object-cover object-center opacity-[0.16] grayscale-[0.15] saturate-75"
+              className="pointer-events-none -z-20 object-cover object-center opacity-[0.26] grayscale-[0.1] saturate-90"
             />
             <div
-              className="pointer-events-none absolute inset-0 -z-10 bg-background/82"
+              className="pointer-events-none absolute inset-0 -z-10 bg-background/74"
               aria-hidden="true"
             />
             <div className="relative mx-auto max-w-3xl px-6">
