@@ -13,7 +13,7 @@ test.describe("homepage", () => {
 
     const sections = [
       "Why The Solas Guide Exists",
-      "Why you can trust who we introduce.",
+      "Recognition is earned. Not purchased.",
       "Facilitators recognised for the depth of their work.",
       "Who the Guide is for",
       "Need help choosing?",
