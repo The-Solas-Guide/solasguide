@@ -179,7 +179,7 @@ export function DesignSystemReview() {
             <SectionHeading index="04 — Type and identity" title="Editorial rhythm with direct interface copy" note="Fraunces gives the guide a recognisable reading voice. Inter keeps navigation, labels, and form controls precise. The wordmark remains provisional until client approval." />
             <div className="mt-12 grid gap-12 lg:grid-cols-[1.2fr_0.8fr]">
               <div className="space-y-12">
-                <div><p className="review-label text-muted-foreground">Display · Fraunces</p><p className="mt-4 font-display text-5xl leading-[1.02] md:text-7xl">The standard was earned, not claimed.</p></div>
+                <div><p className="review-label text-muted-foreground">Display · Barlow Condensed</p><p className="mt-4 font-display text-5xl leading-[1.02] md:text-7xl">The standard was earned, not claimed.</p></div>
                 <div><p className="review-label text-muted-foreground">Body · Inter</p><p className="review-prose mt-4">The Solas Guide begins with a structured enquiry and a personal review. Specific context matters more than broad promises.</p></div>
                 <div className="border-l-2 border-accent pl-7"><p className="font-display text-2xl italic md:text-3xl">“The site should feel established, calm, and specific.”</p><p className="review-label mt-4 text-muted-foreground">Working design interpretation</p></div>
               </div>

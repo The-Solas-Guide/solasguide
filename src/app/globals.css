@@ -189,6 +189,7 @@ footer a:focus-visible {
 
 .font-display {
   font-family: var(--font-display);
+  font-weight: 100;
   letter-spacing: -0.02em;
 }
 

@@ -12,7 +12,7 @@ export function SiteFooter() {
         <div>
           <BrandWordmark
             reversed
-            className="min-h-0 justify-start bg-transparent p-0 text-left [&_p:first-child]:text-3xl"
+            className="min-h-0 justify-start bg-transparent p-0 text-left [&>div]:items-start"
           />
           <div className="mt-4 max-w-md space-y-3 text-sm leading-relaxed text-background/65">
             <p>
