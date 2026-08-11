@@ -409,11 +409,9 @@ export function CustomerEnquiryForm() {
           </Link>
         </div>
 
-        <section className="mt-3 flex min-h-[700px] flex-col border border-border bg-background md:mt-0 md:h-[min(920px,calc(100vh-128px))]">
-          <div className="bg-transparent px-5 py-4 sm:px-6 md:px-0">
-            <h1 className="font-display text-2xl leading-tight tracking-tight md:text-3xl">Tell us about your stay</h1>
+        <section className="mt-3 flex min-h-[700px] flex-col md:mt-0 md:h-[min(920px,calc(100vh-128px))]">
+          <div className="mb-3 bg-transparent">
             <div
-              className="mt-3"
               role="progressbar"
               aria-label="Enquiry progress"
               aria-valuemin={1}
@@ -426,7 +424,7 @@ export function CustomerEnquiryForm() {
                   style={{ width: `${((index + 1) / steps.length) * 100}%` }}
                 />
               </div>
-              <div className="mt-2 flex flex-wrap justify-between gap-x-4 gap-y-1 text-[9px] uppercase tracking-[0.16em] text-muted-foreground">
+              <div className="mt-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
                 <span>
                   Step {index + 1} of {steps.length}
                 </span>
@@ -435,7 +433,7 @@ export function CustomerEnquiryForm() {
             </div>
           </div>
 
-          <div className="grid min-h-0 flex-1 border-t border-border md:grid-cols-[minmax(260px,0.78fr)_minmax(0,1.22fr)]">
+          <div className="grid min-h-0 flex-1 border border-border bg-background md:grid-cols-[minmax(260px,0.78fr)_minmax(0,1.22fr)]">
             <aside
               className={cn(
                 "relative min-h-56 overflow-hidden bg-foreground text-background sm:min-h-64",
@@ -460,13 +458,13 @@ export function CustomerEnquiryForm() {
             </aside>
 
             <div className="scrollbar-none flex min-h-0 flex-col overflow-y-auto p-5 sm:p-6 md:p-8 lg:p-10">
-              <h2
+              <h1
                 ref={headingRef}
                 tabIndex={-1}
                 className="max-w-xl font-display text-xl leading-tight text-balance outline-none md:text-3xl"
               >
                 {copy.title}
-              </h2>
+              </h1>
               {error && (
                 <div ref={errorRef} tabIndex={-1} className="outline-none">
                   <FormFeedback
