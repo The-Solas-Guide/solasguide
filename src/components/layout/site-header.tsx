@@ -32,18 +32,16 @@ export function SiteHeader({
       <div className="flex min-h-20 items-center justify-between gap-4 px-5 md:gap-6 md:px-7">
         <Link
           href="/"
-          className="min-w-0 font-display text-xl leading-none tracking-tight sm:text-2xl"
+          className="min-w-0 shrink-0"
         >
-          <span className="flex items-center gap-2">
-            <Image
-              src="/brand/solas-mark-pebble.png"
-              alt=""
-              width={32}
-              height={30}
-              className="h-7 w-8 shrink-0 object-contain"
-            />
-            <span>The Solas Guide</span>
-          </span>
+          <Image
+            src="/brand/solas-logo-4-pebble.png"
+            alt="The Solas Guide"
+            width={1600}
+            height={606}
+            priority
+            className="h-auto w-[132px] sm:w-[156px]"
+          />
         </Link>
         <nav aria-label="Primary navigation" className="hidden items-center gap-7 lg:flex">
           {links.map((link) => (

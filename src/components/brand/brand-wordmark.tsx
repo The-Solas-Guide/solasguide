@@ -18,22 +18,17 @@ export function BrandWordmark({
         className,
       )}
     >
-      <div>
-        <div className="flex items-center justify-center gap-3">
-          <Image
-            src="/brand/solas-mark-pebble.png"
-            alt=""
-            width={44}
-            height={42}
-            className={cn(
-              "h-10 w-11 shrink-0 object-contain",
-              reversed && "brightness-0 invert",
-            )}
-          />
-          <p className="font-display text-4xl leading-none md:text-5xl">
-            The Solas Guide
-          </p>
-        </div>
+      <div className="flex flex-col items-center">
+        <Image
+          src="/brand/solas-logo-4-pebble.png"
+          alt="The Solas Guide"
+          width={1600}
+          height={606}
+          className={cn(
+            "h-auto w-[220px] md:w-[260px]",
+            reversed && "brightness-0 invert",
+          )}
+        />
         {caption && (
           <p
             className={cn(
