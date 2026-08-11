@@ -14,35 +14,39 @@ export function SiteFooter() {
             reversed
             className="min-h-0 justify-start bg-transparent p-0 text-left [&_p:first-child]:text-3xl"
           />
-          <p className="mt-4 max-w-sm text-sm leading-relaxed text-background/65">
-            A curated network of practitioners, places and experiences in Bali.
-          </p>
+          <div className="mt-4 max-w-md space-y-3 text-sm leading-relaxed text-background/65">
+            <p>
+              The Solas Guide is an independent editorial publication recognising exceptional wellness practitioners through a transparent review process combining independent due diligence with editorial judgement.
+            </p>
+            <p>Volume One features practitioners working across Bali.</p>
+            <p>Future editions will recognise practitioners in other regions.</p>
+          </div>
         </div>
         <div>
           <p className="review-label text-background/50">Explore</p>
           <div className="mt-4 grid gap-1 text-background/85">
-            <Link href="/#explore" className={linkClassName}>
-              Explore the guide
+            <Link href="/#registry" className={linkClassName}>
+              Browse the Guide
             </Link>
-            <Link href="/#how-it-works" className={linkClassName}>
-              How it works
+            <Link href="/#recognition" className={linkClassName}>
+              How Recognition Works
             </Link>
             <Link href="/find-a-match" className={linkClassName}>
-              Build Your Retreat
+              Start Questionnaire
             </Link>
             <TrackedPractitionerLink
               source="footer"
               href="/become-a-practitioner"
               className={linkClassName}
             >
-              Become a practitioner
+              Apply for Recognition
             </TrackedPractitionerLink>
           </div>
         </div>
         <div>
           <p className="review-label text-background/50">Contact</p>
           <div className="mt-4 grid gap-1 text-background/85">
-            <Link href="/#start" className={linkClassName}>
+            <Link href="/#questionnaire" className={linkClassName}>
               Begin your enquiry
             </Link>
           </div>

@@ -65,7 +65,7 @@ export function SiteHeader({
         </nav>
         <div className="hidden lg:block">
           <Button asChild>
-            <Link href="/find-a-match">Build Your Retreat</Link>
+            <Link href="/find-a-match">Start Questionnaire</Link>
           </Button>
         </div>
         <button
@@ -105,7 +105,7 @@ export function SiteHeader({
           </TrackedPractitionerLink>
           <Button asChild className="mt-3 w-full">
             <Link href="/find-a-match" onClick={() => setOpen(false)}>
-              Build Your Retreat
+              Start Questionnaire
             </Link>
           </Button>
         </nav>
