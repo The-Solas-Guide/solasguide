@@ -1,5 +1,10 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { FatalError, RetryableError, getStepMetadata } from "workflow";
+import {
+  CUSTOMER_QUESTIONNAIRE_FORM_VERSION,
+  customerQuestionnaireLabel,
+  customerQuestionnaireOptions,
+} from "@/lib/enquiries/customer-questionnaire";
 import type { Database, Json } from "@/types/database";
 
 const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID;
@@ -31,6 +36,10 @@ const AIRTABLE = {
       practices: "fldU2iJgWyQe9wqN3",
       budget: "fldpJLzOrO8HEzmZe",
       additionalContext: "fld7eU2fiIYsbgFKn",
+      reasonForEnquiry: "fld1SkYYFHVWVS5vm",
+      lookingFor: "fld4VREmRcgNxjjqV",
+      supportAreas: "fldZ24tJovF4pJzna",
+      connectionTiming: "fldJE2lMOO8jFQADG",
       testRecord: "fldEN7U0OR9bF1e2s",
     },
   },
@@ -91,6 +100,12 @@ function answerStrings(answers: Json, key: string): string[] | undefined {
   return values.length > 0 ? values : undefined;
 }
 
+function answerNumber(answers: Json, key: string): number | undefined {
+  if (!isRecord(answers)) return undefined;
+  const value = answers[key];
+  return typeof value === "number" ? value : undefined;
+}
+
 function label(value: string | undefined, labels: Record<string, string>): string | undefined {
   return value ? labels[value] : undefined;
 }
@@ -101,6 +116,7 @@ function contactPreference(value: string) {
 
 function customerFields(row: Database["public"]["Tables"]["customer_enquiries"]["Row"], isTestRecord: boolean) {
   const answers = row.questionnaire_answers;
+  const isV3 = answerNumber(answers, "formVersion") === CUSTOMER_QUESTIONNAIRE_FORM_VERSION;
   const groupSize = answerString(answers, "groupSize");
   const groupSizeNumber = groupSize && /^\d+$/.test(groupSize) ? Number(groupSize) : undefined;
   const fields = AIRTABLE.customer_enquiry.fields;
@@ -177,7 +193,19 @@ function customerFields(row: Database["public"]["Tables"]["customer_enquiries"][
       unsure: "Unsure",
       discuss: "Discuss",
     }),
-    [fields.additionalContext]: answerString(answers, "notes"),
+    [fields.reasonForEnquiry]: isV3
+      ? label(answerString(answers, "q1"), Object.fromEntries(customerQuestionnaireOptions.q1.map((option) => [option.value, option.label])))
+      : undefined,
+    [fields.lookingFor]: isV3
+      ? label(answerString(answers, "q2"), Object.fromEntries(customerQuestionnaireOptions.q2.map((option) => [option.value, option.label])))
+      : undefined,
+    [fields.supportAreas]: isV3
+      ? answerStrings(answers, "q3")?.map((item) => customerQuestionnaireLabel("q3", item)).join("\n")
+      : undefined,
+    [fields.connectionTiming]: isV3
+      ? label(answerString(answers, "q4"), Object.fromEntries(customerQuestionnaireOptions.q4.map((option) => [option.value, option.label])))
+      : undefined,
+    [fields.additionalContext]: isV3 ? answerString(answers, "q5") : answerString(answers, "notes"),
     [fields.testRecord]: isTestRecord,
   });
 }

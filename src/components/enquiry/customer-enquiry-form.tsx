@@ -3,7 +3,7 @@
 import { track } from "@vercel/analytics";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, Check, Mail, MessageCircle, Pencil, Users } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Pencil } from "lucide-react";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { FormChoiceCard } from "@/components/forms/form-choice-card";
 import { FormFeedback } from "@/components/forms/form-feedback";
@@ -11,142 +11,101 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  CUSTOMER_QUESTIONNAIRE_FORM_VERSION,
+  customerQuestionnaireOptions,
+  customerQuestionnaireQuestions,
+  isValidWhatsappNumber,
+} from "@/lib/enquiries/customer-questionnaire";
 import { cn } from "@/lib/utils";
 
-type JourneyStep =
-  | "outcomes"
-  | "need"
-  | "extras"
-  | "timing"
-  | "location"
-  | "group"
-  | "modalities"
-  | "budget"
-  | "notes"
-  | "contact"
-  | "review";
-type Choice = { value: string; label: string; description?: string };
+type JourneyStep = "q1" | "q2" | "q3" | "q4" | "q5" | "contact" | "review";
+type Choice = { value: string; label: string };
 type Draft = {
   submissionToken: string;
-  outcomes: string[];
-  primaryNeed: string;
-  extras: string[];
-  timing: string;
-  startDate: string;
-  endDate: string;
-  location: string;
-  locationDetail: string;
-  group: string;
-  groupSize: string;
-  organizationName: string;
-  modalities: string[];
-  budget: string;
-  notes: string;
+  q1: string;
+  q2: string;
+  q3: string[];
+  q4: string;
+  q5: string;
 };
 
 const steps: { key: JourneyStep; eyebrow: string; title: string }[] = [
-  { key: "outcomes", eyebrow: "What matters", title: "What would you like from your time in Bali?" },
-  { key: "need", eyebrow: "Where to begin", title: "What would you most like help finding?" },
-  { key: "extras", eyebrow: "The wider plan", title: "Would anything else be useful?" },
-  { key: "timing", eyebrow: "Your timing", title: "When are you planning to be in Bali?" },
-  { key: "location", eyebrow: "The setting", title: "Where will you be based?" },
-  { key: "group", eyebrow: "Who is coming", title: "Who are you planning for?" },
-  { key: "modalities", eyebrow: "Your interests", title: "Are there any practices you are drawn to?" },
-  { key: "budget", eyebrow: "Practical context", title: "How are you thinking about your total wellness budget?" },
-  { key: "notes", eyebrow: "Anything else", title: "What else would help us understand your plans?" },
-  { key: "contact", eyebrow: "Your details", title: "How should we follow up?" },
+  ...customerQuestionnaireQuestions.map((question, index) => ({
+    key: question.key,
+    eyebrow: `Question ${index + 1}`,
+    title: question.title,
+  })),
+  { key: "contact", eyebrow: "Your details", title: "How can we contact you?" },
   { key: "review", eyebrow: "Review", title: "Check your enquiry before sending it." },
 ];
+const DRAFT_KEY = "solas-customer-enquiry-draft-v3";
+const LEGACY_DRAFT_KEY = "solas-customer-enquiry-draft-v2";
+const TAB_ID_KEY = "solas-customer-enquiry-tab-id";
+const TAB_NAME_PREFIX = "solas-customer-enquiry:";
+const CHANGED_SUBMISSION_ERROR = "This enquiry was already saved with different details. Please start a new enquiry.";
 
-const outcomeChoices: Choice[] = [
-  { value: "rest-reset", label: "Rest and reset", description: "Slow down, recover, and create space." },
-  { value: "physical-wellbeing", label: "Support my physical wellbeing", description: "Movement, bodywork, or restorative care." },
-  { value: "personal-support", label: "Find personal support", description: "Thoughtful one-to-one guidance for what you need now." },
-  { value: "local-practices", label: "Explore local practices", description: "Learn with relevant people and traditions in Bali." },
-  { value: "connection", label: "Connect and celebrate", description: "Create something meaningful with other people." },
-  { value: "retreat-team", label: "Shape a retreat or team experience", description: "Bring the right people, place, and programme together." },
-  { value: "exploring", label: "I am still exploring" },
-];
-const needChoices: Choice[] = [
-  { value: "practitioner", label: "A practitioner", description: "A credible person or practice suited to your context." },
-  { value: "venue", label: "A venue or place", description: "A considered setting for a stay, retreat, or gathering." },
-  { value: "experience", label: "An experience", description: "Something personal, restorative, or shared." },
-  { value: "event", label: "An event", description: "A workshop, gathering, or guided programme." },
-];
-const timingChoices: Choice[] = [
-  { value: "dates-known", label: "I know my dates" },
-  { value: "month", label: "Within the next month" },
-  { value: "season", label: "In the next few months" },
-  { value: "later", label: "Later this year" },
-  { value: "planning", label: "I am still planning" },
-];
-const locationChoices: Choice[] = [
-  { value: "ubud", label: "Ubud" },
-  { value: "canggu", label: "Canggu or Seminyak" },
-  { value: "south", label: "South Bali" },
-  { value: "east-north", label: "East or North Bali" },
-  { value: "moving", label: "Moving between areas" },
-  { value: "undecided", label: "I have not decided yet" },
-];
-const groupChoices: Choice[] = [
-  { value: "solo", label: "Just me" },
-  { value: "pair", label: "Me and a partner or friend" },
-  { value: "small-group", label: "A small group" },
-  { value: "retreat", label: "A retreat or larger group" },
-  { value: "business", label: "A business or organisation" },
-  { value: "unsure", label: "I am not sure yet" },
-];
-const budgetChoices: Choice[] = [
-  { value: "considered", label: "I have a considered budget", description: "I want relevant options within a clear overall spend." },
-  { value: "flexible", label: "I can be flexible for the right fit", description: "The people and experience matter more than a fixed figure today." },
-  { value: "substantial", label: "I am planning something substantial", description: "This may involve a group, venue, or broader programme." },
-  { value: "unsure", label: "I am not sure yet" },
-  { value: "discuss", label: "I would prefer to discuss it" },
-];
-const modalityChoices: Choice[] = [
-  "Yoga",
-  "Breathwork",
-  "Meditation",
-  "Sound practice",
-  "Bodywork",
-  "Movement",
-  "Balinese practices",
-  "Retreat facilitation",
-].map((label) => ({ value: label.toLowerCase().replaceAll(" ", "-"), label }));
-
-const DRAFT_KEY = "solas-customer-enquiry-draft-v2";
-const DRAFT_TTL = 24 * 60 * 60 * 1000;
+function createSubmissionToken() {
+  if (typeof crypto.randomUUID === "function") return crypto.randomUUID();
+  const bytes = crypto.getRandomValues(new Uint8Array(16));
+  bytes[6] = (bytes[6] & 0x0f) | 0x40;
+  bytes[8] = (bytes[8] & 0x3f) | 0x80;
+  const value = Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
+  return `${value.slice(0, 8)}-${value.slice(8, 12)}-${value.slice(12, 16)}-${value.slice(16, 20)}-${value.slice(20)}`;
+}
 
 function emptyDraft(): Draft {
   return {
-    submissionToken: crypto.randomUUID(),
-    outcomes: [],
-    primaryNeed: "",
-    extras: [],
-    timing: "",
-    startDate: "",
-    endDate: "",
-    location: "",
-    locationDetail: "",
-    group: "",
-    groupSize: "",
-    organizationName: "",
-    modalities: [],
-    budget: "",
-    notes: "",
+    submissionToken: createSubmissionToken(),
+    q1: "",
+    q2: "",
+    q3: [],
+    q4: "",
+    q5: "",
   };
+}
+
+function isDraft(value: unknown): value is Draft {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+  const draft = value as Partial<Draft>;
+  return typeof draft.submissionToken === "string" &&
+    typeof draft.q1 === "string" &&
+    typeof draft.q2 === "string" &&
+    Array.isArray(draft.q3) &&
+    draft.q3.every((item) => typeof item === "string") &&
+    typeof draft.q4 === "string" &&
+    typeof draft.q5 === "string";
 }
 
 function initialDraft(): Draft {
   if (typeof window === "undefined") {
-    return { ...emptyDraft(), submissionToken: "00000000-0000-4000-8000-000000000000" };
+    return {
+      submissionToken: "00000000-0000-4000-8000-000000000000",
+      q1: "",
+      q2: "",
+      q3: [],
+      q4: "",
+      q5: "",
+    };
   }
   try {
-    const saved = JSON.parse(localStorage.getItem(DRAFT_KEY) || "null") as
-      | { expiresAt?: number; draft?: Draft }
-      | null;
-    if (saved?.draft && saved.expiresAt && saved.expiresAt > Date.now()) return saved.draft;
-    localStorage.removeItem(DRAFT_KEY);
+    localStorage.removeItem(LEGACY_DRAFT_KEY);
+    const storedTabId = sessionStorage.getItem(TAB_ID_KEY);
+    const windowTabId = window.name.startsWith(TAB_NAME_PREFIX)
+      ? window.name.slice(TAB_NAME_PREFIX.length)
+      : null;
+    const tabId = storedTabId && storedTabId === windowTabId
+      ? storedTabId
+      : createSubmissionToken();
+    sessionStorage.setItem(TAB_ID_KEY, tabId);
+    window.name = `${TAB_NAME_PREFIX}${tabId}`;
+    if (storedTabId && storedTabId !== windowTabId) {
+      sessionStorage.removeItem(DRAFT_KEY);
+      return emptyDraft();
+    }
+    const saved = JSON.parse(sessionStorage.getItem(DRAFT_KEY) || "null") as unknown;
+    if (isDraft(saved)) return saved;
+    sessionStorage.removeItem(DRAFT_KEY);
   } catch {
     /* Start fresh when a browser draft cannot be read. */
   }
@@ -157,18 +116,30 @@ function ChoiceGrid({
   choices,
   selected,
   onToggle,
+  selectionType,
+  name,
+  label,
 }: {
-  choices: Choice[];
+  choices: readonly Choice[];
   selected: string[];
   onToggle: (value: string) => void;
+  selectionType: "radio" | "checkbox";
+  name: string;
+  label: string;
 }) {
   return (
-    <div className="grid gap-3 sm:grid-cols-2" role="group">
+    <div
+      className="grid gap-3 sm:grid-cols-2"
+      role={selectionType === "radio" ? "radiogroup" : "group"}
+      aria-label={label}
+    >
       {choices.map((choice) => (
         <FormChoiceCard
           key={choice.value}
           label={choice.label}
-          description={choice.description}
+          value={choice.value}
+          name={name}
+          selectionType={selectionType}
           selected={selected.includes(choice.value)}
           onClick={() => onToggle(choice.value)}
         />
@@ -177,8 +148,12 @@ function ChoiceGrid({
   );
 }
 
-function labels(values: string[], choices: Choice[]) {
-  return values.map((value) => choices.find((choice) => choice.value === value)?.label ?? value).join(", ") || "None selected";
+function labelFor(value: string, choices: readonly Choice[]) {
+  return choices.find((choice) => choice.value === value)?.label ?? value;
+}
+
+function labels(values: string[], choices: readonly Choice[]) {
+  return values.map((value) => labelFor(value, choices)).join(", ") || "Nothing selected";
 }
 
 export function CustomerEnquiryForm() {
@@ -187,19 +162,19 @@ export function CustomerEnquiryForm() {
     () => true,
     () => false,
   );
-  const [step, setStep] = useState<JourneyStep>("outcomes");
+  const [step, setStep] = useState<JourneyStep>("q1");
   const [draft, setDraft] = useState<Draft>(initialDraft);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [contactPreference, setContactPreference] = useState<"email" | "whatsapp" | "phone">("email");
+  const [whatsapp, setWhatsapp] = useState("");
   const [consent, setConsent] = useState(false);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [tokenConflict, setTokenConflict] = useState(false);
   const [returnToReview, setReturnToReview] = useState(false);
   const [website, setWebsite] = useState("");
-  const [startedAt] = useState(() => Date.now());
+  const [startedAt, setStartedAt] = useState(() => Date.now());
   const headingRef = useRef<HTMLHeadingElement>(null);
   const errorRef = useRef<HTMLDivElement>(null);
   const started = useRef(false);
@@ -208,75 +183,45 @@ export function CustomerEnquiryForm() {
   useEffect(() => {
     if (!draftStorageActive.current) return;
     try {
-      localStorage.setItem(DRAFT_KEY, JSON.stringify({ expiresAt: Date.now() + DRAFT_TTL, draft }));
+      sessionStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
     } catch {
       /* The form remains usable when browser storage is unavailable. */
     }
   }, [draft]);
   useEffect(() => {
-    headingRef.current?.focus();
-  }, [step]);
+    if (hydrated) headingRef.current?.focus({ preventScroll: true });
+  }, [hydrated, step, submitted]);
   useEffect(() => {
     if (error) errorRef.current?.focus();
   }, [error]);
-  useEffect(() => {
-    const expiryTimer = window.setTimeout(() => {
-      draftStorageActive.current = false;
-      try {
-        localStorage.removeItem(DRAFT_KEY);
-      } catch {
-        /* Storage may be unavailable. */
-      }
-    }, DRAFT_TTL);
-    return () => window.clearTimeout(expiryTimer);
-  }, []);
 
   if (!hydrated) return <main className="min-h-screen bg-muted/40" aria-busy="true" />;
 
   const index = steps.findIndex((item) => item.key === step);
   const copy = steps[index];
-  const requiresGroupSize = ["small-group", "retreat", "business"].includes(draft.group);
   const set = <K extends keyof Draft>(key: K, value: Draft[K]) =>
     setDraft((current) => ({ ...current, [key]: value }));
-  const toggle = (key: "outcomes" | "extras" | "modalities", value: string, limit?: number) => {
-    const current = draft[key];
-    if (current.includes(value)) return set(key, current.filter((item) => item !== value));
-    if (limit && current.length >= limit) return setError(`Choose up to ${limit} options.`);
+
+  function toggleQuestion(value: string) {
+    const current = draft.q3;
     setError("");
-    set(key, [...current, value]);
-  };
-  const select = (key: "primaryNeed" | "timing" | "location" | "group" | "budget", value: string) => {
+    set("q3", current.includes(value) ? current.filter((item) => item !== value) : [...current, value]);
+  }
+
+  function selectQuestion(key: "q1" | "q2" | "q4", value: string) {
     setError("");
-    if (key === "primaryNeed") set("extras", draft.extras.filter((item) => item !== value));
-    if (key === "group" && !["small-group", "retreat", "business"].includes(value)) set("groupSize", "");
-    if (key === "group" && value !== "business") set("organizationName", "");
     set(key, value);
-  };
+  }
 
   function validateCurrent() {
-    if (step === "outcomes" && draft.outcomes.length < 1) return "Choose at least one outcome.";
-    if (step === "need" && !draft.primaryNeed) return "Choose where you would most like us to begin.";
-    if (step === "timing" && !draft.timing) return "Choose a timing option.";
-    if (step === "timing" && draft.timing === "dates-known" && (!draft.startDate || !draft.endDate)) {
-      return "Add your arrival and departure dates.";
-    }
-    if (step === "timing" && draft.timing === "dates-known" && draft.endDate < draft.startDate) {
-      return "Your departure must be after your arrival.";
-    }
-    if (step === "location" && !draft.location) return "Choose where you expect to be based.";
-    if (step === "group" && !draft.group) return "Tell us who you are planning for.";
-    if (step === "group" && requiresGroupSize && Number(draft.groupSize) < 1) {
-      return "Add an approximate group size.";
-    }
-    if (step === "group" && draft.group === "business" && !draft.organizationName.trim()) {
-      return "Add the business or organisation name.";
-    }
-    if (step === "budget" && !draft.budget) return "Choose the closest budget option.";
-    if (step === "contact" && (!name.trim() || !/^\S+@\S+\.\S+$/.test(email))) {
-      return "Add your name and a valid email address.";
-    }
-    if (step === "contact" && contactPreference !== "email" && !phone.trim()) {
-      return "Add a phone number for phone or WhatsApp follow-up.";
+    if (step === "q1" && !draft.q1) return "Choose what brings you to The Solas Guide today.";
+    if (step === "q2" && !draft.q2) return "Choose who you are looking for.";
+    if (step === "q3" && draft.q3.length < 1) return "Choose at least one area.";
+    if (step === "q4" && !draft.q4) return "Choose when you hope to connect.";
+    if (step === "contact") {
+      if (!name.trim()) return "Enter your name.";
+      if (!/^\S+@\S+\.\S+$/.test(email.trim())) return "Enter a valid email address.";
+      if (!isValidWhatsappNumber(whatsapp.trim())) return "Add a valid WhatsApp number.";
     }
     return "";
   }
@@ -303,6 +248,27 @@ export function CustomerEnquiryForm() {
     if (index > 0) setStep(steps[index - 1].key);
   }
 
+  function startNewEnquiry() {
+    draftStorageActive.current = true;
+    try {
+      sessionStorage.removeItem(DRAFT_KEY);
+    } catch {
+      /* Storage may be unavailable. */
+    }
+    setDraft(emptyDraft());
+    setStep("q1");
+    setName("");
+    setEmail("");
+    setWhatsapp("");
+    setConsent(false);
+    setError("");
+    setTokenConflict(false);
+    setReturnToReview(false);
+    setWebsite("");
+    setStartedAt(Date.now());
+    started.current = false;
+  }
+
   async function submit() {
     if (!consent) {
       setError("Confirm that we may use these details to respond to your enquiry.");
@@ -310,6 +276,7 @@ export function CustomerEnquiryForm() {
     }
     setSubmitting(true);
     setError("");
+    setTokenConflict(false);
     try {
       const response = await fetch("/api/enquiries/customer", {
         method: "POST",
@@ -320,16 +287,27 @@ export function CustomerEnquiryForm() {
           website,
           fullName: name,
           email,
-          phone,
-          contactPreference,
+          phone: whatsapp,
+          contactPreference: "whatsapp",
           consentConfirmed: consent,
-          answers: { formVersion: 2, ...draft, submissionToken: undefined },
+          answers: {
+            formVersion: CUSTOMER_QUESTIONNAIRE_FORM_VERSION,
+            q1: draft.q1,
+            q2: draft.q2,
+            q3: draft.q3,
+            q4: draft.q4,
+            q5: draft.q5,
+          },
         }),
       });
       const result = (await response.json()) as { ok?: boolean; error?: string };
-      if (!response.ok || !result.ok) throw new Error(result.error || "We could not send your enquiry.");
+      if (!response.ok || !result.ok) {
+        if (response.status === 409 && result.error === CHANGED_SUBMISSION_ERROR) setTokenConflict(true);
+        throw new Error(result.error || "We could not send your enquiry.");
+      }
       try {
-        localStorage.removeItem(DRAFT_KEY);
+        draftStorageActive.current = false;
+        sessionStorage.removeItem(DRAFT_KEY);
       } catch {
         /* Storage may be unavailable. */
       }
@@ -352,10 +330,9 @@ export function CustomerEnquiryForm() {
         <section className="mx-auto w-full max-w-2xl rounded-md border border-border bg-card p-8 md:p-12" role="status">
           <Check className="size-8 text-accent" aria-hidden="true" />
           <p className="mt-8 text-xs uppercase tracking-[0.18em] text-muted-foreground">Enquiry received</p>
-          <h1 className="mt-4 font-display text-4xl leading-tight md:text-5xl">Thank you. We will take it from here.</h1>
+          <h1 ref={headingRef} tabIndex={-1} className="mt-4 font-display text-4xl leading-tight outline-none md:text-5xl">Thank you. We will take it from here.</h1>
           <p className="mt-6 max-w-xl leading-7 text-muted-foreground">
-            We will review what you shared and respond within two business days. If there is a relevant direction, we
-            will explain the recommendations and help facilitate the right introductions.
+            We will review what you shared personally and respond within two business days. If there is a relevant direction, we will explain it and help facilitate the right introductions.
           </p>
           <Button asChild className="mt-8 w-full sm:w-auto">
             <Link href="/">Return to The Solas Guide</Link>
@@ -366,32 +343,12 @@ export function CustomerEnquiryForm() {
   }
 
   const reviewRows = [
-    { label: "Desired outcomes", value: labels(draft.outcomes, outcomeChoices), edit: "outcomes" as JourneyStep },
-    { label: "Primary need", value: labels([draft.primaryNeed], needChoices), edit: "need" as JourneyStep },
-    { label: "Optional extras", value: labels(draft.extras, needChoices), edit: "extras" as JourneyStep },
-    {
-      label: "Timing",
-      value: draft.timing === "dates-known" ? `${draft.startDate} to ${draft.endDate}` : labels([draft.timing], timingChoices),
-      edit: "timing" as JourneyStep,
-    },
-    {
-      label: "Location",
-      value: `${labels([draft.location], locationChoices)}${draft.locationDetail ? ` — ${draft.locationDetail}` : ""}`,
-      edit: "location" as JourneyStep,
-    },
-    {
-      label: "Who is coming",
-      value: `${labels([draft.group], groupChoices)}${draft.groupSize ? ` — approximately ${draft.groupSize}` : ""}${draft.organizationName ? ` — ${draft.organizationName}` : ""}`,
-      edit: "group" as JourneyStep,
-    },
-    { label: "Practices", value: labels(draft.modalities, modalityChoices), edit: "modalities" as JourneyStep },
-    { label: "Budget", value: labels([draft.budget], budgetChoices), edit: "budget" as JourneyStep },
-    { label: "Additional context", value: draft.notes || "Nothing added", edit: "notes" as JourneyStep },
-    {
-      label: "Follow-up",
-      value: `${contactPreference === "email" ? "Email" : contactPreference === "phone" ? "Phone" : "WhatsApp"} — ${email}${phone ? ` — ${phone}` : ""}`,
-      edit: "contact" as JourneyStep,
-    },
+    { label: "What brings you here", value: labelFor(draft.q1, customerQuestionnaireOptions.q1), edit: "q1" as JourneyStep },
+    { label: "Who you are looking for", value: labelFor(draft.q2, customerQuestionnaireOptions.q2), edit: "q2" as JourneyStep },
+    { label: "What you hope this helps with", value: labels(draft.q3, customerQuestionnaireOptions.q3), edit: "q3" as JourneyStep },
+    { label: "When you hope to connect", value: labelFor(draft.q4, customerQuestionnaireOptions.q4), edit: "q4" as JourneyStep },
+    { label: "Anything else", value: draft.q5 || "Nothing added", edit: "q5" as JourneyStep },
+    { label: "Contact details", value: `${name} — ${email} — WhatsApp: ${whatsapp}`, edit: "contact" as JourneyStep },
   ];
 
   return (
@@ -425,9 +382,7 @@ export function CustomerEnquiryForm() {
                 />
               </div>
               <div className="mt-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
-                <span>
-                  Step {index + 1} of {steps.length}
-                </span>
+                <span>Step {index + 1} of {steps.length}</span>
                 <span className="text-right">{copy.eyebrow}</span>
               </div>
             </div>
@@ -437,7 +392,7 @@ export function CustomerEnquiryForm() {
             <aside
               className={cn(
                 "relative min-h-56 overflow-hidden bg-foreground text-background sm:min-h-64",
-                step !== "outcomes" && "hidden md:block",
+                step !== "q1" && "hidden md:block",
               )}
             >
               <Image
@@ -450,9 +405,9 @@ export function CustomerEnquiryForm() {
               />
               <div className="absolute inset-0 bg-foreground/45" />
               <div className="relative flex min-h-56 flex-col justify-end p-5 sm:min-h-64 sm:p-6 md:min-h-full md:justify-start md:p-8">
-                <p className="text-[10px] uppercase tracking-[0.2em] text-background/65">Your Bali stay</p>
+                <p className="text-[10px] uppercase tracking-[0.2em] text-background/65">Your next step</p>
                 <p className="mt-4 max-w-xs font-display text-2xl leading-tight text-balance sm:mt-5 sm:text-3xl md:text-4xl">
-                  Start with what you want from the experience.
+                  Start with what matters to you.
                 </p>
               </div>
             </aside>
@@ -473,246 +428,113 @@ export function CustomerEnquiryForm() {
                     description={error}
                     className="mt-6"
                   />
+                  {tokenConflict && (
+                    <Button type="button" variant="outline" onClick={startNewEnquiry} className="mt-3 w-full sm:w-auto">
+                      Start a new enquiry
+                    </Button>
+                  )}
                 </div>
               )}
 
               <div className="mt-7">
-                {step === "outcomes" && (
-                  <>
-                    <p className="mb-4 text-sm text-muted-foreground">Choose up to three.</p>
-                    <ChoiceGrid
-                      choices={outcomeChoices}
-                      selected={draft.outcomes}
-                      onToggle={(value) => toggle("outcomes", value, 3)}
-                    />
-                  </>
-                )}
-                {step === "need" && (
+                {step === "q1" && (
                   <ChoiceGrid
-                    choices={needChoices}
-                    selected={[draft.primaryNeed]}
-                    onToggle={(value) => select("primaryNeed", value)}
+                    choices={customerQuestionnaireOptions.q1}
+                    selected={draft.q1 ? [draft.q1] : []}
+                    onToggle={(value) => selectQuestion("q1", value)}
+                    selectionType="radio"
+                    name="q1"
+                    label={customerQuestionnaireQuestions[0].title}
                   />
                 )}
-                {step === "extras" && (
+                {step === "q2" && (
+                  <ChoiceGrid
+                    choices={customerQuestionnaireOptions.q2}
+                    selected={draft.q2 ? [draft.q2] : []}
+                    onToggle={(value) => selectQuestion("q2", value)}
+                    selectionType="radio"
+                    name="q2"
+                    label={customerQuestionnaireQuestions[1].title}
+                  />
+                )}
+                {step === "q3" && (
                   <>
-                    <p className="mb-4 text-sm text-muted-foreground">
-                      Optional. Choose any other areas you would like us to consider.
-                    </p>
+                    <p className="mb-4 text-sm text-muted-foreground">Select all that apply.</p>
                     <ChoiceGrid
-                      choices={needChoices.filter((choice) => choice.value !== draft.primaryNeed)}
-                      selected={draft.extras}
-                      onToggle={(value) => toggle("extras", value)}
+                      choices={customerQuestionnaireOptions.q3}
+                      selected={draft.q3}
+                      onToggle={toggleQuestion}
+                      selectionType="checkbox"
+                      name="q3"
+                      label={customerQuestionnaireQuestions[2].title}
                     />
                   </>
                 )}
-                {step === "timing" && (
-                  <>
-                    <ChoiceGrid
-                      choices={timingChoices}
-                      selected={[draft.timing]}
-                      onToggle={(value) => {
-                        if (value !== "dates-known") {
-                          set("startDate", "");
-                          set("endDate", "");
-                        }
-                        select("timing", value);
-                      }}
-                    />
-                    {draft.timing === "dates-known" && (
-                      <div className="mt-6 grid gap-4 sm:grid-cols-2">
-                        <div>
-                          <Label htmlFor="start-date">Arrival</Label>
-                          <Input
-                            id="start-date"
-                            type="date"
-                            value={draft.startDate}
-                            onChange={(e) => set("startDate", e.target.value)}
-                            className="mt-2 bg-card"
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="end-date">Departure</Label>
-                          <Input
-                            id="end-date"
-                            type="date"
-                            min={draft.startDate}
-                            value={draft.endDate}
-                            onChange={(e) => set("endDate", e.target.value)}
-                            className="mt-2 bg-card"
-                          />
-                        </div>
-                      </div>
-                    )}
-                  </>
+                {step === "q4" && (
+                  <ChoiceGrid
+                    choices={customerQuestionnaireOptions.q4}
+                    selected={draft.q4 ? [draft.q4] : []}
+                    onToggle={(value) => selectQuestion("q4", value)}
+                    selectionType="radio"
+                    name="q4"
+                    label={customerQuestionnaireQuestions[3].title}
+                  />
                 )}
-                {step === "location" && (
-                  <>
-                    <ChoiceGrid
-                      choices={locationChoices}
-                      selected={[draft.location]}
-                      onToggle={(value) => select("location", value)}
-                    />
-                    <div className="mt-6">
-                      <Label htmlFor="location-detail">
-                        Specific place or area <span className="font-normal text-muted-foreground">(optional)</span>
-                      </Label>
-                      <Input
-                        id="location-detail"
-                        value={draft.locationDetail}
-                        onChange={(e) => set("locationDetail", e.target.value)}
-                        className="mt-2 bg-card"
-                      />
-                    </div>
-                  </>
-                )}
-                {step === "group" && (
-                  <>
-                    <ChoiceGrid
-                      choices={groupChoices}
-                      selected={[draft.group]}
-                      onToggle={(value) => select("group", value)}
-                    />
-                    {requiresGroupSize && (
-                      <div className="mt-6 grid gap-4 sm:grid-cols-2">
-                        <div>
-                          <Label htmlFor="group-size">Approximate group size</Label>
-                          <Input
-                            id="group-size"
-                            type="number"
-                            min="1"
-                            value={draft.groupSize}
-                            onChange={(e) => set("groupSize", e.target.value)}
-                            className="mt-2 bg-card"
-                          />
-                        </div>
-                        {draft.group === "business" && (
-                          <div>
-                            <Label htmlFor="organisation">Business or organisation</Label>
-                            <Input
-                              id="organisation"
-                              value={draft.organizationName}
-                              onChange={(e) => set("organizationName", e.target.value)}
-                              className="mt-2 bg-card"
-                            />
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </>
-                )}
-                {step === "modalities" && (
-                  <>
-                    <p className="mb-4 text-sm text-muted-foreground">
-                      Optional. Leave this open if you would prefer us to suggest a direction.
-                    </p>
-                    <ChoiceGrid
-                      choices={modalityChoices}
-                      selected={draft.modalities}
-                      onToggle={(value) => toggle("modalities", value)}
-                    />
-                  </>
-                )}
-                {step === "budget" && (
-                  <>
-                    <p className="mb-4 text-sm text-muted-foreground">
-                      This refers to the people, places, and experiences you may want us to consider—not your full
-                      travel budget.
-                    </p>
-                    <ChoiceGrid
-                      choices={budgetChoices}
-                      selected={[draft.budget]}
-                      onToggle={(value) => select("budget", value)}
-                    />
-                  </>
-                )}
-                {step === "notes" && (
+                {step === "q5" && (
                   <div>
-                    <Label htmlFor="notes">
-                      Additional context <span className="font-normal text-muted-foreground">(optional)</span>
+                    <Label htmlFor="q5">
+                      Anything else <span className="font-normal text-muted-foreground">(optional)</span>
                     </Label>
                     <Textarea
-                      id="notes"
-                      maxLength={3000}
-                      value={draft.notes}
-                      onChange={(e) => set("notes", e.target.value)}
-                      placeholder="Tell us anything that would help us understand what you want from the experience."
+                      id="q5"
+                      maxLength={3_000}
+                      value={draft.q5}
+                      onChange={(event) => set("q5", event.target.value)}
+                      placeholder="Share anything else that would help us understand your enquiry."
                       className="mt-3 min-h-40 bg-card"
                     />
-                    <p className="mt-2 text-xs text-muted-foreground">
-                      Please do not include medical records or sensitive personal information.
-                    </p>
                   </div>
                 )}
                 {step === "contact" && (
-                  <div className="space-y-6">
-                    <div className="grid gap-5 sm:grid-cols-2">
-                      <div>
-                        <Label htmlFor="name">Your name</Label>
-                        <Input
-                          id="name"
-                          autoComplete="name"
-                          value={name}
-                          onChange={(e) => setName(e.target.value)}
-                          className="mt-2 bg-card"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="email">Email address</Label>
-                        <Input
-                          id="email"
-                          type="email"
-                          autoComplete="email"
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          className="mt-2 bg-card"
-                        />
-                      </div>
+                  <div className="space-y-5">
+                    <div>
+                      <Label htmlFor="name">Name</Label>
+                      <Input
+                        id="name"
+                        autoComplete="name"
+                        required
+                        aria-required="true"
+                        value={name}
+                        onChange={(event) => setName(event.target.value)}
+                        className="mt-2 bg-card"
+                      />
                     </div>
-                    <fieldset>
-                      <legend className="text-sm font-medium">Preferred follow-up</legend>
-                      <div className="mt-3 grid gap-3 sm:grid-cols-3">
-                        {(
-                          [
-                            { value: "email", label: "Email", icon: Mail },
-                            { value: "whatsapp", label: "WhatsApp", icon: MessageCircle },
-                            { value: "phone", label: "Phone", icon: Users },
-                          ] as const
-                        ).map(({ value, label, icon: Icon }) => (
-                          <button
-                            key={value}
-                            type="button"
-                            aria-pressed={contactPreference === value}
-                            onClick={() => {
-                              if (value === "email") setPhone("");
-                              setContactPreference(value);
-                            }}
-                            className={cn(
-                              "flex min-h-14 items-center gap-3 rounded-md border px-4 text-left text-sm transition-colors focus-visible:ring-2 focus-visible:ring-ring/40",
-                              contactPreference === value
-                                ? "border-accent bg-accent text-accent-foreground"
-                                : "border-border bg-card hover:border-foreground/40",
-                            )}
-                          >
-                            <Icon className="size-4 shrink-0" aria-hidden="true" />
-                            {label}
-                          </button>
-                        ))}
-                      </div>
-                    </fieldset>
-                    {contactPreference !== "email" && (
-                      <div>
-                        <Label htmlFor="phone">Phone or WhatsApp number</Label>
-                        <Input
-                          id="phone"
-                          type="tel"
-                          autoComplete="tel"
-                          value={phone}
-                          onChange={(e) => setPhone(e.target.value)}
-                          className="mt-2 bg-card"
-                        />
-                      </div>
-                    )}
+                    <div>
+                      <Label htmlFor="email">Email</Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        autoComplete="email"
+                        required
+                        aria-required="true"
+                        value={email}
+                        onChange={(event) => setEmail(event.target.value)}
+                        className="mt-2 bg-card"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="whatsapp">WhatsApp</Label>
+                      <Input
+                        id="whatsapp"
+                        type="tel"
+                        autoComplete="tel"
+                        required
+                        aria-required="true"
+                        value={whatsapp}
+                        onChange={(event) => setWhatsapp(event.target.value)}
+                        className="mt-2 bg-card"
+                      />
+                    </div>
                   </div>
                 )}
                 {step === "review" && (
@@ -743,14 +565,15 @@ export function CustomerEnquiryForm() {
                         tabIndex={-1}
                         autoComplete="off"
                         value={website}
-                        onChange={(e) => setWebsite(e.target.value)}
+                        onChange={(event) => setWebsite(event.target.value)}
                       />
                     </div>
                     <label className="flex items-start gap-3 p-5 text-xs leading-relaxed text-muted-foreground">
                       <input
+                        id="consent"
                         type="checkbox"
                         checked={consent}
-                        onChange={(e) => setConsent(e.target.checked)}
+                        onChange={(event) => setConsent(event.target.checked)}
                         className="mt-0.5 size-5 shrink-0 accent-[var(--accent)]"
                       />
                       <span>I agree that The Solas Guide may use these details to respond to my enquiry.</span>
@@ -770,7 +593,7 @@ export function CustomerEnquiryForm() {
                   </button>
                 ) : (
                   <span className="inline-flex min-h-11 items-center text-xs text-muted-foreground">
-                    Takes about three minutes
+                    Takes about two minutes
                   </span>
                 )}
                 {step === "review" ? (
