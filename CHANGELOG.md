@@ -9,3 +9,4 @@ This file records pull requests merged into `main`. Entries are added automatica
 - 2026-08-11 — feat: add practitioner-first homepage /v2 variant ([#14](https://github.com/The-Solas-Guide/solasguide/pull/14)) — `6fc4ad9c6849f95959f95e21e318ae498a9c8b0b`
 - 2026-08-11 — Align homepage with approved client flow ([#23](https://github.com/The-Solas-Guide/solasguide/pull/23)) — `5a3b887b2c389b28a29c4ae64d804c159e9ac4ac`
 - 2026-08-11 — Add approved recognition content ([#24](https://github.com/The-Solas-Guide/solasguide/pull/24)) — `70374742a52cd00e1a155a18f78df1dd71bf3b94`
+- 2026-08-11 — Update founding practitioner preview ([#25](https://github.com/The-Solas-Guide/solasguide/pull/25)) — `c58bf8feb2ff89b7fb83e2e4616322f0c623be49`
