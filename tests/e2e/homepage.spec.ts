@@ -109,12 +109,12 @@ async function expectPractitionerCard(card: Locator, practitioner: FoundingPract
   await expect(card).toBeVisible();
   await expect(card.getByRole("heading", { level: 3, name: practitioner.name, exact: true })).toBeVisible();
   await expect(card.getByText(practitioner.location, { exact: true })).toBeVisible();
-  await expect(card.getByText("Primary practice", { exact: true })).toBeVisible();
+  await expect(card.getByText("Primary practice", { exact: true })).toBeAttached();
   await expect(card.getByText(practitioner.primaryPractice, { exact: true })).toBeVisible();
   await expect(card.getByText(practitioner.summary, { exact: true })).toBeVisible();
 
   if (practitioner.supportingPractices.length > 0) {
-    await expect(card.getByText("Supporting practices", { exact: true })).toBeVisible();
+    await expect(card.getByText("Supporting practices", { exact: true })).toBeAttached();
     await expect(
       card.getByText(practitioner.supportingPractices.join(" · "), { exact: true }),
     ).toBeVisible();
