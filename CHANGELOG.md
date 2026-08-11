@@ -6,3 +6,4 @@ This file records pull requests merged into `main`. Entries are added automatica
 - 2026-08-06 — Add the Become a Practitioner journey ([#4](https://github.com/The-Solas-Guide/solasguide/pull/4)) — `da4ebe93de44a0240b5ea20131c776e1ffb67196`
 - 2026-08-07 — feat: establish Solas brand direction ([#12](https://github.com/The-Solas-Guide/solasguide/pull/12)) — `1d391aa0cc17e3e0ad860c1e51151f60eb355302`
 - 2026-08-07 — feat: add restrained homepage motion ([#13](https://github.com/The-Solas-Guide/solasguide/pull/13)) — `df7487f00b02f6725eeb3bae05c49c8ae8448d08`
+- 2026-08-11 — feat: add practitioner-first homepage /v2 variant ([#14](https://github.com/The-Solas-Guide/solasguide/pull/14)) — `6fc4ad9c6849f95959f95e21e318ae498a9c8b0b`
