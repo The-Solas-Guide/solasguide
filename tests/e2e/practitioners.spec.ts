@@ -60,9 +60,6 @@ test.describe("practitioner listing", () => {
   }) => {
     await page.goto("/practitioners");
 
-    await checkFilter(page, "Modality", "Pilates");
-    await expect(cards(page)).toHaveCount(2);
-
     await checkFilter(page, "Location", "Seminyak");
     await expect(cards(page)).toHaveCount(1);
     await expect(
@@ -79,20 +76,20 @@ test.describe("practitioner listing", () => {
     const activeFilters = page
       .getByRole("list", { name: "Active filters" })
       .getByRole("button");
-    await expect(activeFilters).toHaveCount(2);
+    await expect(activeFilters).toHaveCount(1);
 
     // Removing one filter widens the results back out.
     await page
       .getByRole("button", { name: "Remove Location filter Seminyak" })
       .click();
-    await expect(activeFilters).toHaveCount(1);
-    await expect(cards(page)).toHaveCount(2);
+    await expect(activeFilters).toHaveCount(0);
+    await expect(cards(page)).toHaveCount(totalPractitioners);
   });
 
   test("clears every filter and the search term at once", async ({ page }) => {
     await page.goto("/practitioners");
 
-    await checkFilter(page, "Modality", "Breathwork");
+    await checkFilter(page, "Location", "Ubud");
     await page.getByLabel("Search the Guide").fill("Pablo");
     await expect(cards(page)).toHaveCount(1);
 
@@ -137,15 +134,20 @@ test.describe("practitioner listing", () => {
     });
     for (const field of [
       "Search the Guide",
-      "Pathway",
-      "Modality",
+      "Areas of support",
+      "Approach",
+      "Works with",
       "Location",
-      "Format",
+      "In-person or online",
+      "Languages",
     ]) {
       await expect(filters.getByLabel(field, { exact: true })).toBeVisible();
     }
-    await expect(filters.getByLabel("Pathway")).toBeDisabled();
-    await expect(filters.getByLabel("Format")).toBeDisabled();
+    await expect(filters.locator("select")).toHaveCount(6);
+    await expect(filters.getByLabel("Modality", { exact: true })).toHaveCount(0);
+    await expect(
+      filters.getByLabel("In-person or online", { exact: true }),
+    ).toBeDisabled();
   });
 });
 
@@ -162,43 +164,39 @@ test.describe("practitioner profile", () => {
       page.getByRole("heading", { level: 1, name: "Riza Sukman" }),
     ).toBeVisible();
     await expect(
-      page.getByText(
-        /Riza is trained in Somatic Experiencing.*support in Bali\./,
-      ),
+      page
+        .getByText(
+          "Riza offers somatic, trauma-informed support for people navigating grief, anxiety, relationship difficulties and disconnection from self.",
+        )
+        .first(),
     ).toBeVisible();
 
     const credentialRecord = page.getByRole("region", {
-      name: "Credential record",
+      name: "Credentials and significant training",
     });
     for (const field of [
-      "Accreditation",
-      "Training",
-      "Pathway",
-      "Practitioner tier",
-      "CPD log",
+      "Credentials",
+      "Significant training",
     ]) {
       await expect(
         credentialRecord.getByText(field, { exact: true }),
       ).toBeVisible();
     }
     await expect(
-      credentialRecord.getByText("Somatic Experiencing", { exact: true }),
+      credentialRecord.getByText(/Integrative Somatic Trauma Therapy/).first(),
     ).toBeVisible();
     await expect(
-      page.getByRole("region", { name: "Editorial profile" }),
+      page.getByRole("region", { name: "About" }),
     ).toBeVisible();
     await expect(
-      page.getByRole("region", { name: "Practice formats" }),
-    ).toContainText("Retreat-intensive work");
+      page.getByRole("region", { name: "Specific modalities" }),
+    ).toContainText("Somatic Experiencing");
     const practical = page.getByRole("region", { name: "Practical" });
-    for (const field of ["Languages", "Formats", "Working from", "Currently"]) {
+    for (const field of ["Works with", "Languages", "In-person or online", "Locations"]) {
       await expect(practical.getByText(field, { exact: true })).toBeVisible();
     }
     await expect(
-      practical.getByText("Ubud, Bali", { exact: true }),
-    ).toBeVisible();
-    await expect(
-      page.getByRole("region", { name: "References on file" }),
+      practical.getByText("Ubud", { exact: true }),
     ).toBeVisible();
 
     await expect(
@@ -316,14 +314,14 @@ test.describe("practitioner prototype at tablet width", () => {
     await page.goto("/practitioners");
 
     const search = await page.getByLabel("Search the Guide").boundingBox();
-    const pathway = await page.getByLabel("Pathway").boundingBox();
-    const modality = await page.getByLabel("Modality").boundingBox();
+    const areas = await page.getByLabel("Areas of support").boundingBox();
+    const approach = await page.getByLabel("Approach").boundingBox();
 
     expect(search).not.toBeNull();
-    expect(pathway).not.toBeNull();
-    expect(modality).not.toBeNull();
-    expect(Math.abs(search!.y - pathway!.y)).toBeLessThan(4);
-    expect(modality!.y).toBeGreaterThan(search!.y + search!.height);
+    expect(areas).not.toBeNull();
+    expect(approach).not.toBeNull();
+    expect(Math.abs(search!.y - areas!.y)).toBeLessThan(4);
+    expect(approach!.y).toBeGreaterThan(search!.y + search!.height);
 
     const firstCard = await cards(page).nth(0).boundingBox();
     const thirdCard = await cards(page).nth(2).boundingBox();

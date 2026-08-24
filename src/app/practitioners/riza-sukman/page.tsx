@@ -28,7 +28,7 @@ const navLinks = [
 
 const dataRowClassName = "border-b border-border/70 py-3.5";
 const dataValueClassName = "mt-2 font-sans text-base leading-6";
-const missingValueClassName = `${dataValueClassName} text-muted-foreground/70`;
+const placeholderValueClassName = `${dataValueClassName} text-muted-foreground`;
 
 export default function RizaSukmanPage() {
   if (!practitioner) notFound();
@@ -84,30 +84,36 @@ export default function RizaSukmanPage() {
                 <h1 className="mt-3 font-display text-4xl leading-[1.04] text-balance md:text-6xl">
                   {practitioner.name}
                 </h1>
-                <p className="mt-3 max-w-xl text-lg leading-7 text-muted-foreground md:text-xl">
-                  {practitioner.modalities.join(" · ")}
-                </p>
+                <dl className="mt-5">
+                  <div>
+                    <dt className="review-label text-muted-foreground">Practice or descriptor</dt>
+                    <dd className={practitioner.descriptor ? dataValueClassName : placeholderValueClassName}>
+                      {practitioner.descriptor ?? "-"}
+                    </dd>
+                  </div>
+                </dl>
 
                 <dl className="mt-6 grid border-y border-border sm:grid-cols-3">
                   <div className="py-3.5 sm:pr-4">
-                    <dt className="review-label text-muted-foreground">Tier · years active</dt>
-                    <dd className={missingValueClassName}>Not provided</dd>
+                    <dt className="review-label text-muted-foreground">Years active</dt>
+                    <dd className={practitioner.yearsActive ? dataValueClassName : placeholderValueClassName}>
+                      {practitioner.yearsActive ?? "-"}
+                    </dd>
                   </div>
-                  <div className="border-t border-border/70 py-3.5 sm:border-t-0 sm:border-l sm:px-4">
+                  <div className="py-3.5 sm:pr-4">
                     <dt className="review-label text-muted-foreground">Based</dt>
                     <dd className={dataValueClassName}>{practitioner.location}</dd>
                   </div>
                   <div className="border-t border-border/70 py-3.5 sm:border-t-0 sm:border-l sm:pl-4">
-                    <dt className="review-label text-muted-foreground">Listed</dt>
-                    <dd className={missingValueClassName}>Not provided</dd>
+                    <dt className="review-label text-muted-foreground">Works with</dt>
+                    <dd className={practitioner.worksWith?.length ? dataValueClassName : placeholderValueClassName}>
+                      {practitioner.worksWith?.join(" · ") || "-"}
+                    </dd>
                   </div>
                 </dl>
 
                 <p className="mt-6 max-w-xl font-display text-xl leading-8 text-foreground">
-                  Riza is trained in Somatic Experiencing, and his practice also includes bodywork
-                  and breathwork. Based in Ubud, he has experience supporting retreat-intensive
-                  work. His profile may be relevant to travellers, retreat organisers and groups
-                  exploring somatic and body-based support in Bali.
+                  {practitioner.summary}
                 </p>
 
                 <div className="mt-6 flex flex-wrap items-center gap-4">
@@ -121,82 +127,84 @@ export default function RizaSukmanPage() {
 
             <div className="grid border-t border-border lg:grid-cols-[0.9fr_1.2fr_0.9fr]">
               <section
-                aria-labelledby="credential-record-heading"
+                aria-labelledby="credentials-and-training-heading"
                 className="px-5 py-12 sm:px-8 md:px-12 md:py-16 lg:px-12"
               >
-                <h2 id="credential-record-heading" className="review-label text-muted-foreground">
-                  Credential record
+                <h2
+                  id="credentials-and-training-heading"
+                  className="review-label text-muted-foreground"
+                >
+                  Credentials and significant training
                 </h2>
                 <dl className="mt-6 border-t border-border/80">
                   <div className={dataRowClassName}>
-                    <dt className="review-label text-muted-foreground">Accreditation</dt>
-                    <dd className={missingValueClassName}>Not provided</dd>
+                    <dt className="review-label text-muted-foreground">Credentials</dt>
+                    <dd className={practitioner.credentials?.length ? dataValueClassName : placeholderValueClassName}>
+                      {practitioner.credentials?.join(" · ") || "-"}
+                    </dd>
                   </div>
                   <div className={dataRowClassName}>
-                    <dt className="review-label text-muted-foreground">Training</dt>
-                    <dd className={dataValueClassName}>Somatic Experiencing</dd>
-                  </div>
-                  <div className={dataRowClassName}>
-                    <dt className="review-label text-muted-foreground">Pathway</dt>
-                    <dd className={missingValueClassName}>Not provided</dd>
-                  </div>
-                  <div className={dataRowClassName}>
-                    <dt className="review-label text-muted-foreground">Practitioner tier</dt>
-                    <dd className={missingValueClassName}>Not provided</dd>
-                  </div>
-                  <div className={dataRowClassName}>
-                    <dt className="review-label text-muted-foreground">Confirmed at source</dt>
-                    <dd className={missingValueClassName}>Not provided</dd>
-                  </div>
-                  <div className={dataRowClassName}>
-                    <dt className="review-label text-muted-foreground">CPD log</dt>
-                    <dd className={missingValueClassName}>Not provided</dd>
-                  </div>
-                  <div className={dataRowClassName}>
-                    <dt className="review-label text-muted-foreground">Renewal due</dt>
-                    <dd className={missingValueClassName}>Not provided</dd>
-                  </div>
-                  <div className={dataRowClassName}>
-                    <dt className="review-label text-muted-foreground">Standing</dt>
-                    <dd className={missingValueClassName}>Not provided</dd>
+                    <dt className="review-label text-muted-foreground">Significant training</dt>
+                    <dd className={dataValueClassName}>
+                      {practitioner.significantTraining?.join(" · ") || "Somatic Experiencing"}
+                    </dd>
                   </div>
                 </dl>
               </section>
 
               <section
-                aria-labelledby="editorial-profile-heading"
+                aria-labelledby="about-heading"
                 className="border-t border-border px-5 py-12 sm:px-8 md:px-12 md:py-16 lg:border-t-0 lg:border-l lg:px-12"
               >
-                <h2 id="editorial-profile-heading" className="review-label text-muted-foreground">
-                  Editorial profile
+                <h2 id="about-heading" className="review-label text-muted-foreground">
+                  About
                 </h2>
                 <p className="mt-6 max-w-[36rem] font-display text-xl leading-8 text-foreground">
-                  Riza&apos;s practice brings together Somatic Experiencing, bodywork and breathwork,
-                  with experience supporting retreat-intensive work.
-                </p>
-                <p className="mt-6 max-w-[36rem] font-display text-xl leading-8 text-foreground">
-                  The Solas Guide considers the context of each enquiry before recommending an
-                  introduction. Share what you are planning so the team can review the most
-                  appropriate next step.
+                  {practitioner.about ?? practitioner.summary}
                 </p>
 
-                <blockquote className="mt-8 max-w-[36rem] border-l border-accent pl-6 font-display text-xl leading-[1.6] italic text-muted-foreground">
-                  “The Solas Guide uses human judgement and its trusted network to review each
-                  enquiry, recommend an appropriate direction and make curated introductions.”
-                  <footer className="review-label mt-5 not-italic text-muted-foreground">
-                    The Solas Guide approach
-                  </footer>
-                </blockquote>
-
-                <section aria-labelledby="practice-formats-heading" className="mt-12">
-                  <h3 id="practice-formats-heading" className="review-label text-muted-foreground">
-                    Practice formats
+                <section aria-labelledby="areas-of-support-heading" className="mt-10">
+                  <h3
+                    id="areas-of-support-heading"
+                    className="review-label text-muted-foreground"
+                  >
+                    Areas of support
                   </h3>
-                  <ul className="mt-4 flex flex-wrap gap-2">
-                    <li className="border border-border bg-muted/30 px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em]">
-                      Retreat-intensive work
-                    </li>
-                  </ul>
+                  <p className={practitioner.areasOfSupport?.length ? dataValueClassName : placeholderValueClassName}>
+                    {practitioner.areasOfSupport?.join(" · ") || "-"}
+                  </p>
+                </section>
+
+                <section aria-labelledby="approach-heading" className="mt-10">
+                  <h3 id="approach-heading" className="review-label text-muted-foreground">
+                    Approach
+                  </h3>
+                  <p className={practitioner.approach ? dataValueClassName : placeholderValueClassName}>
+                    {practitioner.approach ?? "-"}
+                  </p>
+                </section>
+
+                <section aria-labelledby="specific-modalities-heading" className="mt-12">
+                  <h3
+                    id="specific-modalities-heading"
+                    className="review-label text-muted-foreground"
+                  >
+                    Specific modalities
+                  </h3>
+                  {practitioner.modalities.length > 0 ? (
+                    <ul className="mt-4 flex flex-wrap gap-2">
+                      {practitioner.modalities.map((modality) => (
+                      <li
+                        key={modality}
+                        className="border border-border bg-muted/30 px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em]"
+                      >
+                        {modality}
+                      </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className={placeholderValueClassName}>-</p>
+                  )}
                 </section>
               </section>
 
@@ -209,31 +217,28 @@ export default function RizaSukmanPage() {
                 </h2>
                 <dl className="mt-6 border-t border-border/80">
                   <div className={dataRowClassName}>
+                    <dt className="review-label text-muted-foreground">Works with</dt>
+                    <dd className={practitioner.worksWith?.length ? dataValueClassName : placeholderValueClassName}>
+                      {practitioner.worksWith?.join(" · ") || "-"}
+                    </dd>
+                  </div>
+                  <div className={dataRowClassName}>
                     <dt className="review-label text-muted-foreground">Languages</dt>
-                    <dd className={missingValueClassName}>Not provided</dd>
+                    <dd className={practitioner.languages?.length ? dataValueClassName : placeholderValueClassName}>
+                      {practitioner.languages?.join(" · ") || "-"}
+                    </dd>
                   </div>
                   <div className={dataRowClassName}>
-                    <dt className="review-label text-muted-foreground">Formats</dt>
-                    <dd className={dataValueClassName}>Retreat-intensive work</dd>
+                    <dt className="review-label text-muted-foreground">In-person or online</dt>
+                    <dd className={practitioner.delivery?.length ? dataValueClassName : placeholderValueClassName}>
+                      {practitioner.delivery?.join(" · ") || "-"}
+                    </dd>
                   </div>
                   <div className={dataRowClassName}>
-                    <dt className="review-label text-muted-foreground">Working from</dt>
-                    <dd className={dataValueClassName}>{practitioner.location}, Bali</dd>
-                  </div>
-                  <div className={dataRowClassName}>
-                    <dt className="review-label text-muted-foreground">Currently</dt>
-                    <dd className={missingValueClassName}>Not provided</dd>
+                    <dt className="review-label text-muted-foreground">Locations</dt>
+                    <dd className={dataValueClassName}>{practitioner.location}</dd>
                   </div>
                 </dl>
-
-                <section aria-labelledby="references-heading" className="mt-10">
-                  <h3 id="references-heading" className="review-label text-muted-foreground">
-                    References on file
-                  </h3>
-                  <p className={`mt-5 border-y border-border/70 py-3.5 ${missingValueClassName}`}>
-                    Not provided
-                  </p>
-                </section>
               </section>
             </div>
           </article>

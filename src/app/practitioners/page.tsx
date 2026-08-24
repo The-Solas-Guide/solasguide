@@ -7,7 +7,7 @@ import { practitioners } from "@/lib/practitioners";
 export const metadata: Metadata = {
   title: "The Guide",
   description:
-    "Browse the founding practitioners recognised by The Solas Guide and narrow the Guide by area of support and location.",
+    "Explore the founding practitioners included in The Solas Guide and review the information listed for each practitioner.",
   // Phase 2 prototype: not part of the MVP delivery scope and not linked from
   // production navigation, so it should not be indexed.
   robots: { index: false, follow: false },
@@ -44,9 +44,9 @@ export default function PractitionersPage() {
               The founding practitioners of The Solas Guide.
             </h1>
             <p className="mt-7 max-w-xl text-base leading-8 text-muted-foreground">
-              All {practitioners.length} practitioners recognised in the inaugural edition. Search
-              by name, practice or place, and narrow the Guide by the areas of support and locations
-              their profiles state.
+              Explore {practitioners.length} practitioners in the inaugural edition. Search by
+              name, practice or place, then use the filters when a listing includes that
+              information.
             </p>
           </section>
 

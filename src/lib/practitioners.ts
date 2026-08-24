@@ -2,8 +2,18 @@ export type Practitioner = {
   slug: string;
   name: string;
   location: string;
+  descriptor?: string;
   modalities: readonly string[];
   summary: string;
+  about?: string;
+  areasOfSupport?: readonly string[];
+  approach?: string;
+  worksWith?: readonly string[];
+  languages?: readonly string[];
+  delivery?: readonly string[];
+  yearsActive?: number;
+  credentials?: readonly string[];
+  significantTraining?: readonly string[];
   image: string;
   imageAlt: string;
   imagePosition?: string;
@@ -24,9 +34,30 @@ export const practitioners: readonly Practitioner[] = [
     slug: "riza-sukman",
     name: "Riza Sukman",
     location: "Ubud",
+    descriptor: "Somatic practitioner working with integrative trauma work, parts work and embodied healing",
     modalities: ["Somatic Experiencing", "Bodywork", "Breathwork"],
     summary:
-      "Trained in Somatic Experiencing, with experience supporting retreat-intensive work.",
+      "Riza offers somatic, trauma-informed support for people navigating grief, anxiety, relationship difficulties and disconnection from self.",
+    about:
+      "Riza Sukman is a somatic practitioner whose work brings together body-based awareness, parts work and integrative trauma support. His sessions focus on creating space to notice sensations, emotions and protective patterns at a manageable pace. Riza describes his approach as compassionate, present and trauma-informed, with particular attention to grief, anxiety, relationship difficulties, emotional overwhelm and disconnection from self.",
+    areasOfSupport: [
+      "Relationships & intimacy",
+      "Anxiety & emotional wellbeing",
+      "Trauma & nervous system",
+      "Grief & loss",
+    ],
+    approach: "Somatic & body-based",
+    worksWith: ["Individuals"],
+    languages: ["English"],
+    credentials: [
+      "Certificate in Integrative Somatic Trauma Therapy — The Embody Lab",
+      "Certificate in Somatic Parts Work — The Embody Lab",
+    ],
+    significantTraining: [
+      "Family Constellations — European Institute for Systemic Education and Coaching",
+      "200-hour Yoga Teacher Training — Ki McGraw and Bob Smith",
+      "Vipassana meditation practice spanning more than a decade",
+    ],
     image: "/images/people/riza-sukman.jpg",
     imageAlt: "Portrait of Riza Sukman",
     hasPublishedProfile: true,

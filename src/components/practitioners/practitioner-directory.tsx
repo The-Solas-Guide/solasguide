@@ -5,9 +5,7 @@ import Link from "next/link";
 import { SlidersHorizontal, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  areaOfSupportOptions,
   getLocations,
-  locationOptions,
   practitioners,
   type Practitioner,
 } from "@/lib/practitioners";
@@ -15,33 +13,88 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
-type FacetId = "areas" | "locations";
+type FacetId =
+  | "areas"
+  | "approach"
+  | "works-with"
+  | "locations"
+  | "format"
+  | "languages";
 
 type Facet = {
   id: FacetId;
   label: string;
+  allLabel: string;
   options: readonly string[];
   valuesFor: (practitioner: Practitioner) => readonly string[];
 };
+
+function sortedUnique(values: readonly string[]) {
+  return [...new Set(values)].sort((a, b) => a.localeCompare(b));
+}
+
+function optionsFrom(getValues: (practitioner: Practitioner) => readonly string[]) {
+  return sortedUnique(practitioners.flatMap(getValues));
+}
 
 const facets: readonly Facet[] = [
   {
     id: "areas",
     label: "Areas of support",
-    options: areaOfSupportOptions,
-    valuesFor: (practitioner) => practitioner.modalities,
+    allLabel: "All areas",
+    options: optionsFrom((practitioner) => practitioner.areasOfSupport ?? []),
+    valuesFor: (practitioner) => practitioner.areasOfSupport ?? [],
+  },
+  {
+    id: "approach",
+    label: "Approach",
+    allLabel: "All approaches",
+    options: optionsFrom((practitioner) =>
+      practitioner.approach ? [practitioner.approach] : [],
+    ),
+    valuesFor: (practitioner) =>
+      practitioner.approach ? [practitioner.approach] : [],
+  },
+  {
+    id: "works-with",
+    label: "Works with",
+    allLabel: "All audiences",
+    options: optionsFrom((practitioner) => practitioner.worksWith ?? []),
+    valuesFor: (practitioner) => practitioner.worksWith ?? [],
   },
   {
     id: "locations",
     label: "Location",
-    options: locationOptions,
+    allLabel: "All locations",
+    options: optionsFrom(getLocations),
     valuesFor: getLocations,
+  },
+  {
+    id: "format",
+    label: "In-person or online",
+    allLabel: "All formats",
+    options: optionsFrom((practitioner) => practitioner.delivery ?? []),
+    valuesFor: (practitioner) => practitioner.delivery ?? [],
+  },
+  {
+    id: "languages",
+    label: "Languages",
+    allLabel: "All languages",
+    options: optionsFrom((practitioner) => practitioner.languages ?? []),
+    valuesFor: (practitioner) => practitioner.languages ?? [],
   },
 ];
 
 type Selection = Record<FacetId, readonly string[]>;
 
-const emptySelection: Selection = { areas: [], locations: [] };
+const emptySelection: Selection = {
+  areas: [],
+  approach: [],
+  "works-with": [],
+  locations: [],
+  format: [],
+  languages: [],
+};
 
 function matchesQuery(practitioner: Practitioner, query: string) {
   const term = query.trim().toLowerCase();
@@ -52,6 +105,11 @@ function matchesQuery(practitioner: Practitioner, query: string) {
     practitioner.location,
     practitioner.summary,
     ...practitioner.modalities,
+    ...(practitioner.areasOfSupport ?? []),
+    practitioner.approach ?? "",
+    ...(practitioner.worksWith ?? []),
+    ...(practitioner.languages ?? []),
+    ...(practitioner.delivery ?? []),
   ]
     .join(" ")
     .toLowerCase()
@@ -338,38 +396,23 @@ function FilterFields({
 }) {
   return (
     <div className="grid gap-5 md:contents">
-      <div>
-        <label
-          htmlFor="pathway-filter"
-          className="review-label block text-muted-foreground"
-        >
-          Pathway
-        </label>
-        <select
-          id="pathway-filter"
-          disabled
-          className="mt-3 min-h-11 w-full rounded-md border border-border bg-muted/35 px-3 text-sm text-muted-foreground disabled:opacity-100"
-        >
-          <option>All pathways</option>
-        </select>
-      </div>
-
       {facets.map((facet) => (
         <div key={facet.id}>
           <label
             htmlFor={`${facet.id}-filter`}
             className="review-label block text-muted-foreground"
           >
-            {facet.id === "areas" ? "Modality" : facet.label}
+            {facet.label}
           </label>
           <select
             id={`${facet.id}-filter`}
             value={selection[facet.id][0] ?? ""}
             onChange={(event) => setFacetValue(facet.id, event.target.value)}
-            className="mt-3 min-h-11 w-full rounded-md border border-border bg-background px-3 text-sm text-foreground focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:outline-none"
+            disabled={facet.options.length === 0}
+            className="mt-3 min-h-11 w-full rounded-md border border-border bg-background px-3 text-sm text-foreground focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:outline-none disabled:bg-muted/35 disabled:text-muted-foreground disabled:opacity-100"
           >
             <option value="">
-              {facet.id === "areas" ? "All modalities" : "All locations"}
+              {facet.options.length === 0 ? "No options listed" : facet.allLabel}
             </option>
             {facet.options.map((option) => (
               <option key={option} value={option}>
@@ -380,26 +423,13 @@ function FilterFields({
         </div>
       ))}
 
-      <div>
-        <label
-          htmlFor="format-filter"
-          className="review-label block text-muted-foreground"
-        >
-          Format
-        </label>
-        <select
-          id="format-filter"
-          disabled
-          className="mt-3 min-h-11 w-full rounded-md border border-border bg-muted/35 px-3 text-sm text-muted-foreground disabled:opacity-100"
-        >
-          <option>All formats</option>
-        </select>
-      </div>
     </div>
   );
 }
 
 function PractitionerCard({ practitioner }: { practitioner: Practitioner }) {
+  const primaryLocation = getLocations(practitioner)[0] ?? practitioner.location;
+
   return (
     <>
       <div className="relative aspect-[5/4] overflow-hidden bg-muted">
@@ -416,19 +446,28 @@ function PractitionerCard({ practitioner }: { practitioner: Practitioner }) {
       </div>
       <div className="flex flex-1 flex-col p-4">
         <p className="text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-          {practitioner.location}
+          {primaryLocation}
         </p>
         <h3 className="mt-2 font-display text-xl leading-[1.08] text-balance">
           {practitioner.name}
         </h3>
+        {practitioner.descriptor ? (
+          <p className="mt-2 text-sm leading-5 text-foreground/80">
+            {practitioner.descriptor}
+          </p>
+        ) : null}
         <p className="mt-3 min-h-[3.75rem] line-clamp-3 text-sm leading-5 text-muted-foreground">
           {practitioner.summary}
         </p>
         <div className="mt-4 min-h-8 border-t border-border/80 pt-3">
-          <span className="sr-only">Areas of support</span>
-          <p className="text-[0.68rem] leading-4 text-muted-foreground">
-            {practitioner.modalities.join(" · ")}
-          </p>
+          {practitioner.modalities.length > 0 ? (
+            <>
+              <span className="sr-only">Specific modalities</span>
+              <p className="text-[0.68rem] leading-4 text-muted-foreground">
+                {practitioner.modalities.slice(0, 3).join(" · ")}
+              </p>
+            </>
+          ) : null}
         </div>
       </div>
     </>
