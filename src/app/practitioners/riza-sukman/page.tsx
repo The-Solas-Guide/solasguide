@@ -27,12 +27,12 @@ const navLinks = [
 ];
 
 const dataRowClassName = "border-b border-border/70 py-3.5";
-const dataValueClassName = "mt-2 font-sans text-base leading-6";
+const dataValueClassName = "mt-2 font-display text-xl leading-8";
 const placeholderValueClassName = `${dataValueClassName} text-muted-foreground`;
 
 function CredentialList({ items }: { items: readonly string[] }) {
   return (
-    <ul className="mt-2 divide-y divide-border/70 font-sans text-base leading-6">
+    <ul className="mt-2 divide-y divide-border/70 font-display text-xl leading-8">
       {items.map((item) => (
         <li key={item} className="py-3 first:pt-0 last:pb-0">
           {item}
