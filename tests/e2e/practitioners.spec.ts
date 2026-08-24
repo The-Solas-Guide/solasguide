@@ -11,7 +11,10 @@ function resultsCount(page: Page) {
 }
 
 async function checkFilter(page: Page, group: string, option: string) {
-  await page.getByLabel(group, { exact: true }).selectOption(option);
+  await page.getByRole("button", { name: "Filters" }).click();
+  const dialog = page.getByRole("dialog", { name: "Filters" });
+  await dialog.getByLabel(group, { exact: true }).selectOption(option);
+  await dialog.getByRole("button", { name: /Show \d+ results/ }).click();
 }
 
 test.describe("practitioner listing", () => {
@@ -132,8 +135,11 @@ test.describe("practitioner listing", () => {
     const filters = page.getByRole("complementary", {
       name: "Filter practitioners",
     });
+    await expect(filters.getByLabel("Search the Guide", { exact: true })).toBeVisible();
+    await expect(filters.getByLabel("Areas of support", { exact: true })).toBeHidden();
+    await filters.getByRole("button", { name: "Filters" }).click();
+    const dialog = page.getByRole("dialog", { name: "Filters" });
     for (const field of [
-      "Search the Guide",
       "Areas of support",
       "Approach",
       "Works with",
@@ -141,12 +147,12 @@ test.describe("practitioner listing", () => {
       "In-person or online",
       "Languages",
     ]) {
-      await expect(filters.getByLabel(field, { exact: true })).toBeVisible();
+      await expect(dialog.getByLabel(field, { exact: true })).toBeVisible();
     }
-    await expect(filters.locator("select")).toHaveCount(6);
-    await expect(filters.getByLabel("Modality", { exact: true })).toHaveCount(0);
+    await expect(dialog.locator("select")).toHaveCount(6);
+    await expect(dialog.getByLabel("Modality", { exact: true })).toHaveCount(0);
     await expect(
-      filters.getByLabel("In-person or online", { exact: true }),
+      dialog.getByLabel("In-person or online", { exact: true }),
     ).toBeDisabled();
   });
 });
@@ -308,20 +314,18 @@ test.describe("practitioner prototype at 390px", () => {
 test.describe("practitioner prototype at tablet width", () => {
   test.use({ viewport: { width: 1104, height: 1157 } });
 
-  test("wraps filters into two columns before the desktop layout", async ({
+  test("keeps search and the filter trigger on one row", async ({
     page,
   }) => {
     await page.goto("/practitioners");
 
     const search = await page.getByLabel("Search the Guide").boundingBox();
-    const areas = await page.getByLabel("Areas of support").boundingBox();
-    const approach = await page.getByLabel("Approach").boundingBox();
+    const filterButton = await page.getByRole("button", { name: "Filters" }).boundingBox();
 
     expect(search).not.toBeNull();
-    expect(areas).not.toBeNull();
-    expect(approach).not.toBeNull();
-    expect(Math.abs(search!.y - areas!.y)).toBeLessThan(4);
-    expect(approach!.y).toBeGreaterThan(search!.y + search!.height);
+    expect(filterButton).not.toBeNull();
+    expect(Math.abs(search!.y - filterButton!.y)).toBeLessThan(4);
+    await expect(page.getByLabel("Areas of support", { exact: true })).toBeHidden();
 
     const firstCard = await cards(page).nth(0).boundingBox();
     const thirdCard = await cards(page).nth(2).boundingBox();

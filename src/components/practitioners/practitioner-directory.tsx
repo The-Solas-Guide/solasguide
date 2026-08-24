@@ -1,7 +1,5 @@
 "use client";
 
-import Image from "next/image";
-import Link from "next/link";
 import { SlidersHorizontal, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -11,6 +9,7 @@ import {
 } from "@/lib/practitioners";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PractitionerCard } from "@/components/practitioners/practitioner-card";
 import { cn } from "@/lib/utils";
 
 type FacetId =
@@ -195,7 +194,7 @@ export function PractitionerDirectory() {
           aria-label="Filter practitioners"
           className="border-b border-border pb-6"
         >
-          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-3 md:grid-cols-2 md:items-start md:gap-5 xl:grid-cols-5 xl:gap-6">
+          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-3">
             <div>
               <label
                 htmlFor="practitioner-search"
@@ -218,9 +217,9 @@ export function PractitionerDirectory() {
               variant="outline"
               aria-haspopup="dialog"
               aria-expanded={filtersOpen}
-              aria-controls="mobile-practitioner-filters"
+              aria-controls="practitioner-filter-dialog"
               onClick={() => setFiltersOpen(true)}
-              className="w-32 justify-between px-3 md:hidden"
+              className="w-32 justify-between px-3"
             >
               Filters
               <span className="flex items-center">
@@ -235,7 +234,7 @@ export function PractitionerDirectory() {
             </Button>
 
             <div
-              id="mobile-practitioner-filters"
+              id="practitioner-filter-dialog"
               role={filtersOpen ? "dialog" : undefined}
               aria-modal={filtersOpen ? true : undefined}
               aria-labelledby={filtersOpen ? "mobile-filters-title" : undefined}
@@ -244,13 +243,12 @@ export function PractitionerDirectory() {
               }}
               className={cn(
                 filtersOpen
-                  ? "fixed inset-0 z-50 flex items-end bg-foreground/45 p-3"
+                  ? "fixed inset-0 z-50 flex items-end bg-foreground/45 p-3 sm:items-center sm:justify-center sm:p-6"
                   : "hidden",
-                "md:contents",
               )}
             >
-              <div className="max-h-[88dvh] w-full overflow-y-auto border border-border bg-card p-5 shadow-xl md:contents">
-                <div className="mb-6 flex items-center justify-between md:hidden">
+              <div className="max-h-[88dvh] w-full overflow-y-auto border border-border bg-card p-5 shadow-xl sm:max-w-3xl sm:p-7">
+                <div className="mb-6 flex items-center justify-between">
                   <h2
                     id="mobile-filters-title"
                     className="font-display text-2xl"
@@ -274,7 +272,7 @@ export function PractitionerDirectory() {
                   setFacetValue={setFacetValue}
                 />
 
-                <div className="mt-7 grid grid-cols-2 gap-3 md:hidden">
+                <div className="mt-7 grid grid-cols-2 gap-3">
                   <Button
                     type="button"
                     variant="outline"
@@ -363,20 +361,7 @@ export function PractitionerDirectory() {
             <ul className="mt-6 grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-4 lg:grid-cols-3 xl:grid-cols-4">
               {results.map((practitioner) => (
                 <li key={practitioner.slug} className="min-w-0">
-                  <article className="group h-full min-w-0 overflow-hidden border border-border/75 bg-muted/20 transition-colors duration-300 hover:border-accent/55 hover:bg-muted/30">
-                    {practitioner.hasPublishedProfile ? (
-                      <Link
-                        href={`/practitioners/${practitioner.slug}`}
-                        className="flex h-full min-w-0 flex-col focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
-                      >
-                        <PractitionerCard practitioner={practitioner} />
-                      </Link>
-                    ) : (
-                      <div className="flex h-full min-w-0 flex-col">
-                        <PractitionerCard practitioner={practitioner} />
-                      </div>
-                    )}
-                  </article>
+                  <PractitionerCard practitioner={practitioner} />
                 </li>
               ))}
             </ul>
@@ -395,7 +380,7 @@ function FilterFields({
   setFacetValue: (facetId: FacetId, value: string) => void;
 }) {
   return (
-    <div className="grid gap-5 md:contents">
+    <div className="grid gap-5 sm:grid-cols-2">
       {facets.map((facet) => (
         <div key={facet.id}>
           <label
@@ -424,52 +409,5 @@ function FilterFields({
       ))}
 
     </div>
-  );
-}
-
-function PractitionerCard({ practitioner }: { practitioner: Practitioner }) {
-  const primaryLocation = getLocations(practitioner)[0] ?? practitioner.location;
-
-  return (
-    <>
-      <div className="relative aspect-[5/4] overflow-hidden bg-muted">
-        <Image
-          src={practitioner.image}
-          alt={practitioner.imageAlt}
-          fill
-          className={cn(
-            "object-cover motion-safe:transition-transform motion-safe:duration-700 motion-safe:ease-out motion-safe:group-hover:scale-[1.025]",
-            practitioner.imagePosition,
-          )}
-          sizes="(max-width: 639px) 100vw, (max-width: 1279px) 50vw, 28vw"
-        />
-      </div>
-      <div className="flex flex-1 flex-col p-4">
-        <p className="text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-          {primaryLocation}
-        </p>
-        <h3 className="mt-2 font-display text-xl leading-[1.08] text-balance">
-          {practitioner.name}
-        </h3>
-        {practitioner.descriptor ? (
-          <p className="mt-2 text-sm leading-5 text-foreground/80">
-            {practitioner.descriptor}
-          </p>
-        ) : null}
-        <p className="mt-3 min-h-[3.75rem] line-clamp-3 text-sm leading-5 text-muted-foreground">
-          {practitioner.summary}
-        </p>
-        <div className="mt-4 min-h-8 border-t border-border/80 pt-3">
-          {practitioner.modalities.length > 0 ? (
-            <>
-              <span className="sr-only">Specific modalities</span>
-              <p className="text-[0.68rem] leading-4 text-muted-foreground">
-                {practitioner.modalities.slice(0, 3).join(" · ")}
-              </p>
-            </>
-          ) : null}
-        </div>
-      </div>
-    </>
   );
 }

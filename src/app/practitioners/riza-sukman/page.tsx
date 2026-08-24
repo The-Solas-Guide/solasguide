@@ -30,6 +30,33 @@ const dataRowClassName = "border-b border-border/70 py-3.5";
 const dataValueClassName = "mt-2 font-sans text-base leading-6";
 const placeholderValueClassName = `${dataValueClassName} text-muted-foreground`;
 
+function CredentialList({ items }: { items: readonly string[] }) {
+  return (
+    <ul className="mt-2 divide-y divide-border/70 font-sans text-base leading-6">
+      {items.map((item) => (
+        <li key={item} className="py-3 first:pt-0 last:pb-0">
+          {item}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function ProfileTagList({ items }: { items: readonly string[] }) {
+  return (
+    <ul className="mt-4 flex flex-wrap gap-2">
+      {items.map((item) => (
+        <li
+          key={item}
+          className="border border-border bg-muted/30 px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em]"
+        >
+          {item}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 export default function RizaSukmanPage() {
   if (!practitioner) notFound();
 
@@ -47,7 +74,7 @@ export default function RizaSukmanPage() {
         <main id="main-content">
           <nav
             aria-label="Breadcrumb"
-            className="mt-3 border-x border-t border-border bg-background px-5 py-5"
+            className="mt-3 border border-border bg-background px-5 py-5"
           >
             <ol className="flex min-h-11 items-center gap-3 text-xs font-semibold uppercase tracking-[0.13em]">
               <li>
@@ -139,14 +166,20 @@ export default function RizaSukmanPage() {
                 <dl className="mt-6 border-t border-border/80">
                   <div className={dataRowClassName}>
                     <dt className="review-label text-muted-foreground">Credentials</dt>
-                    <dd className={practitioner.credentials?.length ? dataValueClassName : placeholderValueClassName}>
-                      {practitioner.credentials?.join(" · ") || "-"}
+                    <dd>
+                      {practitioner.credentials?.length ? (
+                        <CredentialList items={practitioner.credentials} />
+                      ) : (
+                        <span className={placeholderValueClassName}>-</span>
+                      )}
                     </dd>
                   </div>
                   <div className={dataRowClassName}>
                     <dt className="review-label text-muted-foreground">Significant training</dt>
-                    <dd className={dataValueClassName}>
-                      {practitioner.significantTraining?.join(" · ") || "Somatic Experiencing"}
+                    <dd>
+                      <CredentialList
+                        items={practitioner.significantTraining ?? ["Somatic Experiencing"]}
+                      />
                     </dd>
                   </div>
                 </dl>
@@ -170,18 +203,22 @@ export default function RizaSukmanPage() {
                   >
                     Areas of support
                   </h3>
-                  <p className={practitioner.areasOfSupport?.length ? dataValueClassName : placeholderValueClassName}>
-                    {practitioner.areasOfSupport?.join(" · ") || "-"}
-                  </p>
+                  {practitioner.areasOfSupport?.length ? (
+                    <ProfileTagList items={practitioner.areasOfSupport} />
+                  ) : (
+                    <p className={placeholderValueClassName}>-</p>
+                  )}
                 </section>
 
                 <section aria-labelledby="approach-heading" className="mt-10">
                   <h3 id="approach-heading" className="review-label text-muted-foreground">
                     Approach
                   </h3>
-                  <p className={practitioner.approach ? dataValueClassName : placeholderValueClassName}>
-                    {practitioner.approach ?? "-"}
-                  </p>
+                  {practitioner.approach ? (
+                    <ProfileTagList items={[practitioner.approach]} />
+                  ) : (
+                    <p className={placeholderValueClassName}>-</p>
+                  )}
                 </section>
 
                 <section aria-labelledby="specific-modalities-heading" className="mt-12">
@@ -192,16 +229,7 @@ export default function RizaSukmanPage() {
                     Specific modalities
                   </h3>
                   {practitioner.modalities.length > 0 ? (
-                    <ul className="mt-4 flex flex-wrap gap-2">
-                      {practitioner.modalities.map((modality) => (
-                      <li
-                        key={modality}
-                        className="border border-border bg-muted/30 px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em]"
-                      >
-                        {modality}
-                      </li>
-                      ))}
-                    </ul>
+                    <ProfileTagList items={practitioner.modalities} />
                   ) : (
                     <p className={placeholderValueClassName}>-</p>
                   )}

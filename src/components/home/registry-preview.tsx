@@ -1,6 +1,5 @@
-import Image from "next/image";
+import { PractitionerCard } from "@/components/practitioners/practitioner-card";
 import { practitioners } from "@/lib/practitioners";
-import { cn } from "@/lib/utils";
 
 export function RegistryPreview() {
   return (
@@ -32,50 +31,11 @@ export function RegistryPreview() {
 
       <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 xl:grid-cols-4">
         {practitioners.map((practitioner) => (
-          <article
+          <PractitionerCard
             key={practitioner.slug}
-            className="group flex min-w-0 flex-col overflow-hidden border border-border/75 bg-muted/20 transition-colors duration-300 hover:border-accent/55"
-          >
-            <div className="relative aspect-[4/5] overflow-hidden bg-muted sm:aspect-[3/4] xl:aspect-[4/5]">
-              <Image
-                src={practitioner.image}
-                alt={practitioner.imageAlt}
-                fill
-                className={cn(
-                  "object-cover motion-safe:transition-transform motion-safe:duration-700 motion-safe:ease-out motion-safe:group-hover:scale-[1.025]",
-                  practitioner.imagePosition,
-                )}
-                sizes="(max-width: 1023px) 50vw, 25vw"
-              />
-            </div>
-            <div className="flex flex-1 flex-col p-4">
-              <div>
-                <p className="text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                  {practitioner.location}
-                </p>
-                <h3 className="mt-1 font-display text-xl leading-[1.08] text-balance xl:text-[1.35rem]">
-                  {practitioner.name}
-                </h3>
-              </div>
-              <p className="mt-2.5 line-clamp-3 text-sm leading-5 text-muted-foreground xl:text-[0.75rem] xl:leading-[1.15rem]">
-                {practitioner.summary}
-              </p>
-              <div className="mt-3 border-t border-border/80 pt-3">
-                <span className="sr-only">Primary practice</span>
-                <p className="font-display text-base leading-5 text-foreground xl:text-lg">
-                  {practitioner.modalities[0]}
-                </p>
-                {practitioner.modalities.length > 1 ? (
-                  <div className="mt-1">
-                    <span className="sr-only">Supporting practices</span>
-                    <p className="text-[0.68rem] leading-4 text-muted-foreground">
-                      {practitioner.modalities.slice(1).join(" · ")}
-                    </p>
-                  </div>
-                ) : null}
-              </div>
-            </div>
-          </article>
+            practitioner={practitioner}
+            variant="registry"
+          />
         ))}
       </div>
     </section>

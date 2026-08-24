@@ -17,7 +17,7 @@ const foundingPractitioners: readonly FoundingPractitioner[] = [
     primaryPractice: "Somatic Experiencing",
     supportingPractices: ["Bodywork", "Breathwork"],
     summary:
-      "Trained in Somatic Experiencing, with experience supporting retreat-intensive work.",
+      "Riza offers somatic, trauma-informed support for people navigating grief, anxiety, relationship difficulties and disconnection from self.",
   },
   {
     name: "Pablo Castro",
@@ -109,18 +109,15 @@ async function expectPractitionerCard(card: Locator, practitioner: FoundingPract
   await expect(card).toBeVisible();
   await expect(card.getByRole("heading", { level: 3, name: practitioner.name, exact: true })).toBeVisible();
   await expect(card.getByText(practitioner.location, { exact: true })).toBeVisible();
-  await expect(card.getByText("Primary practice", { exact: true })).toBeAttached();
-  await expect(card.getByText(practitioner.primaryPractice, { exact: true })).toBeVisible();
+  await expect(card.getByText("Specific modalities", { exact: true })).toBeAttached();
   await expect(card.getByText(practitioner.summary, { exact: true })).toBeVisible();
 
-  if (practitioner.supportingPractices.length > 0) {
-    await expect(card.getByText("Supporting practices", { exact: true })).toBeAttached();
-    await expect(
-      card.getByText(practitioner.supportingPractices.join(" · "), { exact: true }),
-    ).toBeVisible();
-  } else {
-    await expect(card.getByText("Supporting practices", { exact: true })).toHaveCount(0);
-  }
+  await expect(
+    card.getByText(
+      [practitioner.primaryPractice, ...practitioner.supportingPractices].join(" · "),
+      { exact: true },
+    ),
+  ).toBeVisible();
 
   await expectLoadedImage(card.locator("img"), practitioner.image);
 }
@@ -186,7 +183,11 @@ test.describe("homepage", () => {
       await expectPractitionerCard(cards.nth(index), practitioner);
     }
 
-    await expect(registry.getByRole("link")).toHaveCount(0);
+    await expect(registry.getByRole("link")).toHaveCount(1);
+    await expect(registry.getByRole("link", { name: /Riza Sukman/ })).toHaveAttribute(
+      "href",
+      "/practitioners/riza-sukman",
+    );
     await expect(registry.getByText("Build Your Retreat", { exact: true })).toHaveCount(0);
   });
 
