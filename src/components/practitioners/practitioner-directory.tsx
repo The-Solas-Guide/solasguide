@@ -2,8 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { X } from "lucide-react";
-import { useMemo, useState } from "react";
+import { SlidersHorizontal, X } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   areaOfSupportOptions,
   getLocations,
@@ -71,6 +71,20 @@ function matchesFacets(practitioner: Practitioner, selection: Selection) {
 export function PractitionerDirectory() {
   const [query, setQuery] = useState("");
   const [selection, setSelection] = useState<Selection>(emptySelection);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const closeFiltersRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (!filtersOpen) return;
+
+    closeFiltersRef.current?.focus();
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [filtersOpen]);
 
   const results = useMemo(
     () =>
@@ -123,7 +137,7 @@ export function PractitionerDirectory() {
           aria-label="Filter practitioners"
           className="border-b border-border pb-6"
         >
-          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-5 lg:gap-6">
+          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-3 md:grid-cols-2 md:items-start md:gap-5 xl:grid-cols-5 xl:gap-6">
             <div>
               <label
                 htmlFor="practitioner-search"
@@ -141,64 +155,75 @@ export function PractitionerDirectory() {
               />
             </div>
 
-            <div>
-              <label
-                htmlFor="pathway-filter"
-                className="review-label block text-muted-foreground"
-              >
-                Pathway
-              </label>
-              <select
-                id="pathway-filter"
-                disabled
-                className="mt-3 min-h-10 w-full border border-border bg-transparent px-3 text-sm text-muted-foreground disabled:opacity-100"
-              >
-                <option>All pathways</option>
-              </select>
-            </div>
+            <Button
+              type="button"
+              variant="outline"
+              aria-haspopup="dialog"
+              aria-expanded={filtersOpen}
+              aria-controls="mobile-practitioner-filters"
+              onClick={() => setFiltersOpen(true)}
+              className="min-w-28 justify-between md:hidden"
+            >
+              Filters
+              <span className="flex items-center gap-2">
+                {activeFilters.length > 0 ? `(${activeFilters.length})` : null}
+                <SlidersHorizontal className="size-4" aria-hidden="true" />
+              </span>
+            </Button>
 
-            {facets.map((facet) => (
-              <div key={facet.id}>
-                <label
-                  htmlFor={`${facet.id}-filter`}
-                  className="review-label block text-muted-foreground"
-                >
-                  {facet.id === "areas" ? "Modality" : facet.label}
-                </label>
-                <select
-                  id={`${facet.id}-filter`}
-                  value={selection[facet.id][0] ?? ""}
-                  onChange={(event) =>
-                    setFacetValue(facet.id, event.target.value)
-                  }
-                  className="mt-3 min-h-10 w-full border border-border bg-transparent px-3 text-sm text-foreground"
-                >
-                  <option value="">
-                    {facet.id === "areas" ? "All modalities" : "All locations"}
-                  </option>
-                  {facet.options.map((option) => (
-                    <option key={option} value={option}>
-                      {option}
-                    </option>
-                  ))}
-                </select>
+            <div
+              id="mobile-practitioner-filters"
+              role={filtersOpen ? "dialog" : undefined}
+              aria-modal={filtersOpen ? true : undefined}
+              aria-labelledby={filtersOpen ? "mobile-filters-title" : undefined}
+              onKeyDown={(event) => {
+                if (event.key === "Escape") setFiltersOpen(false);
+              }}
+              className={cn(
+                filtersOpen
+                  ? "fixed inset-0 z-50 flex items-end bg-foreground/45 p-3"
+                  : "hidden",
+                "md:contents",
+              )}
+            >
+              <div className="max-h-[88dvh] w-full overflow-y-auto border border-border bg-card p-5 shadow-xl md:contents">
+                <div className="mb-6 flex items-center justify-between md:hidden">
+                  <h2
+                    id="mobile-filters-title"
+                    className="font-display text-2xl"
+                  >
+                    Filters
+                  </h2>
+                  <Button
+                    ref={closeFiltersRef}
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    aria-label="Close filters"
+                    onClick={() => setFiltersOpen(false)}
+                  >
+                    <X className="size-5" aria-hidden="true" />
+                  </Button>
+                </div>
+
+                <FilterFields
+                  selection={selection}
+                  setFacetValue={setFacetValue}
+                />
+
+                <div className="mt-7 grid grid-cols-2 gap-3 md:hidden">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setSelection(emptySelection)}
+                  >
+                    Clear filters
+                  </Button>
+                  <Button type="button" onClick={() => setFiltersOpen(false)}>
+                    Show {results.length} results
+                  </Button>
+                </div>
               </div>
-            ))}
-
-            <div>
-              <label
-                htmlFor="format-filter"
-                className="review-label block text-muted-foreground"
-              >
-                Format
-              </label>
-              <select
-                id="format-filter"
-                disabled
-                className="mt-3 min-h-10 w-full border border-border bg-transparent px-3 text-sm text-muted-foreground disabled:opacity-100"
-              >
-                <option>All formats</option>
-              </select>
             </div>
           </div>
         </aside>
@@ -263,7 +288,7 @@ export function PractitionerDirectory() {
               </Button>
             </div>
           ) : (
-            <ul className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 xl:grid-cols-3">
+            <ul className="mt-6 grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-4 lg:grid-cols-3 xl:grid-cols-4">
               {results.map((practitioner) => (
                 <li key={practitioner.slug} className="min-w-0">
                   <article className="group h-full min-w-0 overflow-hidden border border-border/75 bg-muted/20 transition-colors duration-300 hover:border-accent/55">
@@ -285,6 +310,76 @@ export function PractitionerDirectory() {
             </ul>
           )}
         </div>
+      </div>
+    </div>
+  );
+}
+
+function FilterFields({
+  selection,
+  setFacetValue,
+}: {
+  selection: Selection;
+  setFacetValue: (facetId: FacetId, value: string) => void;
+}) {
+  return (
+    <div className="grid gap-5 md:contents">
+      <div>
+        <label
+          htmlFor="pathway-filter"
+          className="review-label block text-muted-foreground"
+        >
+          Pathway
+        </label>
+        <select
+          id="pathway-filter"
+          disabled
+          className="mt-3 min-h-10 w-full border border-border bg-transparent px-3 text-sm text-muted-foreground disabled:opacity-100"
+        >
+          <option>All pathways</option>
+        </select>
+      </div>
+
+      {facets.map((facet) => (
+        <div key={facet.id}>
+          <label
+            htmlFor={`${facet.id}-filter`}
+            className="review-label block text-muted-foreground"
+          >
+            {facet.id === "areas" ? "Modality" : facet.label}
+          </label>
+          <select
+            id={`${facet.id}-filter`}
+            value={selection[facet.id][0] ?? ""}
+            onChange={(event) => setFacetValue(facet.id, event.target.value)}
+            className="mt-3 min-h-10 w-full border border-border bg-transparent px-3 text-sm text-foreground"
+          >
+            <option value="">
+              {facet.id === "areas" ? "All modalities" : "All locations"}
+            </option>
+            {facet.options.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+        </div>
+      ))}
+
+      <div>
+        <label
+          htmlFor="format-filter"
+          className="review-label block text-muted-foreground"
+        >
+          Format
+        </label>
+        <select
+          id="format-filter"
+          disabled
+          className="mt-3 min-h-10 w-full border border-border bg-transparent px-3 text-sm text-muted-foreground disabled:opacity-100"
+        >
+          <option>All formats</option>
+        </select>
       </div>
     </div>
   );

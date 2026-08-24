@@ -251,18 +251,36 @@ test.describe("practitioner profile", () => {
 test.describe("practitioner prototype at 390px", () => {
   test.use({ viewport: { width: 390, height: 844 } });
 
-  test("stacks the top filters and avoids horizontal overflow", async ({
+  test("opens filters in a modal and avoids horizontal overflow", async ({
     page,
   }) => {
     await page.goto("/practitioners");
 
-    const filters = page.getByRole("complementary", {
-      name: "Filter practitioners",
-    });
-    await expect(filters).toBeVisible();
+    await expect(page.getByLabel("Search the Guide")).toBeVisible();
+    await expect(page.getByLabel("Location", { exact: true })).toBeHidden();
 
-    await checkFilter(page, "Location", "Ubud");
+    const search = await page.getByLabel("Search the Guide").boundingBox();
+    const filterButton = await page
+      .getByRole("button", { name: "Filters" })
+      .boundingBox();
+    expect(search).not.toBeNull();
+    expect(filterButton).not.toBeNull();
+    expect(Math.abs(search!.y - filterButton!.y)).toBeLessThan(4);
+
+    await page.getByRole("button", { name: "Filters" }).click();
+    const dialog = page.getByRole("dialog", { name: "Filters" });
+    await expect(dialog).toBeVisible();
+
+    await dialog.getByLabel("Location", { exact: true }).selectOption("Ubud");
+    await dialog.getByRole("button", { name: "Show 6 results" }).click();
+    await expect(dialog).toBeHidden();
     await expect(cards(page)).toHaveCount(6);
+
+    const firstCard = await cards(page).nth(0).boundingBox();
+    const secondCard = await cards(page).nth(1).boundingBox();
+    expect(firstCard).not.toBeNull();
+    expect(secondCard).not.toBeNull();
+    expect(secondCard!.y).toBeGreaterThan(firstCard!.y + firstCard!.height);
 
     await expect(
       page.evaluate(
@@ -286,5 +304,51 @@ test.describe("practitioner prototype at 390px", () => {
           document.documentElement.clientWidth,
       ),
     ).resolves.toBe(false);
+  });
+});
+
+test.describe("practitioner prototype at tablet width", () => {
+  test.use({ viewport: { width: 1104, height: 1157 } });
+
+  test("wraps filters into two columns before the desktop layout", async ({
+    page,
+  }) => {
+    await page.goto("/practitioners");
+
+    const search = await page.getByLabel("Search the Guide").boundingBox();
+    const pathway = await page.getByLabel("Pathway").boundingBox();
+    const modality = await page.getByLabel("Modality").boundingBox();
+
+    expect(search).not.toBeNull();
+    expect(pathway).not.toBeNull();
+    expect(modality).not.toBeNull();
+    expect(Math.abs(search!.y - pathway!.y)).toBeLessThan(4);
+    expect(modality!.y).toBeGreaterThan(search!.y + search!.height);
+
+    const firstCard = await cards(page).nth(0).boundingBox();
+    const thirdCard = await cards(page).nth(2).boundingBox();
+    const fourthCard = await cards(page).nth(3).boundingBox();
+    expect(firstCard).not.toBeNull();
+    expect(thirdCard).not.toBeNull();
+    expect(fourthCard).not.toBeNull();
+    expect(Math.abs(firstCard!.y - thirdCard!.y)).toBeLessThan(4);
+    expect(fourthCard!.y).toBeGreaterThan(firstCard!.y + firstCard!.height);
+  });
+});
+
+test.describe("practitioner prototype at desktop width", () => {
+  test.use({ viewport: { width: 1440, height: 1200 } });
+
+  test("shows four practitioner cards per row", async ({ page }) => {
+    await page.goto("/practitioners");
+
+    const firstCard = await cards(page).nth(0).boundingBox();
+    const fourthCard = await cards(page).nth(3).boundingBox();
+    const fifthCard = await cards(page).nth(4).boundingBox();
+    expect(firstCard).not.toBeNull();
+    expect(fourthCard).not.toBeNull();
+    expect(fifthCard).not.toBeNull();
+    expect(Math.abs(firstCard!.y - fourthCard!.y)).toBeLessThan(4);
+    expect(fifthCard!.y).toBeGreaterThan(firstCard!.y + firstCard!.height);
   });
 });
