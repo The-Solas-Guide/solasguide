@@ -205,10 +205,34 @@ test.describe("homepage", () => {
       await expectLoadedImage(card.locator("img"), practitioner.image);
     }
 
+    const firstCard = await cards.nth(0).boundingBox();
+    const secondCard = await cards.nth(1).boundingBox();
+    expect(firstCard).not.toBeNull();
+    expect(secondCard).not.toBeNull();
+    expect(secondCard!.y).toBeGreaterThan(firstCard!.y + firstCard!.height - 4);
+
     const hasOverflow = await page.evaluate(
       () => document.documentElement.scrollWidth > document.documentElement.clientWidth,
     );
 
     expect(hasOverflow).toBe(false);
+  });
+
+  test("shows four founding practitioner columns at tablet width", async ({ page }) => {
+    await page.setViewportSize({ width: 1104, height: 1157 });
+    await page.goto("/");
+
+    const cards = page
+      .getByRole("region", { name: "Meet the Founding Practitioners" })
+      .locator("article");
+    const firstRow = await Promise.all(
+      [0, 1, 2, 3].map((index) => cards.nth(index).boundingBox()),
+    );
+    const fifthCard = await cards.nth(4).boundingBox();
+
+    expect(firstRow.every((box) => box !== null)).toBe(true);
+    expect(fifthCard).not.toBeNull();
+    expect(Math.max(...firstRow.map((box) => box!.y)) - Math.min(...firstRow.map((box) => box!.y))).toBeLessThan(4);
+    expect(fifthCard!.y).toBeGreaterThan(firstRow[0]!.y + firstRow[0]!.height - 4);
   });
 });
