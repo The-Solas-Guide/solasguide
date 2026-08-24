@@ -150,7 +150,7 @@ export function PractitionerDirectory() {
                 type="search"
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
-                placeholder="Name, practice or place"
+                placeholder="Name or practice"
                 className="mt-3"
               />
             </div>
@@ -162,12 +162,17 @@ export function PractitionerDirectory() {
               aria-expanded={filtersOpen}
               aria-controls="mobile-practitioner-filters"
               onClick={() => setFiltersOpen(true)}
-              className="min-w-28 justify-between md:hidden"
+              className="w-32 justify-between px-3 md:hidden"
             >
               Filters
-              <span className="flex items-center gap-2">
-                {activeFilters.length > 0 ? `(${activeFilters.length})` : null}
-                <SlidersHorizontal className="size-4" aria-hidden="true" />
+              <span className="flex items-center">
+                {activeFilters.length > 0 ? (
+                  <span className="inline-flex size-5 items-center justify-center rounded-full bg-foreground text-[0.62rem] text-background">
+                    {activeFilters.length}
+                  </span>
+                ) : (
+                  <SlidersHorizontal className="size-4" aria-hidden="true" />
+                )}
               </span>
             </Button>
 
@@ -216,10 +221,15 @@ export function PractitionerDirectory() {
                     type="button"
                     variant="outline"
                     onClick={() => setSelection(emptySelection)}
+                    className="px-2 text-[0.62rem] tracking-[0.08em] whitespace-nowrap"
                   >
                     Clear filters
                   </Button>
-                  <Button type="button" onClick={() => setFiltersOpen(false)}>
+                  <Button
+                    type="button"
+                    onClick={() => setFiltersOpen(false)}
+                    className="px-2 text-[0.62rem] tracking-[0.08em] whitespace-nowrap"
+                  >
                     Show {results.length} results
                   </Button>
                 </div>
@@ -262,6 +272,10 @@ export function PractitionerDirectory() {
                     aria-label={`Remove ${filter.facetLabel} filter ${filter.value}`}
                     className="inline-flex min-h-9 items-center gap-2 border border-border bg-muted/40 px-3 text-xs text-foreground transition-colors hover:border-foreground/45"
                   >
+                    <span className="text-muted-foreground">
+                      {filter.facetLabel}
+                    </span>
+                    <span aria-hidden="true">·</span>
                     {filter.value}
                     <X className="size-3.5" aria-hidden="true" />
                   </button>
@@ -271,7 +285,7 @@ export function PractitionerDirectory() {
           ) : null}
 
           {results.length === 0 ? (
-            <div className="mt-10 border border-border bg-muted/20 px-6 py-14 text-center">
+            <div className="mt-8 border border-border bg-muted/20 px-6 py-12 text-center">
               <h2 className="font-display text-2xl leading-tight">
                 No practitioners match yet.
               </h2>
@@ -291,7 +305,7 @@ export function PractitionerDirectory() {
             <ul className="mt-6 grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-4 lg:grid-cols-3 xl:grid-cols-4">
               {results.map((practitioner) => (
                 <li key={practitioner.slug} className="min-w-0">
-                  <article className="group h-full min-w-0 overflow-hidden border border-border/75 bg-muted/20 transition-colors duration-300 hover:border-accent/55">
+                  <article className="group h-full min-w-0 overflow-hidden border border-border/75 bg-muted/20 transition-colors duration-300 hover:border-accent/55 hover:bg-muted/30">
                     {practitioner.hasPublishedProfile ? (
                       <Link
                         href={`/practitioners/${practitioner.slug}`}
@@ -334,7 +348,7 @@ function FilterFields({
         <select
           id="pathway-filter"
           disabled
-          className="mt-3 min-h-10 w-full border border-border bg-transparent px-3 text-sm text-muted-foreground disabled:opacity-100"
+          className="mt-3 min-h-11 w-full rounded-md border border-border bg-muted/35 px-3 text-sm text-muted-foreground disabled:opacity-100"
         >
           <option>All pathways</option>
         </select>
@@ -352,7 +366,7 @@ function FilterFields({
             id={`${facet.id}-filter`}
             value={selection[facet.id][0] ?? ""}
             onChange={(event) => setFacetValue(facet.id, event.target.value)}
-            className="mt-3 min-h-10 w-full border border-border bg-transparent px-3 text-sm text-foreground"
+            className="mt-3 min-h-11 w-full rounded-md border border-border bg-background px-3 text-sm text-foreground focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:outline-none"
           >
             <option value="">
               {facet.id === "areas" ? "All modalities" : "All locations"}
@@ -376,7 +390,7 @@ function FilterFields({
         <select
           id="format-filter"
           disabled
-          className="mt-3 min-h-10 w-full border border-border bg-transparent px-3 text-sm text-muted-foreground disabled:opacity-100"
+          className="mt-3 min-h-11 w-full rounded-md border border-border bg-muted/35 px-3 text-sm text-muted-foreground disabled:opacity-100"
         >
           <option>All formats</option>
         </select>
@@ -404,13 +418,13 @@ function PractitionerCard({ practitioner }: { practitioner: Practitioner }) {
         <p className="text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
           {practitioner.location}
         </p>
-        <h3 className="mt-1 font-display text-xl leading-[1.08] text-balance">
+        <h3 className="mt-2 font-display text-xl leading-[1.08] text-balance">
           {practitioner.name}
         </h3>
-        <p className="mt-2.5 line-clamp-3 text-sm leading-5 text-muted-foreground">
+        <p className="mt-3 min-h-[3.75rem] line-clamp-3 text-sm leading-5 text-muted-foreground">
           {practitioner.summary}
         </p>
-        <div className="mt-auto border-t border-border/80 pt-3">
+        <div className="mt-4 min-h-8 border-t border-border/80 pt-3">
           <span className="sr-only">Areas of support</span>
           <p className="text-[0.68rem] leading-4 text-muted-foreground">
             {practitioner.modalities.join(" · ")}
