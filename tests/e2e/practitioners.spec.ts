@@ -53,18 +53,20 @@ test.describe("published practitioner directory", () => {
   test("filters by linked areas, approaches, audiences, locations, format, and languages", async ({ page }) => {
     await page.goto("/practitioners");
     const cases = [
-      ["Areas of support", "trauma-and-nervous-system", "Kartika Alexandra"],
-      ["Approach", "coaching", "Sandra Echemendia"],
-      ["Works with", "groups", "Indri Hapsari"],
-      ["Location", "international", "Sandra Echemendia"],
-      ["In-person or online", "online", ""],
-      ["Languages", "english", ""],
+      ["Areas of support", "Trauma & nervous system", "Kartika Alexandra"],
+      ["Approach", "Coaching", "Sandra Echemendia"],
+      ["Works with", "Groups", "Indri Hapsari"],
+      ["Location", "International", "Sandra Echemendia"],
+      ["In-person or online", "Online", ""],
+      ["Languages", "English", ""],
     ] as const;
 
-    for (const [label, value, expectedName] of cases) {
+    for (const [label, optionLabel, expectedName] of cases) {
       await page.getByRole("button", { name: /Filters/ }).click();
       const dialog = page.getByRole("dialog", { name: "Filters" });
-      await dialog.getByLabel(label, { exact: true }).selectOption(value);
+      await dialog
+        .getByLabel(label, { exact: true })
+        .selectOption({ label: optionLabel });
       await dialog.getByRole("button", { name: /Show .* results/ }).click();
 
       await expect(cards(page)).toHaveCount(expectedName ? 1 : 3);
