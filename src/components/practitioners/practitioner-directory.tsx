@@ -1,13 +1,16 @@
 "use client";
 
 import { SlidersHorizontal, X } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Dialog } from "radix-ui";
+import { useMemo, useState } from "react";
 import type { Practitioner, PractitionerTermType } from "@/lib/practitioners";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PractitionerCard } from "@/components/practitioners/practitioner-card";
-import { PractitionerDirectoryEmpty, PractitionerDirectoryError } from "@/components/practitioners/practitioner-status";
-import { cn } from "@/lib/utils";
+import {
+  PractitionerDirectoryEmpty,
+  PractitionerDirectoryError,
+} from "@/components/practitioners/practitioner-status";
 
 export type FacetId =
   | "areas"
@@ -45,17 +48,24 @@ function termOptions(
   practitioners: readonly Practitioner[],
   type: PractitionerTermType,
 ): FacetOption[] {
-  const options = new Map<string, FacetOption>();
+  const options = new Map<string, FacetOption & { sortOrder: number }>();
   for (const practitioner of practitioners) {
     for (const term of practitioner.terms) {
       if (term.type !== type || options.has(term.slug)) continue;
-      options.set(term.slug, { value: term.slug, label: term.name });
+      options.set(term.slug, {
+        value: term.slug,
+        label: term.name,
+        sortOrder: term.sortOrder,
+      });
     }
   }
 
-  return [...options.values()].sort((left, right) =>
-    left.label.localeCompare(right.label),
-  );
+  return [...options.values()]
+    .sort(
+      (left, right) =>
+        left.sortOrder - right.sortOrder || left.label.localeCompare(right.label),
+    )
+    .map(({ value, label }) => ({ value, label }));
 }
 
 function termsFor(practitioner: Practitioner, type: PractitionerTermType) {
@@ -166,23 +176,10 @@ export function PractitionerDirectory({
   const [query, setQuery] = useState("");
   const [selection, setSelection] = useState<Selection>(emptySelection);
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const closeFiltersRef = useRef<HTMLButtonElement>(null);
   const facets = useMemo(
     () => getFacetDefinitions(practitioners),
     [practitioners],
   );
-
-  useEffect(() => {
-    if (!filtersOpen) return;
-
-    closeFiltersRef.current?.focus();
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
-    return () => {
-      document.body.style.overflow = previousOverflow;
-    };
-  }, [filtersOpen]);
 
   const results = useMemo(
     () =>
@@ -256,86 +253,77 @@ export function PractitionerDirectory({
               />
             </div>
 
-            <Button
-              type="button"
-              variant="outline"
-              aria-haspopup="dialog"
-              aria-expanded={filtersOpen}
-              aria-controls="practitioner-filter-dialog"
-              onClick={() => setFiltersOpen(true)}
-              className="w-32 justify-between px-3"
-            >
-              Filters
-              <span className="flex items-center">
-                {activeFilters.length > 0 ? (
-                  <span className="inline-flex size-5 items-center justify-center rounded-full bg-foreground text-[0.62rem] text-background">
-                    {activeFilters.length}
+            <Dialog.Root open={filtersOpen} onOpenChange={setFiltersOpen}>
+              <Dialog.Trigger asChild>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-32 justify-between px-3"
+                >
+                  Filters
+                  <span className="flex items-center">
+                    {activeFilters.length > 0 ? (
+                      <span className="inline-flex size-5 items-center justify-center rounded-full bg-foreground text-[0.62rem] text-background">
+                        {activeFilters.length}
+                      </span>
+                    ) : (
+                      <SlidersHorizontal className="size-4" aria-hidden="true" />
+                    )}
                   </span>
-                ) : (
-                  <SlidersHorizontal className="size-4" aria-hidden="true" />
-                )}
-              </span>
-            </Button>
+                </Button>
+              </Dialog.Trigger>
 
-            <div
-              id="practitioner-filter-dialog"
-              role={filtersOpen ? "dialog" : undefined}
-              aria-modal={filtersOpen ? true : undefined}
-              aria-labelledby={filtersOpen ? "mobile-filters-title" : undefined}
-              onKeyDown={(event) => {
-                if (event.key === "Escape") setFiltersOpen(false);
-              }}
-              className={cn(
-                filtersOpen
-                  ? "fixed inset-0 z-50 flex items-end bg-foreground/45 p-3 sm:items-center sm:justify-center sm:p-6"
-                  : "hidden",
-              )}
-            >
-              <div className="max-h-[88dvh] w-full overflow-y-auto border border-border bg-card p-5 shadow-xl sm:max-w-3xl sm:p-7">
-                <div className="mb-6 flex items-center justify-between">
-                  <h2
-                    id="mobile-filters-title"
-                    className="font-display text-2xl"
-                  >
-                    Filters
-                  </h2>
-                  <Button
-                    ref={closeFiltersRef}
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    aria-label="Close filters"
-                    onClick={() => setFiltersOpen(false)}
-                  >
-                    <X className="size-5" aria-hidden="true" />
-                  </Button>
-                </div>
+              <Dialog.Portal>
+                <Dialog.Overlay className="fixed inset-0 z-50 bg-foreground/45" />
+                <Dialog.Content
+                  id="practitioner-filter-dialog"
+                  className="fixed inset-0 z-50 flex items-end p-3 outline-none sm:items-center sm:justify-center sm:p-6"
+                >
+                  <div className="max-h-[88dvh] w-full overflow-y-auto border border-border bg-card p-5 shadow-xl sm:max-w-3xl sm:p-7">
+                    <div className="mb-6 flex items-center justify-between">
+                      <Dialog.Title asChild>
+                        <h2 className="font-display text-2xl">Filters</h2>
+                      </Dialog.Title>
+                      <Dialog.Close asChild>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          aria-label="Close filters"
+                        >
+                          <X className="size-5" aria-hidden="true" />
+                        </Button>
+                      </Dialog.Close>
+                    </div>
 
-                <FilterFields
-                  facets={facets}
-                  selection={selection}
-                  setFacetValue={setFacetValue}
-                />
+                    <FilterFields
+                      facets={facets}
+                      selection={selection}
+                      setFacetValue={setFacetValue}
+                    />
 
-                <div className="mt-7 grid grid-cols-2 gap-3">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setSelection(emptySelection)}
-                    className="px-2 text-[0.62rem] tracking-[0.08em] whitespace-nowrap"
-                  >
-                    Clear filters
-                  </Button>
-                  <Button
-                    type="button"
-                    onClick={() => setFiltersOpen(false)}
-                    className="px-2 text-[0.62rem] tracking-[0.08em] whitespace-nowrap"
-                  >
-                    Show {results.length} results
-                  </Button>
-                </div>
-              </div>
-            </div>
+                    <div className="mt-7 grid grid-cols-2 gap-3">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setSelection(emptySelection)}
+                        className="px-2 text-[0.62rem] tracking-[0.08em] whitespace-nowrap"
+                      >
+                        Clear filters
+                      </Button>
+                      <Dialog.Close asChild>
+                        <Button
+                          type="button"
+                          className="px-2 text-[0.62rem] tracking-[0.08em] whitespace-nowrap"
+                        >
+                          Show {results.length} results
+                        </Button>
+                      </Dialog.Close>
+                    </div>
+                  </div>
+                </Dialog.Content>
+              </Dialog.Portal>
+            </Dialog.Root>
           </div>
         </aside>
 

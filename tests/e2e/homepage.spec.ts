@@ -1,4 +1,9 @@
 import { expect, test } from "@playwright/test";
+import { installPractitionerImageFixture } from "./practitioner-fixtures";
+
+test.beforeEach(async ({ page }) => {
+  await installPractitionerImageFixture(page);
+});
 
 test.describe("homepage", () => {
   test("follows the approved client flow", async ({ page }) => {
@@ -36,7 +41,7 @@ test.describe("homepage", () => {
     );
   });
 
-  test("shows the empty dynamic practitioner preview in local state", async ({ page }) => {
+  test("shows published practitioner cards in the dynamic preview", async ({ page }) => {
     await page.goto("/");
 
     const registry = page.getByRole("region", { name: "Meet the Founding Practitioners" });
@@ -53,21 +58,25 @@ test.describe("homepage", () => {
         { exact: true },
       ),
     ).toBeVisible();
-    await expect(registry.locator("article")).toHaveCount(0);
-    await expect(
-      registry
-        .getByText("Profiles will appear here as they are published.", { exact: true })
-        .or(registry.getByRole("status")),
-    ).toBeVisible();
+    await expect(registry.locator("article")).toHaveCount(3);
+    await expect(registry.getByRole("heading", { name: "Kartika Alexandra" })).toBeVisible();
+    await expect(registry.getByRole("heading", { name: "Sandra Echemendia" })).toBeVisible();
+    await expect(registry.getByRole("heading", { name: "Indri Hapsari" })).toBeVisible();
+    await expect(registry.locator("img")).toHaveCount(3);
+    await expect(registry.getByRole("link", { name: /Kartika Alexandra/ })).toHaveAttribute(
+      "href",
+      "/practitioners/kartika-alexandra",
+    );
     await expect(registry.getByText("Build Your Retreat", { exact: true })).toHaveCount(0);
   });
 
-  test("keeps the empty practitioner preview usable at 390px", async ({ page }) => {
+  test("keeps the published practitioner preview usable at 390px", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
 
     const registry = page.getByRole("region", { name: "Meet the Founding Practitioners" });
-    await expect(registry.locator("article")).toHaveCount(0);
+    await expect(registry.locator("article")).toHaveCount(3);
+    await expect(registry.getByRole("heading", { name: "Kartika Alexandra" })).toBeVisible();
 
     const hasOverflow = await page.evaluate(
       () => document.documentElement.scrollWidth > document.documentElement.clientWidth,
@@ -81,11 +90,7 @@ test.describe("homepage", () => {
     await page.goto("/");
 
     const registry = page.getByRole("region", { name: "Meet the Founding Practitioners" });
-    await expect(registry.locator("article")).toHaveCount(0);
-    await expect(
-      registry
-        .getByText("Profiles will appear here as they are published.", { exact: true })
-        .or(registry.getByRole("status")),
-    ).toBeVisible();
+    await expect(registry.locator("article")).toHaveCount(3);
+    await expect(registry.getByRole("heading", { name: "Kartika Alexandra" })).toBeVisible();
   });
 });

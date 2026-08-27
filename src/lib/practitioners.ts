@@ -1,4 +1,5 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { getPractitionerE2EFixtures } from "@/lib/practitioner-e2e-fixtures";
 import type { Database } from "@/types/database";
 
 export type PractitionerTermType =
@@ -14,6 +15,9 @@ export type PractitionerTerm = {
   type: PractitionerTermType;
   name: string;
   slug: string;
+  /** Taxonomy order used when rendering shared filter options. */
+  sortOrder: number;
+  /** Profile-specific order used for linked terms such as modalities. */
   displayOrder: number;
 };
 
@@ -148,7 +152,8 @@ export function mapPractitionerRows(
       type: term.type,
       name: term.name,
       slug: term.slug,
-      displayOrder: term.sort_order,
+      sortOrder: term.sort_order,
+      displayOrder: 0,
     });
   }
 
@@ -270,6 +275,21 @@ async function queryPublishedPractitioners(
   client: PublicSupabaseClient,
   slug?: string,
 ): Promise<DirectoryQueryResult<Practitioner[]>> {
+  if (
+    process.env.SOLAS_PRACTITIONER_E2E === "1" &&
+    process.env.NODE_ENV !== "production"
+  ) {
+    const fixtures = getPractitionerE2EFixtures();
+    const profiles = slug
+      ? fixtures.profiles.filter((profile) => profile.slug === slug)
+      : fixtures.profiles;
+
+    return {
+      data: mapPractitionerRows(profiles, fixtures.terms, fixtures.links, client),
+      error: false,
+    };
+  }
+
   const profiles = await loadProfiles(client, slug);
   if (profiles.error) return { data: [], error: true };
 

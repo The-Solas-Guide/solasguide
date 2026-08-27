@@ -41,7 +41,7 @@ const termRows: TermRow[] = [
     type: "modality",
     name: "Second modality",
     slug: "second-modality",
-    sort_order: 20,
+    sort_order: 10,
     is_active: true,
   },
   {
@@ -49,7 +49,7 @@ const termRows: TermRow[] = [
     type: "modality",
     name: "Primary modality",
     slug: "primary-modality",
-    sort_order: 10,
+    sort_order: 20,
     is_active: true,
   },
   {
@@ -68,6 +68,30 @@ const termRows: TermRow[] = [
     sort_order: 10,
     is_active: false,
   },
+  {
+    id: "term-support-z",
+    type: "support_area",
+    name: "Z early area",
+    slug: "z-early-area",
+    sort_order: 10,
+    is_active: true,
+  },
+  {
+    id: "term-support-a",
+    type: "support_area",
+    name: "A early area",
+    slug: "a-early-area",
+    sort_order: 10,
+    is_active: true,
+  },
+  {
+    id: "term-support-late",
+    type: "support_area",
+    name: "A later area",
+    slug: "a-later-area",
+    sort_order: 20,
+    is_active: true,
+  },
 ];
 
 const linkRows: LinkRow[] = [
@@ -75,6 +99,9 @@ const linkRows: LinkRow[] = [
   { practitioner_id: "profile-1", term_id: "term-primary", display_order: 1 },
   { practitioner_id: "profile-1", term_id: "term-location", display_order: 1 },
   { practitioner_id: "profile-1", term_id: "term-inactive", display_order: 1 },
+  { practitioner_id: "profile-1", term_id: "term-support-late", display_order: 1 },
+  { practitioner_id: "profile-1", term_id: "term-support-z", display_order: 2 },
+  { practitioner_id: "profile-1", term_id: "term-support-a", display_order: 3 },
 ];
 
 function builder(result: { data: unknown; error: null | { message: string } }) {
@@ -131,6 +158,9 @@ describe("public practitioner directory data", () => {
   it("maps a mocked published response and keeps ordered active taxonomy", async () => {
     const { client, profileQuery, linkQuery, termQuery } = mockedClient();
     const { getPublishedPractitioners } = await import("@/lib/practitioners");
+    const { getFacetDefinitions } = await import(
+      "@/components/practitioners/practitioner-directory"
+    );
 
     const result = await getPublishedPractitioners(client as never);
     const practitioner = result.data[0];
@@ -149,7 +179,26 @@ describe("public practitioner directory data", () => {
     expect(practitioner.terms.map((term) => term.slug)).toEqual([
       "bali",
       "primary-modality",
+      "a-later-area",
       "second-modality",
+      "z-early-area",
+      "a-early-area",
+    ]);
+    expect(
+      practitioner.terms
+        .filter((term) => term.type === "modality")
+        .map((term) => ({ slug: term.slug, sortOrder: term.sortOrder, displayOrder: term.displayOrder })),
+    ).toEqual([
+      { slug: "primary-modality", sortOrder: 20, displayOrder: 1 },
+      { slug: "second-modality", sortOrder: 10, displayOrder: 2 },
+    ]);
+    const areaFacet = getFacetDefinitions([practitioner]).find(
+      (facet) => facet.id === "areas",
+    );
+    expect(areaFacet?.options.map((option) => option.value)).toEqual([
+      "a-early-area",
+      "z-early-area",
+      "a-later-area",
     ]);
     expect(practitioner.terms.some((term) => term.slug === "inactive-area")).toBe(false);
     expect(profileQuery.eq).toHaveBeenCalledWith("status", "published");
@@ -159,6 +208,9 @@ describe("public practitioner directory data", () => {
       "term-primary",
       "term-location",
       "term-inactive",
+      "term-support-late",
+      "term-support-z",
+      "term-support-a",
     ]);
     expect(termQuery.eq).toHaveBeenCalledWith("is_active", true);
   });

@@ -37,7 +37,7 @@ export function PractitionerCard({
             }}
             sizes={
               variant === "registry"
-                ? "(max-width: 1023px) 50vw, 25vw"
+                ? "(max-width: 767px) 100vw, 25vw"
                 : "(max-width: 639px) 100vw, (max-width: 1279px) 50vw, 28vw"
             }
           />

@@ -20,5 +20,10 @@ export default defineConfig({
     command: "npm run dev -- --hostname 127.0.0.1 --port 3100",
     url: "http://127.0.0.1:3100/find-a-match",
     reuseExistingServer: !process.env.CI,
+    env: {
+      SOLAS_PRACTITIONER_E2E: "1",
+      NEXT_PUBLIC_SUPABASE_URL: "https://example.supabase.test",
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: "local-e2e-publishable-key",
+    },
   },
 });
