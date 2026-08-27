@@ -1,6 +1,6 @@
 begin;
 
-select plan(35);
+select plan(36);
 
 select has_table('public', 'practitioners', 'practitioners table exists');
 select has_table('public', 'practitioner_terms', 'practitioner_terms table exists');
@@ -101,19 +101,24 @@ select is(
 select is(
   (
     select bool_and(
-      not has_function_privilege('anon', function_signature, 'EXECUTE')
+      not has_function_privilege(role_name, function_signature, 'EXECUTE')
     )
       from (
         values
-          ('public.set_practitioner_updated_at()'),
-          ('public.assert_published_practitioner_has_location(uuid)'),
-          ('public.validate_practitioner_publication()'),
-          ('public.validate_practitioner_location_links()'),
-          ('public.validate_practitioner_term_type_changes()')
-      ) as directory_functions(function_signature)
+          ('anon', 'public.set_practitioner_updated_at()'),
+          ('anon', 'public.assert_published_practitioner_has_location(uuid)'),
+          ('anon', 'public.validate_practitioner_publication()'),
+          ('anon', 'public.validate_practitioner_location_links()'),
+          ('anon', 'public.validate_practitioner_term_type_changes()'),
+          ('authenticated', 'public.set_practitioner_updated_at()'),
+          ('authenticated', 'public.assert_published_practitioner_has_location(uuid)'),
+          ('authenticated', 'public.validate_practitioner_publication()'),
+          ('authenticated', 'public.validate_practitioner_location_links()'),
+          ('authenticated', 'public.validate_practitioner_term_type_changes()')
+      ) as directory_functions(role_name, function_signature)
   ),
   true,
-  'public roles cannot execute directory helper or trigger functions'
+  'anon and authenticated cannot execute directory helper or trigger functions'
 );
 
 insert into public.practitioners (
@@ -312,7 +317,14 @@ select throws_ok(
   $$select public.assert_published_practitioner_has_location('00000000-0000-0000-0000-000000009001')$$,
   '42501',
   null,
-  'public roles cannot execute the location helper'
+  'anon cannot execute the location helper'
+);
+set local role authenticated;
+select throws_ok(
+  $$select public.assert_published_practitioner_has_location('00000000-0000-0000-0000-000000009001')$$,
+  '42501',
+  null,
+  'authenticated cannot execute the location helper'
 );
 
 select * from finish();
