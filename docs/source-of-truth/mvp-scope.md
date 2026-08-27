@@ -15,6 +15,10 @@ The service uses human judgement and the trusted Solas network to review buyer c
 - Become a Practitioner page and expression-of-interest form.
 - Privacy and website terms pages using client-approved content.
 - Supabase storage for buyer and practitioner submissions.
+- Supabase practitioner directory schema with controlled taxonomy and a draft, published, and archived lifecycle.
+- Support for one approved portrait per practitioner. Public images require approval before upload or publication.
+- Import of 20 supplied practitioner profiles as drafts. All 20 remain drafts without approved images.
+- Dynamic public practitioner directory, search, filters, and profile pages that read published records only.
 - On-screen confirmation, one customer confirmation email, and one internal notification for each submission journey.
 - MailerSend transactional email integration.
 - Vercel Web Analytics page views and agreed custom events.
@@ -23,15 +27,12 @@ The service uses human judgement and the trusted Solas network to review buyer c
 
 ## Excluded
 
-- Public practitioner directory or public practitioner profiles.
-- Search, category filtering, saved items, or recently viewed items.
-- Customer or practitioner accounts.
-- Custom administration portal.
-- Automated matching, verification, or practitioner approval.
+- Customer or practitioner accounts, admin portal, or admin authentication.
+- Find a Match generated results, automated matching, verification, or practitioner approval.
 - Booking, payments, subscriptions, billing, or ticketing.
-- Direct customer-to-practitioner messaging.
+- WhatsApp or internal customer-to-practitioner messaging.
 - Venue or event directories.
-- Airtable as a source of truth, public-application read dependency, or reverse-sync destination.
+- Airtable as a runtime source, write target, public-application read dependency, or reverse-sync destination.
 
 ## Technical decisions
 
@@ -40,8 +41,7 @@ The service uses human judgement and the trusted Solas network to review buyer c
 - Develop against local Supabase Docker and manage schema changes through committed migrations.
 - Use MailerSend for transactional email unless the provider decision is explicitly revisited.
 - Use Vercel for preview and production deployments.
-- Use a one-way Supabase-to-Airtable CRM projection for submitted enquiries and practitioner expressions of interest. Supabase remains authoritative; Airtable owns CRM status, owners, outreach activity, follow-up, and notes. This approved change supersedes the earlier Supabase-only operational handoff direction.
-- A privacy or retention deletion must remove the authoritative Supabase record and its matching Airtable CRM record. For the MVP, the Airtable removal is a documented manual operational step.
+- Keep Airtable outside the application runtime. Any temporary handoff is manual or exported.
 - Keep the application simple and MVP-focused. Record non-critical edge cases instead of expanding scope automatically.
 
 ## Acceptance summary
