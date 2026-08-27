@@ -24,7 +24,10 @@ const profileImageRemotePatterns = (() => {
 
 const nextConfig: NextConfig = {
   allowedDevOrigins: ["127.0.0.1"],
-  images: { remotePatterns: profileImageRemotePatterns },
+  images: {
+    remotePatterns: profileImageRemotePatterns,
+    dangerouslyAllowLocalIP: process.env.NODE_ENV !== "production",
+  },
   turbopack: {
     root: process.cwd(),
   },
