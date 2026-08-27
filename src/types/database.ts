@@ -275,12 +275,36 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      set_submission_updated_at: {
+        Args: Record<PropertyKey, never>
+        Returns: unknown
+      }
       claim_customer_enquiry_delivery: {
         Args: { p_enquiry_id: string }
         Returns: {
           send_customer: boolean
           send_internal: boolean
         }[]
+      }
+      set_practitioner_updated_at: {
+        Args: Record<PropertyKey, never>
+        Returns: unknown
+      }
+      assert_published_practitioner_has_location: {
+        Args: { p_practitioner_id: string }
+        Returns: undefined
+      }
+      validate_practitioner_publication: {
+        Args: Record<PropertyKey, never>
+        Returns: unknown
+      }
+      validate_practitioner_location_links: {
+        Args: Record<PropertyKey, never>
+        Returns: unknown
+      }
+      validate_practitioner_term_type_changes: {
+        Args: Record<PropertyKey, never>
+        Returns: unknown
       }
     }
     Enums: {

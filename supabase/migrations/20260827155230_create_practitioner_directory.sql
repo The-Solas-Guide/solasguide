@@ -156,6 +156,7 @@ begin
          join public.practitioner_terms as t on t.id = l.term_id
         where l.practitioner_id = p_practitioner_id
           and t.type = 'location'
+          and t.is_active
      ) then
     raise exception using
       errcode = '23514',
@@ -196,30 +197,17 @@ begin
       new.published_at := coalesce(new.published_at, pg_catalog.now());
     end if;
 
-    if tg_op = 'INSERT' then
-      if not exists (
-        select 1
-          from public.practitioner_term_links as l
-          join public.practitioner_terms as t on t.id = l.term_id
-         where l.practitioner_id = new.id
-           and t.type = 'location'
-      ) then
-        raise exception using
-          errcode = '23514',
-          message = 'A published practitioner must have at least one location';
-      end if;
-    else
-      if not exists (
-        select 1
-          from public.practitioner_term_links as l
-          join public.practitioner_terms as t on t.id = l.term_id
-         where l.practitioner_id = new.id
-           and t.type = 'location'
-      ) then
-        raise exception using
-          errcode = '23514',
-          message = 'A published practitioner must have at least one location';
-      end if;
+    if not exists (
+      select 1
+        from public.practitioner_term_links as l
+        join public.practitioner_terms as t on t.id = l.term_id
+       where l.practitioner_id = new.id
+         and t.type = 'location'
+         and t.is_active
+    ) then
+      raise exception using
+        errcode = '23514',
+        message = 'A published practitioner must have at least one location';
     end if;
   else
     new.published_at := null;
@@ -267,7 +255,9 @@ as $$
 declare
   linked_practitioner record;
 begin
-  if old.type = 'location' or new.type = 'location' then
+  if old.type = 'location'
+     or new.type = 'location'
+     or old.is_active is distinct from new.is_active then
     for linked_practitioner in
       select distinct l.practitioner_id
         from public.practitioner_term_links as l
@@ -282,9 +272,21 @@ end;
 $$;
 
 create trigger practitioner_terms_validate_type_changes
-after update of type on public.practitioner_terms
+after update of type, is_active on public.practitioner_terms
 for each row
 execute function public.validate_practitioner_term_type_changes();
+
+revoke execute on function public.set_practitioner_updated_at() from public, anon, authenticated;
+revoke execute on function public.assert_published_practitioner_has_location(uuid) from public, anon, authenticated;
+revoke execute on function public.validate_practitioner_publication() from public, anon, authenticated;
+revoke execute on function public.validate_practitioner_location_links() from public, anon, authenticated;
+revoke execute on function public.validate_practitioner_term_type_changes() from public, anon, authenticated;
+
+grant execute on function public.set_practitioner_updated_at() to service_role;
+grant execute on function public.assert_published_practitioner_has_location(uuid) to service_role;
+grant execute on function public.validate_practitioner_publication() to service_role;
+grant execute on function public.validate_practitioner_location_links() to service_role;
+grant execute on function public.validate_practitioner_term_type_changes() to service_role;
 
 alter table public.practitioners enable row level security;
 alter table public.practitioner_terms enable row level security;
@@ -300,6 +302,33 @@ grant select on table public.practitioner_term_links to anon, authenticated;
 grant all on table public.practitioners to service_role;
 grant all on table public.practitioner_terms to service_role;
 grant all on table public.practitioner_term_links to service_role;
+
+-- RLS policies need to check a term's active flag without recursively
+-- evaluating the public policy on practitioner_terms. Keep this narrow
+-- security-definer helper outside the exposed schemas.
+create schema if not exists directory_private;
+revoke all on schema directory_private from public;
+grant usage on schema directory_private to anon, authenticated, service_role;
+
+create or replace function directory_private.practitioner_term_is_active(p_term_id uuid)
+returns boolean
+language sql
+stable
+security definer
+set search_path = pg_catalog, public
+as $$
+  select exists (
+    select 1
+      from public.practitioner_terms as t
+     where t.id = p_term_id
+       and t.is_active
+  );
+$$;
+
+revoke all on function directory_private.practitioner_term_is_active(uuid)
+  from public, anon, authenticated;
+grant execute on function directory_private.practitioner_term_is_active(uuid)
+  to anon, authenticated, service_role;
 
 create policy practitioners_public_read
 on public.practitioners
@@ -332,6 +361,7 @@ using (
       from public.practitioners as p
      where p.id = practitioner_term_links.practitioner_id
        and p.status = 'published'
+       and directory_private.practitioner_term_is_active(practitioner_term_links.term_id)
   )
 );
 

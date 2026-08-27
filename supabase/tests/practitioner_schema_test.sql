@@ -1,6 +1,6 @@
 begin;
 
-select plan(30);
+select plan(35);
 
 select has_table('public', 'practitioners', 'practitioners table exists');
 select has_table('public', 'practitioner_terms', 'practitioner_terms table exists');
@@ -98,6 +98,24 @@ select is(
   'profile image writes have a service-role-only policy'
 );
 
+select is(
+  (
+    select bool_and(
+      not has_function_privilege('anon', function_signature, 'EXECUTE')
+    )
+      from (
+        values
+          ('public.set_practitioner_updated_at()'),
+          ('public.assert_published_practitioner_has_location(uuid)'),
+          ('public.validate_practitioner_publication()'),
+          ('public.validate_practitioner_location_links()'),
+          ('public.validate_practitioner_term_type_changes()')
+      ) as directory_functions(function_signature)
+  ),
+  true,
+  'public roles cannot execute directory helper or trigger functions'
+);
+
 insert into public.practitioners (
   id, slug, name, summary, about, image_path, status
 )
@@ -170,6 +188,36 @@ select '00000000-0000-0000-0000-000000009004', id, 1
   from public.practitioner_terms
  where type = 'location' and slug = 'international';
 
+insert into public.practitioner_terms (type, name, slug, sort_order, is_active)
+values (
+  'location',
+  'Schema Test Inactive Location',
+  'schema-test-inactive-location',
+  999,
+  false
+);
+
+insert into public.practitioner_term_links (practitioner_id, term_id, display_order)
+select '00000000-0000-0000-0000-000000009001', id, 1
+  from public.practitioner_terms
+ where type = 'location' and slug = 'schema-test-inactive-location';
+
+insert into public.practitioners (id, slug, name, summary, about, image_path, status)
+values (
+  '00000000-0000-0000-0000-000000009009',
+  'schema-test-inactive-only',
+  'Schema Test Inactive Only',
+  'A complete profile with an inactive location only.',
+  'A complete profile whose only location is inactive.',
+  'schema-test-inactive-only.jpg',
+  'draft'
+);
+
+insert into public.practitioner_term_links (practitioner_id, term_id, display_order)
+select '00000000-0000-0000-0000-000000009009', id, 0
+  from public.practitioner_terms
+ where type = 'location' and slug = 'schema-test-inactive-location';
+
 select throws_ok(
   $$insert into public.practitioners (id, slug, name) values ('00000000-0000-0000-0000-000000009005', 'schema-test-published', 'Duplicate slug')$$,
   '23505',
@@ -199,6 +247,18 @@ select throws_ok(
   '23514',
   null,
   'publication without a location fails'
+);
+select throws_ok(
+  $$update public.practitioners set status = 'published' where id = '00000000-0000-0000-0000-000000009009'$$,
+  '23514',
+  null,
+  'publication with only an inactive location fails'
+);
+select throws_ok(
+  $$update public.practitioner_terms set is_active = false where type = 'location' and slug = 'bali'$$,
+  '23514',
+  null,
+  'deactivating the last active location fails'
 );
 select is(
   (select published_at is not null
@@ -239,6 +299,20 @@ select is(
   (select count(*)::integer from public.practitioner_term_links),
   1,
   'public reads return links for published profiles only'
+);
+select is(
+  (select count(*)::integer
+     from public.practitioner_term_links as l
+     join public.practitioner_terms as t on t.id = l.term_id
+    where t.slug = 'schema-test-inactive-location'),
+  0,
+  'public reads hide links to inactive terms'
+);
+select throws_ok(
+  $$select public.assert_published_practitioner_has_location('00000000-0000-0000-0000-000000009001')$$,
+  '42501',
+  null,
+  'public roles cannot execute the location helper'
 );
 
 select * from finish();
