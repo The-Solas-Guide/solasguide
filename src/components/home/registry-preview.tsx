@@ -1,7 +1,12 @@
+import { connection } from "next/server";
 import { PractitionerCard } from "@/components/practitioners/practitioner-card";
-import { practitioners } from "@/lib/practitioners";
+import { PractitionerDirectoryError } from "@/components/practitioners/practitioner-status";
+import { getPublishedPractitioners } from "@/lib/practitioners";
 
-export function RegistryPreview() {
+export async function RegistryPreview() {
+  await connection();
+  const result = await getPublishedPractitioners();
+
   return (
     <section
       id="registry"
@@ -29,15 +34,27 @@ export function RegistryPreview() {
         </div>
       </div>
 
-      <div className="mt-8 grid grid-cols-1 gap-3 md:grid-cols-4 md:gap-4">
-        {practitioners.map((practitioner) => (
-          <PractitionerCard
-            key={practitioner.slug}
-            practitioner={practitioner}
-            variant="registry"
-          />
-        ))}
-      </div>
+      {result.error ? (
+        <div className="mt-8">
+          <PractitionerDirectoryError />
+        </div>
+      ) : result.data.length === 0 ? (
+        <div className="mt-8 border border-border bg-muted/20 px-6 py-10 text-center">
+          <p className="text-sm leading-7 text-muted-foreground">
+            Profiles will appear here as they are published.
+          </p>
+        </div>
+      ) : (
+        <div className="mt-8 grid grid-cols-1 gap-3 md:grid-cols-4 md:gap-4">
+          {result.data.map((practitioner) => (
+            <PractitionerCard
+              key={practitioner.slug}
+              practitioner={practitioner}
+              variant="registry"
+            />
+          ))}
+        </div>
+      )}
     </section>
   );
 }

@@ -1,126 +1,4 @@
-import { expect, test, type Locator } from "@playwright/test";
-
-type FoundingPractitioner = {
-  name: string;
-  image: string;
-  location: string;
-  primaryPractice: string;
-  supportingPractices: readonly string[];
-  summary: string;
-};
-
-const foundingPractitioners: readonly FoundingPractitioner[] = [
-  {
-    name: "Riza Sukman",
-    image: "/images/people/riza-sukman.jpg",
-    location: "Ubud",
-    primaryPractice: "Somatic Experiencing",
-    supportingPractices: ["Bodywork", "Breathwork"],
-    summary:
-      "Riza offers somatic, trauma-informed support for people navigating grief, anxiety, relationship difficulties and disconnection from self.",
-  },
-  {
-    name: "Pablo Castro",
-    image: "/images/people/pablo-castro.jpg",
-    location: "Ubud",
-    primaryPractice: "Breathwork",
-    supportingPractices: ["Water work", "Water therapy"],
-    summary:
-      "An Alchemy of Breath senior trainer with more than five years of experience across somatic, breathwork and water-based practice.",
-  },
-  {
-    name: "Wayan Marcus Wistika",
-    image: "/images/people/marcus-wistika.jpg",
-    location: "Ubud",
-    primaryPractice: "Vinyasa",
-    supportingPractices: ["Power yoga", "Hatha"],
-    summary:
-      "A Balinese E-RYT 500+ teacher whose work includes resorts, hotels, private villas and The Yoga Barn.",
-  },
-  {
-    name: "Pak Merta Ada",
-    image: "/images/people/pak-merta-ada.jpg",
-    location: "Sanur",
-    primaryPractice: "Bali Usada health meditation",
-    supportingPractices: [],
-    summary:
-      "A teacher within the Bali Usada lineage who has shared this practice internationally since 1993.",
-  },
-  {
-    name: "Cat Wheeler",
-    image: "/images/people/cat-wheeler.jpg",
-    location: "Ubud",
-    primaryPractice: "Usui Reiki",
-    supportingPractices: ["Teaching", "Private sessions"],
-    summary:
-      "A Certified Reiki Master Teacher who has taught since 1998 and worked with more than 1,000 students.",
-  },
-  {
-    name: "Ibu Jero",
-    image: "/images/people/ibu-jero.jpg",
-    location: "Jimbaran, Denpasar",
-    primaryPractice: "Balinese traditional practice",
-    supportingPractices: ["High priestess"],
-    summary:
-      "A fifth-generation Balinese Balian and Mangku whose practice includes private and group work.",
-  },
-  {
-    name: "Sook Fun Chen",
-    image: "/images/people/sook-fun-chen.jpg",
-    location: "Seminyak, Ubud",
-    primaryPractice: "Pilates",
-    supportingPractices: ["Gyrotonic", "Rolfing"],
-    summary:
-      "Founder of Movement Matters Bali, with practice across Pilates, Gyrotonic, Rolfing and functional anatomy.",
-  },
-  {
-    name: "Rachel Ellery",
-    image: "/images/people/rachel-ellery.jpg",
-    location: "Ubud",
-    primaryPractice: "Osteopathy",
-    supportingPractices: ["Functional anatomy", "Pilates"],
-    summary:
-      "A British School of Osteopathy graduate with more than 26 years of professional practice.",
-  },
-];
-
-function getImageSourcePath(src: string | null) {
-  if (!src) throw new Error("Founding practitioner image has no src attribute");
-
-  const imageUrl = new URL(src, "http://127.0.0.1:3100");
-  return imageUrl.searchParams.get("url") ?? imageUrl.pathname;
-}
-
-async function expectLoadedImage(image: Locator, expectedSource: string) {
-  await image.scrollIntoViewIfNeeded();
-  await expect(image).toBeVisible();
-  expect(getImageSourcePath(await image.getAttribute("src"))).toBe(expectedSource);
-  await expect
-    .poll(() =>
-      image.evaluate((element) => {
-        const candidate = element as HTMLImageElement;
-        return candidate.complete && candidate.naturalWidth > 0;
-      }),
-    )
-    .toBe(true);
-}
-
-async function expectPractitionerCard(card: Locator, practitioner: FoundingPractitioner) {
-  await expect(card).toBeVisible();
-  await expect(card.getByRole("heading", { level: 3, name: practitioner.name, exact: true })).toBeVisible();
-  await expect(card.getByText(practitioner.location, { exact: true })).toBeVisible();
-  await expect(card.getByText("Specific modalities", { exact: true })).toBeAttached();
-  await expect(card.getByText(practitioner.summary, { exact: true })).toBeVisible();
-
-  await expect(
-    card.getByText(
-      [practitioner.primaryPractice, ...practitioner.supportingPractices].join(" · "),
-      { exact: true },
-    ),
-  ).toBeVisible();
-
-  await expectLoadedImage(card.locator("img"), practitioner.image);
-}
+import { expect, test } from "@playwright/test";
 
 test.describe("homepage", () => {
   test("follows the approved client flow", async ({ page }) => {
@@ -158,7 +36,7 @@ test.describe("homepage", () => {
     );
   });
 
-  test("shows a static founding practitioner preview", async ({ page }) => {
+  test("shows the empty dynamic practitioner preview in local state", async ({ page }) => {
     await page.goto("/");
 
     const registry = page.getByRole("region", { name: "Meet the Founding Practitioners" });
@@ -175,41 +53,21 @@ test.describe("homepage", () => {
         { exact: true },
       ),
     ).toBeVisible();
-
-    const cards = registry.locator("article");
-    await expect(cards).toHaveCount(foundingPractitioners.length);
-
-    for (const [index, practitioner] of foundingPractitioners.entries()) {
-      await expectPractitionerCard(cards.nth(index), practitioner);
-    }
-
-    await expect(registry.getByRole("link")).toHaveCount(1);
-    await expect(registry.getByRole("link", { name: /Riza Sukman/ })).toHaveAttribute(
-      "href",
-      "/practitioners/riza-sukman",
-    );
+    await expect(registry.locator("article")).toHaveCount(0);
+    await expect(
+      registry
+        .getByText("Profiles will appear here as they are published.", { exact: true })
+        .or(registry.getByRole("status")),
+    ).toBeVisible();
     await expect(registry.getByText("Build Your Retreat", { exact: true })).toHaveCount(0);
   });
 
-  test("keeps all founding practitioner cards loaded at 390px", async ({ page }) => {
+  test("keeps the empty practitioner preview usable at 390px", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
 
     const registry = page.getByRole("region", { name: "Meet the Founding Practitioners" });
-    const cards = registry.locator("article");
-    await expect(cards).toHaveCount(foundingPractitioners.length);
-
-    for (const [index, practitioner] of foundingPractitioners.entries()) {
-      const card = cards.nth(index);
-      await expect(card).toBeVisible();
-      await expectLoadedImage(card.locator("img"), practitioner.image);
-    }
-
-    const firstCard = await cards.nth(0).boundingBox();
-    const secondCard = await cards.nth(1).boundingBox();
-    expect(firstCard).not.toBeNull();
-    expect(secondCard).not.toBeNull();
-    expect(secondCard!.y).toBeGreaterThan(firstCard!.y + firstCard!.height - 4);
+    await expect(registry.locator("article")).toHaveCount(0);
 
     const hasOverflow = await page.evaluate(
       () => document.documentElement.scrollWidth > document.documentElement.clientWidth,
@@ -218,21 +76,16 @@ test.describe("homepage", () => {
     expect(hasOverflow).toBe(false);
   });
 
-  test("shows four founding practitioner columns at tablet width", async ({ page }) => {
+  test("keeps the dynamic preview available at tablet width", async ({ page }) => {
     await page.setViewportSize({ width: 1104, height: 1157 });
     await page.goto("/");
 
-    const cards = page
-      .getByRole("region", { name: "Meet the Founding Practitioners" })
-      .locator("article");
-    const firstRow = await Promise.all(
-      [0, 1, 2, 3].map((index) => cards.nth(index).boundingBox()),
-    );
-    const fifthCard = await cards.nth(4).boundingBox();
-
-    expect(firstRow.every((box) => box !== null)).toBe(true);
-    expect(fifthCard).not.toBeNull();
-    expect(Math.max(...firstRow.map((box) => box!.y)) - Math.min(...firstRow.map((box) => box!.y))).toBeLessThan(4);
-    expect(fifthCard!.y).toBeGreaterThan(firstRow[0]!.y + firstRow[0]!.height - 4);
+    const registry = page.getByRole("region", { name: "Meet the Founding Practitioners" });
+    await expect(registry.locator("article")).toHaveCount(0);
+    await expect(
+      registry
+        .getByText("Profiles will appear here as they are published.", { exact: true })
+        .or(registry.getByRole("status")),
+    ).toBeVisible();
   });
 });

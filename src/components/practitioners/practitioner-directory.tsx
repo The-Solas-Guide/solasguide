@@ -2,17 +2,14 @@
 
 import { SlidersHorizontal, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import {
-  getLocations,
-  practitioners,
-  type Practitioner,
-} from "@/lib/practitioners";
+import type { Practitioner, PractitionerTermType } from "@/lib/practitioners";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PractitionerCard } from "@/components/practitioners/practitioner-card";
+import { PractitionerDirectoryEmpty, PractitionerDirectoryError } from "@/components/practitioners/practitioner-status";
 import { cn } from "@/lib/utils";
 
-type FacetId =
+export type FacetId =
   | "areas"
   | "approach"
   | "works-with"
@@ -20,73 +17,22 @@ type FacetId =
   | "format"
   | "languages";
 
+export type FacetOption = {
+  value: string;
+  label: string;
+};
+
 type Facet = {
   id: FacetId;
   label: string;
   allLabel: string;
-  options: readonly string[];
+  options: readonly FacetOption[];
   valuesFor: (practitioner: Practitioner) => readonly string[];
 };
 
-function sortedUnique(values: readonly string[]) {
-  return [...new Set(values)].sort((a, b) => a.localeCompare(b));
-}
+export type Selection = Record<FacetId, readonly string[]>;
 
-function optionsFrom(getValues: (practitioner: Practitioner) => readonly string[]) {
-  return sortedUnique(practitioners.flatMap(getValues));
-}
-
-const facets: readonly Facet[] = [
-  {
-    id: "areas",
-    label: "Areas of support",
-    allLabel: "All areas",
-    options: optionsFrom((practitioner) => practitioner.areasOfSupport ?? []),
-    valuesFor: (practitioner) => practitioner.areasOfSupport ?? [],
-  },
-  {
-    id: "approach",
-    label: "Approach",
-    allLabel: "All approaches",
-    options: optionsFrom((practitioner) =>
-      practitioner.approach ? [practitioner.approach] : [],
-    ),
-    valuesFor: (practitioner) =>
-      practitioner.approach ? [practitioner.approach] : [],
-  },
-  {
-    id: "works-with",
-    label: "Works with",
-    allLabel: "All audiences",
-    options: optionsFrom((practitioner) => practitioner.worksWith ?? []),
-    valuesFor: (practitioner) => practitioner.worksWith ?? [],
-  },
-  {
-    id: "locations",
-    label: "Location",
-    allLabel: "All locations",
-    options: optionsFrom(getLocations),
-    valuesFor: getLocations,
-  },
-  {
-    id: "format",
-    label: "In-person or online",
-    allLabel: "All formats",
-    options: optionsFrom((practitioner) => practitioner.delivery ?? []),
-    valuesFor: (practitioner) => practitioner.delivery ?? [],
-  },
-  {
-    id: "languages",
-    label: "Languages",
-    allLabel: "All languages",
-    options: optionsFrom((practitioner) => practitioner.languages ?? []),
-    valuesFor: (practitioner) => practitioner.languages ?? [],
-  },
-];
-
-type Selection = Record<FacetId, readonly string[]>;
-
-const emptySelection: Selection = {
+export const emptySelection: Selection = {
   areas: [],
   approach: [],
   "works-with": [],
@@ -95,27 +41,110 @@ const emptySelection: Selection = {
   languages: [],
 };
 
-function matchesQuery(practitioner: Practitioner, query: string) {
+function termOptions(
+  practitioners: readonly Practitioner[],
+  type: PractitionerTermType,
+): FacetOption[] {
+  const options = new Map<string, FacetOption>();
+  for (const practitioner of practitioners) {
+    for (const term of practitioner.terms) {
+      if (term.type !== type || options.has(term.slug)) continue;
+      options.set(term.slug, { value: term.slug, label: term.name });
+    }
+  }
+
+  return [...options.values()].sort((left, right) =>
+    left.label.localeCompare(right.label),
+  );
+}
+
+function termsFor(practitioner: Practitioner, type: PractitionerTermType) {
+  return practitioner.terms
+    .filter((term) => term.type === type)
+    .map((term) => term.slug);
+}
+
+export function getFacetDefinitions(
+  practitioners: readonly Practitioner[],
+): readonly Facet[] {
+  const formatOptions: FacetOption[] = [];
+  if (practitioners.some((practitioner) => practitioner.offersInPerson)) {
+    formatOptions.push({ value: "in-person", label: "In-person" });
+  }
+  if (practitioners.some((practitioner) => practitioner.offersOnline)) {
+    formatOptions.push({ value: "online", label: "Online" });
+  }
+
+  return [
+    {
+      id: "areas",
+      label: "Areas of support",
+      allLabel: "All areas",
+      options: termOptions(practitioners, "support_area"),
+      valuesFor: (practitioner) => termsFor(practitioner, "support_area"),
+    },
+    {
+      id: "approach",
+      label: "Approach",
+      allLabel: "All approaches",
+      options: termOptions(practitioners, "approach"),
+      valuesFor: (practitioner) => termsFor(practitioner, "approach"),
+    },
+    {
+      id: "works-with",
+      label: "Works with",
+      allLabel: "All audiences",
+      options: termOptions(practitioners, "works_with"),
+      valuesFor: (practitioner) => termsFor(practitioner, "works_with"),
+    },
+    {
+      id: "locations",
+      label: "Location",
+      allLabel: "All locations",
+      options: termOptions(practitioners, "location"),
+      valuesFor: (practitioner) => termsFor(practitioner, "location"),
+    },
+    {
+      id: "format",
+      label: "In-person or online",
+      allLabel: "All formats",
+      options: formatOptions,
+      valuesFor: (practitioner) => [
+        ...(practitioner.offersInPerson ? ["in-person"] : []),
+        ...(practitioner.offersOnline ? ["online"] : []),
+      ],
+    },
+    {
+      id: "languages",
+      label: "Languages",
+      allLabel: "All languages",
+      options: termOptions(practitioners, "language"),
+      valuesFor: (practitioner) => termsFor(practitioner, "language"),
+    },
+  ];
+}
+
+export function matchesQuery(practitioner: Practitioner, query: string) {
   const term = query.trim().toLowerCase();
   if (term === "") return true;
 
   return [
     practitioner.name,
-    practitioner.location,
-    practitioner.summary,
-    ...practitioner.modalities,
-    ...(practitioner.areasOfSupport ?? []),
-    practitioner.approach ?? "",
-    ...(practitioner.worksWith ?? []),
-    ...(practitioner.languages ?? []),
-    ...(practitioner.delivery ?? []),
+    practitioner.descriptor ?? "",
+    practitioner.summary ?? "",
+    practitioner.about ?? "",
+    ...practitioner.terms.map((linkedTerm) => linkedTerm.name),
   ]
     .join(" ")
     .toLowerCase()
     .includes(term);
 }
 
-function matchesFacets(practitioner: Practitioner, selection: Selection) {
+export function matchesFacets(
+  practitioner: Practitioner,
+  selection: Selection,
+  facets: readonly Facet[],
+) {
   return facets.every((facet) => {
     const selected = selection[facet.id];
     if (selected.length === 0) return true;
@@ -125,11 +154,23 @@ function matchesFacets(practitioner: Practitioner, selection: Selection) {
   });
 }
 
-export function PractitionerDirectory() {
+type PractitionerDirectoryProps = {
+  practitioners: readonly Practitioner[];
+  error?: boolean;
+};
+
+export function PractitionerDirectory({
+  practitioners,
+  error = false,
+}: PractitionerDirectoryProps) {
   const [query, setQuery] = useState("");
   const [selection, setSelection] = useState<Selection>(emptySelection);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const closeFiltersRef = useRef<HTMLButtonElement>(null);
+  const facets = useMemo(
+    () => getFacetDefinitions(practitioners),
+    [practitioners],
+  );
 
   useEffect(() => {
     if (!filtersOpen) return;
@@ -148,9 +189,9 @@ export function PractitionerDirectory() {
       practitioners.filter(
         (practitioner) =>
           matchesQuery(practitioner, query) &&
-          matchesFacets(practitioner, selection),
+          matchesFacets(practitioner, selection, facets),
       ),
-    [query, selection],
+    [facets, practitioners, query, selection],
   );
 
   const activeFilters = facets.flatMap((facet) =>
@@ -158,6 +199,8 @@ export function PractitionerDirectory() {
       facetId: facet.id,
       facetLabel: facet.label,
       value,
+      label:
+        facet.options.find((option) => option.value === value)?.label ?? value,
     })),
   );
   const hasActiveFilters = activeFilters.length > 0 || query.trim() !== "";
@@ -186,6 +229,8 @@ export function PractitionerDirectory() {
     setSelection(emptySelection);
   }
 
+  if (error) return <PractitionerDirectoryError />;
+
   return (
     <div className="border-x border-b border-border bg-card px-5 py-12 sm:px-8 md:px-12 md:py-16 lg:px-16">
       <div>
@@ -208,7 +253,6 @@ export function PractitionerDirectory() {
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder="Name or practice"
-                className="mt-3"
               />
             </div>
 
@@ -268,6 +312,7 @@ export function PractitionerDirectory() {
                 </div>
 
                 <FilterFields
+                  facets={facets}
                   selection={selection}
                   setFacetValue={setFacetValue}
                 />
@@ -325,14 +370,14 @@ export function PractitionerDirectory() {
                   <button
                     type="button"
                     onClick={() => toggleValue(filter.facetId, filter.value)}
-                    aria-label={`Remove ${filter.facetLabel} filter ${filter.value}`}
+                    aria-label={`Remove ${filter.facetLabel} filter ${filter.label}`}
                     className="inline-flex min-h-9 items-center gap-2 border border-border bg-muted/40 px-3 text-xs text-foreground transition-colors hover:border-foreground/45"
                   >
                     <span className="text-muted-foreground">
                       {filter.facetLabel}
                     </span>
                     <span aria-hidden="true">·</span>
-                    {filter.value}
+                    {filter.label}
                     <X className="size-3.5" aria-hidden="true" />
                   </button>
                 </li>
@@ -341,22 +386,26 @@ export function PractitionerDirectory() {
           ) : null}
 
           {results.length === 0 ? (
-            <div className="mt-8 border border-border bg-muted/20 px-6 py-12 text-center">
-              <h2 className="font-display text-2xl leading-tight">
-                No practitioners match yet.
-              </h2>
-              <p className="mx-auto mt-3 max-w-sm text-sm leading-7 text-muted-foreground">
-                Try a different term, or remove a filter to widen your search.
-              </p>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={clearAll}
-                className="mt-7"
-              >
-                Clear all filters
-              </Button>
-            </div>
+            practitioners.length === 0 ? (
+              <PractitionerDirectoryEmpty />
+            ) : (
+              <div className="mt-8 border border-border bg-muted/20 px-6 py-12 text-center">
+                <h2 className="font-display text-2xl leading-tight">
+                  No practitioners match yet.
+                </h2>
+                <p className="mx-auto mt-3 max-w-sm text-sm leading-7 text-muted-foreground">
+                  Try a different term, or remove a filter to widen your search.
+                </p>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={clearAll}
+                  className="mt-7"
+                >
+                  Clear all filters
+                </Button>
+              </div>
+            )
           ) : (
             <ul className="mt-6 grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-4 lg:grid-cols-3 xl:grid-cols-4">
               {results.map((practitioner) => (
@@ -373,9 +422,11 @@ export function PractitionerDirectory() {
 }
 
 function FilterFields({
+  facets,
   selection,
   setFacetValue,
 }: {
+  facets: readonly Facet[];
   selection: Selection;
   setFacetValue: (facetId: FacetId, value: string) => void;
 }) {
@@ -400,14 +451,13 @@ function FilterFields({
               {facet.options.length === 0 ? "No options listed" : facet.allLabel}
             </option>
             {facet.options.map((option) => (
-              <option key={option} value={option}>
-                {option}
+              <option key={option.value} value={option.value}>
+                {option.label}
               </option>
             ))}
           </select>
         </div>
       ))}
-
     </div>
   );
 }
