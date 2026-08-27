@@ -8,8 +8,8 @@ export const metadata: Metadata = {
   title: "The Guide",
   description:
     "Explore the founding practitioners included in The Solas Guide and review the information listed for each practitioner.",
-  // Phase 2 prototype: not part of the MVP delivery scope and not linked from
-  // production navigation, so it should not be indexed.
+  // Keep the directory out of search results until its draft profiles and
+  // approved portraits are ready to publish.
   robots: { index: false, follow: false },
 };
 
