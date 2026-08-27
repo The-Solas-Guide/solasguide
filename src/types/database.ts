@@ -9,6 +9,138 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      practitioners: {
+        Row: {
+          about: string | null
+          credentials: string[] | null
+          created_at: string
+          descriptor: string | null
+          id: string
+          image_alt: string | null
+          image_focal_x: number
+          image_focal_y: number
+          image_path: string | null
+          instagram_url: string | null
+          name: string
+          offers_in_person: boolean
+          offers_online: boolean
+          published_at: string | null
+          significant_training: string[] | null
+          slug: string
+          status: string
+          summary: string | null
+          updated_at: string
+          website_url: string | null
+          years_active: number | null
+        }
+        Insert: {
+          about?: string | null
+          credentials?: string[] | null
+          created_at?: string
+          descriptor?: string | null
+          id?: string
+          image_alt?: string | null
+          image_focal_x?: number
+          image_focal_y?: number
+          image_path?: string | null
+          instagram_url?: string | null
+          name: string
+          offers_in_person?: boolean
+          offers_online?: boolean
+          published_at?: string | null
+          significant_training?: string[] | null
+          slug: string
+          status?: string
+          summary?: string | null
+          updated_at?: string
+          website_url?: string | null
+          years_active?: number | null
+        }
+        Update: {
+          about?: string | null
+          credentials?: string[] | null
+          created_at?: string
+          descriptor?: string | null
+          id?: string
+          image_alt?: string | null
+          image_focal_x?: number
+          image_focal_y?: number
+          image_path?: string | null
+          instagram_url?: string | null
+          name?: string
+          offers_in_person?: boolean
+          offers_online?: boolean
+          published_at?: string | null
+          significant_training?: string[] | null
+          slug?: string
+          status?: string
+          summary?: string | null
+          updated_at?: string
+          website_url?: string | null
+          years_active?: number | null
+        }
+        Relationships: []
+      }
+      practitioner_terms: {
+        Row: {
+          id: string
+          is_active: boolean
+          name: string
+          slug: string
+          sort_order: number
+          type: string
+        }
+        Insert: {
+          id?: string
+          is_active?: boolean
+          name: string
+          slug: string
+          sort_order?: number
+          type: string
+        }
+        Update: {
+          id?: string
+          is_active?: boolean
+          name?: string
+          slug?: string
+          sort_order?: number
+          type?: string
+        }
+        Relationships: []
+      }
+      practitioner_term_links: {
+        Row: {
+          display_order: number
+          practitioner_id: string
+          term_id: string
+        }
+        Insert: {
+          display_order?: number
+          practitioner_id: string
+          term_id: string
+        }
+        Update: {
+          display_order?: number
+          practitioner_id?: string
+          term_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "practitioner_term_links_practitioner_id_fkey"
+            columns: ["practitioner_id"]
+            isOneToOne: false
+            referencedRelation: "practitioners"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "practitioner_term_links_term_id_fkey"
+            columns: ["term_id"]
+            isOneToOne: false
+            referencedRelation: "practitioner_terms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       customer_enquiries: {
         Row: {
           consent_confirmed: boolean
