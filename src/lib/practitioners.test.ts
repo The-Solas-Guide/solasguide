@@ -196,9 +196,9 @@ describe("public practitioner directory data", () => {
       (facet) => facet.id === "areas",
     );
     expect(areaFacet?.options.map((option) => option.value)).toEqual([
-      "a-early-area",
-      "z-early-area",
-      "a-later-area",
+      "term-support-a",
+      "term-support-z",
+      "term-support-late",
     ]);
     expect(practitioner.terms.some((term) => term.slug === "inactive-area")).toBe(false);
     expect(profileQuery.eq).toHaveBeenCalledWith("status", "published");

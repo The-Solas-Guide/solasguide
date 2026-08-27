@@ -51,9 +51,9 @@ function termOptions(
   const options = new Map<string, FacetOption & { sortOrder: number }>();
   for (const practitioner of practitioners) {
     for (const term of practitioner.terms) {
-      if (term.type !== type || options.has(term.slug)) continue;
-      options.set(term.slug, {
-        value: term.slug,
+      if (term.type !== type || options.has(term.id)) continue;
+      options.set(term.id, {
+        value: term.id,
         label: term.name,
         sortOrder: term.sortOrder,
       });
@@ -71,7 +71,7 @@ function termOptions(
 function termsFor(practitioner: Practitioner, type: PractitionerTermType) {
   return practitioner.terms
     .filter((term) => term.type === type)
-    .map((term) => term.slug);
+    .map((term) => term.id);
 }
 
 export function getFacetDefinitions(
