@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import type { Practitioner } from "@/lib/practitioners";
+import { portraitObjectPosition, type Practitioner } from "@/lib/practitioners";
 import { cn } from "@/lib/utils";
 
 type PractitionerCardProps = {
@@ -29,11 +29,10 @@ export function PractitionerCard({
             fill
             className="object-cover motion-safe:transition-transform motion-safe:duration-700 motion-safe:ease-out motion-safe:group-hover:scale-[1.025]"
             style={{
-              objectPosition:
-                practitioner.imageFocalX !== undefined &&
-                practitioner.imageFocalY !== undefined
-                  ? `${practitioner.imageFocalX}% ${practitioner.imageFocalY}%`
-                  : undefined,
+              objectPosition: portraitObjectPosition(
+                practitioner.imageFocalX,
+                practitioner.imageFocalY,
+              ),
             }}
             sizes={
               variant === "registry"

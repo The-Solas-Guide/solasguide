@@ -9,6 +9,7 @@ import { SiteHeader } from "@/components/layout/site-header";
 import { buttonVariants } from "@/components/ui/button";
 import {
   getPublishedPractitionerBySlug,
+  portraitObjectPosition,
   type Practitioner,
 } from "@/lib/practitioners";
 import { cn } from "@/lib/utils";
@@ -47,7 +48,7 @@ export async function generateMetadata({
 const navLinks = [
   { label: "Why Solas", href: "/#why-solas" },
   { label: "Recognition", href: "/#recognition" },
-  { label: "The Guide", href: "/#registry" },
+  { label: "The Guide", href: "/practitioners" },
 ];
 
 const dataRowClassName = "border-b border-border/70 py-3.5";
@@ -155,11 +156,10 @@ function ProfilePage({ practitioner }: { practitioner: Practitioner }) {
                     priority
                     className="object-cover"
                     style={{
-                      objectPosition:
-                        practitioner.imageFocalX !== undefined &&
-                        practitioner.imageFocalY !== undefined
-                          ? `${practitioner.imageFocalX}% ${practitioner.imageFocalY}%`
-                          : undefined,
+                      objectPosition: portraitObjectPosition(
+                        practitioner.imageFocalX,
+                        practitioner.imageFocalY,
+                      ),
                     }}
                     sizes="(max-width: 1023px) 100vw, 42vw"
                   />

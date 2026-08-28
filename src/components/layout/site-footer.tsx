@@ -25,7 +25,7 @@ export function SiteFooter() {
         <div>
           <p className="review-label text-background/50">Explore</p>
           <div className="mt-4 grid gap-1 text-background/85">
-            <Link href="/#registry" className={linkClassName}>
+            <Link href="/practitioners" className={linkClassName}>
               Browse the Guide
             </Link>
             <Link href="/#recognition" className={linkClassName}>

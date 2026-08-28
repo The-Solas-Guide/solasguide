@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Database } from "@/types/database";
+import { portraitObjectPosition } from "@/lib/practitioners";
 
 const mocks = vi.hoisted(() => ({ createClient: vi.fn() }));
 
@@ -228,5 +229,17 @@ describe("public practitioner directory data", () => {
 
     expect(result).toEqual({ data: [], error: true });
     expect(JSON.stringify(result)).not.toContain("private database detail");
+  });
+});
+
+
+describe("portraitObjectPosition", () => {
+  it("uses a high default crop so faces are not clipped", () => {
+    expect(portraitObjectPosition()).toBe("50% 20%");
+    expect(portraitObjectPosition(50, 50)).toBe("50% 20%");
+  });
+
+  it("keeps an explicit custom focal point", () => {
+    expect(portraitObjectPosition(35, 65)).toBe("35% 65%");
   });
 });

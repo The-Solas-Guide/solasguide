@@ -120,6 +120,13 @@ function cleanOptionalStringList(value: readonly string[] | null | undefined) {
   return cleaned?.length ? cleaned : undefined;
 }
 
+
+/** Default crop sits high so faces are not clipped. Custom focals still win. */
+export function portraitObjectPosition(x?: number, y?: number) {
+  const custom = x !== undefined && y !== undefined && (x !== 50 || y !== 50);
+  return custom ? `${x}% ${y}%` : "50% 20%";
+}
+
 function isTermType(value: string): value is PractitionerTermType {
   return [
     "support_area",

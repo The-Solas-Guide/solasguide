@@ -67,6 +67,18 @@ test.describe("homepage", () => {
       "href",
       "/practitioners/kartika-alexandra",
     );
+    await expect(registry.getByRole("link", { name: "View All Practitioners" })).toHaveAttribute(
+      "href",
+      "/practitioners",
+    );
+    await expect(page.getByRole("navigation", { name: "Primary navigation" }).getByRole("link", { name: "The Guide" })).toHaveAttribute(
+      "href",
+      "/practitioners",
+    );
+    await expect(page.locator("footer").getByRole("link", { name: "Browse the Guide" })).toHaveAttribute(
+      "href",
+      "/practitioners",
+    );
     await expect(registry.getByText("Build Your Retreat", { exact: true })).toHaveCount(0);
   });
 

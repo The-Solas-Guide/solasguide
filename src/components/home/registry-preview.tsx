@@ -1,11 +1,16 @@
+import Link from "next/link";
 import { connection } from "next/server";
 import { PractitionerCard } from "@/components/practitioners/practitioner-card";
 import { PractitionerDirectoryError } from "@/components/practitioners/practitioner-status";
+import { Button } from "@/components/ui/button";
 import { getPublishedPractitioners } from "@/lib/practitioners";
+
+const HOMEPAGE_PREVIEW_LIMIT = 8;
 
 export async function RegistryPreview() {
   await connection();
   const result = await getPublishedPractitioners();
+  const preview = result.data.slice(0, HOMEPAGE_PREVIEW_LIMIT);
 
   return (
     <section
@@ -45,15 +50,22 @@ export async function RegistryPreview() {
           </p>
         </div>
       ) : (
-        <div className="mt-8 grid grid-cols-1 gap-3 md:grid-cols-4 md:gap-4">
-          {result.data.map((practitioner) => (
-            <PractitionerCard
-              key={practitioner.slug}
-              practitioner={practitioner}
-              variant="registry"
-            />
-          ))}
-        </div>
+        <>
+          <div className="mt-8 grid grid-cols-1 gap-3 md:grid-cols-4 md:gap-4">
+            {preview.map((practitioner) => (
+              <PractitionerCard
+                key={practitioner.slug}
+                practitioner={practitioner}
+                variant="registry"
+              />
+            ))}
+          </div>
+          <div className="mt-8 flex justify-center">
+            <Button asChild>
+              <Link href="/practitioners">View All Practitioners</Link>
+            </Button>
+          </div>
+        </>
       )}
     </section>
   );

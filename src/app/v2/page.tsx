@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 const navLinks = [
   { label: "Why Solas", href: "#why-solas" },
   { label: "Recognition", href: "#recognition" },
-  { label: "The Guide", href: "#registry" },
+  { label: "The Guide", href: "/practitioners" },
 ];
 
 const audiences = [

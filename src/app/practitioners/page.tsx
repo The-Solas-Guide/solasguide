@@ -18,7 +18,7 @@ export const dynamic = "force-dynamic";
 const navLinks = [
   { label: "Why Solas", href: "/#why-solas" },
   { label: "Recognition", href: "/#recognition" },
-  { label: "The Guide", href: "/#registry" },
+  { label: "The Guide", href: "/practitioners" },
 ];
 
 export default async function PractitionersPage() {
