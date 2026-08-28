@@ -17,9 +17,7 @@ export function PractitionerCard({
       <div
         className={cn(
           "relative overflow-hidden bg-muted",
-          variant === "registry"
-            ? "aspect-[4/5] sm:aspect-[3/4] xl:aspect-[4/5]"
-            : "aspect-[5/4]",
+          "aspect-[4/5] sm:aspect-[3/4] xl:aspect-[4/5]",
         )}
       >
         {practitioner.image ? (
