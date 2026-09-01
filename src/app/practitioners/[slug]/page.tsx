@@ -9,6 +9,7 @@ import { SiteHeader } from "@/components/layout/site-header";
 import { buttonVariants } from "@/components/ui/button";
 import {
   getPublishedPractitionerBySlug,
+  getTermsByType,
   portraitObjectPosition,
   type Practitioner,
 } from "@/lib/practitioners";
@@ -66,15 +67,29 @@ function CredentialList({ items }: { items: readonly string[] }) {
   );
 }
 
-function ProfileTagList({ items }: { items: readonly string[] }) {
+type ProfileTag = {
+  label: string;
+  href?: string;
+};
+
+function ProfileTagList({ items }: { items: readonly ProfileTag[] }) {
   return (
     <ul className="mt-4 flex flex-wrap gap-2">
       {items.map((item) => (
         <li
-          key={item}
+          key={item.href ?? item.label}
           className="border border-border bg-muted/30 px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em]"
         >
-          {item}
+          {item.href ? (
+            <Link
+              href={item.href}
+              className="underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground"
+            >
+              {item.label}
+            </Link>
+          ) : (
+            item.label
+          )}
         </li>
       ))}
     </ul>
@@ -92,10 +107,22 @@ function safeExternalUrl(value: string | undefined) {
 }
 
 function ProfilePage({ practitioner }: { practitioner: Practitioner }) {
-  const locations = practitioner.location;
+  const locationTerms = getTermsByType(practitioner, "location");
+  const areaTerms = getTermsByType(practitioner, "support_area");
+  const locations = locationTerms.map((term) => term.name).join(", ") || undefined;
   const approaches = practitioner.approaches ?? (practitioner.approach ? [practitioner.approach] : []);
   const areasOfSupport = practitioner.areasOfSupport ?? [];
   const modalities = practitioner.modalities;
+  const areaTags = areaTerms.map((term) => ({
+    label: term.name,
+    href: `/practitioners/areas/${term.slug}`,
+  }));
+  const approachTags = approaches.map((label) => ({ label }));
+  const modalityTags = modalities.map((label) => ({ label }));
+  const locationTags = locationTerms.map((term) => ({
+    label: term.name,
+    href: `/practitioners/locations/${term.slug}`,
+  }));
   const hasCredentials = Boolean(
     practitioner.credentials?.length || practitioner.significantTraining?.length,
   );
@@ -264,21 +291,21 @@ function ProfilePage({ practitioner }: { practitioner: Practitioner }) {
                     {areasOfSupport.length ? (
                       <section aria-labelledby="areas-of-support-heading" className="mt-10">
                         <h2 id="areas-of-support-heading" className="review-label text-muted-foreground">Areas of support</h2>
-                        <ProfileTagList items={areasOfSupport} />
+                        <ProfileTagList items={areaTags} />
                       </section>
                     ) : null}
 
                     {approaches.length ? (
                       <section aria-labelledby="approach-heading" className="mt-10">
                         <h2 id="approach-heading" className="review-label text-muted-foreground">Approach</h2>
-                        <ProfileTagList items={approaches} />
+                        <ProfileTagList items={approachTags} />
                       </section>
                     ) : null}
 
                     {modalities.length ? (
                       <section aria-labelledby="specific-modalities-heading" className="mt-12">
                         <h2 id="specific-modalities-heading" className="review-label text-muted-foreground">Specific modalities</h2>
-                        <ProfileTagList items={modalities} />
+                        <ProfileTagList items={modalityTags} />
                       </section>
                     ) : null}
                   </section>
@@ -315,7 +342,7 @@ function ProfilePage({ practitioner }: { practitioner: Practitioner }) {
                       {locations ? (
                         <div className={dataRowClassName}>
                           <dt className="review-label text-muted-foreground">Locations</dt>
-                          <dd className={dataValueClassName}>{locations}</dd>
+                          <dd><ProfileTagList items={locationTags} /></dd>
                         </div>
                       ) : null}
                     </dl>

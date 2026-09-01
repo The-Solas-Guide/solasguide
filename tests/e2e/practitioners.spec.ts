@@ -262,6 +262,93 @@ test.describe("published practitioner directory", () => {
   });
 });
 
+test.describe("practitioner taxonomy discovery pages", () => {
+  test("renders a support-area page with matching practitioners and a directory return link", async ({ page }) => {
+    await page.goto("/practitioners/areas/trauma-and-nervous-system");
+
+    await expect(
+      page.getByRole("heading", {
+        level: 1,
+        name: "Trauma & nervous system",
+      }),
+    ).toBeVisible();
+    await expect(
+      page.getByText(
+        "Explore practitioners whose published profiles include this area of support.",
+        { exact: true },
+      ),
+    ).toBeVisible();
+    await expect(cards(page)).toHaveCount(1);
+    await expect(
+      cards(page).getByRole("heading", { name: "Kartika Alexandra" }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: /back to the guide/i }),
+    ).toHaveAttribute("href", "/practitioners");
+  });
+
+  test("renders a location page with matching practitioners", async ({ page }) => {
+    await page.goto("/practitioners/locations/international");
+
+    await expect(
+      page.getByRole("heading", { level: 1, name: "International" }),
+    ).toBeVisible();
+    await expect(
+      page.getByText(
+        "Explore practitioners whose published profiles include this location.",
+        { exact: true },
+      ),
+    ).toBeVisible();
+    await expect(cards(page)).toHaveCount(1);
+    await expect(
+      cards(page).getByRole("heading", { name: "Sandra Echemendia" }),
+    ).toBeVisible();
+  });
+
+  test("links profile support areas and locations to discovery pages", async ({ page }) => {
+    await page.goto("/practitioners/kartika-alexandra");
+
+    await expect(
+      page.getByRole("link", { name: "Trauma & nervous system" }),
+    ).toHaveAttribute(
+      "href",
+      "/practitioners/areas/trauma-and-nervous-system",
+    );
+    await expect(page.getByRole("link", { name: "Bali" })).toHaveAttribute(
+      "href",
+      "/practitioners/locations/bali",
+    );
+  });
+
+  test("links active directory taxonomy summaries to discovery pages", async ({ page }) => {
+    await page.goto(
+      "/practitioners?areas=trauma-and-nervous-system&locations=bali",
+    );
+
+    await expect(
+      page.getByRole("link", { name: "Explore Trauma & nervous system" }),
+    ).toHaveAttribute(
+      "href",
+      "/practitioners/areas/trauma-and-nervous-system",
+    );
+    await expect(
+      page.getByRole("link", { name: "Explore Bali" }),
+    ).toHaveAttribute("href", "/practitioners/locations/bali");
+  });
+
+  test("returns not found for missing and inactive taxonomy slugs", async ({ page }) => {
+    const missingArea = await page.goto(
+      "/practitioners/areas/not-a-real-area",
+    );
+    expect(missingArea?.status()).toBe(404);
+
+    const inactiveLocation = await page.goto(
+      "/practitioners/locations/inactive-location",
+    );
+    expect(inactiveLocation?.status()).toBe(404);
+  });
+});
+
 test.describe("published practitioner directory at 390px", () => {
   test.use({ viewport: { width: 390, height: 844 } });
 
@@ -285,6 +372,28 @@ test.describe("published practitioner directory at 390px", () => {
 
     await page.goto("/practitioners/indri-hapsari");
     await expect(page.getByRole("heading", { level: 1, name: "Indri Hapsari" })).toBeVisible();
+    await expect(
+      page.evaluate(
+        () => document.documentElement.scrollWidth > document.documentElement.clientWidth,
+      ),
+    ).resolves.toBe(false);
+  });
+
+  test("keeps discovery pages usable without horizontal overflow", async ({ page }) => {
+    await page.goto("/practitioners/areas/trauma-and-nervous-system");
+    await expect(
+      page.getByRole("heading", { level: 1, name: "Trauma & nervous system" }),
+    ).toBeVisible();
+    await expect(
+      page.evaluate(
+        () => document.documentElement.scrollWidth > document.documentElement.clientWidth,
+      ),
+    ).resolves.toBe(false);
+
+    await page.goto("/practitioners/locations/international");
+    await expect(
+      page.getByRole("heading", { level: 1, name: "International" }),
+    ).toBeVisible();
     await expect(
       page.evaluate(
         () => document.documentElement.scrollWidth > document.documentElement.clientWidth,

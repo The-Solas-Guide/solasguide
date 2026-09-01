@@ -27,6 +27,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PractitionerCard } from "@/components/practitioners/practitioner-card";
+import Link from "next/link";
 import {
   PractitionerDirectoryEmpty,
   PractitionerDirectoryError,
@@ -371,6 +372,12 @@ export function PractitionerDirectory({
       label:
         facet.options.find((option) => option.value === value)?.label ?? value,
       urlValue: optionUrlValue(facet, value),
+      discoveryHref:
+        facet.id === "areas"
+          ? `/practitioners/areas/${optionUrlValue(facet, value)}`
+          : facet.id === "locations"
+            ? `/practitioners/locations/${optionUrlValue(facet, value)}`
+            : undefined,
     })),
   );
   const hasActiveFilters = activeFilters.length > 0 || query.trim() !== "";
@@ -565,18 +572,31 @@ export function PractitionerDirectory({
               className="mt-4 flex flex-wrap gap-2"
             >
               {activeFilters.map((filter) => (
-                <li key={`${filter.facetId}-${filter.value}`}>
+                <li
+                  key={`${filter.facetId}-${filter.value}`}
+                  className="inline-flex min-h-9 items-center gap-2 border border-border bg-muted/40 px-3 text-xs text-foreground transition-colors hover:border-foreground/45"
+                >
+                  <span className="text-muted-foreground">
+                    {filter.facetLabel}
+                  </span>
+                  <span aria-hidden="true">·</span>
+                  {filter.discoveryHref ? (
+                    <Link
+                      href={filter.discoveryHref}
+                      aria-label={`Explore ${filter.label}`}
+                      className="underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground"
+                    >
+                      {filter.label}
+                    </Link>
+                  ) : (
+                    <span>{filter.label}</span>
+                  )}
                   <button
                     type="button"
                     onClick={() => toggleValue(filter.facetId, filter.value)}
                     aria-label={`Remove ${filter.facetLabel} filter ${filter.label}`}
-                    className="inline-flex min-h-9 items-center gap-2 border border-border bg-muted/40 px-3 text-xs text-foreground transition-colors hover:border-foreground/45"
+                    className="inline-flex min-h-7 min-w-7 items-center justify-center rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
                   >
-                    <span className="text-muted-foreground">
-                      {filter.facetLabel}
-                    </span>
-                    <span aria-hidden="true">·</span>
-                    {filter.label}
                     <X className="size-3.5" aria-hidden="true" />
                   </button>
                 </li>
