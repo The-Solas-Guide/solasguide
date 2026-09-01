@@ -12,6 +12,7 @@ export function PractitionerCard({
   practitioner,
   variant = "directory",
 }: PractitionerCardProps) {
+  const Heading = variant === "registry" ? "h3" : "h2";
   const content = (
     <>
       <div
@@ -46,9 +47,9 @@ export function PractitionerCard({
             {practitioner.location}
           </p>
         ) : null}
-        <h3 className="mt-2 font-display text-xl leading-[1.08] text-balance">
+        <Heading className="mt-2 font-display text-xl leading-[1.08] text-balance">
           {practitioner.name}
-        </h3>
+        </Heading>
         {practitioner.summary ? (
           <p className="mt-2.5 min-h-[3.75rem] line-clamp-3 text-sm leading-5 text-muted-foreground">
             {practitioner.summary}

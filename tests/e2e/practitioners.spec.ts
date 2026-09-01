@@ -21,9 +21,9 @@ test.describe("published practitioner directory", () => {
     ).toBeVisible();
     await expect(page.getByText("Showing 3 of 3 practitioners")).toBeVisible();
     await expect(cards(page)).toHaveCount(3);
-    await expect(cards(page).getByRole("heading", { name: "Kartika Alexandra" })).toBeVisible();
-    await expect(cards(page).getByRole("heading", { name: "Sandra Echemendia" })).toBeVisible();
-    await expect(cards(page).getByRole("heading", { name: "Indri Hapsari" })).toBeVisible();
+    await expect(cards(page).getByRole("heading", { level: 2, name: "Kartika Alexandra" })).toBeVisible();
+    await expect(cards(page).getByRole("heading", { level: 2, name: "Sandra Echemendia" })).toBeVisible();
+    await expect(cards(page).getByRole("heading", { level: 2, name: "Indri Hapsari" })).toBeVisible();
 
     for (const image of await cards(page).locator("img").all()) {
       await expect(image).toBeVisible();

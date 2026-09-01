@@ -49,8 +49,9 @@ export default async function PractitionersPage() {
               The founding practitioners of The Solas Guide.
             </h1>
             <p className="mt-7 max-w-xl text-base leading-8 text-muted-foreground">
-              Explore {practitioners.length} practitioners in the Guide. Search by name, practice
-              or place, then use the filters when a listing includes that information.
+              {result.error
+                ? "Browse approved practitioner profiles by name, practice or place."
+                : `Explore ${practitioners.length} practitioners in the Guide. Search by name, practice or place, then use the filters when a listing includes that information.`}
             </p>
           </section>
 

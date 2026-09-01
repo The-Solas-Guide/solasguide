@@ -17,8 +17,9 @@ The service uses human judgement and the trusted Solas network to review buyer c
 - Supabase storage for buyer and practitioner submissions.
 - Supabase practitioner directory schema with controlled taxonomy and a draft, published, and archived lifecycle.
 - Support for one approved portrait per practitioner. Public images require approval before upload or publication.
-- Import of 20 supplied practitioner profiles as drafts. All 20 remain drafts without approved images.
+- Import of 20 supplied practitioner profiles with approved portraits and controlled publication states.
 - Dynamic public practitioner directory, search, filters, and profile pages that read published records only.
+- Admin Portal V1 for one authorised administrator to create, edit, preview, publish, unpublish, archive, and restore practitioner listings.
 - On-screen confirmation, one customer confirmation email, and one internal notification for each submission journey.
 - MailerSend transactional email integration.
 - Vercel Web Analytics page views and agreed custom events.
@@ -27,7 +28,7 @@ The service uses human judgement and the trusted Solas network to review buyer c
 
 ## Excluded
 
-- Customer or practitioner accounts, admin portal, or admin authentication.
+- Customer or practitioner accounts.
 - Find a Match generated results, automated matching, verification, or practitioner approval.
 - Booking, payments, subscriptions, billing, or ticketing.
 - WhatsApp or internal customer-to-practitioner messaging.

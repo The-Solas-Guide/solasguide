@@ -59,9 +59,9 @@ test.describe("homepage", () => {
       ),
     ).toBeVisible();
     await expect(registry.locator("article")).toHaveCount(3);
-    await expect(registry.getByRole("heading", { name: "Kartika Alexandra" })).toBeVisible();
-    await expect(registry.getByRole("heading", { name: "Sandra Echemendia" })).toBeVisible();
-    await expect(registry.getByRole("heading", { name: "Indri Hapsari" })).toBeVisible();
+    await expect(registry.getByRole("heading", { level: 3, name: "Kartika Alexandra" })).toBeVisible();
+    await expect(registry.getByRole("heading", { level: 3, name: "Sandra Echemendia" })).toBeVisible();
+    await expect(registry.getByRole("heading", { level: 3, name: "Indri Hapsari" })).toBeVisible();
     await expect(registry.locator("img")).toHaveCount(3);
     await expect(registry.getByRole("link", { name: /Kartika Alexandra/ })).toHaveAttribute(
       "href",
