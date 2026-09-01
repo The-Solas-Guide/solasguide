@@ -284,7 +284,7 @@ describe("public practitioner directory data", () => {
     } = await import("@/lib/practitioners");
     const filters = parseDirectoryFilters(
       new URLSearchParams(
-        "search=%20somatic%20&areas=b&areas=a&areas=b&areas=%20&format=online&format=hybrid&unknown=value",
+        "search=%20somatic%20&areas=b&areas=a&areas=b&areas=%20&format=online&format=in-person&format=hybrid&unknown=value",
       ),
     );
 
@@ -294,11 +294,11 @@ describe("public practitioner directory data", () => {
       approach: [],
       "works-with": [],
       locations: [],
-      format: ["online"],
+      format: ["in-person", "online"],
       languages: [],
     });
     expect(serializeDirectoryFilters(filters).toString()).toBe(
-      "search=somatic&areas=a&areas=b&format=online",
+      "search=somatic&areas=a&areas=b&format=in-person&format=online",
     );
     expect(parseDirectoryFilters(serializeDirectoryFilters(filters))).toEqual(
       filters,

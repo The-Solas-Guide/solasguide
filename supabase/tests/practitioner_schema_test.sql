@@ -1,6 +1,6 @@
 begin;
 
-select plan(47);
+select plan(48);
 
 select has_table('public', 'practitioners', 'practitioners table exists');
 select has_table('public', 'practitioner_terms', 'practitioner_terms table exists');
@@ -362,6 +362,19 @@ select is(
   'search RPC is executable only by public API roles'
 );
 
+select is(
+  (
+    select coalesce(bool_or(acl.grantee = 0 and acl.privilege_type = 'EXECUTE'), false)
+      from pg_proc as procedure
+      cross join lateral aclexplode(
+        coalesce(procedure.proacl, acldefault('f', procedure.proowner))
+      ) as acl
+     where procedure.oid = 'public.search_published_practitioner_ids(text,text[],text[],text[],text[],text[],text[])'::regprocedure
+  ),
+  false,
+  'search RPC does not grant execute to PUBLIC'
+);
+
 select results_eq(
   $$select practitioner_id
       from public.search_published_practitioner_ids(
@@ -467,10 +480,10 @@ select results_eq(
   $$select practitioner_id
       from public.search_published_practitioner_ids(
         null,
+        '{}'::text[],
+        '{}'::text[],
+        '{}'::text[],
         array['schema-test-inactive-location']::text[],
-        '{}'::text[],
-        '{}'::text[],
-        '{}'::text[],
         '{}'::text[],
         '{}'::text[]
       )$$,
