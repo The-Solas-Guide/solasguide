@@ -17,7 +17,7 @@ const foundingPractitioners: readonly FoundingPractitioner[] = [
     primaryPractice: "Somatic Experiencing",
     supportingPractices: ["Bodywork", "Breathwork"],
     summary:
-      "Trained in Somatic Experiencing, with experience supporting retreat-intensive work.",
+      "Riza offers somatic, trauma-informed support for people navigating grief, anxiety, relationship difficulties and disconnection from self.",
   },
   {
     name: "Pablo Castro",
@@ -109,18 +109,15 @@ async function expectPractitionerCard(card: Locator, practitioner: FoundingPract
   await expect(card).toBeVisible();
   await expect(card.getByRole("heading", { level: 3, name: practitioner.name, exact: true })).toBeVisible();
   await expect(card.getByText(practitioner.location, { exact: true })).toBeVisible();
-  await expect(card.getByText("Primary practice", { exact: true })).toBeAttached();
-  await expect(card.getByText(practitioner.primaryPractice, { exact: true })).toBeVisible();
+  await expect(card.getByText("Specific modalities", { exact: true })).toBeAttached();
   await expect(card.getByText(practitioner.summary, { exact: true })).toBeVisible();
 
-  if (practitioner.supportingPractices.length > 0) {
-    await expect(card.getByText("Supporting practices", { exact: true })).toBeAttached();
-    await expect(
-      card.getByText(practitioner.supportingPractices.join(" · "), { exact: true }),
-    ).toBeVisible();
-  } else {
-    await expect(card.getByText("Supporting practices", { exact: true })).toHaveCount(0);
-  }
+  await expect(
+    card.getByText(
+      [practitioner.primaryPractice, ...practitioner.supportingPractices].join(" · "),
+      { exact: true },
+    ),
+  ).toBeVisible();
 
   await expectLoadedImage(card.locator("img"), practitioner.image);
 }
@@ -186,7 +183,11 @@ test.describe("homepage", () => {
       await expectPractitionerCard(cards.nth(index), practitioner);
     }
 
-    await expect(registry.getByRole("link")).toHaveCount(0);
+    await expect(registry.getByRole("link")).toHaveCount(1);
+    await expect(registry.getByRole("link", { name: /Riza Sukman/ })).toHaveAttribute(
+      "href",
+      "/practitioners/riza-sukman",
+    );
     await expect(registry.getByText("Build Your Retreat", { exact: true })).toHaveCount(0);
   });
 
@@ -204,10 +205,34 @@ test.describe("homepage", () => {
       await expectLoadedImage(card.locator("img"), practitioner.image);
     }
 
+    const firstCard = await cards.nth(0).boundingBox();
+    const secondCard = await cards.nth(1).boundingBox();
+    expect(firstCard).not.toBeNull();
+    expect(secondCard).not.toBeNull();
+    expect(secondCard!.y).toBeGreaterThan(firstCard!.y + firstCard!.height - 4);
+
     const hasOverflow = await page.evaluate(
       () => document.documentElement.scrollWidth > document.documentElement.clientWidth,
     );
 
     expect(hasOverflow).toBe(false);
+  });
+
+  test("shows four founding practitioner columns at tablet width", async ({ page }) => {
+    await page.setViewportSize({ width: 1104, height: 1157 });
+    await page.goto("/");
+
+    const cards = page
+      .getByRole("region", { name: "Meet the Founding Practitioners" })
+      .locator("article");
+    const firstRow = await Promise.all(
+      [0, 1, 2, 3].map((index) => cards.nth(index).boundingBox()),
+    );
+    const fifthCard = await cards.nth(4).boundingBox();
+
+    expect(firstRow.every((box) => box !== null)).toBe(true);
+    expect(fifthCard).not.toBeNull();
+    expect(Math.max(...firstRow.map((box) => box!.y)) - Math.min(...firstRow.map((box) => box!.y))).toBeLessThan(4);
+    expect(fifthCard!.y).toBeGreaterThan(firstRow[0]!.y + firstRow[0]!.height - 4);
   });
 });
