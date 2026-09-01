@@ -33,7 +33,7 @@ The service uses human judgement and the trusted Solas network to review buyer c
 - Booking, payments, subscriptions, billing, or ticketing.
 - WhatsApp or internal customer-to-practitioner messaging.
 - Venue or event directories.
-- Airtable as a runtime source, write target, public-application read dependency, or reverse-sync destination.
+- Airtable as a source of truth, public-application read dependency, or reverse-sync destination.
 
 ## Technical decisions
 
@@ -42,7 +42,8 @@ The service uses human judgement and the trusted Solas network to review buyer c
 - Develop against local Supabase Docker and manage schema changes through committed migrations.
 - Use MailerSend for transactional email unless the provider decision is explicitly revisited.
 - Use Vercel for preview and production deployments.
-- Keep Airtable outside the application runtime. Any temporary handoff is manual or exported.
+- Use a one-way Supabase-to-Airtable CRM projection for submitted enquiries and practitioner expressions of interest. Supabase remains authoritative; Airtable owns CRM status, owners, outreach activity, follow-up, and notes. This approved change supersedes the earlier Supabase-only operational handoff direction.
+- A privacy or retention deletion must remove the authoritative Supabase record and its matching Airtable CRM record. For the MVP, the Airtable removal is a documented manual operational step.
 - Keep the application simple and MVP-focused. Record non-critical edge cases instead of expanding scope automatically.
 
 ## Acceptance summary
