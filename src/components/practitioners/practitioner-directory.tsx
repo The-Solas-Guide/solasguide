@@ -299,18 +299,22 @@ export function PractitionerDirectory({
     source: searchParamString,
     value: selectionFromFilters(filters, facets),
   }));
+  const searchDebounce = useRef<number | null>(null);
+  const latestSearchParamString = useRef(searchParamString);
   const query =
-    queryState.source === searchParamString ? queryState.value : urlFilters.query;
+    queryState.source === searchParamString ||
+    isPending
+      ? queryState.value
+      : urlFilters.query;
   const canonicalSelection = useMemo(
     () => selectionFromFilters(urlFilters, facets),
     [facets, urlFilters],
   );
   const selection =
-    selectionState.source === searchParamString
+    selectionState.source === searchParamString ||
+    isPending
       ? selectionState.value
       : canonicalSelection;
-  const searchDebounce = useRef<number | null>(null);
-  const latestSearchParamString = useRef(searchParamString);
 
   useEffect(() => {
     latestSearchParamString.current = searchParamString;
@@ -336,6 +340,7 @@ export function PractitionerDirectory({
           router.push(href, { scroll: false });
         }
       });
+      return queryString;
     },
     [pathname, router],
   );
@@ -352,7 +357,8 @@ export function PractitionerDirectory({
       params.delete("q");
       const trimmed = value.trim();
       if (trimmed) params.set("search", trimmed);
-      updateUrl(params, "replace");
+      const destination = updateUrl(params, "replace");
+      setQueryState({ source: destination, value: trimmed });
       searchDebounce.current = null;
     }, 250);
   }
@@ -378,7 +384,8 @@ export function PractitionerDirectory({
     for (const [key, value] of serializedFilters) {
       params.append(key, value);
     }
-    updateUrl(params);
+    const destination = updateUrl(params);
+    setSelectionState({ source: destination, value: nextSelection });
   }
 
   function toggleValue(facetId: FacetId, value: string) {
@@ -389,7 +396,6 @@ export function PractitionerDirectory({
         ? selected.filter((entry) => entry !== value)
         : [...selected, value],
     };
-    setSelectionState({ source: searchParamString, value: nextSelection });
     navigateSelection(nextSelection);
   }
 
@@ -398,29 +404,27 @@ export function PractitionerDirectory({
       ...selection,
       [facetId]: value === "" ? [] : [value],
     };
-    setSelectionState({ source: searchParamString, value: nextSelection });
     navigateSelection(nextSelection);
   }
 
   function clearFilters() {
     const nextSelection = emptySelectionForFacets(facets);
-    setSelectionState({ source: searchParamString, value: nextSelection });
     navigateSelection(nextSelection);
   }
 
   function clearAll() {
-    setQueryState({ source: searchParamString, value: "" });
-    setSelectionState({
-      source: searchParamString,
-      value: emptySelectionForFacets(facets),
-    });
     if (searchDebounce.current !== null) {
       window.clearTimeout(searchDebounce.current);
       searchDebounce.current = null;
     }
     const params = new URLSearchParams(latestSearchParamString.current);
     removeDirectoryParameters(params);
-    updateUrl(params);
+    const destination = updateUrl(params);
+    setQueryState({ source: destination, value: "" });
+    setSelectionState({
+      source: destination,
+      value: emptySelectionForFacets(facets),
+    });
   }
 
   if (error) return <PractitionerDirectoryError />;

@@ -112,27 +112,77 @@ test.describe("published practitioner directory", () => {
     await expect(cards(page).getByRole("heading", { name: "Sandra Echemendia" })).toBeVisible();
   });
 
-  test("restores directory results through back and forward navigation", async ({ page }) => {
+  test("restores directory results and controls through back and forward navigation", async ({ page }) => {
     await page.goto("/practitioners");
+    const search = page.getByLabel("Search the Guide");
+    await search.fill("kartika");
+    await expect(page).toHaveURL(/\/practitioners\?search=kartika$/);
+
     await page.getByRole("button", { name: /Filters/ }).click();
     const dialog = page.getByRole("dialog", { name: "Filters" });
     await dialog.getByLabel("Areas of support", { exact: true }).selectOption({
       label: "Trauma & nervous system",
     });
     await dialog.getByRole("button", { name: /Show .* results/ }).click();
-    await expect(page).toHaveURL(/areas=trauma-and-nervous-system/);
+    await expect(page).toHaveURL(
+      /\/practitioners\?search=kartika&areas=trauma-and-nervous-system$/,
+    );
     await expect(cards(page)).toHaveCount(1);
+    await expect(search).toHaveValue("kartika");
+    await expect(
+      page.getByRole("button", {
+        name: "Remove Areas of support filter Trauma & nervous system",
+      }),
+    ).toBeVisible();
+    await expect(page.getByRole("button", { name: /Filters/ })).toContainText("1");
+    await expect(page.getByRole("button", { name: "Clear all" })).toBeVisible();
 
     await page.getByRole("button", { name: "Clear all" }).click();
     await expect(page).toHaveURL("http://127.0.0.1:3100/practitioners");
     await expect(cards(page)).toHaveCount(3);
+    await expect(search).toHaveValue("");
+    await expect(page.getByRole("button", { name: /Filters/ })).not.toContainText("1");
+    await expect(page.getByRole("button", { name: "Clear all" })).toHaveCount(0);
 
     await page.goBack();
-    await expect(page).toHaveURL(/areas=trauma-and-nervous-system/);
+    await expect(page).toHaveURL(
+      /\/practitioners\?search=kartika&areas=trauma-and-nervous-system$/,
+    );
     await expect(cards(page)).toHaveCount(1);
+    await expect(search).toHaveValue("kartika");
+    await expect(
+      page.getByRole("button", {
+        name: "Remove Areas of support filter Trauma & nervous system",
+      }),
+    ).toBeVisible();
+    await expect(page.getByRole("button", { name: /Filters/ })).toContainText("1");
+    await expect(page.getByRole("button", { name: "Clear all" })).toBeVisible();
+    await page.getByRole("button", { name: /Filters/ }).click();
+    await expect(
+      page
+        .getByRole("dialog", { name: "Filters" })
+        .getByLabel("Areas of support", { exact: true })
+        .locator("option:checked"),
+    ).toHaveText("Trauma & nervous system");
+    await page.keyboard.press("Escape");
+
     await page.goForward();
     await expect(page).toHaveURL("http://127.0.0.1:3100/practitioners");
     await expect(cards(page)).toHaveCount(3);
+    await expect(search).toHaveValue("");
+    await expect(page.getByRole("button", { name: /Filters/ })).not.toContainText("1");
+    await expect(
+      page.getByRole("button", {
+        name: "Remove Areas of support filter Trauma & nervous system",
+      }),
+    ).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "Clear all" })).toHaveCount(0);
+    await page.getByRole("button", { name: /Filters/ }).click();
+    await expect(
+      page
+        .getByRole("dialog", { name: "Filters" })
+        .getByLabel("Areas of support", { exact: true }),
+    ).toHaveValue("");
   });
 
   test("explains unknown filter values without echoing them", async ({ page }) => {
