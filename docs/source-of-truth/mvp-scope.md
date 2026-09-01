@@ -15,6 +15,11 @@ The service uses human judgement and the trusted Solas network to review buyer c
 - Become a Practitioner page and expression-of-interest form.
 - Privacy and website terms pages using client-approved content.
 - Supabase storage for buyer and practitioner submissions.
+- Supabase practitioner directory schema with controlled taxonomy and a draft, published, and archived lifecycle.
+- Support for one approved portrait per practitioner. Public images require approval before upload or publication.
+- Import of 20 supplied practitioner profiles with approved portraits and controlled publication states.
+- Dynamic public practitioner directory, search, filters, and profile pages that read published records only.
+- Admin Portal V1 for one authorised administrator to create, edit, preview, publish, unpublish, archive, and restore practitioner listings.
 - On-screen confirmation, one customer confirmation email, and one internal notification for each submission journey.
 - MailerSend transactional email integration.
 - Vercel Web Analytics page views and agreed custom events.
@@ -23,13 +28,10 @@ The service uses human judgement and the trusted Solas network to review buyer c
 
 ## Excluded
 
-- Public practitioner directory or public practitioner profiles.
-- Search, category filtering, saved items, or recently viewed items.
 - Customer or practitioner accounts.
-- Custom administration portal.
-- Automated matching, verification, or practitioner approval.
+- Find a Match generated results, automated matching, verification, or practitioner approval.
 - Booking, payments, subscriptions, billing, or ticketing.
-- Direct customer-to-practitioner messaging.
+- WhatsApp or internal customer-to-practitioner messaging.
 - Venue or event directories.
 - Airtable as a source of truth, public-application read dependency, or reverse-sync destination.
 

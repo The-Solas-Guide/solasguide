@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 const defaultLinks = [
   { label: "Explore", href: "/#explore" },
   { label: "How it works", href: "/#how-it-works" },
+  { label: "The Guide", href: "/practitioners" },
 ];
 
 type NavLink = {

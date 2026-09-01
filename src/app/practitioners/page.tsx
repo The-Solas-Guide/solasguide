@@ -2,24 +2,29 @@ import type { Metadata } from "next";
 import { PractitionerDirectory } from "@/components/practitioners/practitioner-directory";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
-import { practitioners } from "@/lib/practitioners";
+import { getPublishedPractitioners } from "@/lib/practitioners";
 
 export const metadata: Metadata = {
   title: "The Guide",
   description:
     "Explore the founding practitioners included in The Solas Guide and review the information listed for each practitioner.",
-  // Phase 2 prototype: not part of the MVP delivery scope and not linked from
-  // production navigation, so it should not be indexed.
+  // Keep the directory out of search results until its draft profiles and
+  // approved portraits are ready to publish.
   robots: { index: false, follow: false },
 };
+
+export const dynamic = "force-dynamic";
 
 const navLinks = [
   { label: "Why Solas", href: "/#why-solas" },
   { label: "Recognition", href: "/#recognition" },
-  { label: "The Guide", href: "/#registry" },
+  { label: "The Guide", href: "/practitioners" },
 ];
 
-export default function PractitionersPage() {
+export default async function PractitionersPage() {
+  const result = await getPublishedPractitioners();
+  const practitioners = result.data;
+
   return (
     <>
       <a
@@ -44,13 +49,16 @@ export default function PractitionersPage() {
               The founding practitioners of The Solas Guide.
             </h1>
             <p className="mt-7 max-w-xl text-base leading-8 text-muted-foreground">
-              Explore {practitioners.length} practitioners in the inaugural edition. Search by
-              name, practice or place, then use the filters when a listing includes that
-              information.
+              {result.error
+                ? "Browse approved practitioner profiles by name, practice or place."
+                : `Explore ${practitioners.length} practitioners in the Guide. Search by name, practice or place, then use the filters when a listing includes that information.`}
             </p>
           </section>
 
-          <PractitionerDirectory />
+          <PractitionerDirectory
+            practitioners={practitioners}
+            error={result.error}
+          />
         </main>
 
         <SiteFooter />
