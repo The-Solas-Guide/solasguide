@@ -96,30 +96,48 @@ const profiles: PractitionerRow[] = [
 
 type TermDefinition = readonly [string, string, string, number];
 
-const terms: PractitionerTermRow[] = ([
-  ["support_area", "Trauma & nervous system", "trauma-and-nervous-system", 10],
-  ["support_area", "Leadership & work", "leadership-and-work", 50],
-  ["support_area", "Women’s wellbeing", "womens-wellbeing", 90],
-  ["approach", "Therapy & counselling", "therapy-and-counselling", 10],
-  ["approach", "Coaching", "coaching", 30],
-  ["approach", "Breathwork", "breathwork", 80],
-  ["modality", "Integrative hypnotherapy", "integrative-hypnotherapy", 10],
-  ["modality", "Strategy advisory", "strategy-advisory", 40],
-  ["modality", "Breathwork", "breathwork", 340],
-  ["works_with", "Individuals", "individuals", 10],
-  ["works_with", "Leaders & professional teams", "leaders-professional-teams", 20],
-  ["works_with", "Groups", "groups", 30],
-  ["location", "Bali", "bali", 10],
-  ["location", "International", "international", 20],
-  ["language", "English", "english", 10],
- ] satisfies readonly TermDefinition[]).map(([type, name, slug, sort_order], index) => ({
-  id: `e2e-term-${index + 1}`,
-  type,
-  name,
-  slug,
-  sort_order,
-  is_active: true,
-}));
+const terms: PractitionerTermRow[] = [
+  ...([
+    ["support_area", "Trauma & nervous system", "trauma-and-nervous-system", 10],
+    ["support_area", "Leadership & work", "leadership-and-work", 50],
+    ["support_area", "Women’s wellbeing", "womens-wellbeing", 90],
+    ["approach", "Therapy & counselling", "therapy-and-counselling", 10],
+    ["approach", "Coaching", "coaching", 30],
+    ["approach", "Breathwork", "breathwork", 80],
+    ["modality", "Integrative hypnotherapy", "integrative-hypnotherapy", 10],
+    ["modality", "Strategy advisory", "strategy-advisory", 40],
+    ["modality", "Breathwork", "breathwork", 340],
+    ["works_with", "Individuals", "individuals", 10],
+    ["works_with", "Leaders & professional teams", "leaders-professional-teams", 20],
+    ["works_with", "Groups", "groups", 30],
+    ["location", "Bali", "bali", 10],
+    ["location", "International", "international", 20],
+    ["language", "English", "english", 10],
+  ] satisfies readonly TermDefinition[]).map(([type, name, slug, sort_order], index) => ({
+    id: `e2e-term-${index + 1}`,
+    type,
+    name,
+    slug,
+    sort_order,
+    is_active: true,
+  })),
+  {
+    id: "e2e-term-inactive-location",
+    type: "location",
+    name: "Inactive location",
+    slug: "inactive-location",
+    sort_order: 90,
+    is_active: false,
+  },
+  {
+    id: "e2e-term-unlinked-area",
+    type: "support_area",
+    name: "Unlinked area",
+    slug: "unlinked-area",
+    sort_order: 110,
+    is_active: true,
+  },
+];
 
 const termId = new Map(terms.map((term) => [`${term.type}:${term.slug}`, term.id]));
 

@@ -2,14 +2,36 @@
 
 import { SlidersHorizontal, X } from "lucide-react";
 import { Dialog } from "radix-ui";
-import { useMemo, useState } from "react";
-import type { Practitioner, PractitionerTermType } from "@/lib/practitioners";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
+import {
+  emptyDirectoryFilters,
+  parseDirectoryFilters,
+  serializeDirectoryFilters,
+  type DirectoryFacetType,
+  type DirectoryFilters,
+  type Practitioner,
+  type PractitionerTermType,
+} from "@/lib/practitioners";
+import {
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PractitionerCard } from "@/components/practitioners/practitioner-card";
+import Link from "next/link";
 import {
   PractitionerDirectoryEmpty,
   PractitionerDirectoryError,
+  PractitionerDirectoryInvalidFilters,
 } from "@/components/practitioners/practitioner-status";
 
 export type FacetId =
@@ -23,6 +45,8 @@ export type FacetId =
 export type FacetOption = {
   value: string;
   label: string;
+  /** Stable taxonomy slug used in shareable directory URLs. */
+  slug?: string;
 };
 
 type Facet = {
@@ -55,6 +79,7 @@ function termOptions(
       options.set(term.id, {
         value: term.id,
         label: term.name,
+        slug: term.slug,
         sortOrder: term.sortOrder,
       });
     }
@@ -65,7 +90,7 @@ function termOptions(
       (left, right) =>
         left.sortOrder - right.sortOrder || left.label.localeCompare(right.label),
     )
-    .map(({ value, label }) => ({ value, label }));
+    .map(({ value, label, slug }) => ({ value, label, slug }));
 }
 
 function termsFor(practitioner: Practitioner, type: PractitionerTermType) {
@@ -79,10 +104,14 @@ export function getFacetDefinitions(
 ): readonly Facet[] {
   const formatOptions: FacetOption[] = [];
   if (practitioners.some((practitioner) => practitioner.offersInPerson)) {
-    formatOptions.push({ value: "in-person", label: "In-person" });
+    formatOptions.push({
+      value: "in-person",
+      label: "In-person",
+      slug: "in-person",
+    });
   }
   if (practitioners.some((practitioner) => practitioner.offersOnline)) {
-    formatOptions.push({ value: "online", label: "Online" });
+    formatOptions.push({ value: "online", label: "Online", slug: "online" });
   }
 
   return [
@@ -166,30 +195,174 @@ export function matchesFacets(
 
 type PractitionerDirectoryProps = {
   practitioners: readonly Practitioner[];
+  availablePractitioners?: readonly Practitioner[];
+  filters?: DirectoryFilters;
+  invalidFilters?: boolean;
   error?: boolean;
 };
 
+const directoryFacetTypes: readonly DirectoryFacetType[] = [
+  "areas",
+  "approach",
+  "works-with",
+  "locations",
+  "format",
+  "languages",
+];
+
+const directoryParameterNames = [
+  "search",
+  "query",
+  "q",
+  ...directoryFacetTypes,
+] as const;
+
+function emptySelectionForFacets(facets: readonly Facet[]): Selection {
+  return Object.fromEntries(
+    facets.map((facet) => [facet.id, []]),
+  ) as unknown as Selection;
+}
+
+function selectionFromFilters(
+  filters: DirectoryFilters,
+  facets: readonly Facet[],
+): Selection {
+  const selection = emptySelectionForFacets(facets);
+  for (const facet of facets) {
+    const values = filters[facet.id];
+    selection[facet.id] = values.flatMap((value) => {
+      const option = facet.options.find(
+        (candidate) => (candidate.slug ?? candidate.value) === value,
+      );
+      return option ? [option.value] : [];
+    });
+  }
+  return selection;
+}
+
+function optionUrlValue(facet: Facet, value: string) {
+  return facet.options.find((option) => option.value === value)?.slug ?? value;
+}
+
+function filtersFromSelection(
+  selection: Selection,
+  facets: readonly Facet[],
+  query: string,
+): DirectoryFilters {
+  const valuesByFacet: Record<FacetId, readonly string[]> = {
+    areas: [],
+    approach: [],
+    "works-with": [],
+    locations: [],
+    format: [],
+    languages: [],
+  };
+
+  for (const facet of facets) {
+    valuesByFacet[facet.id] = selection[facet.id].map((value) =>
+      optionUrlValue(facet, value),
+    );
+  }
+
+  return { query, ...valuesByFacet } as unknown as DirectoryFilters;
+}
+
+function removeDirectoryParameters(params: URLSearchParams) {
+  for (const name of directoryParameterNames) params.delete(name);
+}
+
 export function PractitionerDirectory({
   practitioners,
+  availablePractitioners = practitioners,
+  filters = emptyDirectoryFilters,
+  invalidFilters = false,
   error = false,
 }: PractitionerDirectoryProps) {
-  const [query, setQuery] = useState("");
-  const [selection, setSelection] = useState<Selection>(emptySelection);
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const searchParamString = searchParams.toString();
+  const [isPending, startTransition] = useTransition();
   const [filtersOpen, setFiltersOpen] = useState(false);
   const facets = useMemo(
-    () => getFacetDefinitions(practitioners),
-    [practitioners],
+    () => getFacetDefinitions(availablePractitioners),
+    [availablePractitioners],
+  );
+  const urlFilters = useMemo(
+    () => parseDirectoryFilters(new URLSearchParams(searchParamString)),
+    [searchParamString],
+  );
+  const [queryState, setQueryState] = useState(() => ({
+    source: searchParamString,
+    value: filters.query,
+  }));
+  const [selectionState, setSelectionState] = useState(() => ({
+    source: searchParamString,
+    value: selectionFromFilters(filters, facets),
+  }));
+  const searchDebounce = useRef<number | null>(null);
+  const latestSearchParamString = useRef(searchParamString);
+  const query =
+    queryState.source === searchParamString ||
+    isPending
+      ? queryState.value
+      : urlFilters.query;
+  const canonicalSelection = useMemo(
+    () => selectionFromFilters(urlFilters, facets),
+    [facets, urlFilters],
+  );
+  const selection =
+    selectionState.source === searchParamString ||
+    isPending
+      ? selectionState.value
+      : canonicalSelection;
+
+  useEffect(() => {
+    latestSearchParamString.current = searchParamString;
+  }, [searchParamString]);
+
+  useEffect(() => {
+    return () => {
+      if (searchDebounce.current !== null) {
+        window.clearTimeout(searchDebounce.current);
+      }
+    };
+  }, []);
+
+  const updateUrl = useCallback(
+    (params: URLSearchParams, mode: "push" | "replace" = "push") => {
+      const queryString = params.toString();
+      const href = queryString ? `${pathname}?${queryString}` : pathname;
+      latestSearchParamString.current = queryString;
+      startTransition(() => {
+        if (mode === "replace") {
+          router.replace(href, { scroll: false });
+        } else {
+          router.push(href, { scroll: false });
+        }
+      });
+      return queryString;
+    },
+    [pathname, router],
   );
 
-  const results = useMemo(
-    () =>
-      practitioners.filter(
-        (practitioner) =>
-          matchesQuery(practitioner, query) &&
-          matchesFacets(practitioner, selection, facets),
-      ),
-    [facets, practitioners, query, selection],
-  );
+  function handleSearchChange(value: string) {
+    setQueryState({ source: searchParamString, value });
+    if (searchDebounce.current !== null) {
+      window.clearTimeout(searchDebounce.current);
+    }
+    searchDebounce.current = window.setTimeout(() => {
+      const params = new URLSearchParams(latestSearchParamString.current);
+      params.delete("search");
+      params.delete("query");
+      params.delete("q");
+      const trimmed = value.trim();
+      if (trimmed) params.set("search", trimmed);
+      const destination = updateUrl(params, "replace");
+      setQueryState({ source: destination, value: trimmed });
+      searchDebounce.current = null;
+    }, 250);
+  }
 
   const activeFilters = facets.flatMap((facet) =>
     selection[facet.id].map((value) => ({
@@ -198,32 +371,67 @@ export function PractitionerDirectory({
       value,
       label:
         facet.options.find((option) => option.value === value)?.label ?? value,
+      urlValue: optionUrlValue(facet, value),
+      discoveryHref:
+        facet.id === "areas"
+          ? `/practitioners/areas/${optionUrlValue(facet, value)}`
+          : facet.id === "locations"
+            ? `/practitioners/locations/${optionUrlValue(facet, value)}`
+            : undefined,
     })),
   );
   const hasActiveFilters = activeFilters.length > 0 || query.trim() !== "";
 
+  function navigateSelection(nextSelection: Selection) {
+    const params = new URLSearchParams(latestSearchParamString.current);
+    removeDirectoryParameters(params);
+    const serializedFilters = serializeDirectoryFilters(
+      filtersFromSelection(nextSelection, facets, query),
+    );
+    for (const [key, value] of serializedFilters) {
+      params.append(key, value);
+    }
+    const destination = updateUrl(params);
+    setSelectionState({ source: destination, value: nextSelection });
+  }
+
   function toggleValue(facetId: FacetId, value: string) {
-    setSelection((current) => {
-      const selected = current[facetId];
-      return {
-        ...current,
-        [facetId]: selected.includes(value)
-          ? selected.filter((entry) => entry !== value)
-          : [...selected, value],
-      };
-    });
+    const selected = selection[facetId];
+    const nextSelection = {
+      ...selection,
+      [facetId]: selected.includes(value)
+        ? selected.filter((entry) => entry !== value)
+        : [...selected, value],
+    };
+    navigateSelection(nextSelection);
   }
 
   function setFacetValue(facetId: FacetId, value: string) {
-    setSelection((current) => ({
-      ...current,
+    const nextSelection = {
+      ...selection,
       [facetId]: value === "" ? [] : [value],
-    }));
+    };
+    navigateSelection(nextSelection);
+  }
+
+  function clearFilters() {
+    const nextSelection = emptySelectionForFacets(facets);
+    navigateSelection(nextSelection);
   }
 
   function clearAll() {
-    setQuery("");
-    setSelection(emptySelection);
+    if (searchDebounce.current !== null) {
+      window.clearTimeout(searchDebounce.current);
+      searchDebounce.current = null;
+    }
+    const params = new URLSearchParams(latestSearchParamString.current);
+    removeDirectoryParameters(params);
+    const destination = updateUrl(params);
+    setQueryState({ source: destination, value: "" });
+    setSelectionState({
+      source: destination,
+      value: emptySelectionForFacets(facets),
+    });
   }
 
   if (error) return <PractitionerDirectoryError />;
@@ -231,6 +439,7 @@ export function PractitionerDirectory({
   return (
     <div className="border-x border-b border-border bg-card px-5 py-12 sm:px-8 md:px-12 md:py-16 lg:px-16">
       <div>
+        {invalidFilters ? <PractitionerDirectoryInvalidFilters /> : null}
         <aside
           id="practitioner-filters"
           aria-label="Filter practitioners"
@@ -248,7 +457,7 @@ export function PractitionerDirectory({
                 id="practitioner-search"
                 type="search"
                 value={query}
-                onChange={(event) => setQuery(event.target.value)}
+                onChange={(event) => handleSearchChange(event.target.value)}
                 placeholder="Name or practice"
               />
             </div>
@@ -306,7 +515,7 @@ export function PractitionerDirectory({
                       <Button
                         type="button"
                         variant="outline"
-                        onClick={() => setSelection(emptySelection)}
+                        onClick={clearFilters}
                         className="px-2 text-[0.62rem] tracking-[0.08em] whitespace-nowrap"
                       >
                         Clear filters
@@ -316,7 +525,7 @@ export function PractitionerDirectory({
                           type="button"
                           className="px-2 text-[0.62rem] tracking-[0.08em] whitespace-nowrap"
                         >
-                          Show {results.length} results
+                          Show {practitioners.length} results
                         </Button>
                       </Dialog.Close>
                     </div>
@@ -329,13 +538,22 @@ export function PractitionerDirectory({
 
         <div className="mt-8">
           <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border pb-4">
-            <p aria-live="polite" className="text-sm text-muted-foreground">
+            <p
+              aria-busy={isPending}
+              aria-live="polite"
+              className="text-sm text-muted-foreground"
+            >
               Showing{" "}
               <span className="font-semibold text-foreground">
-                {results.length}
+                {practitioners.length}
               </span>{" "}
-              of {practitioners.length} practitioners
+              of {availablePractitioners.length} practitioners
             </p>
+            {isPending ? (
+              <span className="text-sm text-muted-foreground" role="status">
+                Updating results…
+              </span>
+            ) : null}
             {hasActiveFilters ? (
               <Button
                 type="button"
@@ -354,18 +572,31 @@ export function PractitionerDirectory({
               className="mt-4 flex flex-wrap gap-2"
             >
               {activeFilters.map((filter) => (
-                <li key={`${filter.facetId}-${filter.value}`}>
+                <li
+                  key={`${filter.facetId}-${filter.value}`}
+                  className="inline-flex min-h-9 items-center gap-2 border border-border bg-muted/40 px-3 text-xs text-foreground transition-colors hover:border-foreground/45"
+                >
+                  <span className="text-muted-foreground">
+                    {filter.facetLabel}
+                  </span>
+                  <span aria-hidden="true">·</span>
+                  {filter.discoveryHref ? (
+                    <Link
+                      href={filter.discoveryHref}
+                      aria-label={`Explore ${filter.label}`}
+                      className="underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground"
+                    >
+                      {filter.label}
+                    </Link>
+                  ) : (
+                    <span>{filter.label}</span>
+                  )}
                   <button
                     type="button"
                     onClick={() => toggleValue(filter.facetId, filter.value)}
                     aria-label={`Remove ${filter.facetLabel} filter ${filter.label}`}
-                    className="inline-flex min-h-9 items-center gap-2 border border-border bg-muted/40 px-3 text-xs text-foreground transition-colors hover:border-foreground/45"
+                    className="inline-flex min-h-7 min-w-7 items-center justify-center rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
                   >
-                    <span className="text-muted-foreground">
-                      {filter.facetLabel}
-                    </span>
-                    <span aria-hidden="true">·</span>
-                    {filter.label}
                     <X className="size-3.5" aria-hidden="true" />
                   </button>
                 </li>
@@ -373,8 +604,8 @@ export function PractitionerDirectory({
             </ul>
           ) : null}
 
-          {results.length === 0 ? (
-            practitioners.length === 0 ? (
+          {practitioners.length === 0 ? (
+            availablePractitioners.length === 0 ? (
               <PractitionerDirectoryEmpty />
             ) : (
               <div className="mt-8 border border-border bg-muted/20 px-6 py-12 text-center">
@@ -396,7 +627,7 @@ export function PractitionerDirectory({
             )
           ) : (
             <ul className="mt-6 grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-4 lg:grid-cols-3 xl:grid-cols-4">
-              {results.map((practitioner) => (
+              {practitioners.map((practitioner) => (
                 <li key={practitioner.slug} className="min-w-0">
                   <PractitionerCard practitioner={practitioner} />
                 </li>

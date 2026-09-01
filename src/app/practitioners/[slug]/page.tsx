@@ -9,10 +9,17 @@ import { SiteHeader } from "@/components/layout/site-header";
 import { buttonVariants } from "@/components/ui/button";
 import {
   getPublishedPractitionerBySlug,
+  getTermsByType,
   portraitObjectPosition,
   type Practitioner,
 } from "@/lib/practitioners";
 import { cn } from "@/lib/utils";
+import {
+  getPractitionerJsonLd,
+  getPractitionerMetadata,
+  getUnavailableMetadata,
+  safeExternalUrl as safeMetadataExternalUrl,
+} from "@/lib/practitioner-metadata";
 
 type PractitionerPageProps = {
   params: Promise<{ slug: string }>;
@@ -27,22 +34,13 @@ export async function generateMetadata({
   const result = await getPublishedPractitionerBySlug(slug);
   const practitioner = result.data;
 
-  if (result.error || !practitioner) {
-    return {
-      title: "Practitioner profile",
-      description: "Explore practitioner profiles in The Solas Guide.",
-      robots: { index: false, follow: false },
-    };
+  if (result.error) {
+    return getUnavailableMetadata();
   }
 
-  return {
-    title: practitioner.name,
-    description:
-      practitioner.summary ??
-      practitioner.descriptor ??
-      "Explore this practitioner profile in The Solas Guide.",
-    robots: { index: false, follow: false },
-  };
+  if (!practitioner) return {};
+
+  return getPractitionerMetadata(practitioner);
 }
 
 const navLinks = [
@@ -66,36 +64,54 @@ function CredentialList({ items }: { items: readonly string[] }) {
   );
 }
 
-function ProfileTagList({ items }: { items: readonly string[] }) {
+type ProfileTag = {
+  label: string;
+  href?: string;
+};
+
+function ProfileTagList({ items }: { items: readonly ProfileTag[] }) {
   return (
     <ul className="mt-4 flex flex-wrap gap-2">
       {items.map((item) => (
         <li
-          key={item}
+          key={item.href ?? item.label}
           className="border border-border bg-muted/30 px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em]"
         >
-          {item}
+          {item.href ? (
+            <Link
+              href={item.href}
+              className="underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground"
+            >
+              {item.label}
+            </Link>
+          ) : (
+            item.label
+          )}
         </li>
       ))}
     </ul>
   );
 }
 
-function safeExternalUrl(value: string | undefined) {
-  if (!value) return undefined;
-  try {
-    const url = new URL(value);
-    return url.protocol === "https:" ? value : undefined;
-  } catch {
-    return undefined;
-  }
-}
+const safeExternalUrl = safeMetadataExternalUrl;
 
 function ProfilePage({ practitioner }: { practitioner: Practitioner }) {
-  const locations = practitioner.location;
+  const locationTerms = getTermsByType(practitioner, "location");
+  const areaTerms = getTermsByType(practitioner, "support_area");
+  const locations = locationTerms.map((term) => term.name).join(", ") || undefined;
   const approaches = practitioner.approaches ?? (practitioner.approach ? [practitioner.approach] : []);
   const areasOfSupport = practitioner.areasOfSupport ?? [];
   const modalities = practitioner.modalities;
+  const areaTags = areaTerms.map((term) => ({
+    label: term.name,
+    href: `/practitioners/areas/${term.slug}`,
+  }));
+  const approachTags = approaches.map((label) => ({ label }));
+  const modalityTags = modalities.map((label) => ({ label }));
+  const locationTags = locationTerms.map((term) => ({
+    label: term.name,
+    href: `/practitioners/locations/${term.slug}`,
+  }));
   const hasCredentials = Boolean(
     practitioner.credentials?.length || practitioner.significantTraining?.length,
   );
@@ -146,6 +162,15 @@ function ProfilePage({ practitioner }: { practitioner: Practitioner }) {
           </nav>
 
           <article className="border-x border-b border-border bg-background">
+            <script
+              type="application/ld+json"
+              dangerouslySetInnerHTML={{
+                __html: JSON.stringify(getPractitionerJsonLd(practitioner)).replace(
+                  /</g,
+                  "\\u003c",
+                ),
+              }}
+            />
             <div className="grid lg:grid-cols-[minmax(20rem,26rem)_1fr]">
               <div className="relative aspect-[3/4] bg-muted">
                 {practitioner.image ? (
@@ -264,21 +289,21 @@ function ProfilePage({ practitioner }: { practitioner: Practitioner }) {
                     {areasOfSupport.length ? (
                       <section aria-labelledby="areas-of-support-heading" className="mt-10">
                         <h2 id="areas-of-support-heading" className="review-label text-muted-foreground">Areas of support</h2>
-                        <ProfileTagList items={areasOfSupport} />
+                        <ProfileTagList items={areaTags} />
                       </section>
                     ) : null}
 
                     {approaches.length ? (
                       <section aria-labelledby="approach-heading" className="mt-10">
                         <h2 id="approach-heading" className="review-label text-muted-foreground">Approach</h2>
-                        <ProfileTagList items={approaches} />
+                        <ProfileTagList items={approachTags} />
                       </section>
                     ) : null}
 
                     {modalities.length ? (
                       <section aria-labelledby="specific-modalities-heading" className="mt-12">
                         <h2 id="specific-modalities-heading" className="review-label text-muted-foreground">Specific modalities</h2>
-                        <ProfileTagList items={modalities} />
+                        <ProfileTagList items={modalityTags} />
                       </section>
                     ) : null}
                   </section>
@@ -315,7 +340,7 @@ function ProfilePage({ practitioner }: { practitioner: Practitioner }) {
                       {locations ? (
                         <div className={dataRowClassName}>
                           <dt className="review-label text-muted-foreground">Locations</dt>
-                          <dd className={dataValueClassName}>{locations}</dd>
+                          <dd><ProfileTagList items={locationTags} /></dd>
                         </div>
                       ) : null}
                     </dl>
