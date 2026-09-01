@@ -1,6 +1,9 @@
 import type { MetadataRoute } from "next";
 import { getAbsoluteUrl } from "@/lib/practitioner-metadata";
-import { getPublishedPractitioners } from "@/lib/practitioners";
+import {
+  getActivePublicDiscoveryTerms,
+  getPublishedPractitioners,
+} from "@/lib/practitioners";
 
 const staticPaths = [
   "/",
@@ -19,7 +22,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticEntries = staticPaths.map((path) => ({
     url: getAbsoluteUrl(path),
   }));
-  const result = await getPublishedPractitioners();
+  const [result, taxonomyResult] = await Promise.all([
+    getPublishedPractitioners(),
+    getActivePublicDiscoveryTerms(),
+  ]);
 
   if (result.error) return staticEntries;
 
@@ -28,23 +34,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       `/practitioners/${encodeURIComponent(practitioner.slug)}`,
     ),
   }));
-  const terms = new Map<string, { kind: "area" | "location"; slug: string }>();
-
-  for (const practitioner of result.data) {
-    for (const term of practitioner.terms) {
-      if (term.type === "support_area") {
-        terms.set(`area:${term.slug}`, { kind: "area", slug: term.slug });
-      }
-      if (term.type === "location") {
-        terms.set(`location:${term.slug}`, {
-          kind: "location",
-          slug: term.slug,
-        });
-      }
-    }
-  }
-
-  const discoveryEntries = [...terms.values()]
+  const discoveryEntries = (taxonomyResult.error ? [] : taxonomyResult.data)
+    .map((term) => ({
+      kind:
+        term.type === "support_area"
+          ? ("area" as const)
+          : ("location" as const),
+      slug: term.slug,
+    }))
     .sort((left, right) =>
       `${left.kind}:${left.slug}`.localeCompare(`${right.kind}:${right.slug}`),
     )

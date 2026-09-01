@@ -1,6 +1,6 @@
 begin;
 
-select plan(53);
+select plan(57);
 
 select has_table('public', 'practitioners', 'practitioners table exists');
 select has_table('public', 'practitioner_terms', 'practitioner_terms table exists');
@@ -410,6 +410,54 @@ select is_empty(
         'schema-test-active-empty-area'
       )$$,
   'taxonomy RPC rejects unsupported term types'
+);
+
+select is(
+  (
+    select bool_and(
+      has_function_privilege(
+        role_name,
+        'public.list_active_practitioner_taxonomy_terms()',
+        'EXECUTE'
+      )
+    )
+      from (values ('anon'), ('authenticated'), ('service_role')) as allowed_roles(role_name)
+  ),
+  true,
+  'active taxonomy list RPC is executable by public API roles'
+);
+
+select is(
+  (
+    select coalesce(bool_or(acl.grantee = 0 and acl.privilege_type = 'EXECUTE'), false)
+      from pg_proc as procedure
+      cross join lateral aclexplode(
+        coalesce(procedure.proacl, acldefault('f', procedure.proowner))
+      ) as acl
+     where procedure.oid = 'public.list_active_practitioner_taxonomy_terms()'::regprocedure
+  ),
+  false,
+  'active taxonomy list RPC does not grant execute to PUBLIC'
+);
+
+select is(
+  (
+    select count(*)::integer
+      from public.list_active_practitioner_taxonomy_terms()
+     where slug = 'schema-test-active-empty-area'
+  ),
+  1,
+  'active unlinked terms appear in the public taxonomy list'
+);
+
+select is(
+  (
+    select count(*)::integer
+      from public.list_active_practitioner_taxonomy_terms()
+     where slug = 'schema-test-inactive-location'
+  ),
+  0,
+  'inactive terms do not appear in the public taxonomy list'
 );
 
 select is(

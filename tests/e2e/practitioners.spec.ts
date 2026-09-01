@@ -429,7 +429,7 @@ test.describe("practitioner taxonomy discovery pages", () => {
     );
   });
 
-  test("publishes discovery metadata and only linked terms in the sitemap", async ({ page }) => {
+  test("publishes discovery metadata and active terms in the sitemap", async ({ page }) => {
     await page.goto("/practitioners/areas/trauma-and-nervous-system");
 
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
@@ -458,7 +458,9 @@ test.describe("practitioner taxonomy discovery pages", () => {
     expect(sitemap).toContain(
       "http://localhost:3000/practitioners/locations/bali",
     );
-    expect(sitemap).not.toContain("unlinked-area");
+    expect(sitemap).toContain(
+      "http://localhost:3000/practitioners/areas/unlinked-area",
+    );
     expect(sitemap).not.toContain("inactive-location");
 
     await page.goto("/practitioners/locations/bali");

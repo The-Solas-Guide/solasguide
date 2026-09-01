@@ -303,7 +303,7 @@ export function mapPractitionerRows(
     if (!term.is_active || !isTermType(term.type)) continue;
     termsById.set(term.id, {
       id: term.id,
-      type: term.type,
+      type: term.type as PublicDiscoveryTermType,
       name: term.name,
       slug: term.slug,
       sortOrder: term.sort_order,
@@ -621,6 +621,50 @@ export async function getActivePublicDiscoveryTerm(
           displayOrder: 0,
         }
       : null,
+    error: false,
+  };
+}
+
+export async function getActivePublicDiscoveryTerms(
+  client = createPublicSupabaseClient(),
+): Promise<DirectoryQueryResult<PractitionerTerm[]>> {
+  if (
+    process.env.SOLAS_PRACTITIONER_E2E === "1" &&
+    process.env.NODE_ENV !== "production"
+  ) {
+    return {
+      data: getPractitionerE2EFixtures().terms
+        .filter(
+          (term) =>
+            term.is_active &&
+            (term.type === "support_area" || term.type === "location"),
+        )
+        .map((term) => ({
+          id: term.id,
+          type: term.type as PublicDiscoveryTermType,
+          name: term.name,
+          slug: term.slug,
+          sortOrder: term.sort_order,
+          displayOrder: 0,
+        })),
+      error: false,
+    };
+  }
+
+  if (!client) return { data: [], error: true };
+
+  const result = await client.rpc("list_active_practitioner_taxonomy_terms");
+  if (result.error) return { data: [], error: true };
+
+  return {
+    data: (result.data ?? []).map((term) => ({
+      id: term.id,
+      type: term.type as PublicDiscoveryTermType,
+      name: term.name,
+      slug: term.slug,
+      sortOrder: 0,
+      displayOrder: 0,
+    })),
     error: false,
   };
 }

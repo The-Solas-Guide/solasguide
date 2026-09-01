@@ -33,3 +33,25 @@ grant execute on function public.get_active_practitioner_taxonomy_term(text, tex
 
 comment on function public.get_active_practitioner_taxonomy_term(text, text) is
   'Return one active support-area or location term for a public discovery page.';
+
+create or replace function public.list_active_practitioner_taxonomy_terms()
+returns table (id uuid, type text, name text, slug text)
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select term.id, term.type, term.name, term.slug
+    from public.practitioner_terms as term
+   where term.type in ('support_area', 'location')
+     and term.is_active
+   order by term.type, term.slug;
+$$;
+
+revoke all on function public.list_active_practitioner_taxonomy_terms()
+  from public, anon, authenticated;
+grant execute on function public.list_active_practitioner_taxonomy_terms()
+  to anon, authenticated, service_role;
+
+comment on function public.list_active_practitioner_taxonomy_terms() is
+  'Return active support-area and location terms for public discovery indexing.';

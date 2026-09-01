@@ -295,6 +295,15 @@ export type Database = {
           type: string
         }[]
       }
+      list_active_practitioner_taxonomy_terms: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          id: string
+          name: string
+          slug: string
+          type: string
+        }[]
+      }
       search_published_practitioner_ids: {
         Args: {
           p_area_slugs: string[]
