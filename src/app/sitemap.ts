@@ -9,6 +9,8 @@ const staticPaths = [
   "/practitioners",
 ] as const;
 
+export const dynamic = "force-dynamic";
+
 /**
  * Keep the sitemap limited to public entry points and published directory data.
  * The directory loader already omits draft, archived, inactive, and unlinked terms.

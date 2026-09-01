@@ -34,9 +34,11 @@ export async function generateMetadata({
   const result = await getPublishedPractitionerBySlug(slug);
   const practitioner = result.data;
 
-  if (result.error || !practitioner) {
+  if (result.error) {
     return getUnavailableMetadata();
   }
+
+  if (!practitioner) return {};
 
   return getPractitionerMetadata(practitioner);
 }

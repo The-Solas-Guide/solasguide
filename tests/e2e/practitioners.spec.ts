@@ -483,10 +483,9 @@ test.describe("practitioner taxonomy discovery pages", () => {
   test("keeps missing profile and discovery routes unavailable", async ({ page }) => {
     const missingProfile = await page.goto("/practitioners/not-a-real-profile");
     expect(missingProfile?.status()).toBe(404);
-    await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
-      "content",
-      /noindex, nofollow/,
-    );
+    await expect(
+      page.locator('meta[name="robots"][content*="noindex"]'),
+    ).toHaveCount(1);
     await expect(page.locator('link[rel="canonical"]')).toHaveCount(0);
     const missingArea = await page.goto("/practitioners/areas/not-a-real-area");
     expect(missingArea?.status()).toBe(404);
@@ -494,10 +493,9 @@ test.describe("practitioner taxonomy discovery pages", () => {
       "/practitioners/locations/not-a-real-location",
     );
     expect(missingLocation?.status()).toBe(404);
-    await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
-      "content",
-      /noindex, nofollow/,
-    );
+    await expect(
+      page.locator('meta[name="robots"][content*="noindex"]'),
+    ).toHaveCount(1);
   });
 });
 

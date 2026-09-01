@@ -21,7 +21,8 @@ export async function generateMetadata({ params }: AreaPageProps): Promise<Metad
   const { slug } = await params;
   const result = await getActivePublicDiscoveryTerm("support_area", slug);
 
-  if (result.error || !result.data) return getUnavailableMetadata();
+  if (result.error) return getUnavailableMetadata();
+  if (!result.data) return {};
   return getDiscoveryMetadata("area", result.data);
 }
 

@@ -21,7 +21,8 @@ export async function generateMetadata({ params }: LocationPageProps): Promise<M
   const { slug } = await params;
   const result = await getActivePublicDiscoveryTerm("location", slug);
 
-  if (result.error || !result.data) return getUnavailableMetadata();
+  if (result.error) return getUnavailableMetadata();
+  if (!result.data) return {};
   return getDiscoveryMetadata("location", result.data);
 }
 
