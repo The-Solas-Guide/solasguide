@@ -286,6 +286,15 @@ export type Database = {
           send_internal: boolean
         }[]
       }
+      get_active_practitioner_taxonomy_term: {
+        Args: { p_slug: string; p_type: string }
+        Returns: {
+          id: string
+          name: string
+          slug: string
+          type: string
+        }[]
+      }
       search_published_practitioner_ids: {
         Args: {
           p_area_slugs: string[]

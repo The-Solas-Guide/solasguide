@@ -2,8 +2,8 @@ import { notFound } from "next/navigation";
 import { PractitionerDiscoveryPage } from "@/components/practitioners/practitioner-discovery-page";
 import {
   emptyDirectoryFilters,
+  getActivePublicDiscoveryTerm,
   getPublishedPractitioners,
-  getTermsByType,
 } from "@/lib/practitioners";
 
 type AreaPageProps = {
@@ -14,9 +14,9 @@ export const dynamic = "force-dynamic";
 
 export default async function PractitionerAreaPage({ params }: AreaPageProps) {
   const { slug } = await params;
-  const allResult = await getPublishedPractitioners();
+  const termResult = await getActivePublicDiscoveryTerm("support_area", slug);
 
-  if (allResult.error) {
+  if (termResult.error) {
     return (
       <PractitionerDiscoveryPage
         kind="area"
@@ -27,21 +27,17 @@ export default async function PractitionerAreaPage({ params }: AreaPageProps) {
     );
   }
 
-  const term = allResult.data
-    .flatMap((practitioner) => getTermsByType(practitioner, "support_area"))
-    .find((candidate) => candidate.slug === slug);
-
-  if (!term) notFound();
+  if (!termResult.data) notFound();
 
   const result = await getPublishedPractitioners({
     ...emptyDirectoryFilters,
-    areas: [term.slug],
+    areas: [termResult.data.slug],
   });
 
   return (
     <PractitionerDiscoveryPage
       kind="area"
-      term={term}
+      term={termResult.data}
       practitioners={result.data}
       error={result.error}
     />

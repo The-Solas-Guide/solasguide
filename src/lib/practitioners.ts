@@ -21,6 +21,8 @@ export type PractitionerTerm = {
   displayOrder: number;
 };
 
+export type PublicDiscoveryTermType = "support_area" | "location";
+
 export type DirectoryFacetType =
   | "areas"
   | "approach"
@@ -564,6 +566,63 @@ export async function getPublishedPractitionerBySlug(
   if (!client) return { data: null, error: true };
   const result = await queryPublishedPractitioners(client, slug);
   return { data: result.data[0] ?? null, error: result.error };
+}
+
+/**
+ * Load one active public taxonomy term without requiring a published profile
+ * to link it. Discovery pages can then render an explicit empty state while
+ * keeping the practitioner query limited to published profiles.
+ */
+export async function getActivePublicDiscoveryTerm(
+  type: PublicDiscoveryTermType,
+  slug: string,
+  client = createPublicSupabaseClient(),
+): Promise<DirectoryQueryResult<PractitionerTerm | null>> {
+  if (
+    process.env.SOLAS_PRACTITIONER_E2E === "1" &&
+    process.env.NODE_ENV !== "production"
+  ) {
+    const fixture = getPractitionerE2EFixtures().terms.find(
+      (term) => term.type === type && term.slug === slug && term.is_active,
+    );
+    return {
+      data: fixture
+        ? {
+            id: fixture.id,
+            type,
+            name: fixture.name,
+            slug: fixture.slug,
+            sortOrder: fixture.sort_order,
+            displayOrder: 0,
+          }
+        : null,
+      error: false,
+    };
+  }
+
+  if (!client) return { data: null, error: true };
+
+  const result = await client.rpc("get_active_practitioner_taxonomy_term", {
+    p_type: type,
+    p_slug: slug,
+  });
+
+  if (result.error) return { data: null, error: true };
+  const term = result.data?.[0] ?? null;
+
+  return {
+    data: term
+      ? {
+          id: term.id,
+          type,
+          name: term.name,
+          slug: term.slug,
+          sortOrder: 0,
+          displayOrder: 0,
+        }
+      : null,
+    error: false,
+  };
 }
 
 /** A practitioner's ordered location terms, used by the directory filter. */

@@ -1,6 +1,6 @@
 begin;
 
-select plan(48);
+select plan(53);
 
 select has_table('public', 'practitioners', 'practitioners table exists');
 select has_table('public', 'practitioner_terms', 'practitioner_terms table exists');
@@ -202,6 +202,15 @@ values (
   false
 );
 
+insert into public.practitioner_terms (type, name, slug, sort_order, is_active)
+values (
+  'support_area',
+  'Schema Test Active Empty Area',
+  'schema-test-active-empty-area',
+  998,
+  true
+);
+
 insert into public.practitioner_term_links (practitioner_id, term_id, display_order)
 select '00000000-0000-0000-0000-000000009001', id, 1
   from public.practitioner_terms
@@ -346,6 +355,62 @@ select is(
 );
 
 set local role anon;
+
+select is(
+  (
+    select bool_and(
+      has_function_privilege(
+        role_name,
+        'public.get_active_practitioner_taxonomy_term(text,text)',
+        'EXECUTE'
+      )
+    )
+      from (values ('anon'), ('authenticated'), ('service_role')) as allowed_roles(role_name)
+  ),
+  true,
+  'active taxonomy RPC is executable by public API roles'
+);
+
+select is(
+  (
+    select coalesce(bool_or(acl.grantee = 0 and acl.privilege_type = 'EXECUTE'), false)
+      from pg_proc as procedure
+      cross join lateral aclexplode(
+        coalesce(procedure.proacl, acldefault('f', procedure.proowner))
+      ) as acl
+     where procedure.oid = 'public.get_active_practitioner_taxonomy_term(text,text)'::regprocedure
+  ),
+  false,
+  'active taxonomy RPC does not grant execute to PUBLIC'
+);
+
+select results_eq(
+  $$select type, name, slug
+      from public.get_active_practitioner_taxonomy_term(
+        'support_area',
+        'schema-test-active-empty-area'
+      )$$,
+  $$values ('support_area'::text, 'Schema Test Active Empty Area'::text, 'schema-test-active-empty-area'::text)$$,
+  'active unlinked taxonomy terms are available to discovery pages'
+);
+
+select is_empty(
+  $$select id
+      from public.get_active_practitioner_taxonomy_term(
+        'location',
+        'schema-test-inactive-location'
+      )$$,
+  'inactive taxonomy terms are not exposed'
+);
+
+select is_empty(
+  $$select id
+      from public.get_active_practitioner_taxonomy_term(
+        'approach',
+        'schema-test-active-empty-area'
+      )$$,
+  'taxonomy RPC rejects unsupported term types'
+);
 
 select is(
   (

@@ -347,6 +347,26 @@ test.describe("practitioner taxonomy discovery pages", () => {
     );
     expect(inactiveLocation?.status()).toBe(404);
   });
+
+  test("renders an empty state for an active area without published practitioners", async ({ page }) => {
+    await page.goto("/practitioners/areas/unlinked-area");
+
+    await expect(
+      page.getByRole("heading", { level: 1, name: "Unlinked area" }),
+    ).toBeVisible();
+    await expect(
+      page.getByText(
+        "Explore practitioners whose published profiles include this area of support.",
+        { exact: true },
+      ),
+    ).toBeVisible();
+    await expect(cards(page)).toHaveCount(0);
+    await expect(
+      page.getByRole("heading", {
+        name: "No practitioners are listed under this area yet.",
+      }),
+    ).toBeVisible();
+  });
 });
 
 test.describe("published practitioner directory at 390px", () => {
