@@ -12,3 +12,4 @@ This file records pull requests merged into `main`. Entries are added automatica
 - 2026-08-11 — Update founding practitioner preview ([#25](https://github.com/The-Solas-Guide/solasguide/pull/25)) — `c58bf8feb2ff89b7fb83e2e4616322f0c623be49`
 - 2026-08-11 — Rebuild buyer questionnaire ([#26](https://github.com/The-Solas-Guide/solasguide/pull/26)) — `705b49f39ca119aff10b2198238dbefbe929f179`
 - 2026-08-11 — Apply approved logo and brand font ([#27](https://github.com/The-Solas-Guide/solasguide/pull/27)) — `4dc7d3d4502ce98a77e3138b307dc32908121854`
+- 2026-09-01 — feat: add practitioner directory prototype ([#33](https://github.com/The-Solas-Guide/solasguide/pull/33)) — `0ea8d6d549fa60534c3397cf1aa1e07b1934aa84`
