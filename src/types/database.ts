@@ -286,6 +286,20 @@ export type Database = {
           send_internal: boolean
         }[]
       }
+      search_published_practitioner_ids: {
+        Args: {
+          p_area_slugs: string[]
+          p_approach_slugs: string[]
+          p_format_values: string[]
+          p_language_slugs: string[]
+          p_location_slugs: string[]
+          p_query: string | null
+          p_works_with_slugs: string[]
+        }
+        Returns: {
+          practitioner_id: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

@@ -1,6 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Database } from "@/types/database";
-import { portraitObjectPosition } from "@/lib/practitioners";
+import {
+  portraitObjectPosition,
+  type DirectoryFilters,
+} from "@/lib/practitioners";
 
 const mocks = vi.hoisted(() => ({ createClient: vi.fn() }));
 
@@ -148,6 +151,16 @@ function mockedClient() {
   return { client, from, profileQuery, linkQuery, termQuery };
 }
 
+const emptyFilters: DirectoryFilters = {
+  query: "",
+  areas: [],
+  approach: [],
+  "works-with": [],
+  locations: [],
+  format: [],
+  languages: [],
+};
+
 describe("public practitioner directory data", () => {
   beforeEach(() => {
     vi.resetModules();
@@ -229,6 +242,67 @@ describe("public practitioner directory data", () => {
 
     expect(result).toEqual({ data: [], error: true });
     expect(JSON.stringify(result)).not.toContain("private database detail");
+  });
+
+  it("uses the search RPC for active filters and loads only its published ids", async () => {
+    const { client, profileQuery } = mockedClient();
+    const rpc = vi.fn().mockResolvedValue({
+      data: [{ practitioner_id: "profile-1" }],
+      error: null,
+    });
+    Object.assign(client, { rpc });
+    const { getPublishedPractitioners } = await import("@/lib/practitioners");
+
+    const result = await getPublishedPractitioners(
+      {
+        ...emptyFilters,
+        query: "  published profile ",
+        areas: ["support-area"],
+        format: ["online"],
+      },
+      client as never,
+    );
+
+    expect(result.error).toBe(false);
+    expect(result.data).toHaveLength(1);
+    expect(rpc).toHaveBeenCalledWith("search_published_practitioner_ids", {
+      p_query: "published profile",
+      p_area_slugs: ["support-area"],
+      p_approach_slugs: [],
+      p_works_with_slugs: [],
+      p_location_slugs: [],
+      p_format_values: ["online"],
+      p_language_slugs: [],
+    });
+    expect(profileQuery.in).toHaveBeenCalledWith("id", ["profile-1"]);
+  });
+
+  it("parses and serializes canonical repeated directory parameters", async () => {
+    const {
+      parseDirectoryFilters,
+      serializeDirectoryFilters,
+    } = await import("@/lib/practitioners");
+    const filters = parseDirectoryFilters(
+      new URLSearchParams(
+        "search=%20somatic%20&areas=b&areas=a&areas=b&areas=%20&format=online&format=hybrid&unknown=value",
+      ),
+    );
+
+    expect(filters).toEqual({
+      query: "somatic",
+      areas: ["a", "b"],
+      approach: [],
+      "works-with": [],
+      locations: [],
+      format: ["online"],
+      languages: [],
+    });
+    expect(serializeDirectoryFilters(filters).toString()).toBe(
+      "search=somatic&areas=a&areas=b&format=online",
+    );
+    expect(parseDirectoryFilters(serializeDirectoryFilters(filters))).toEqual(
+      filters,
+    );
   });
 });
 

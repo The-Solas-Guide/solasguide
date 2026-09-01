@@ -1,6 +1,6 @@
 begin;
 
-select plan(36);
+select plan(47);
 
 select has_table('public', 'practitioners', 'practitioners table exists');
 select has_table('public', 'practitioner_terms', 'practitioner_terms table exists');
@@ -207,6 +207,78 @@ select '00000000-0000-0000-0000-000000009001', id, 1
   from public.practitioner_terms
  where type = 'location' and slug = 'schema-test-inactive-location';
 
+insert into public.practitioner_term_links (practitioner_id, term_id, display_order)
+select '00000000-0000-0000-0000-000000009001', id, 0
+  from public.practitioner_terms
+ where type = 'support_area' and slug = 'trauma-and-nervous-system';
+
+insert into public.practitioner_term_links (practitioner_id, term_id, display_order)
+select '00000000-0000-0000-0000-000000009001', id, 0
+  from public.practitioner_terms
+ where type = 'approach' and slug = 'coaching';
+
+insert into public.practitioner_term_links (practitioner_id, term_id, display_order)
+select '00000000-0000-0000-0000-000000009001', id, 0
+  from public.practitioner_terms
+ where type = 'works_with' and slug = 'individuals';
+
+insert into public.practitioner_term_links (practitioner_id, term_id, display_order)
+select '00000000-0000-0000-0000-000000009001', id, 0
+  from public.practitioner_terms
+ where type = 'language' and slug = 'english';
+
+insert into public.practitioners (
+  id, slug, name, summary, about, offers_in_person, offers_online, image_path, status
+)
+values (
+  '00000000-0000-0000-0000-000000009010',
+  'schema-test-online',
+  'Online Somatic Practitioner',
+  'Offers anxiety support online.',
+  'An online practitioner profile for search and format filtering.',
+  false,
+  true,
+  'schema-test-online.jpg',
+  'draft'
+);
+
+insert into public.practitioner_term_links (practitioner_id, term_id, display_order)
+select '00000000-0000-0000-0000-000000009010', id, 0
+  from public.practitioner_terms
+ where type = 'support_area' and slug = 'anxiety-and-emotional-wellbeing';
+
+insert into public.practitioner_term_links (practitioner_id, term_id, display_order)
+select '00000000-0000-0000-0000-000000009010', id, 0
+  from public.practitioner_terms
+ where type = 'location' and slug = 'international';
+
+insert into public.practitioner_term_links (practitioner_id, term_id, display_order)
+select '00000000-0000-0000-0000-000000009010', id, 0
+  from public.practitioner_terms
+ where type = 'language' and slug = 'english';
+
+update public.practitioners
+   set status = 'published'
+ where id = '00000000-0000-0000-0000-000000009010';
+
+update public.practitioners
+   set offers_online = false
+ where id = '00000000-0000-0000-0000-000000009001';
+
+insert into public.practitioner_terms (type, name, slug, sort_order, is_active)
+values (
+  'language',
+  'Schema Test Draft Only',
+  'schema-test-draft-only',
+  999,
+  true
+);
+
+insert into public.practitioner_term_links (practitioner_id, term_id, display_order)
+select '00000000-0000-0000-0000-000000009003', id, 0
+  from public.practitioner_terms
+ where type = 'language' and slug = 'schema-test-draft-only';
+
 insert into public.practitioners (id, slug, name, summary, about, image_path, status)
 values (
   '00000000-0000-0000-0000-000000009009',
@@ -274,9 +346,168 @@ select is(
 );
 
 set local role anon;
+
+select is(
+  (
+    select bool_and(
+      has_function_privilege(
+        role_name,
+        'public.search_published_practitioner_ids(text,text[],text[],text[],text[],text[],text[])',
+        'EXECUTE'
+      )
+    )
+      from (values ('anon'), ('authenticated'), ('service_role')) as allowed_roles(role_name)
+  ),
+  true,
+  'search RPC is executable only by public API roles'
+);
+
+select results_eq(
+  $$select practitioner_id
+      from public.search_published_practitioner_ids(
+        null,
+        '{}'::text[],
+        '{}'::text[],
+        '{}'::text[],
+        '{}'::text[],
+        '{}'::text[],
+        '{}'::text[]
+      )
+     order by practitioner_id$$,
+  $$values
+    ('00000000-0000-0000-0000-000000009001'::uuid),
+    ('00000000-0000-0000-0000-000000009010'::uuid)$$,
+  'search returns published practitioner ids and excludes drafts'
+);
+select results_eq(
+  $$select practitioner_id
+      from public.search_published_practitioner_ids(
+        'schema test published',
+        '{}'::text[],
+        '{}'::text[],
+        '{}'::text[],
+        '{}'::text[],
+        '{}'::text[],
+        '{}'::text[]
+      )$$,
+  $$values ('00000000-0000-0000-0000-000000009001'::uuid)$$,
+  'search matches practitioner names'
+);
+select results_eq(
+  $$select practitioner_id
+      from public.search_published_practitioner_ids(
+        'anxiety support',
+        '{}'::text[],
+        '{}'::text[],
+        '{}'::text[],
+        '{}'::text[],
+        '{}'::text[],
+        '{}'::text[]
+      )$$,
+  $$values ('00000000-0000-0000-0000-000000009010'::uuid)$$,
+  'search matches published profile text'
+);
+select results_eq(
+  $$select practitioner_id
+      from public.search_published_practitioner_ids(
+        'coaching',
+        '{}'::text[],
+        '{}'::text[],
+        '{}'::text[],
+        '{}'::text[],
+        '{}'::text[],
+        '{}'::text[]
+      )$$,
+  $$values ('00000000-0000-0000-0000-000000009001'::uuid)$$,
+  'search matches linked term names'
+);
+select results_eq(
+  $$select practitioner_id
+      from public.search_published_practitioner_ids(
+        null,
+        array['trauma-and-nervous-system']::text[],
+        '{}'::text[],
+        '{}'::text[],
+        array['bali']::text[],
+        '{}'::text[],
+        '{}'::text[]
+      )$$,
+  $$values ('00000000-0000-0000-0000-000000009001'::uuid)$$,
+  'search combines support area and location filters'
+);
+select results_eq(
+  $$select practitioner_id
+      from public.search_published_practitioner_ids(
+        null,
+        '{}'::text[],
+        '{}'::text[],
+        '{}'::text[],
+        '{}'::text[],
+        array['in-person']::text[],
+        '{}'::text[]
+      )$$,
+  $$values ('00000000-0000-0000-0000-000000009001'::uuid)$$,
+  'format filters match in-person practitioners'
+);
+select results_eq(
+  $$select practitioner_id
+      from public.search_published_practitioner_ids(
+        null,
+        '{}'::text[],
+        '{}'::text[],
+        '{}'::text[],
+        '{}'::text[],
+        array['online']::text[],
+        '{}'::text[]
+      )$$,
+  $$values ('00000000-0000-0000-0000-000000009010'::uuid)$$,
+  'format filters match online practitioners'
+);
+select results_eq(
+  $$select practitioner_id
+      from public.search_published_practitioner_ids(
+        null,
+        array['schema-test-inactive-location']::text[],
+        '{}'::text[],
+        '{}'::text[],
+        '{}'::text[],
+        '{}'::text[],
+        '{}'::text[]
+      )$$,
+  $$select null::uuid where false$$,
+  'inactive taxonomy terms do not match'
+);
+select results_eq(
+  $$select practitioner_id
+      from public.search_published_practitioner_ids(
+        null,
+        array['not-a-real-term']::text[],
+        '{}'::text[],
+        '{}'::text[],
+        '{}'::text[],
+        '{}'::text[],
+        '{}'::text[]
+      )$$,
+  $$select null::uuid where false$$,
+  'invalid taxonomy slugs do not match'
+);
+select results_eq(
+  $$select practitioner_id
+      from public.search_published_practitioner_ids(
+        null,
+        array['trauma-and-nervous-system', 'anxiety-and-emotional-wellbeing']::text[],
+        '{}'::text[],
+        '{}'::text[],
+        array['international']::text[],
+        '{}'::text[],
+        '{}'::text[]
+      )$$,
+  $$values ('00000000-0000-0000-0000-000000009010'::uuid)$$,
+  'taxonomy groups use OR within a group and AND between groups'
+);
 select is(
   (select count(*)::integer from public.practitioners),
-  1,
+  2,
   'public reads return only published practitioners'
 );
 select is(
@@ -296,13 +527,13 @@ select is(
 select is(
   (select count(*)::integer
      from public.practitioner_terms
-    where type = 'language' and slug = 'english'),
+    where type = 'language' and slug = 'schema-test-draft-only'),
   0,
   'public reads hide terms linked only to unpublished profiles'
 );
 select is(
   (select count(*)::integer from public.practitioner_term_links),
-  1,
+  8,
   'public reads return links for published profiles only'
 );
 select is(
