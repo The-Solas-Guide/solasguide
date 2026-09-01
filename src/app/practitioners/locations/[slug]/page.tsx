@@ -1,5 +1,10 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PractitionerDiscoveryPage } from "@/components/practitioners/practitioner-discovery-page";
+import {
+  getDiscoveryMetadata,
+  getUnavailableMetadata,
+} from "@/lib/practitioner-metadata";
 import {
   emptyDirectoryFilters,
   getActivePublicDiscoveryTerm,
@@ -11,6 +16,14 @@ type LocationPageProps = {
 };
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({ params }: LocationPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const result = await getActivePublicDiscoveryTerm("location", slug);
+
+  if (result.error || !result.data) return getUnavailableMetadata();
+  return getDiscoveryMetadata("location", result.data);
+}
 
 export default async function PractitionerLocationPage({ params }: LocationPageProps) {
   const { slug } = await params;

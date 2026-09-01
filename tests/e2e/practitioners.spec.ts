@@ -367,6 +367,138 @@ test.describe("practitioner taxonomy discovery pages", () => {
       }),
     ).toBeVisible();
   });
+
+  test("publishes canonical social and robots metadata for the directory", async ({ page }) => {
+    await page.goto("/practitioners?areas=trauma-and-nervous-system");
+
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      "href",
+      "http://localhost:3000/practitioners",
+    );
+    await expect(page.locator('meta[property="og:url"]')).toHaveAttribute(
+      "content",
+      "http://localhost:3000/practitioners",
+    );
+    await expect(page.locator('meta[property="og:type"]')).toHaveAttribute(
+      "content",
+      "website",
+    );
+    await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute(
+      "content",
+      "summary_large_image",
+    );
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
+      "content",
+      /index, follow/,
+    );
+  });
+
+  test("publishes profile JSON-LD with only public profile facts", async ({ page }) => {
+    await page.goto("/practitioners/kartika-alexandra");
+
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      "href",
+      "http://localhost:3000/practitioners/kartika-alexandra",
+    );
+    await expect(page.locator('meta[property="og:type"]')).toHaveAttribute(
+      "content",
+      "profile",
+    );
+    await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute(
+      "content",
+      "summary_large_image",
+    );
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
+      "content",
+      /index, follow/,
+    );
+
+    const jsonLd = await page.locator('script[type="application/ld+json"]').textContent();
+    expect(jsonLd).not.toBeNull();
+    const parsed = JSON.parse(jsonLd!);
+    expect(parsed).toMatchObject({
+      "@context": "https://schema.org",
+      "@type": "ProfilePage",
+      mainEntity: {
+        "@type": "Person",
+        name: "Kartika Alexandra",
+      },
+    });
+    expect(jsonLd).not.toMatch(
+      /aggregateRating|medicalCondition|review|booking|telephone|email|availability/i,
+    );
+  });
+
+  test("publishes discovery metadata and only linked terms in the sitemap", async ({ page }) => {
+    await page.goto("/practitioners/areas/trauma-and-nervous-system");
+
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      "href",
+      "http://localhost:3000/practitioners/areas/trauma-and-nervous-system",
+    );
+    await expect(page.locator('meta[property="og:url"]')).toHaveAttribute(
+      "content",
+      "http://localhost:3000/practitioners/areas/trauma-and-nervous-system",
+    );
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
+      "content",
+      /index, follow/,
+    );
+
+    const sitemapResponse = await page.request.get("/sitemap.xml");
+    expect(sitemapResponse.ok()).toBe(true);
+    const sitemap = await sitemapResponse.text();
+    expect(sitemap).toContain("http://localhost:3000/practitioners");
+    expect(sitemap).toContain(
+      "http://localhost:3000/practitioners/kartika-alexandra",
+    );
+    expect(sitemap).toContain(
+      "http://localhost:3000/practitioners/areas/trauma-and-nervous-system",
+    );
+    expect(sitemap).toContain(
+      "http://localhost:3000/practitioners/locations/bali",
+    );
+    expect(sitemap).not.toContain("unlinked-area");
+    expect(sitemap).not.toContain("inactive-location");
+
+    await page.goto("/practitioners/locations/bali");
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      "href",
+      "http://localhost:3000/practitioners/locations/bali",
+    );
+    await expect(page.locator('meta[property="og:type"]')).toHaveAttribute(
+      "content",
+      "website",
+    );
+    await expect(page.locator('meta[property="og:url"]')).toHaveAttribute(
+      "content",
+      "http://localhost:3000/practitioners/locations/bali",
+    );
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
+      "content",
+      /index, follow/,
+    );
+  });
+
+  test("keeps missing profile and discovery routes unavailable", async ({ page }) => {
+    const missingProfile = await page.goto("/practitioners/not-a-real-profile");
+    expect(missingProfile?.status()).toBe(404);
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
+      "content",
+      /noindex, nofollow/,
+    );
+    await expect(page.locator('link[rel="canonical"]')).toHaveCount(0);
+    const missingArea = await page.goto("/practitioners/areas/not-a-real-area");
+    expect(missingArea?.status()).toBe(404);
+    const missingLocation = await page.goto(
+      "/practitioners/locations/not-a-real-location",
+    );
+    expect(missingLocation?.status()).toBe(404);
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
+      "content",
+      /noindex, nofollow/,
+    );
+  });
 });
 
 test.describe("published practitioner directory at 390px", () => {

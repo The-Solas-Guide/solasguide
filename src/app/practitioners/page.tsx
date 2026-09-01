@@ -1,7 +1,7 @@
-import type { Metadata } from "next";
 import { PractitionerDirectory } from "@/components/practitioners/practitioner-directory";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
+import { getDirectoryMetadata } from "@/lib/practitioner-metadata";
 import {
   getPublishedPractitioners,
   parseDirectoryFilters,
@@ -10,14 +10,7 @@ import {
   type Practitioner,
 } from "@/lib/practitioners";
 
-export const metadata: Metadata = {
-  title: "The Guide",
-  description:
-    "Explore the founding practitioners included in The Solas Guide and review the information listed for each practitioner.",
-  // Keep the directory out of search results until its draft profiles and
-  // approved portraits are ready to publish.
-  robots: { index: false, follow: false },
-};
+export const metadata = getDirectoryMetadata();
 
 export const dynamic = "force-dynamic";
 

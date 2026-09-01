@@ -14,6 +14,12 @@ import {
   type Practitioner,
 } from "@/lib/practitioners";
 import { cn } from "@/lib/utils";
+import {
+  getPractitionerJsonLd,
+  getPractitionerMetadata,
+  getUnavailableMetadata,
+  safeExternalUrl as safeMetadataExternalUrl,
+} from "@/lib/practitioner-metadata";
 
 type PractitionerPageProps = {
   params: Promise<{ slug: string }>;
@@ -29,21 +35,10 @@ export async function generateMetadata({
   const practitioner = result.data;
 
   if (result.error || !practitioner) {
-    return {
-      title: "Practitioner profile",
-      description: "Explore practitioner profiles in The Solas Guide.",
-      robots: { index: false, follow: false },
-    };
+    return getUnavailableMetadata();
   }
 
-  return {
-    title: practitioner.name,
-    description:
-      practitioner.summary ??
-      practitioner.descriptor ??
-      "Explore this practitioner profile in The Solas Guide.",
-    robots: { index: false, follow: false },
-  };
+  return getPractitionerMetadata(practitioner);
 }
 
 const navLinks = [
@@ -96,15 +91,7 @@ function ProfileTagList({ items }: { items: readonly ProfileTag[] }) {
   );
 }
 
-function safeExternalUrl(value: string | undefined) {
-  if (!value) return undefined;
-  try {
-    const url = new URL(value);
-    return url.protocol === "https:" ? value : undefined;
-  } catch {
-    return undefined;
-  }
-}
+const safeExternalUrl = safeMetadataExternalUrl;
 
 function ProfilePage({ practitioner }: { practitioner: Practitioner }) {
   const locationTerms = getTermsByType(practitioner, "location");
@@ -173,6 +160,15 @@ function ProfilePage({ practitioner }: { practitioner: Practitioner }) {
           </nav>
 
           <article className="border-x border-b border-border bg-background">
+            <script
+              type="application/ld+json"
+              dangerouslySetInnerHTML={{
+                __html: JSON.stringify(getPractitionerJsonLd(practitioner)).replace(
+                  /</g,
+                  "\\u003c",
+                ),
+              }}
+            />
             <div className="grid lg:grid-cols-[minmax(20rem,26rem)_1fr]">
               <div className="relative aspect-[3/4] bg-muted">
                 {practitioner.image ? (
