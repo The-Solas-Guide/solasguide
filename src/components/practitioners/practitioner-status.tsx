@@ -14,6 +14,18 @@ export function PractitionerDirectoryError() {
   );
 }
 
+export function PractitionerDirectoryInvalidFilters() {
+  return (
+    <div
+      role="status"
+      className="mb-8 border border-border bg-muted/35 px-5 py-4 text-sm leading-7 text-muted-foreground sm:px-6"
+    >
+      Some filters in this link are no longer available. The Guide is showing
+      results using the remaining filters.
+    </div>
+  );
+}
+
 export function PractitionerDirectoryEmpty() {
   return (
     <div className="mt-8 border border-border bg-muted/20 px-6 py-12 text-center">

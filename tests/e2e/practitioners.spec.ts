@@ -50,6 +50,20 @@ test.describe("published practitioner directory", () => {
     await expect(cards(page).getByRole("heading", { name: "Sandra Echemendia" })).toBeVisible();
   });
 
+  test("synchronises search in the URL and restores it after refresh", async ({ page }) => {
+    await page.goto("/practitioners");
+    const search = page.getByLabel("Search the Guide");
+
+    await search.fill("breathwork");
+    await expect(page).toHaveURL(/\/practitioners\?search=breathwork$/);
+    await expect(cards(page)).toHaveCount(1);
+    await page.reload();
+
+    await expect(page.getByLabel("Search the Guide")).toHaveValue("breathwork");
+    await expect(cards(page)).toHaveCount(1);
+    await expect(cards(page).getByRole("heading", { name: "Indri Hapsari" })).toBeVisible();
+  });
+
   test("filters by linked areas, approaches, audiences, locations, format, and languages", async ({ page }) => {
     await page.goto("/practitioners");
     const cases = [
@@ -76,6 +90,72 @@ test.describe("published practitioner directory", () => {
       await page.getByRole("button", { name: "Clear all" }).click();
       await expect(cards(page)).toHaveCount(3);
     }
+  });
+
+  test("writes stable repeated slug parameters for combined filters", async ({ page }) => {
+    await page.goto("/practitioners");
+    await page.getByRole("button", { name: /Filters/ }).click();
+    const dialog = page.getByRole("dialog", { name: "Filters" });
+
+    await dialog.getByLabel("Areas of support", { exact: true }).selectOption({
+      label: "Leadership & work",
+    });
+    await dialog.getByLabel("Location", { exact: true }).selectOption({
+      label: "International",
+    });
+    await dialog.getByRole("button", { name: /Show .* results/ }).click();
+
+    await expect(page).toHaveURL(
+      /\/practitioners\?areas=leadership-and-work&locations=international$/,
+    );
+    await expect(cards(page)).toHaveCount(1);
+    await expect(cards(page).getByRole("heading", { name: "Sandra Echemendia" })).toBeVisible();
+  });
+
+  test("restores directory results through back and forward navigation", async ({ page }) => {
+    await page.goto("/practitioners");
+    await page.getByRole("button", { name: /Filters/ }).click();
+    const dialog = page.getByRole("dialog", { name: "Filters" });
+    await dialog.getByLabel("Areas of support", { exact: true }).selectOption({
+      label: "Trauma & nervous system",
+    });
+    await dialog.getByRole("button", { name: /Show .* results/ }).click();
+    await expect(page).toHaveURL(/areas=trauma-and-nervous-system/);
+    await expect(cards(page)).toHaveCount(1);
+
+    await page.getByRole("button", { name: "Clear all" }).click();
+    await expect(page).toHaveURL("http://127.0.0.1:3100/practitioners");
+    await expect(cards(page)).toHaveCount(3);
+
+    await page.goBack();
+    await expect(page).toHaveURL(/areas=trauma-and-nervous-system/);
+    await expect(cards(page)).toHaveCount(1);
+    await page.goForward();
+    await expect(page).toHaveURL("http://127.0.0.1:3100/practitioners");
+    await expect(cards(page)).toHaveCount(3);
+  });
+
+  test("explains unknown filter values without echoing them", async ({ page }) => {
+    const unknown = "secret-filter-value";
+    await page.goto(`/practitioners?areas=${unknown}`);
+
+    await expect(
+      page.getByText(
+        "Some filters in this link are no longer available. The Guide is showing results using the remaining filters.",
+        { exact: true },
+      ),
+    ).toBeVisible();
+    await expect(cards(page)).toHaveCount(3);
+    await expect(page.locator("main")).not.toContainText(unknown);
+  });
+
+  test("clear all removes only directory parameters", async ({ page }) => {
+    await page.goto("/practitioners?ref=campaign&areas=leadership-and-work&search=sandra");
+    await expect(cards(page)).toHaveCount(1);
+    await page.getByRole("button", { name: "Clear all" }).click();
+
+    await expect(page).toHaveURL("http://127.0.0.1:3100/practitioners?ref=campaign");
+    await expect(cards(page)).toHaveCount(3);
   });
 
   test("supports keyboard close and trigger focus restoration for filters", async ({ page }) => {
