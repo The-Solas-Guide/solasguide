@@ -30,6 +30,26 @@ async function expectStorageError(operation, label) {
   return result.error;
 }
 
+async function expectStorageListingDenied(operation, label) {
+  const result = await operation();
+  assert(
+    result.error || (result.data?.length ?? 0) === 0,
+    `${label} exposed storage objects`,
+  );
+  return result.error;
+}
+
+async function expectStorageMutationDenied(operation, label, admin, objectPath, expectedPresent) {
+  const result = await operation();
+  const listing = await admin.storage.from("profile-images").list("integration", { limit: 100 });
+  assert(!listing.error, `${label} verification listing failed: ${listing.error?.message}`);
+  const objectName = objectPath.slice(objectPath.lastIndexOf("/") + 1);
+  const present = listing.data?.some((object) => object.name === objectName) ?? false;
+  assert(present === expectedPresent, `${label} changed storage state unexpectedly`);
+  assert(result.error || present === expectedPresent, `${label} unexpectedly succeeded`);
+  return result.error;
+}
+
 const status = localStatus();
 const apiUrl = status.API_URL;
 const anonKey = status.ANON_KEY;
@@ -46,13 +66,15 @@ const password = `local-only-${randomUUID()}-Aa1!`;
 const adminEmail = `storage-admin-${suffix}@example.test`;
 const userEmail = `storage-user-${suffix}@example.test`;
 const path = `integration/${suffix}.png`;
+const anonymousPath = `${path}.anonymous`;
+const nonAdminPath = `${path}.non-admin`;
 const invalidPath = `integration/${suffix}.txt`;
 const oversizedPath = `integration/${suffix}-oversized.jpg`;
 
 const service = createClient(apiUrl, serviceRoleKey, {
   auth: { persistSession: false, autoRefreshToken: false },
 });
-const anon = createClient(apiUrl, anonKey, {
+const anonymous = createClient(apiUrl, anonKey, {
   auth: { persistSession: false, autoRefreshToken: false },
 });
 
@@ -83,45 +105,83 @@ try {
   userId = userCreated.data.user?.id;
   assert(userId, "local non-admin user was not returned");
 
-  const adminLogin = await anon.auth.signInWithPassword({ email: adminEmail, password });
+  const adminAuth = createClient(apiUrl, anonKey, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+  const adminLogin = await adminAuth.auth.signInWithPassword({ email: adminEmail, password });
   assert(!adminLogin.error && adminLogin.data.session, `could not sign in local admin: ${adminLogin.error?.message}`);
   admin = createClient(apiUrl, anonKey, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
   await admin.auth.setSession(adminLogin.data.session);
 
-  const userLogin = await anon.auth.signInWithPassword({ email: userEmail, password });
+  const userAuth = createClient(apiUrl, anonKey, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+  const userLogin = await userAuth.auth.signInWithPassword({ email: userEmail, password });
   assert(!userLogin.error && userLogin.data.session, `could not sign in local non-admin: ${userLogin.error?.message}`);
   user = createClient(apiUrl, anonKey, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
   await user.auth.setSession(userLogin.data.session);
 
-  const anonymousListing = await anon.storage.from("profile-images").list("", { limit: 100 });
-  assert(
-    anonymousListing.error || (anonymousListing.data?.length ?? 0) === 0,
-    "anonymous users can list profile image objects",
-  );
-  await expectStorageError(
-    () => anon.storage.from("profile-images").upload(path, Buffer.from("anonymous"), { contentType: "image/png" }),
-    "anonymous profile image upload",
-  );
-
-  const nonAdminListing = await user.storage.from("profile-images").list("", { limit: 100 });
-  assert(
-    nonAdminListing.error || (nonAdminListing.data?.length ?? 0) === 0,
-    "non-admin users can list profile image objects",
-  );
-  await expectStorageError(
-    () => user.storage.from("profile-images").upload(path, Buffer.from("non-admin"), { contentType: "image/png" }),
-    "non-admin profile image upload",
-  );
-
   const uploaded = await admin.storage.from("profile-images").upload(path, Buffer.from("initial image"), {
     contentType: "image/png",
     upsert: false,
   });
   assert(!uploaded.error, `administrator upload failed: ${uploaded.error?.message}`);
+
+  await expectStorageListingDenied(
+    () => anonymous.storage.from("profile-images").list("integration", { limit: 100 }),
+    "anonymous profile image listing",
+  );
+  await expectStorageMutationDenied(
+    () => anonymous.storage.from("profile-images").upload(anonymousPath, Buffer.from("anonymous"), { contentType: "image/png" }),
+    "anonymous profile image upload",
+    admin,
+    anonymousPath,
+    false,
+  );
+  await expectStorageMutationDenied(
+    () => anonymous.storage.from("profile-images").update(path, Buffer.from("anonymous update"), { contentType: "image/png" }),
+    "anonymous profile image update",
+    admin,
+    path,
+    true,
+  );
+  await expectStorageMutationDenied(
+    () => anonymous.storage.from("profile-images").remove([path]),
+    "anonymous profile image delete",
+    admin,
+    path,
+    true,
+  );
+
+  await expectStorageListingDenied(
+    () => user.storage.from("profile-images").list("integration", { limit: 100 }),
+    "non-admin profile image listing",
+  );
+  await expectStorageMutationDenied(
+    () => user.storage.from("profile-images").upload(nonAdminPath, Buffer.from("non-admin"), { contentType: "image/png" }),
+    "non-admin profile image upload",
+    admin,
+    nonAdminPath,
+    false,
+  );
+  await expectStorageMutationDenied(
+    () => user.storage.from("profile-images").update(path, Buffer.from("non-admin update"), { contentType: "image/png" }),
+    "non-admin profile image update",
+    admin,
+    path,
+    true,
+  );
+  await expectStorageMutationDenied(
+    () => user.storage.from("profile-images").remove([path]),
+    "non-admin profile image delete",
+    admin,
+    path,
+    true,
+  );
 
   const adminListing = await admin.storage.from("profile-images").list("integration", { limit: 100 });
   assert(!adminListing.error, `administrator listing failed: ${adminListing.error?.message}`);
@@ -159,7 +219,13 @@ try {
 } finally {
   // The Storage API owns object deletion. Service-role cleanup handles failures
   // before an authenticated administrator client is available.
-  await service.storage.from("profile-images").remove([path, invalidPath, oversizedPath]);
+  await service.storage.from("profile-images").remove([
+    path,
+    anonymousPath,
+    nonAdminPath,
+    invalidPath,
+    oversizedPath,
+  ]);
   if (userId) await service.auth.admin.deleteUser(userId);
   if (adminId) await service.auth.admin.deleteUser(adminId);
 }
