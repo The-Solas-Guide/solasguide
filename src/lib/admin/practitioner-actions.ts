@@ -177,9 +177,9 @@ export async function savePractitioner(formData: FormData): Promise<AdminActionR
   const oldPath: string | null = existing?.image_path ?? null;
   try {
     if (!practitionerId) {
-      const { data, error } = await supabase.from("practitioners").insert(practitionerPayload(formData)).select("id").single();
+      const { data, error } = await supabase.schema("admin_api").rpc("create_admin_practitioner_draft");
       if (error || !data) throw new Error(error?.message ?? "The practitioner could not be created.");
-      practitionerId = data.id;
+      practitionerId = data;
       created = true;
     }
     if (!practitionerId) throw new Error("The practitioner ID is missing.");
@@ -222,7 +222,7 @@ export async function savePractitioner(formData: FormData): Promise<AdminActionR
     return { ok: true, data: { id: practitionerId }, warning };
   } catch (error) {
     if (newPath) await removePortrait(supabase, newPath);
-    if (created && practitionerId) await supabase.from("practitioners").delete().eq("id", practitionerId);
+    if (created && practitionerId) await supabase.schema("admin_api").rpc("delete_failed_admin_practitioner_draft", { p_practitioner_id: practitionerId });
     return { ok: false, error: error instanceof Error ? error.message : "The practitioner could not be saved." };
   }
 }
