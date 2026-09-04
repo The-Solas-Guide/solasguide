@@ -171,15 +171,22 @@ export async function savePractitioner(formData: FormData): Promise<AdminActionR
   const fieldErrors = validatePractitionerFields(formData, status, Boolean(file || existing?.image_path), hasLocation);
   if (Object.keys(fieldErrors).length) return { ok: false, fieldErrors };
 
-  let practitionerId = existing?.id ?? crypto.randomUUID();
+  let practitionerId = existing?.id;
+  let reserved = false;
   let newPath: string | null = null;
   const oldPath: string | null = existing?.image_path ?? null;
   try {
+    if (!practitionerId) {
+      const { data, error } = await supabase.schema("admin_api").rpc("reserve_admin_practitioner");
+      if (error || !data) throw new Error(error?.message ?? "The practitioner could not be created.");
+      practitionerId = data;
+      reserved = true;
+    }
     if (file) newPath = await uploadPortrait(supabase, practitionerId, file);
 
     const payload = practitionerPayload(formData, newPath ?? oldPath);
     const { data: savedId, error: saveError } = await supabase.schema("admin_api").rpc("save_admin_practitioner", {
-      p_practitioner_id: existing ? practitionerId : undefined,
+      p_practitioner_id: practitionerId,
       p_slug: payload.slug,
       p_name: payload.name,
       p_descriptor: payload.descriptor ?? undefined,
@@ -214,6 +221,7 @@ export async function savePractitioner(formData: FormData): Promise<AdminActionR
     return { ok: true, data: { id: practitionerId }, warning };
   } catch (error) {
     if (newPath) await removePortrait(supabase, newPath);
+    if (reserved && practitionerId) await supabase.schema("admin_api").rpc("delete_admin_practitioner_reservation", { p_practitioner_id: practitionerId });
     return { ok: false, error: error instanceof Error ? error.message : "The practitioner could not be saved." };
   }
 }

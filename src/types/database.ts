@@ -15,10 +15,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      delete_admin_practitioner_reservation: {
+        Args: { p_practitioner_id: string }
+        Returns: undefined
+      }
       reorder_admin_featured: {
         Args: { p_practitioner_ids: string[] }
         Returns: undefined
       }
+      reserve_admin_practitioner: { Args: never; Returns: string }
       save_admin_practitioner: {
         Args: {
           p_about?: string
