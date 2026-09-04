@@ -1,7 +1,7 @@
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
-import { randomUUID } from "node:crypto";
+import { createHmac, randomUUID } from "node:crypto";
 import { createClient } from "@supabase/supabase-js";
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
@@ -41,7 +41,8 @@ async function expectStorageListingDenied(operation, label) {
 
 async function expectStorageMutationDenied(operation, label, admin, objectPath, expectedPresent) {
   const result = await operation();
-  const listing = await admin.storage.from("profile-images").list("integration", { limit: 100 });
+  const folder = objectPath.slice(0, objectPath.lastIndexOf("/"));
+  const listing = await admin.storage.from("profile-images").list(folder, { limit: 100 });
   assert(!listing.error, `${label} verification listing failed: ${listing.error?.message}`);
   const objectName = objectPath.slice(objectPath.lastIndexOf("/") + 1);
   const present = listing.data?.some((object) => object.name === objectName) ?? false;
@@ -74,11 +75,13 @@ const suffix = randomUUID().slice(0, 8);
 const password = `local-only-${randomUUID()}-Aa1!`;
 const adminEmail = `storage-admin-${suffix}@example.test`;
 const userEmail = `storage-user-${suffix}@example.test`;
-const path = `integration/${suffix}.png`;
-const anonymousPath = `${path}.anonymous`;
-const nonAdminPath = `${path}.non-admin`;
-const invalidPath = `integration/${suffix}.txt`;
-const oversizedPath = `integration/${suffix}-oversized.jpg`;
+const practitionerId = randomUUID();
+const path = `${practitionerId}/${suffix}.png`;
+const anonymousPath = `${practitionerId}/${suffix}-anonymous.png`;
+const nonAdminPath = `${practitionerId}/${suffix}-non-admin.png`;
+const invalidPath = `${practitionerId}/${suffix}.txt`;
+const oversizedPath = `${practitionerId}/${suffix}-oversized.jpg`;
+const legacyPath = `${suffix}-legacy.png`;
 const originalContent = Buffer.from("initial image");
 
 const service = createClient(apiUrl, serviceRoleKey, {
@@ -90,6 +93,7 @@ const anonymous = createClient(apiUrl, anonKey, {
 
 let adminId;
 let userId;
+let practitionerCreated = false;
 let admin;
 let user;
 
@@ -105,6 +109,15 @@ try {
 
   const allowlisted = await service.from("admin_users").insert({ user_id: adminId });
   assert(!allowlisted.error, `could not allowlist local admin: ${allowlisted.error?.message}`);
+
+  const practitionerCreatedResult = await service.from("practitioners").insert({
+    id: practitionerId,
+    slug: `storage-integration-${suffix}`,
+    name: "Storage Integration Practitioner",
+    status: "draft",
+  });
+  assert(!practitionerCreatedResult.error, `could not create storage practitioner: ${practitionerCreatedResult.error?.message}`);
+  practitionerCreated = true;
 
   const userCreated = await service.auth.admin.createUser({
     email: userEmail,
@@ -141,8 +154,21 @@ try {
   });
   assert(!uploaded.error, `administrator upload failed: ${uploaded.error?.message}`);
 
+  const legacyUploaded = await service.storage.from("profile-images").upload(legacyPath, originalContent, {
+    contentType: "image/png",
+    upsert: false,
+  });
+  assert(!legacyUploaded.error, `legacy fixture upload failed: ${legacyUploaded.error?.message}`);
+
+  const legacyRemoved = await admin.storage.from("profile-images").remove([legacyPath]);
+  assert(!legacyRemoved.error, `administrator legacy cleanup failed: ${legacyRemoved.error?.message}`);
+
+  const rootAfterLegacyDelete = await admin.storage.from("profile-images").list("", { limit: 100 });
+  assert(!rootAfterLegacyDelete.error, `administrator legacy cleanup listing failed: ${rootAfterLegacyDelete.error?.message}`);
+  assert(!rootAfterLegacyDelete.data?.some((object) => object.name === legacyPath), "deleted legacy object still appears in Storage listing");
+
   await expectStorageListingDenied(
-    () => anonymous.storage.from("profile-images").list("integration", { limit: 100 }),
+    () => anonymous.storage.from("profile-images").list(practitionerId, { limit: 100 }),
     "anonymous profile image listing",
   );
   await expectStorageMutationDenied(
@@ -168,7 +194,7 @@ try {
   );
 
   await expectStorageListingDenied(
-    () => user.storage.from("profile-images").list("integration", { limit: 100 }),
+    () => user.storage.from("profile-images").list(practitionerId, { limit: 100 }),
     "non-admin profile image listing",
   );
   await expectStorageMutationDenied(
@@ -193,7 +219,7 @@ try {
     true,
   );
 
-  const adminListing = await admin.storage.from("profile-images").list("integration", { limit: 100 });
+  const adminListing = await admin.storage.from("profile-images").list(practitionerId, { limit: 100 });
   assert(!adminListing.error, `administrator listing failed: ${adminListing.error?.message}`);
   assert(adminListing.data?.some((object) => object.name === `${suffix}.png`), "administrator cannot list uploaded object");
 
@@ -218,14 +244,38 @@ try {
   const publicResponse = await fetch(publicUrl);
   assert(publicResponse.ok, `public profile image URL failed: HTTP ${publicResponse.status}`);
 
+  const expiredHeader = Buffer.from(JSON.stringify({ alg: "HS256", typ: "JWT" })).toString("base64url");
+  const expiredPayload = Buffer.from(JSON.stringify({
+    aud: "authenticated",
+    role: "authenticated",
+    sub: adminId,
+    exp: Math.floor(Date.now() / 1000) - 60,
+    iat: Math.floor(Date.now() / 1000) - 120,
+  })).toString("base64url");
+  const expiredUnsignedToken = `${expiredHeader}.${expiredPayload}`;
+  const expiredSignature = createHmac("sha256", status.JWT_SECRET)
+    .update(expiredUnsignedToken)
+    .digest("base64url");
+  const expiredToken = `${expiredUnsignedToken}.${expiredSignature}`;
+  const expiredResponse = await fetch(`${apiUrl}/storage/v1/object/list/profile-images`, {
+    method: "POST",
+    headers: {
+      apikey: anonKey,
+      Authorization: `Bearer ${expiredToken}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ prefix: practitionerId, limit: 100 }),
+  });
+  assert([400, 401].includes(expiredResponse.status), `expired administrator token was not denied: HTTP ${expiredResponse.status}`);
+
   const removed = await admin.storage.from("profile-images").remove([path]);
   assert(!removed.error, `administrator Storage API delete failed: ${removed.error?.message}`);
 
-  const afterDelete = await admin.storage.from("profile-images").list("integration", { limit: 100 });
+  const afterDelete = await admin.storage.from("profile-images").list(practitionerId, { limit: 100 });
   assert(!afterDelete.error, `administrator post-delete listing failed: ${afterDelete.error?.message}`);
   assert(!afterDelete.data?.some((object) => object.name === `${suffix}.png`), "deleted object still appears in Storage listing");
 
-  console.log("Storage API integration passed: anonymous/non-admin denial, admin CRUD, MIME/size limits, public URL, and listing controls.");
+  console.log("Storage API integration passed: anonymous/non-admin denial, admin CRUD, legacy cleanup, MIME/size limits, public URL, and listing controls.");
 } finally {
   // The Storage API owns object deletion. Service-role cleanup handles failures
   // before an authenticated administrator client is available.
@@ -235,7 +285,12 @@ try {
     nonAdminPath,
     invalidPath,
     oversizedPath,
+    legacyPath,
   ]);
+  if (practitionerCreated) {
+    await service.from("practitioners").update({ status: "archived" }).eq("id", practitionerId);
+    await service.from("practitioners").delete().eq("id", practitionerId);
+  }
   if (userId) await service.auth.admin.deleteUser(userId);
   if (adminId) await service.auth.admin.deleteUser(adminId);
 }

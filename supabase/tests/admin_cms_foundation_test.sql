@@ -11,6 +11,27 @@ select has_column('public', 'practitioner_terms', 'updated_at', 'terms have upda
 select has_column('public', 'customer_enquiries', 'archived_at', 'customer enquiries have archived_at');
 select has_column('public', 'practitioner_expressions_of_interest', 'archived_at', 'practitioner interest has archived_at');
 
+-- Blocker regressions: source values must use the database enum.
+select has_type('public', 'submission_source', 'submission source enum exists');
+select is(
+  (select udt_name
+     from information_schema.columns
+    where table_schema = 'public'
+      and table_name = 'customer_enquiries'
+      and column_name = 'source'),
+  'submission_source',
+  'customer enquiry source uses the enum'
+);
+select is(
+  (select udt_name
+     from information_schema.columns
+    where table_schema = 'public'
+      and table_name = 'practitioner_expressions_of_interest'
+      and column_name = 'source'),
+  'submission_source',
+  'practitioner interest source uses the enum'
+);
+
 select ok(
   exists (
     select 1
@@ -43,6 +64,17 @@ select ok(
        and pg_get_constraintdef(oid) ilike '%published%'
   ),
   'featured practitioners must be published'
+);
+select ok(
+  exists (
+    select 1
+      from pg_indexes
+     where schemaname = 'public'
+       and tablename = 'practitioners'
+       and indexname = 'practitioners_image_path_idx'
+       and indexdef ilike '%unique%'
+  ),
+  'practitioner image paths are unique when present'
 );
 
 -- The policy catalog must distinguish the administrator allowlist from public reads.
@@ -165,7 +197,7 @@ values (
   'Foundation Practitioner',
   'A complete foundation profile.',
   'A complete foundation profile with all required copy.',
-  'foundation-practitioner.jpg',
+  '00000000-0000-0000-0000-00000000b101/foundation-practitioner.jpg',
   'draft'
 );
 insert into public.practitioner_term_links (practitioner_id, term_id)
@@ -182,7 +214,7 @@ values (
   'Foundation Second Practitioner',
   'A second complete foundation profile.',
   'A second complete foundation profile with all required copy.',
-  'foundation-second-practitioner.jpg',
+  '00000000-0000-0000-0000-00000000b102/foundation-second-practitioner.jpg',
   'draft'
 );
 insert into public.practitioner_term_links (practitioner_id, term_id)
@@ -270,6 +302,26 @@ select throws_ok(
   null,
   'non-admin users cannot insert practitioners'
 );
+select throws_ok(
+  $$insert into public.customer_enquiries (
+       full_name, email, consent_confirmed, questionnaire_answers, source
+     ) values (
+       'Non-admin Enquiry', 'non-admin-enquiry@example.com', true, '{}'::jsonb, 'admin'
+     )$$,
+  '42501',
+  null,
+  'non-admin users cannot insert customer enquiries'
+);
+select throws_ok(
+  $$insert into public.practitioner_expressions_of_interest (
+       full_name, email, consent_confirmed, questionnaire_answers, source
+     ) values (
+       'Non-admin Applicant', 'non-admin-applicant@example.com', true, '{}'::jsonb, 'admin'
+     )$$,
+  '42501',
+  null,
+  'non-admin users cannot insert practitioner interest'
+);
 
 -- An administrator can manage directory records and links.
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-00000000b001', true);
@@ -296,6 +348,35 @@ select lives_ok(
       from public.practitioner_terms
      where slug = 'foundation-approach'$$,
   'administrator can create term links'
+);
+
+select set_config(
+  'request.jwt.claims',
+  json_build_object(
+    'sub', '00000000-0000-0000-0000-00000000b001',
+    'role', 'authenticated',
+    'exp', floor(extract(epoch from now()))::bigint - 60
+  )::text,
+  true
+);
+select is(
+  admin_private.is_admin(),
+  false,
+  'expired administrator sessions are denied'
+);
+select is(
+  (select count(*)::integer from public.practitioners),
+  0,
+  'expired administrator sessions cannot read CMS records'
+);
+select set_config(
+  'request.jwt.claims',
+  json_build_object(
+    'sub', '00000000-0000-0000-0000-00000000b001',
+    'role', 'authenticated',
+    'exp', floor(extract(epoch from now()))::bigint + 3600
+  )::text,
+  true
 );
 
 -- Practitioner lifecycle and featured ordering.
@@ -397,6 +478,89 @@ select throws_ok(
   null,
   'featured practitioners cannot be deleted'
 );
+
+select lives_ok(
+  $$insert into public.practitioners (
+       id, slug, name, summary, about, image_path, status
+     ) values (
+       '00000000-0000-0000-0000-00000000b103',
+       'foundation-draft-delete',
+       'Foundation Draft Delete',
+       'A draft used for deletion checks.',
+       'A draft used for deletion checks.',
+       null,
+       'draft'
+     )$$,
+  'administrator can create a draft practitioner for deletion checks'
+);
+select throws_ok(
+  $$delete from public.practitioners
+     where id = '00000000-0000-0000-0000-00000000b103'$$,
+  '23514',
+  null,
+  'draft practitioners cannot be permanently deleted'
+);
+select lives_ok(
+  $$update public.practitioners
+       set status = 'archived'
+     where id = '00000000-0000-0000-0000-00000000b103'$$,
+  'administrator can archive the deletion-check practitioner'
+);
+select lives_ok(
+  $$delete from public.practitioners
+     where id = '00000000-0000-0000-0000-00000000b103'$$,
+  'only archived and unfeatured practitioners can be deleted'
+);
+select lives_ok(
+  $$insert into public.practitioners (
+       id, slug, name, image_path, status
+     ) values (
+       '00000000-0000-0000-0000-00000000b104',
+       'foundation-image-delete',
+       'Foundation Image Delete',
+       '00000000-0000-0000-0000-00000000b104/image-delete.jpg',
+       'draft'
+     )$$,
+  'administrator can create an archived-practitioner deletion fixture'
+);
+select lives_ok(
+  $$update public.practitioners
+       set status = 'archived'
+     where id = '00000000-0000-0000-0000-00000000b104'$$,
+  'administrator can archive the portrait deletion fixture'
+);
+select throws_ok(
+  $$delete from public.practitioners
+     where id = '00000000-0000-0000-0000-00000000b104'$$,
+  '23514',
+  null,
+  'archived practitioners with portraits cannot be permanently deleted'
+);
+select lives_ok(
+  $$update public.practitioners
+       set image_path = null
+     where id = '00000000-0000-0000-0000-00000000b104'$$,
+  'administrator can clear the portrait path before deletion'
+);
+select lives_ok(
+  $$delete from public.practitioners
+     where id = '00000000-0000-0000-0000-00000000b104'$$,
+  'an archived unfeatured practitioner can be deleted after portrait cleanup'
+);
+select throws_ok(
+  $$insert into public.practitioners (
+       id, slug, name, image_path, status
+     ) values (
+       '00000000-0000-0000-0000-00000000b105',
+       'foundation-wrong-image-owner',
+       'Foundation Wrong Image Owner',
+       '00000000-0000-0000-0000-00000000b101/wrong-owner.jpg',
+       'draft'
+     )$$,
+  '23514',
+  null,
+  'practitioner images must use the owning practitioner UUID folder'
+);
 select lives_ok(
   $$update public.practitioners set featured_position = null
      where id = '00000000-0000-0000-0000-00000000b101'$$,
@@ -495,6 +659,126 @@ select lives_ok(
 );
 
 -- Private submission access and column protections.
+select ok(
+  has_column_privilege('authenticated', 'public.customer_enquiries', 'full_name', 'INSERT')
+    and has_column_privilege('authenticated', 'public.customer_enquiries', 'email', 'INSERT')
+    and has_column_privilege('authenticated', 'public.customer_enquiries', 'consent_confirmed', 'INSERT')
+    and has_column_privilege('authenticated', 'public.customer_enquiries', 'source', 'INSERT'),
+  'administrators have exact customer enquiry insert column grants'
+);
+select ok(
+  not has_column_privilege('authenticated', 'public.customer_enquiries', 'id', 'INSERT')
+    and not has_column_privilege('authenticated', 'public.customer_enquiries', 'created_at', 'INSERT')
+    and not has_column_privilege('authenticated', 'public.customer_enquiries', 'updated_at', 'INSERT')
+    and not has_column_privilege('authenticated', 'public.customer_enquiries', 'internal_notification_sent_at', 'INSERT'),
+  'administrators cannot insert protected customer enquiry columns'
+);
+select ok(
+  has_column_privilege('authenticated', 'public.practitioner_expressions_of_interest', 'full_name', 'INSERT')
+    and has_column_privilege('authenticated', 'public.practitioner_expressions_of_interest', 'email', 'INSERT')
+    and has_column_privilege('authenticated', 'public.practitioner_expressions_of_interest', 'consent_confirmed', 'INSERT')
+    and has_column_privilege('authenticated', 'public.practitioner_expressions_of_interest', 'source', 'INSERT'),
+  'administrators have exact practitioner interest insert column grants'
+);
+select ok(
+  not has_column_privilege('authenticated', 'public.practitioner_expressions_of_interest', 'id', 'INSERT')
+    and not has_column_privilege('authenticated', 'public.practitioner_expressions_of_interest', 'created_at', 'INSERT')
+    and not has_column_privilege('authenticated', 'public.practitioner_expressions_of_interest', 'updated_at', 'INSERT')
+    and not has_column_privilege('authenticated', 'public.practitioner_expressions_of_interest', 'internal_notification_sent_at', 'INSERT'),
+  'administrators cannot insert protected practitioner interest columns'
+);
+select lives_ok(
+  $$insert into public.customer_enquiries (
+       full_name, email, consent_confirmed, questionnaire_answers, source, status
+     ) values (
+       'Administrator Enquiry',
+       'administrator-enquiry@example.com',
+       true,
+       '{}'::jsonb,
+       'admin',
+       'new'
+     )$$,
+  'administrator can create a customer enquiry with the admin source'
+);
+select throws_ok(
+  $$insert into public.customer_enquiries (
+       full_name, email, consent_confirmed, questionnaire_answers, source, status
+     ) values (
+       'Invalid Administrator Enquiry',
+       'invalid-administrator-enquiry@example.com',
+       false,
+       '{}'::jsonb,
+       'admin',
+       'new'
+     )$$,
+  '23514',
+  null,
+  'administrator-created enquiries still require consent'
+);
+select throws_ok(
+  $$insert into public.customer_enquiries (
+       full_name, email, phone, contact_preference, consent_confirmed,
+       questionnaire_answers, source, status
+     ) values (
+       'Invalid Administrator Enquiry',
+       'invalid-contact-enquiry@example.com',
+       null,
+       'phone',
+       true,
+       '{}'::jsonb,
+       'admin',
+       'new'
+     )$$,
+  '23514',
+  null,
+  'administrator-created enquiries still require contact details'
+);
+select lives_ok(
+  $$insert into public.practitioner_expressions_of_interest (
+       full_name, email, consent_confirmed, questionnaire_answers, source, status
+     ) values (
+       'Administrator Applicant',
+       'administrator-applicant@example.com',
+       true,
+       '{}'::jsonb,
+       'admin',
+       'new'
+     )$$,
+  'administrator can create practitioner interest with the admin source'
+);
+select throws_ok(
+  $$insert into public.practitioner_expressions_of_interest (
+       full_name, email, consent_confirmed, questionnaire_answers, source, status
+     ) values (
+       'Invalid Administrator Applicant',
+       'invalid-administrator-applicant@example.com',
+       false,
+       '{}'::jsonb,
+       'admin',
+       'new'
+     )$$,
+  '23514',
+  null,
+  'administrator-created practitioner interest still requires consent'
+);
+select throws_ok(
+  $$insert into public.practitioner_expressions_of_interest (
+       full_name, email, phone, contact_preference, consent_confirmed,
+       questionnaire_answers, source, status
+     ) values (
+       'Invalid Administrator Applicant',
+       'invalid-contact-applicant@example.com',
+       null,
+       'phone',
+       true,
+       '{}'::jsonb,
+       'admin',
+       'new'
+     )$$,
+  '23514',
+  null,
+  'administrator-created practitioner interest still requires contact details'
+);
 select is(
   (select count(*)::integer from public.customer_enquiries
     where id = '00000000-0000-0000-0000-00000000b201'),
@@ -721,21 +1005,153 @@ select is(
 );
 select lives_ok(
   $$insert into storage.objects (bucket_id, name, owner, metadata)
-    values ('profile-images', 'foundation.jpg', '00000000-0000-0000-0000-00000000b001',
+    values ('profile-images', '00000000-0000-0000-0000-00000000b101/foundation.jpg', '00000000-0000-0000-0000-00000000b001',
             '{"mimetype":"image/jpeg"}'::jsonb)$$,
   'administrator can insert an allowed profile image object'
 );
 select lives_ok(
   $$update storage.objects set metadata = '{"mimetype":"image/png"}'::jsonb
-     where bucket_id = 'profile-images' and name = 'foundation.jpg'$$,
+     where bucket_id = 'profile-images'
+       and name = '00000000-0000-0000-0000-00000000b101/foundation.jpg'$$,
   'administrator can update a profile image object'
 );
 select throws_ok(
   $$delete from storage.objects
-     where bucket_id = 'profile-images' and name = 'foundation.jpg'$$,
+     where bucket_id = 'profile-images'
+       and name = '00000000-0000-0000-0000-00000000b101/foundation.jpg'$$,
   '42501',
   null,
   'profile image deletes must use the Storage API'
+);
+select throws_ok(
+  $$insert into storage.objects (bucket_id, name, owner, metadata)
+    values ('profile-images', 'arbitrary/foundation.jpg', '00000000-0000-0000-0000-00000000b001',
+            '{"mimetype":"image/jpeg"}'::jsonb)$$,
+  '42501',
+  null,
+  'administrator cannot insert a profile image at an arbitrary path'
+);
+select throws_ok(
+  $$insert into storage.objects (bucket_id, name, owner, metadata)
+    values ('profile-images', '00000000-0000-0000-0000-00000000b999/other.jpg', '00000000-0000-0000-0000-00000000b001',
+            '{"mimetype":"image/jpeg"}'::jsonb)$$,
+  '42501',
+  null,
+  'administrator cannot insert a profile image for an unknown practitioner'
+);
+
+-- Production already contains legacy portrait paths. Simulate one existing
+-- row inside this rollback-only test so ordinary edits remain compatible.
+set local role postgres;
+alter table public.practitioners drop constraint practitioners_image_path_check;
+alter table public.practitioners disable trigger practitioners_validate_image_path;
+insert into public.practitioners (
+  id, slug, name, image_path, status
+)
+values (
+  '00000000-0000-0000-0000-00000000b106',
+  'foundation-legacy-image',
+  'Foundation Legacy Image',
+  'foundation-legacy.jpg',
+  'draft'
+);
+insert into storage.objects (bucket_id, name, owner, metadata)
+values (
+  'profile-images',
+  'foundation-legacy.jpg',
+  '00000000-0000-0000-0000-00000000b001',
+  '{"mimetype":"image/jpeg"}'::jsonb
+);
+alter table public.practitioners enable trigger practitioners_validate_image_path;
+set local role authenticated;
+select set_config(
+  'request.jwt.claims',
+  json_build_object(
+    'sub', '00000000-0000-0000-0000-00000000b001',
+    'role', 'authenticated'
+  )::text,
+  true
+);
+select is(
+  (select count(*)::integer
+     from storage.objects
+    where bucket_id = 'profile-images'
+      and name = 'foundation-legacy.jpg'),
+  1,
+  'administrators can select a referenced legacy portrait object'
+);
+select lives_ok(
+  $$update public.practitioners
+       set descriptor = 'Edited while retaining the legacy portrait path',
+           image_path = image_path
+     where id = '00000000-0000-0000-0000-00000000b106'$$,
+  'ordinary practitioner edits preserve referenced legacy portrait paths'
+);
+select throws_ok(
+  $$update public.practitioners
+       set image_path = 'legacy/changed.jpg'
+     where id = '00000000-0000-0000-0000-00000000b106'$$,
+  '23514',
+  null,
+  'legacy portrait paths cannot be changed to another legacy path'
+);
+select lives_ok(
+  $$update public.practitioners
+       set image_path = '00000000-0000-0000-0000-00000000b106/replacement.jpg'
+     where id = '00000000-0000-0000-0000-00000000b106'$$,
+  'administrator can save a UUID-path replacement for a legacy portrait'
+);
+select is(
+  (select count(*)::integer
+     from storage.objects
+    where bucket_id = 'profile-images'
+      and name = 'foundation-legacy.jpg'),
+  1,
+  'administrator can still select the old legacy portrait after saving its replacement'
+);
+select throws_ok(
+  $$delete from public.practitioners
+     where id = '00000000-0000-0000-0000-00000000b106'$$,
+  '23514',
+  null,
+  'legacy portrait rows require Storage deletion and path clearing first'
+);
+
+-- Clearing image_path alone cannot bypass UUID-folder object cleanup.
+set local role postgres;
+insert into public.practitioners (
+  id, slug, name, image_path, status, archived_at
+)
+values (
+  '00000000-0000-0000-0000-00000000b107',
+  'foundation-orphaned-folder-image',
+  'Foundation Orphaned Folder Image',
+  null,
+  'archived',
+  pg_catalog.now()
+);
+insert into storage.objects (bucket_id, name, owner, metadata)
+values (
+  'profile-images',
+  '00000000-0000-0000-0000-00000000b107/orphan.png',
+  '00000000-0000-0000-0000-00000000b001',
+  '{"mimetype":"image/png"}'::jsonb
+);
+set local role authenticated;
+select set_config(
+  'request.jwt.claims',
+  json_build_object(
+    'sub', '00000000-0000-0000-0000-00000000b001',
+    'role', 'authenticated'
+  )::text,
+  true
+);
+select throws_ok(
+  $$delete from public.practitioners
+     where id = '00000000-0000-0000-0000-00000000b107'$$,
+  '23514',
+  null,
+  'practitioners cannot be deleted while their UUID Storage folder contains an object'
 );
 
 select * from finish();
