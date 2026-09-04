@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState, useTransition } from "react";
-import { PlusIcon } from "lucide-react";
+import { useId, useMemo, useState, useTransition } from "react";
+import { EllipsisIcon, PlusIcon } from "lucide-react";
 import { toast } from "sonner";
 import { AdminTableShell } from "@/components/admin/admin-table";
-import { AdminArchiveDialog } from "@/components/admin/record-deletion";
+import { AdminArchiveConfirmation } from "@/components/admin/record-deletion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useAdminTableQuery } from "@/hooks/use-admin-table-query";
 import { archiveTaxonomy, type AdminTaxonomyRecord } from "@/lib/admin/taxonomy-actions";
 import { getTaxonomyLifecycle, formatAdminDate } from "@/lib/admin/practitioner-cms";
@@ -17,6 +18,13 @@ const pageSize = 10;
 
 function StateBadge({ state }: { state: string }) {
   return <Badge variant={state === "active" ? "default" : state === "archived" ? "secondary" : "outline"}>{state[0].toUpperCase() + state.slice(1)}</Badge>;
+}
+
+function TaxonomyRowActions({ record, disabled, onArchive, onRestore }: { record: AdminTaxonomyRecord; disabled: boolean; onArchive: (record: AdminTaxonomyRecord) => void; onRestore: (record: AdminTaxonomyRecord) => void }) {
+  const triggerId = useId();
+  const [archiveOpen, setArchiveOpen] = useState(false);
+
+  return <><DropdownMenu><DropdownMenuTrigger asChild><Button id={triggerId} type="button" variant="ghost" size="icon" aria-label={`Actions for ${record.name}`} disabled={disabled}><EllipsisIcon /></Button></DropdownMenuTrigger><DropdownMenuContent align="end" className="w-48"><DropdownMenuItem asChild className="min-h-10 px-3"><Link href={`/admin/taxonomy/${record.id}`}>Edit term</Link></DropdownMenuItem><DropdownMenuSeparator />{record.archived_at ? <DropdownMenuItem className="min-h-10 px-3" onSelect={() => onRestore(record)}>Restore to inactive</DropdownMenuItem> : <DropdownMenuItem className="min-h-10 px-3" variant="destructive" onSelect={() => setArchiveOpen(true)}>Archive term</DropdownMenuItem>}</DropdownMenuContent></DropdownMenu><AdminArchiveConfirmation open={archiveOpen} onOpenChange={setArchiveOpen} recordName={record.name} onArchive={() => onArchive(record)} returnFocusId={triggerId} /></>;
 }
 
 export function TaxonomyManager({ initialRecords }: { initialRecords: AdminTaxonomyRecord[] }) {
@@ -53,6 +61,6 @@ export function TaxonomyManager({ initialRecords }: { initialRecords: AdminTaxon
   return <div className="mx-auto flex w-full min-w-0 max-w-7xl flex-col gap-6">
     <header className="flex min-w-0 flex-wrap items-start justify-between gap-4 border-b pb-5"><div className="min-w-0"><p className="text-sm font-medium text-muted-foreground">Controlled values</p><h1 className="break-words font-display text-4xl leading-tight">Taxonomy</h1><p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">Manage the terms used to describe practitioner practices and locations.</p></div><Button asChild><Link href="/admin/taxonomy/new"><PlusIcon />New term</Link></Button></header>
     <div className="grid gap-3 sm:grid-cols-3"><div className="rounded-md border bg-card p-4"><p className="text-xs font-semibold uppercase tracking-[0.1em] text-muted-foreground">Active terms</p><p className="mt-2 text-2xl font-semibold">{counts.active}</p><p className="mt-1 text-sm text-muted-foreground">Available to public records.</p></div><div className="rounded-md border bg-card p-4"><p className="text-xs font-semibold uppercase tracking-[0.1em] text-muted-foreground">Inactive</p><p className="mt-2 text-2xl font-semibold">{counts.inactive}</p><p className="mt-1 text-sm text-muted-foreground">Kept for later reuse.</p></div><div className="rounded-md border bg-card p-4"><p className="text-xs font-semibold uppercase tracking-[0.1em] text-muted-foreground">Archived</p><p className="mt-2 text-2xl font-semibold">{counts.archived}</p><p className="mt-1 text-sm text-muted-foreground">Restore to inactive or delete if unused.</p></div></div>
-    <AdminTableShell data={pageRecords} columns={columns} getRowId={(row) => row.id} query={query} onQueryChange={(next) => dispatch({ type: "hydrate", state: next })} totalCount={filtered.length} hasNextPage={pageStart + pageSize < filtered.length} statusTabs={[{ value: "all", label: "Every term", count: counts.all }, { value: "active", label: "Active", count: counts.active }, { value: "inactive", label: "Inactive", count: counts.inactive }, { value: "archived", label: "Archived", count: counts.archived }]} filters={[{ id: "type", label: "Type", options: taxonomyTypes.map((type) => ({ value: type, label: taxonomyTypeLabel(type) })) }]} rowActions={(record) => <div className="flex flex-wrap gap-1"><Button asChild variant="ghost"><Link href={`/admin/taxonomy/${record.id}`}>Edit</Link></Button>{record.archived_at ? <Button type="button" variant="ghost" disabled={pending} onClick={() => restore(record)}>Restore</Button> : <AdminArchiveDialog recordName={record.name} onArchive={() => archive(record)} disabled={pending} />}</div>} renderMobileCard={(record) => <div className="grid gap-2"><div className="flex items-start justify-between gap-3"><div className="min-w-0"><p className="truncate font-medium">{record.name}</p><p className="text-xs text-muted-foreground">{taxonomyTypeLabel(record.type)}</p></div><StateBadge state={getTaxonomyLifecycle(record)} /></div><p className="text-sm text-muted-foreground">Used by {record.usageCount} practitioner{record.usageCount === 1 ? "" : "s"}</p>{record.practitioners.length > 0 && <p className="truncate text-xs text-muted-foreground">{record.practitioners.map((practitioner) => practitioner.name).join(", ")}</p>}</div>} />
+    <AdminTableShell data={pageRecords} columns={columns} getRowId={(row) => row.id} query={query} onQueryChange={(next) => dispatch({ type: "hydrate", state: next })} totalCount={filtered.length} hasNextPage={pageStart + pageSize < filtered.length} statusTabs={[{ value: "all", label: "All", count: counts.all }, { value: "active", label: "Active", count: counts.active }, { value: "inactive", label: "Inactive", count: counts.inactive }, { value: "archived", label: "Archived", count: counts.archived }]} filters={[{ id: "type", label: "Type", options: taxonomyTypes.map((type) => ({ value: type, label: taxonomyTypeLabel(type) })) }]} rowActions={(record) => <TaxonomyRowActions record={record} disabled={pending} onArchive={archive} onRestore={restore} />} renderMobileCard={(record) => <div className="grid gap-2"><div className="flex items-start justify-between gap-3"><div className="min-w-0"><p className="truncate font-medium">{record.name}</p><p className="text-xs text-muted-foreground">{taxonomyTypeLabel(record.type)}</p></div><StateBadge state={getTaxonomyLifecycle(record)} /></div><p className="text-sm text-muted-foreground">Used by {record.usageCount} practitioner{record.usageCount === 1 ? "" : "s"}</p>{record.practitioners.length > 0 && <p className="truncate text-xs text-muted-foreground">{record.practitioners.map((practitioner) => practitioner.name).join(", ")}</p>}</div>} />
   </div>;
 }

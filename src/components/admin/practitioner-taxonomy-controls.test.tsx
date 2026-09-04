@@ -103,7 +103,8 @@ describe("practitioner and taxonomy CMS controls", () => {
   it("shows featured actions and readiness on the practitioner screen", () => {
     render(<PractitionerManager initialRecords={[practitioner]} />);
     expect(screen.getByRole("button", { name: "Manage featured" })).toBeTruthy();
-    expect(screen.getAllByRole("button", { name: "Remove featured" })).toHaveLength(2);
+    expect(screen.getAllByRole("button", { name: "Actions for Test Practitioner" })).toHaveLength(2);
+    expect(screen.getByRole("tab", { name: /All 1/ })).toBeTruthy();
     expect(screen.getAllByText("1 / 8")).toHaveLength(1);
   });
 
