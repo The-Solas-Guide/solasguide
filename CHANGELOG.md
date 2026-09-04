@@ -18,3 +18,4 @@ This file records pull requests merged into `main`. Entries are added automatica
 - 2026-09-04 — Secure the Solas Admin CMS foundation ([#45](https://github.com/The-Solas-Guide/solasguide/pull/45)) — `b7147761c2747c1915ae1ff1c2e160190b2b4fcd`
 - 2026-09-04 — Build the Admin CMS schema foundation ([#47](https://github.com/The-Solas-Guide/solasguide/pull/47)) — `721fa4fd1e24b8a41245b76ffb84f4dd60d2b645`
 - 2026-09-04 — Build shared Admin CMS interface patterns ([#48](https://github.com/The-Solas-Guide/solasguide/pull/48)) — `3cf6b2a9eaf4d484b86d20b8558149a8688e20c1`
+- 2026-09-04 — feat: add practitioner and taxonomy CMS ([#49](https://github.com/The-Solas-Guide/solasguide/pull/49)) — `61319cbb230485e7e90962a670084f99d42e05fc`
