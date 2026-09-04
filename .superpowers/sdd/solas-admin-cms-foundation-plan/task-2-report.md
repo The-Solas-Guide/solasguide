@@ -21,10 +21,12 @@ code was added.
 - `src/components/ui/table.tsx`
 - `src/components/ui/tabs.tsx`
 - `src/components/ui/select.tsx`
-- `src/components/ui/command.tsx`
 - `src/components/ui/form.tsx`
 - `src/components/ui/badge.tsx`
 - `src/components/ui/alert-dialog.tsx`
+- `src/hooks/use-unsaved-changes.ts` and `src/hooks/use-unsaved-changes.test.ts`
+
+The unused `src/components/ui/command.tsx` primitive was removed during review.
 
 ## Implementation
 
@@ -98,3 +100,67 @@ No screenshot artifacts were added for the deferred shared states.
   submission tables. Consumers should pass a narrower status list when needed.
 
 No production deployment, Supabase change, data mutation, or PR was performed.
+
+## Round 1 review fixes
+
+The review fixes keep the shared foundation within the original scope.
+
+- Dirty editors now guard Cancel, same-origin admin links, and the exported
+  guarded router helper. The `beforeunload` warning remains active.
+- Table query state now hydrates later URL changes, preserves unrelated query
+  parameters, and resets to caller defaults.
+- `AdminFormField` now renders field errors beside controls and wires
+  `aria-invalid` and `aria-describedby` to the shared error interface.
+- Public, taxonomy, and operational archive actions now use the shared
+  confirmation dialog. Operational `isSubmission` is retained as record-kind
+  metadata, and submission delete suppression remains active.
+- Tabs, select items, lifecycle controls, archive and delete controls, table
+  pagination, sorting controls, and row action surfaces use 44px targets.
+- Tables now include an Actions header, sortable `aria-sort` state, supplied
+  All-tab label and count, and separate desktop and mobile action surfaces.
+- The unused `command.tsx` primitive was removed.
+
+### Round 1 TDD evidence
+
+RED command before the review fixes:
+
+```text
+npm test -- --run src/hooks/use-admin-table-query.test.ts src/components/admin/admin-form.test.ts src/components/admin/lifecycle-controls.test.ts src/components/admin/admin-table.test.ts src/components/admin/record-deletion.test.ts
+```
+
+Result: failed as expected. The run reported missing caller-default reset,
+dirty navigation confirmation, field-error wiring, archive dialogs, action
+headers, `aria-sort`, and supplied All-tab label behavior.
+
+Focused GREEN command after the review fixes:
+
+```text
+npm test -- --run src/lib/admin/types.test.ts src/hooks/use-admin-table-query.test.ts src/hooks/use-unsaved-changes.test.ts src/components/admin/admin-table.test.ts src/components/admin/admin-form.test.ts src/components/admin/lifecycle-controls.test.ts src/components/admin/record-deletion.test.ts
+```
+
+Result: 7 files passed, 28 tests passed.
+
+Full GREEN command:
+
+```text
+npm test
+```
+
+Result: 18 files passed, 89 tests passed.
+
+### Round 1 checks
+
+- `npm run lint`: passed with no warnings.
+- `npm run type-check`: passed.
+- `npm run build`: passed; 25 routes generated.
+- `git diff --check`: passed.
+- `npx playwright test tests/e2e/homepage.spec.ts --project=chromium`: passed;
+  4 tests, including desktop and 390px overflow coverage.
+- Direct Playwright checks of `/admin/sign-in` passed at 1280px and 390px.
+  Both returned 200, showed the existing sign-in form, had no horizontal
+  overflow, and produced no console errors.
+
+### Round 1 browser limits
+
+Shared table, form, lifecycle, archive, and deletion flows remain deferred.
+Issue #39 must provide the first real domain consumer. No fake route was added.

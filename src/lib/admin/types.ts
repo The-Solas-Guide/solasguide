@@ -53,6 +53,7 @@ export const defaultAdminTableQuery: AdminTableQueryState = {
 };
 
 const pageSizes = new Set([10, 25, 50, 100]);
+const managedTableQueryKeys = ["q", "status", "page", "pageSize", "sort", "dir"] as const;
 
 export function parseAdminTableQuery(
   params: URLSearchParams,
@@ -66,7 +67,9 @@ export function parseAdminTableQuery(
     sortId && (direction === "asc" || direction === "desc")
       ? { id: sortId, direction: direction as TableSort["direction"] }
       : undefined;
-  const filters: Record<string, string[]> = {};
+  const filters: Record<string, string[]> = Object.fromEntries(
+    Object.entries(defaults.filters).map(([id, values]) => [id, [...values]]),
+  );
 
   for (const [key, value] of params.entries()) {
     if (!key.startsWith("filter.") || !value) continue;
@@ -80,7 +83,7 @@ export function parseAdminTableQuery(
     status: params.get("status") ?? defaults.status,
     page: Number.isInteger(pageValue) && pageValue > 0 ? pageValue : defaults.page,
     pageSize: pageSizes.has(pageSizeValue) ? pageSizeValue : defaults.pageSize,
-    sort,
+    sort: sort ?? defaults.sort,
   };
 }
 
@@ -104,4 +107,20 @@ export function serializeAdminTableQuery(state: AdminTableQueryState) {
 
 export function adminTableQueryKey(state: AdminTableQueryState) {
   return serializeAdminTableQuery(state);
+}
+
+/** Replace only table-owned parameters, keeping route parameters from the caller. */
+export function mergeAdminTableQueryParams(
+  current: URLSearchParams,
+  state: AdminTableQueryState,
+) {
+  const next = new URLSearchParams(current.toString());
+  for (const key of Array.from(next.keys())) {
+    if (managedTableQueryKeys.includes(key as (typeof managedTableQueryKeys)[number]) || key.startsWith("filter.")) {
+      next.delete(key);
+    }
+  }
+  const managed = new URLSearchParams(serializeAdminTableQuery(state));
+  for (const [key, value] of managed.entries()) next.append(key, value);
+  return next;
 }

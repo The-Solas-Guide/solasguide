@@ -24,7 +24,7 @@ function table(overrides: Partial<React.ComponentProps<typeof AdminTableShell<Ro
     query: defaultAdminTableQuery,
     onQueryChange: vi.fn(),
     statusTabs: [
-      { value: "all", label: "All" },
+      { value: "all", label: "Every record", count: 2 },
       { value: "published", label: "Published", count: 1 },
     ],
     rowActions: (row) => createElement("button", { type: "button" }, `Open ${row.name}`),
@@ -39,6 +39,8 @@ describe("AdminTableShell", () => {
     render(table({ totalCount: 2 }));
 
     expect(screen.getByRole("table")).toBeTruthy();
+    expect(screen.getByRole("columnheader", { name: "Actions" })).toBeTruthy();
+    expect(screen.getByRole("tab", { name: /Every record 2/ })).toBeTruthy();
     expect(screen.getByText("2 results")).toBeTruthy();
     expect(screen.getByRole("button", { name: /sort by name/i })).toBeTruthy();
     expect(screen.getAllByRole("button", { name: /open maya hart/i })).toHaveLength(2);
@@ -60,6 +62,16 @@ describe("AdminTableShell", () => {
     expect(onQueryChange).toHaveBeenCalledWith(expect.objectContaining({ search: "maya", page: 1 }));
     expect(onQueryChange).toHaveBeenCalledWith(expect.objectContaining({ status: "published", page: 1 }));
     expect(onQueryChange).toHaveBeenCalledWith(expect.objectContaining({ sort: { id: "name", direction: "asc" } }));
+  });
+
+  it("exposes sortable aria-sort state and keeps desktop and mobile action surfaces separate", () => {
+    const query = { ...defaultAdminTableQuery, sort: { id: "name", direction: "asc" as const } };
+    render(table({ query }));
+
+    expect(screen.getByRole("columnheader", { name: /Name/ }).getAttribute("aria-sort")).toBe("ascending");
+    expect(screen.getByTestId("admin-table-desktop").querySelectorAll('[data-table-action-surface="desktop"]').length).toBe(2);
+    expect(screen.getByTestId("admin-table-mobile").querySelectorAll('[data-table-action-surface="mobile"]').length).toBe(2);
+    expect(screen.getByTestId("admin-status-navigation").className).toContain("overflow-x-auto");
   });
 
   it("renders mobile cards and actions without horizontal table overflow", () => {

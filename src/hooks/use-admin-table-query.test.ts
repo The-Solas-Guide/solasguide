@@ -1,9 +1,23 @@
-import { describe, expect, it } from "vitest";
+// @vitest-environment jsdom
+import { act, renderHook } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import {
   adminTableQueryReducer,
   defaultAdminTableQuery,
+  useAdminTableQuery,
   type AdminTableQueryAction,
 } from "@/hooks/use-admin-table-query";
+
+const navigation = vi.hoisted(() => ({
+  params: new URLSearchParams("q=old&keep=1"),
+  router: { replace: vi.fn() },
+}));
+
+vi.mock("next/navigation", () => ({
+  usePathname: () => "/admin/practitioners",
+  useRouter: () => navigation.router,
+  useSearchParams: () => navigation.params,
+}));
 
 describe("admin table query state", () => {
   it("resets pagination when a search, filter, or status changes", () => {
@@ -45,5 +59,33 @@ describe("admin table query state", () => {
         { type: "reset" },
       ),
     ).toEqual(defaultAdminTableQuery);
+  });
+
+  it("uses caller defaults when reset is requested", () => {
+    const callerDefaults = { status: "active", pageSize: 25 };
+    expect(adminTableQueryReducer({ ...defaultAdminTableQuery, page: 4 }, { type: "reset", defaults: callerDefaults })).toEqual({
+      ...defaultAdminTableQuery,
+      ...callerDefaults,
+    });
+  });
+
+  it("hydrates URL changes and preserves unrelated query parameters", () => {
+    navigation.params = new URLSearchParams("q=old&keep=1");
+    navigation.router.replace.mockClear();
+    const { result, rerender } = renderHook(() =>
+      useAdminTableQuery({ status: "active", pageSize: 25 }),
+    );
+
+    expect(result.current.state.search).toBe("old");
+    act(() => result.current.dispatch({ type: "search", value: "new" }));
+    expect(navigation.router.replace).toHaveBeenCalledWith(
+      "/admin/practitioners?keep=1&q=new&status=active&pageSize=25",
+      { scroll: false },
+    );
+
+    navigation.params = new URLSearchParams("q=later&keep=1&status=closed");
+    rerender();
+    expect(result.current.state.search).toBe("later");
+    expect(result.current.state.status).toBe("closed");
   });
 });

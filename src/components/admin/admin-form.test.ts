@@ -2,7 +2,7 @@
 import { createElement } from "react";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { AdminFormLayout, AdminFormSection } from "@/components/admin/admin-form";
+import { AdminFormField, AdminFormLayout, AdminFormSection } from "@/components/admin/admin-form";
 
 describe("AdminFormLayout", () => {
   afterEach(cleanup);
@@ -56,6 +56,7 @@ describe("AdminFormLayout", () => {
 
   it("warns before leaving a dirty editor and supports cancellation", () => {
     const onCancel = vi.fn();
+    const confirm = vi.spyOn(window, "confirm").mockReturnValue(true);
     render(createElement(AdminFormLayout, { title: "Edit record", isDirty: true, onCancel }));
 
     const event = new Event("beforeunload", { cancelable: true });
@@ -63,5 +64,48 @@ describe("AdminFormLayout", () => {
     expect(event.defaultPrevented).toBe(true);
     fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
     expect(onCancel).toHaveBeenCalledOnce();
+    confirm.mockRestore();
+  });
+
+  it("guards dirty cancel actions and internal admin links", () => {
+    const onCancel = vi.fn();
+    const confirm = vi.spyOn(window, "confirm").mockReturnValue(false);
+    render(
+      createElement(
+        AdminFormLayout,
+        { title: "Edit record", isDirty: true, onCancel },
+        createElement("a", { href: "/admin/practitioners" }, "Practitioners"),
+      ),
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
+    fireEvent.click(screen.getByRole("link", { name: "Practitioners" }));
+
+    expect(confirm).toHaveBeenCalledTimes(2);
+    expect(onCancel).not.toHaveBeenCalled();
+    confirm.mockRestore();
+  });
+
+  it("wires field errors beside their field with invalid and described-by state", () => {
+    render(
+      createElement(
+        AdminFormLayout,
+        { title: "New record", validationErrors: { summary: "Summary is required" } },
+        createElement(
+          AdminFormSection,
+          { title: "Public profile" },
+          createElement(
+            AdminFormField,
+            { name: "summary", label: "Summary" },
+            createElement("input", { name: "summary" }),
+          ),
+        ),
+      ),
+    );
+
+    const field = screen.getByRole("textbox", { name: "Summary" });
+    expect(field.getAttribute("aria-invalid")).toBe("true");
+    expect(field.getAttribute("aria-describedby")).toBe("summary-error");
+    expect(field.parentElement?.parentElement?.textContent).toContain("Summary is required");
   });
 });

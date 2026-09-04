@@ -1,12 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useReducer } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useRef } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   adminTableQueryKey,
   defaultAdminTableQuery,
+  mergeAdminTableQueryParams,
   parseAdminTableQuery,
-  serializeAdminTableQuery,
   type AdminTableQueryState,
 } from "@/lib/admin/types";
 
@@ -17,7 +17,8 @@ export type AdminTableQueryAction =
   | { type: "page"; value: number }
   | { type: "page-size"; value: number }
   | { type: "sort"; id: string }
-  | { type: "reset" };
+  | { type: "reset"; defaults?: Partial<AdminTableQueryState> }
+  | { type: "hydrate"; state: AdminTableQueryState };
 
 export const defaultAdminTableQueryState = defaultAdminTableQuery;
 export { defaultAdminTableQuery };
@@ -51,7 +52,13 @@ export function adminTableQueryReducer(
       return { ...state, sort: undefined, page: 1 };
     }
     case "reset":
-      return { ...defaultAdminTableQuery };
+      return {
+        ...defaultAdminTableQuery,
+        ...action.defaults,
+        filters: { ...defaultAdminTableQuery.filters, ...action.defaults?.filters },
+      };
+    case "hydrate":
+      return action.state;
   }
 }
 
@@ -61,26 +68,49 @@ export function useAdminTableQuery(
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const callerDefaults = useMemo(
+    () => ({ ...defaultAdminTableQuery, ...defaults, filters: { ...defaultAdminTableQuery.filters, ...defaults.filters } }),
+    [defaults],
+  );
   const initial = useMemo(
     () =>
       parseAdminTableQuery(
         new URLSearchParams(searchParams.toString()),
-        { ...defaultAdminTableQuery, ...defaults },
+        callerDefaults,
       ),
-    [defaults, searchParams],
+    [callerDefaults, searchParams],
   );
   const [state, dispatch] = useReducer(adminTableQueryReducer, initial);
+  const lastUrlKey = useRef(adminTableQueryKey(initial));
+  const pendingUrlKey = useRef<string | null>(null);
+  const urlState = useMemo(
+    () => parseAdminTableQuery(new URLSearchParams(searchParams.toString()), callerDefaults),
+    [callerDefaults, searchParams],
+  );
 
   useEffect(() => {
-    const query = serializeAdminTableQuery(state);
-    const nextUrl = query ? `${pathname}?${query}` : pathname;
-    if (adminTableQueryKey(state) !== searchParams.toString()) {
-      router.replace(nextUrl, { scroll: false });
+    const incomingKey = adminTableQueryKey(urlState);
+    const stateKey = adminTableQueryKey(state);
+    if (incomingKey !== lastUrlKey.current) {
+      lastUrlKey.current = incomingKey;
+      if (pendingUrlKey.current !== incomingKey && incomingKey !== stateKey) {
+        dispatch({ type: "hydrate", state: urlState });
+      }
+      pendingUrlKey.current = null;
+      return;
     }
-  }, [pathname, router, searchParams, state]);
+    if (stateKey !== incomingKey && pendingUrlKey.current !== stateKey) {
+      const query = mergeAdminTableQueryParams(
+        new URLSearchParams(searchParams.toString()),
+        state,
+      ).toString();
+      router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
+      pendingUrlKey.current = stateKey;
+    }
+  }, [pathname, router, searchParams, state, urlState]);
 
   const update = useCallback((action: AdminTableQueryAction) => dispatch(action), []);
-  const reset = useCallback(() => dispatch({ type: "reset" }), []);
+  const reset = useCallback(() => dispatch({ type: "reset", defaults }), [defaults]);
 
   return { state, dispatch: update, reset };
 }

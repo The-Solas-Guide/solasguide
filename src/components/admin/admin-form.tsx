@@ -7,7 +7,13 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldDescription, FieldError, FieldGroup, FieldTitle } from "@/components/ui/field";
 import { Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import type { PublicLifecycle } from "@/lib/admin/types";
+import { Label } from "@/components/ui/label";
+import type { ArchiveState, OperationalWorkflow, PublicLifecycle, TaxonomyLifecycle } from "@/lib/admin/types";
+import { useUnsavedChanges } from "@/hooks/use-unsaved-changes";
+
+export type AdminFormStatus = PublicLifecycle | TaxonomyLifecycle | OperationalWorkflow | ArchiveState;
+
+export type AdminFormValidationErrors = Record<string, string | readonly string[]>;
 
 export type AdminProtectedField = {
   label: string;
@@ -19,9 +25,9 @@ type AdminFormLayoutProps = {
   title: React.ReactNode;
   description?: React.ReactNode;
   status?: React.ReactNode;
-  statusKind?: PublicLifecycle;
+  statusKind?: AdminFormStatus;
   protectedFields?: readonly AdminProtectedField[];
-  validationErrors?: Record<string, string | readonly string[]>;
+  validationErrors?: AdminFormValidationErrors;
   error?: React.ReactNode;
   pending?: boolean;
   saved?: boolean;
@@ -30,6 +36,21 @@ type AdminFormLayoutProps = {
   onCancel?: () => void;
   saveLabel?: string;
   children?: React.ReactNode;
+};
+
+export type AdminFormFieldProps = {
+  name: string;
+  label: React.ReactNode;
+  description?: React.ReactNode;
+  error?: string | readonly string[];
+  children?: React.ReactElement<AdminFormControlProps>;
+};
+
+type AdminFormControlProps = React.HTMLAttributes<HTMLElement> & {
+  id?: string;
+  name?: string;
+  "aria-describedby"?: string;
+  "aria-invalid"?: boolean | "true" | "false";
 };
 
 function AdminFormSection({ title, description, children }: { title: React.ReactNode; description?: React.ReactNode; children?: React.ReactNode }) {
@@ -43,6 +64,27 @@ function ProtectedFields({ fields }: { fields: readonly AdminProtectedField[] })
 
 function validationMessage(value: string | readonly string[]) {
   return Array.isArray(value) ? value.map(String).join(" ") : value;
+}
+
+const AdminFormValidationContext = React.createContext<AdminFormValidationErrors>({});
+
+function AdminFormField({ name, label, description, error, children }: AdminFormFieldProps) {
+  const validationErrors = React.useContext(AdminFormValidationContext);
+  const fieldError = error ?? validationErrors[name];
+  const message = fieldError === undefined ? undefined : validationMessage(fieldError);
+  if (!children) return null;
+  const inputId = children.props.id ?? name;
+  const describedBy = message
+    ? [children.props["aria-describedby"], `${name}-error`].filter(Boolean).join(" ")
+    : children.props["aria-describedby"];
+  const control = React.cloneElement(children, {
+    id: inputId,
+    name: children.props.name ?? name,
+    "aria-invalid": message ? true : children.props["aria-invalid"],
+    "aria-describedby": describedBy || undefined,
+  });
+
+  return <Field data-invalid={message ? "true" : undefined}><FieldTitle><Label htmlFor={inputId}>{label}</Label></FieldTitle>{control}{description && <FieldDescription>{description}</FieldDescription>}{message && <FieldError id={`${name}-error`} data-field-error={name}>{message}</FieldError>}</Field>;
 }
 
 function AdminFormLayout({
@@ -61,15 +103,7 @@ function AdminFormLayout({
   saveLabel = "Save",
   children,
 }: AdminFormLayoutProps) {
-  React.useEffect(() => {
-    if (!isDirty) return;
-    const warnBeforeLeave = (event: BeforeUnloadEvent) => {
-      event.preventDefault();
-      event.returnValue = "";
-    };
-    window.addEventListener("beforeunload", warnBeforeLeave);
-    return () => window.removeEventListener("beforeunload", warnBeforeLeave);
-  }, [isDirty]);
+  const { guardNavigation } = useUnsavedChanges(isDirty);
 
   React.useEffect(() => {
     if (saved) toast.success("Saved");
@@ -88,11 +122,11 @@ function AdminFormLayout({
     {statusKind === "published" && <Alert><AlertTitle>Published record</AlertTitle><AlertDescription>Saving changes to a published record updates the public site.</AlertDescription></Alert>}
     {error && <Alert variant="destructive"><AlertTitle>Could not save changes</AlertTitle><AlertDescription>{error}</AlertDescription></Alert>}
     {Object.keys(validationErrors).length > 0 && <div className="sr-only" role="status" aria-live="polite">There are validation errors. Correct the highlighted fields.</div>}
-    {children}
+    <AdminFormValidationContext.Provider value={validationErrors}>{children}</AdminFormValidationContext.Provider>
     <ProtectedFields fields={protectedFields} />
-    {Object.entries(validationErrors).map(([name, message]) => <FieldError key={name} id={`${name}-error`} data-field-error={name}>{validationMessage(message)}</FieldError>)}
-    <footer className="sticky bottom-0 z-10 -mx-4 flex flex-wrap items-center justify-end gap-2 border-t bg-background/95 px-4 py-4 backdrop-blur sm:-mx-6 sm:px-6"><Button type="submit" disabled={pending}>{pending ? "Saving…" : saved ? "Saved" : saveLabel}</Button>{onCancel && <Button type="button" variant="outline" onClick={onCancel} disabled={pending}>Cancel</Button>}</footer>
+    {Object.entries(validationErrors).map(([name, message]) => <FieldError key={name} id={`${name}-summary-error`} data-field-error={name}>{validationMessage(message)}</FieldError>)}
+    <footer className="sticky bottom-0 z-10 -mx-4 flex flex-wrap items-center justify-end gap-2 border-t bg-background/95 px-4 py-4 backdrop-blur sm:-mx-6 sm:px-6"><Button type="submit" disabled={pending}>{pending ? "Saving…" : saved ? "Saved" : saveLabel}</Button>{onCancel && <Button type="button" variant="outline" onClick={() => { if (guardNavigation()) onCancel(); }} disabled={pending}>Cancel</Button>}</footer>
   </Form>;
 }
 
-export { AdminFormLayout, AdminFormSection, ProtectedFields };
+export { AdminFormField, AdminFormLayout, AdminFormSection, ProtectedFields };

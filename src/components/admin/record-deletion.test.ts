@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { createElement } from "react";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   AdminArchiveDialog,
@@ -33,16 +33,15 @@ describe("admin archive and deletion patterns", () => {
     expect(onArchive).toHaveBeenCalledOnce();
   });
 
-  it("supports keyboard focus and restores focus to the archive trigger", () => {
+  it("supports keyboard focus and restores focus to the archive trigger", async () => {
     render(createElement(AdminArchiveDialog, { recordName: "Maya Hart", onArchive: vi.fn() }));
     const trigger = screen.getByRole("button", { name: "Archive" });
     trigger.focus();
-    expect(document.activeElement).toBe(trigger);
+    await waitFor(() => expect(document.activeElement).toBe(trigger));
     fireEvent.keyDown(trigger, { key: "Enter", code: "Enter" });
-    fireEvent.click(trigger);
     expect(screen.getByRole("heading", { name: "Archive Maya Hart?" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
-    expect(document.activeElement).toBe(trigger);
+    await waitFor(() => expect(document.activeElement).toBe(trigger));
   });
 
   it("blocks permanent deletion and lists every dependency", () => {
