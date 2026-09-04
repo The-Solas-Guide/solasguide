@@ -41,7 +41,7 @@ export type Database = {
           internal_notification_status: string
           phone: string | null
           questionnaire_answers: Json
-          source: string
+          source: Database["public"]["Enums"]["submission_source"]
           status: string
           submission_token: string
           updated_at: string
@@ -62,7 +62,7 @@ export type Database = {
           internal_notification_status?: string
           phone?: string | null
           questionnaire_answers?: Json
-          source?: string
+          source?: Database["public"]["Enums"]["submission_source"]
           status?: string
           submission_token?: string
           updated_at?: string
@@ -83,7 +83,7 @@ export type Database = {
           internal_notification_status?: string
           phone?: string | null
           questionnaire_answers?: Json
-          source?: string
+          source?: Database["public"]["Enums"]["submission_source"]
           status?: string
           submission_token?: string
           updated_at?: string
@@ -107,7 +107,7 @@ export type Database = {
           phone: string | null
           practice_name: string | null
           questionnaire_answers: Json
-          source: string
+          source: Database["public"]["Enums"]["submission_source"]
           status: string
           submission_token: string
           updated_at: string
@@ -129,7 +129,7 @@ export type Database = {
           phone?: string | null
           practice_name?: string | null
           questionnaire_answers?: Json
-          source?: string
+          source?: Database["public"]["Enums"]["submission_source"]
           status?: string
           submission_token?: string
           updated_at?: string
@@ -151,7 +151,7 @@ export type Database = {
           phone?: string | null
           practice_name?: string | null
           questionnaire_answers?: Json
-          source?: string
+          source?: Database["public"]["Enums"]["submission_source"]
           status?: string
           submission_token?: string
           updated_at?: string
@@ -356,7 +356,7 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      submission_source: "website" | "admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -483,6 +483,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      submission_source: ["website", "admin"],
+    },
   },
 } as const
