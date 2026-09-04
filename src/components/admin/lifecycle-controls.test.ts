@@ -37,6 +37,27 @@ describe("admin lifecycle controls", () => {
     expect(screen.queryByRole("button", { name: /publish/i })).toBeNull();
     expect(screen.getByRole("button", { name: "Archive" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Mark inactive" })).toBeTruthy();
+    const trigger = screen.getByRole("combobox", { name: "Taxonomy status" });
+    fireEvent.mouseDown(trigger);
+    expect(screen.queryByRole("option", { name: "Archived" })).toBeNull();
+    fireEvent.keyDown(trigger, { key: "Escape" });
+  });
+
+  it("keeps restore available without adding archive to the taxonomy select", () => {
+    render(createElement(TaxonomyLifecycleControls, { value: "archived", onChange: vi.fn(), recordName: "Area" }));
+    expect(screen.getByRole("button", { name: "Restore" })).toBeTruthy();
+    const trigger = screen.getByRole("combobox", { name: "Taxonomy status" });
+    fireEvent.mouseDown(trigger);
+    expect(screen.queryByRole("option", { name: "Archived" })).toBeNull();
+    fireEvent.keyDown(trigger, { key: "Escape" });
+  });
+
+  it("keeps archive out of the public status select", () => {
+    render(createElement(PublicLifecycleControls, { value: "draft", onChange: vi.fn(), recordName: "Maya Hart" }));
+    const trigger = screen.getByRole("combobox", { name: "Public status" });
+    fireEvent.mouseDown(trigger);
+    expect(screen.queryByRole("option", { name: "Archived" })).toBeNull();
+    fireEvent.keyDown(trigger, { key: "Escape" });
   });
 
   it("keeps operational submissions workflow-only and exposes archive separately", () => {

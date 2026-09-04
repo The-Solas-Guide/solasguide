@@ -12,13 +12,13 @@ export function confirmUnsavedNavigation(
   return !isDirty || confirmFn(UNSAVED_CHANGES_MESSAGE);
 }
 
-function isAdminAnchor(anchor: HTMLAnchorElement) {
-  if (anchor.target === "_blank" || anchor.hasAttribute("download")) return false;
+function isSameOriginNavigation(anchor: HTMLAnchorElement) {
   const url = new URL(anchor.href, window.location.href);
   return url.origin === window.location.origin
-    && (url.pathname === "/admin" || url.pathname.startsWith("/admin/"))
     && (url.pathname !== window.location.pathname || url.search !== window.location.search);
 }
+
+let unsavedGuardCounter = 0;
 
 export function useUnsavedChanges(isDirty: boolean) {
   const guardNavigation = useCallback(
@@ -29,24 +29,47 @@ export function useUnsavedChanges(isDirty: boolean) {
   useEffect(() => {
     if (!isDirty) return;
 
+    const guardId = `solas-unsaved-${++unsavedGuardCounter}`;
+    const originalState = window.history.state;
+    const originalUrl = window.location.href;
+    const guardState = originalState && typeof originalState === "object"
+      ? { ...originalState, __solasUnsavedGuard: guardId }
+      : { __solasUnsavedGuard: guardId };
+    window.history.pushState(guardState, "", originalUrl);
+    let restoringHistory = false;
+
     const warnBeforeLeave = (event: BeforeUnloadEvent) => {
       event.preventDefault();
       event.returnValue = "";
     };
-    const guardAdminLink = (event: MouseEvent) => {
+    const guardSameOriginLink = (event: MouseEvent) => {
       if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
       const target = event.target instanceof Element ? event.target.closest("a") : null;
-      if (target instanceof HTMLAnchorElement && isAdminAnchor(target) && !guardNavigation()) {
+      if (target instanceof HTMLAnchorElement && isSameOriginNavigation(target) && !guardNavigation()) {
         event.preventDefault();
         event.stopPropagation();
       }
     };
+    const guardHistoryNavigation = () => {
+      if (restoringHistory) {
+        restoringHistory = false;
+        return;
+      }
+      if (guardNavigation()) return;
+      restoringHistory = true;
+      window.history.go(1);
+    };
 
     window.addEventListener("beforeunload", warnBeforeLeave);
-    document.addEventListener("click", guardAdminLink, true);
+    document.addEventListener("click", guardSameOriginLink, true);
+    window.addEventListener("popstate", guardHistoryNavigation);
     return () => {
       window.removeEventListener("beforeunload", warnBeforeLeave);
-      document.removeEventListener("click", guardAdminLink, true);
+      document.removeEventListener("click", guardSameOriginLink, true);
+      window.removeEventListener("popstate", guardHistoryNavigation);
+      if (window.history.state?.__solasUnsavedGuard === guardId) {
+        window.history.replaceState(originalState, "", window.location.href);
+      }
     };
   }, [guardNavigation, isDirty]);
 
