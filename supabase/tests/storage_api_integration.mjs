@@ -81,6 +81,7 @@ const anonymousPath = `${practitionerId}/${suffix}-anonymous.png`;
 const nonAdminPath = `${practitionerId}/${suffix}-non-admin.png`;
 const invalidPath = `${practitionerId}/${suffix}.txt`;
 const oversizedPath = `${practitionerId}/${suffix}-oversized.jpg`;
+const legacyPath = `${suffix}-legacy.png`;
 const originalContent = Buffer.from("initial image");
 
 const service = createClient(apiUrl, serviceRoleKey, {
@@ -152,6 +153,19 @@ try {
     upsert: false,
   });
   assert(!uploaded.error, `administrator upload failed: ${uploaded.error?.message}`);
+
+  const legacyUploaded = await service.storage.from("profile-images").upload(legacyPath, originalContent, {
+    contentType: "image/png",
+    upsert: false,
+  });
+  assert(!legacyUploaded.error, `legacy fixture upload failed: ${legacyUploaded.error?.message}`);
+
+  const legacyRemoved = await admin.storage.from("profile-images").remove([legacyPath]);
+  assert(!legacyRemoved.error, `administrator legacy cleanup failed: ${legacyRemoved.error?.message}`);
+
+  const rootAfterLegacyDelete = await admin.storage.from("profile-images").list("", { limit: 100 });
+  assert(!rootAfterLegacyDelete.error, `administrator legacy cleanup listing failed: ${rootAfterLegacyDelete.error?.message}`);
+  assert(!rootAfterLegacyDelete.data?.some((object) => object.name === legacyPath), "deleted legacy object still appears in Storage listing");
 
   await expectStorageListingDenied(
     () => anonymous.storage.from("profile-images").list(practitionerId, { limit: 100 }),
@@ -261,7 +275,7 @@ try {
   assert(!afterDelete.error, `administrator post-delete listing failed: ${afterDelete.error?.message}`);
   assert(!afterDelete.data?.some((object) => object.name === `${suffix}.png`), "deleted object still appears in Storage listing");
 
-  console.log("Storage API integration passed: anonymous/non-admin denial, admin CRUD, MIME/size limits, public URL, and listing controls.");
+  console.log("Storage API integration passed: anonymous/non-admin denial, admin CRUD, legacy cleanup, MIME/size limits, public URL, and listing controls.");
 } finally {
   // The Storage API owns object deletion. Service-role cleanup handles failures
   // before an authenticated administrator client is available.
@@ -271,6 +285,7 @@ try {
     nonAdminPath,
     invalidPath,
     oversizedPath,
+    legacyPath,
   ]);
   if (practitionerCreated) {
     await service.from("practitioners").update({ status: "archived" }).eq("id", practitionerId);

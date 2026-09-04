@@ -1052,13 +1052,13 @@ values (
   '00000000-0000-0000-0000-00000000b106',
   'foundation-legacy-image',
   'Foundation Legacy Image',
-  'legacy/foundation-legacy.jpg',
+  'foundation-legacy.jpg',
   'draft'
 );
 insert into storage.objects (bucket_id, name, owner, metadata)
 values (
   'profile-images',
-  'legacy/foundation-legacy.jpg',
+  'foundation-legacy.jpg',
   '00000000-0000-0000-0000-00000000b001',
   '{"mimetype":"image/jpeg"}'::jsonb
 );
@@ -1076,7 +1076,7 @@ select is(
   (select count(*)::integer
      from storage.objects
     where bucket_id = 'profile-images'
-      and name = 'legacy/foundation-legacy.jpg'),
+      and name = 'foundation-legacy.jpg'),
   1,
   'administrators can select a referenced legacy portrait object'
 );
@@ -1094,6 +1094,20 @@ select throws_ok(
   '23514',
   null,
   'legacy portrait paths cannot be changed to another legacy path'
+);
+select lives_ok(
+  $$update public.practitioners
+       set image_path = '00000000-0000-0000-0000-00000000b106/replacement.jpg'
+     where id = '00000000-0000-0000-0000-00000000b106'$$,
+  'administrator can save a UUID-path replacement for a legacy portrait'
+);
+select is(
+  (select count(*)::integer
+     from storage.objects
+    where bucket_id = 'profile-images'
+      and name = 'foundation-legacy.jpg'),
+  1,
+  'administrator can still select the old legacy portrait after saving its replacement'
 );
 select throws_ok(
   $$delete from public.practitioners

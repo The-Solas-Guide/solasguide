@@ -122,9 +122,9 @@ revoke all on function admin_private.is_valid_practitioner_image_path(text)
 grant execute on function admin_private.is_valid_practitioner_image_path(text)
   to authenticated, service_role;
 
--- Existing legacy objects may be managed only while their exact path remains
--- referenced by a practitioner. New objects use the strict helper above.
-create or replace function admin_private.is_referenced_practitioner_image_path(p_path text)
+-- Existing top-level portraits may be selected and deleted after a UUID-path
+-- replacement is saved. New objects still use the strict helper above.
+create or replace function admin_private.is_legacy_practitioner_image_path(p_path text)
 returns boolean
 language sql
 stable
@@ -132,16 +132,12 @@ security invoker
 set search_path = ''
 as $$
   select p_path is not null
-    and exists (
-      select 1
-        from public.practitioners as p
-       where p.image_path = p_path
-    );
+    and p_path ~ '^[a-z0-9][a-z0-9._-]*\.(jpe?g|png|webp)$';
 $$;
 
-revoke all on function admin_private.is_referenced_practitioner_image_path(text)
+revoke all on function admin_private.is_legacy_practitioner_image_path(text)
   from public, anon, authenticated;
-grant execute on function admin_private.is_referenced_practitioner_image_path(text)
+grant execute on function admin_private.is_legacy_practitioner_image_path(text)
   to authenticated, service_role;
 
 -- Admin creation is limited to business-input columns. Source must be admin,
@@ -236,7 +232,7 @@ using (
   and bucket_id = 'profile-images'
   and (
     (select admin_private.is_valid_practitioner_image_path(name))
-    or (select admin_private.is_referenced_practitioner_image_path(name))
+    or (select admin_private.is_legacy_practitioner_image_path(name))
   )
 );
 
@@ -279,6 +275,6 @@ using (
   and bucket_id = 'profile-images'
   and (
     (select admin_private.is_valid_practitioner_image_path(name))
-    or (select admin_private.is_referenced_practitioner_image_path(name))
+    or (select admin_private.is_legacy_practitioner_image_path(name))
   )
 );
