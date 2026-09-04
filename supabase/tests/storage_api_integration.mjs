@@ -257,7 +257,7 @@ try {
   const removed = await admin.storage.from("profile-images").remove([path]);
   assert(!removed.error, `administrator Storage API delete failed: ${removed.error?.message}`);
 
-  const afterDelete = await admin.storage.from("profile-images").list("integration", { limit: 100 });
+  const afterDelete = await admin.storage.from("profile-images").list(practitionerId, { limit: 100 });
   assert(!afterDelete.error, `administrator post-delete listing failed: ${afterDelete.error?.message}`);
   assert(!afterDelete.data?.some((object) => object.name === `${suffix}.png`), "deleted object still appears in Storage listing");
 

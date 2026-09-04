@@ -488,7 +488,7 @@ select lives_ok(
        'Foundation Draft Delete',
        'A draft used for deletion checks.',
        'A draft used for deletion checks.',
-       '00000000-0000-0000-0000-00000000b103/draft-delete.jpg',
+       null,
        'draft'
      )$$,
   'administrator can create a draft practitioner for deletion checks'
@@ -511,11 +511,47 @@ select lives_ok(
      where id = '00000000-0000-0000-0000-00000000b103'$$,
   'only archived and unfeatured practitioners can be deleted'
 );
-select throws_ok(
+select lives_ok(
   $$insert into public.practitioners (
        id, slug, name, image_path, status
      ) values (
        '00000000-0000-0000-0000-00000000b104',
+       'foundation-image-delete',
+       'Foundation Image Delete',
+       '00000000-0000-0000-0000-00000000b104/image-delete.jpg',
+       'draft'
+     )$$,
+  'administrator can create an archived-practitioner deletion fixture'
+);
+select lives_ok(
+  $$update public.practitioners
+       set status = 'archived'
+     where id = '00000000-0000-0000-0000-00000000b104'$$,
+  'administrator can archive the portrait deletion fixture'
+);
+select throws_ok(
+  $$delete from public.practitioners
+     where id = '00000000-0000-0000-0000-00000000b104'$$,
+  '23514',
+  null,
+  'archived practitioners with portraits cannot be permanently deleted'
+);
+select lives_ok(
+  $$update public.practitioners
+       set image_path = null
+     where id = '00000000-0000-0000-0000-00000000b104'$$,
+  'administrator can clear the portrait path before deletion'
+);
+select lives_ok(
+  $$delete from public.practitioners
+     where id = '00000000-0000-0000-0000-00000000b104'$$,
+  'an archived unfeatured practitioner can be deleted after portrait cleanup'
+);
+select throws_ok(
+  $$insert into public.practitioners (
+       id, slug, name, image_path, status
+     ) values (
+       '00000000-0000-0000-0000-00000000b105',
        'foundation-wrong-image-owner',
        'Foundation Wrong Image Owner',
        '00000000-0000-0000-0000-00000000b101/wrong-owner.jpg',
