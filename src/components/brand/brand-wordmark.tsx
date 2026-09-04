@@ -5,10 +5,12 @@ export function BrandWordmark({
   reversed = false,
   caption,
   className,
+  priority = false,
 }: {
   reversed?: boolean;
   caption?: string;
   className?: string;
+  priority?: boolean;
 }) {
   return (
     <div
@@ -24,6 +26,7 @@ export function BrandWordmark({
           alt="The Solas Guide"
           width={1600}
           height={606}
+          priority={priority}
           className={cn(
             "h-auto w-[220px] md:w-[260px]",
             reversed && "brightness-0 invert",

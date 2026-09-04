@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Barlow_Condensed, Inter } from "next/font/google";
 import { Suspense } from "react";
 import { DesignReviewGate } from "@/components/design-system/design-review-gate";
+import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
 const barlowCondensed = Barlow_Condensed({
@@ -85,6 +86,7 @@ export default function RootLayout({
         <Suspense fallback={null}>
           <DesignReviewGate />
         </Suspense>
+        <Toaster position="top-right" />
         <Analytics />
       </body>
     </html>
