@@ -136,6 +136,14 @@ describe("practitioner and taxonomy CMS controls", () => {
     expect(toast.warning).toHaveBeenCalledWith("Save or cancel your changes before archiving or restoring this practitioner.");
   });
 
+  it("keeps the practitioner editor usable after archiving", async () => {
+    const { container } = render(<PractitionerEditor record={practitioner} terms={[]} />);
+    fireEvent.click(screen.getByRole("button", { name: "Archive" }));
+    fireEvent.click(screen.getByRole("button", { name: "Confirm archive" }));
+    await waitFor(() => expect(mocks.archivePractitioner).toHaveBeenCalledWith(practitionerId, false));
+    await waitFor(() => expect(container.querySelector('[data-lifecycle="archived"]')?.textContent).toBe("Archived"));
+  });
+
   it("blocks taxonomy archive while the editor has unsaved changes", async () => {
     render(<TaxonomyEditor record={activeTaxonomy} />);
     fireEvent.change(screen.getByLabelText("Name"), { target: { value: "Changed term" } });
@@ -143,6 +151,14 @@ describe("practitioner and taxonomy CMS controls", () => {
     fireEvent.click(screen.getByRole("button", { name: "Confirm archive" }));
     await waitFor(() => expect(mocks.archiveTaxonomy).not.toHaveBeenCalled());
     expect(toast.warning).toHaveBeenCalledWith("Save or cancel your changes before archiving or restoring this taxonomy term.");
+  });
+
+  it("keeps the taxonomy editor usable after archiving", async () => {
+    const { container } = render(<TaxonomyEditor record={activeTaxonomy} />);
+    fireEvent.click(screen.getByRole("button", { name: "Archive" }));
+    fireEvent.click(screen.getByRole("button", { name: "Confirm archive" }));
+    await waitFor(() => expect(mocks.archiveTaxonomy).toHaveBeenCalledWith(activeTaxonomy.id, false));
+    await waitFor(() => expect(container.querySelector('[data-lifecycle="archived"]')?.textContent).toBe("archived"));
   });
 
   it("keeps linked archived taxonomy terms visible, but hides unrelated archived terms", () => {

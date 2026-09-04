@@ -76,7 +76,11 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
       if (isNew && result.data?.id) router.replace(`/admin/practitioners/${result.data.id}`);
     });
   };
-  const changeStatus = (next: typeof status) => { setStatus(next); markDirty(); };
+  const changeStatus = (next: typeof status) => {
+    if (next !== "draft" && next !== "published" && next !== "archived") return;
+    setStatus(next);
+    markDirty();
+  };
   const archive = (restore = false) => startTransition(async () => {
     if (!record) return;
     if (!guardLifecycleAction()) return;
@@ -108,7 +112,7 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
 
   return <div className="mx-auto flex w-full min-w-0 max-w-4xl flex-col gap-6">
     <div className="flex flex-wrap items-center gap-3"><Button asChild variant="ghost"><Link href="/admin/practitioners"><ArrowLeftIcon />Practitioners</Link></Button>{record && <Button asChild variant="outline"><Link href={`/admin/practitioners/${record.id}/preview`}>Preview</Link></Button>}</div>
-    <AdminFormLayout title={isNew ? "New practitioner" : `Edit ${record?.name ?? "practitioner"}`} description="Keep public profile details specific and current. Saving a published record updates the public site." status={status[0].toUpperCase() + status.slice(1)} statusKind={status} pending={pending} saved={saved} isDirty={dirty} error={error} validationErrors={fieldErrors} onSubmit={submit} onCancel={() => router.replace("/admin/practitioners")} saveLabel={isNew ? "Create practitioner" : "Save changes"}>
+    <AdminFormLayout title={isNew ? "New practitioner" : `Edit ${record?.name ?? "practitioner"}`} description="Keep public profile details specific and current. Saving a published record updates the public site." status={status ? status[0].toUpperCase() + status.slice(1) : "Draft"} statusKind={status || "draft"} pending={pending} saved={saved} isDirty={dirty} error={error} validationErrors={fieldErrors} onSubmit={submit} onCancel={() => router.replace("/admin/practitioners")} saveLabel={isNew ? "Create practitioner" : "Save changes"}>
       <input type="hidden" name="id" value={record?.id ?? ""} />
       <AdminFormSection title="Public profile" description="These fields make up the public practitioner record."><div className="grid gap-5">
         <AdminFormField name="name" label="Name" error={fieldErrors.name}><Input defaultValue={record?.name ?? ""} required onChange={markDirty} /></AdminFormField>

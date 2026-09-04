@@ -30,7 +30,12 @@ export function TaxonomyEditor({ record, isNew = false }: { record: TaxonomyWith
     return false;
   };
   const submit = (event: React.FormEvent<HTMLFormElement>) => { event.preventDefault(); const form = new FormData(event.currentTarget); form.set("state", state); form.set("type", type); startTransition(async () => { setError(undefined); setFieldErrors({}); const result = await saveTaxonomy(form); if (!result.ok) { setError(result.error); setFieldErrors(result.fieldErrors ?? {}); return; } setDirty(false); setSaved(true); if (isNew && result.data?.id) router.replace(`/admin/taxonomy/${result.data.id}`); }); };
-  const updateState = (next: typeof state) => { setState(next); setDirty(true); setSaved(false); };
+  const updateState = (next: typeof state) => {
+    if (next !== "active" && next !== "inactive" && next !== "archived") return;
+    setState(next);
+    setDirty(true);
+    setSaved(false);
+  };
   const lifecycle = (restore = false) => startTransition(async () => { if (!record || !guardLifecycleAction()) return; const result = await archiveTaxonomy(record.id, restore); if (!result.ok) { setError(result.error); toast.error(result.error ?? "The taxonomy lifecycle could not be saved."); } else { setState(restore ? "inactive" : "archived"); setDirty(false); setSaved(true); } });
   const remove = () => startTransition(async () => { if (!record || !guardLifecycleAction()) return; const result = await deleteTaxonomy(record.id); if (!result.ok) { setError(result.error); toast.error(result.error ?? "The taxonomy term could not be deleted."); } else router.replace("/admin/taxonomy"); });
   const blocker = record ? taxonomyDeleteBlocker(record) : null;
