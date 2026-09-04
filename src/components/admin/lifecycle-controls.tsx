@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AdminArchiveDialog } from "@/components/admin/record-deletion";
-import type { OperationalWorkflow, PublicLifecycle, TaxonomyLifecycle } from "@/lib/admin/types";
+import type { ArchiveState, OperationalWorkflow, PublicLifecycle, TaxonomyLifecycle } from "@/lib/admin/types";
 
 function ControlGroup({ children, label, recordKind }: { children: React.ReactNode; label: string; recordKind?: string }) {
   return <section className="flex min-w-0 flex-col gap-3 rounded-md border bg-card p-4" aria-label={label} data-record-kind={recordKind}><div className="flex min-w-0 flex-wrap items-center justify-between gap-3">{children}</div></section>;
@@ -35,15 +35,15 @@ function TaxonomyLifecycleControls({ value, onChange, disabled = false, onArchiv
   return <ControlGroup label="Taxonomy lifecycle"><div className="flex min-w-0 flex-1 flex-col gap-1"><span className="text-sm font-semibold">Taxonomy lifecycle</span><span className="text-sm text-muted-foreground">Activation controls where a value can be used.</span></div><Select value={value} onValueChange={(next) => onChange(next as TaxonomyLifecycle)} disabled={disabled}><SelectTrigger aria-label="Taxonomy status" className="w-full sm:w-44"><SelectValue>{value === "archived" ? "Archived" : undefined}</SelectValue></SelectTrigger><SelectContent><SelectItem value="active">Active</SelectItem><SelectItem value="inactive">Inactive</SelectItem></SelectContent></Select><div className="flex w-full flex-wrap gap-2 sm:w-auto"><Button type="button" onClick={() => onChange(value === "archived" ? "inactive" : value === "active" ? "inactive" : "active")} disabled={disabled}>{value === "archived" ? "Restore" : value === "active" ? "Mark inactive" : "Activate"}</Button>{value !== "archived" && <AdminArchiveDialog recordName={recordName} onArchive={archive} disabled={disabled} />}</div></ControlGroup>;
 }
 
-const defaultWorkflowStatuses: readonly OperationalWorkflow[] = ["new", "contacted", "reviewing", "accepted", "declined", "closed"];
-
-type OperationalLifecycleControlsProps = {
-  value: OperationalWorkflow;
-  onChange: (value: OperationalWorkflow) => void;
+type OperationalLifecycleControlsProps<T extends OperationalWorkflow> = {
+  value: T;
+  onChange: (value: T) => void;
   disabled?: boolean;
   isSubmission?: boolean;
   onArchive: () => void;
-  statuses?: readonly OperationalWorkflow[];
+  onRestore: () => void;
+  archiveState: ArchiveState;
+  statuses: readonly T[];
   recordName?: string;
 };
 
@@ -51,8 +51,8 @@ function formatWorkflow(value: string) {
   return value.replaceAll("_", " ").replace(/(^|\s)\S/g, (letter) => letter.toUpperCase());
 }
 
-function OperationalLifecycleControls({ value, onChange, disabled = false, onArchive, statuses = defaultWorkflowStatuses, isSubmission = false, recordName = "this record" }: OperationalLifecycleControlsProps) {
-  return <ControlGroup label="Operational workflow" recordKind={isSubmission ? "submission" : "operational-record"}><div className="flex min-w-0 flex-1 flex-col gap-1"><span className="text-sm font-semibold">Operational workflow</span><span className="text-sm text-muted-foreground">Private workflow status stays separate from archive state.</span></div><Select value={value} onValueChange={(next) => onChange(next as OperationalWorkflow)} disabled={disabled}><SelectTrigger aria-label="Workflow status" className="w-full sm:w-52"><SelectValue /></SelectTrigger><SelectContent>{statuses.map((status) => <SelectItem key={status} value={status}>{formatWorkflow(status)}</SelectItem>)}</SelectContent></Select><div className="flex w-full flex-wrap gap-2 sm:w-auto"><AdminArchiveDialog recordName={recordName} onArchive={onArchive} disabled={disabled} /></div></ControlGroup>;
+function OperationalLifecycleControls<T extends OperationalWorkflow>({ value, onChange, disabled = false, onArchive, onRestore, archiveState, statuses, isSubmission = false, recordName = "this record" }: OperationalLifecycleControlsProps<T>) {
+  return <ControlGroup label="Operational workflow" recordKind={isSubmission ? "submission" : "operational-record"}><div className="flex min-w-0 flex-1 flex-col gap-1"><span className="text-sm font-semibold">Operational workflow</span><span className="text-sm text-muted-foreground">Private workflow status stays separate from archive state.</span></div><Select value={value} onValueChange={(next) => onChange(next as T)} disabled={disabled}><SelectTrigger aria-label="Workflow status" className="w-full sm:w-52"><SelectValue /></SelectTrigger><SelectContent>{statuses.map((status) => <SelectItem key={status} value={status}>{formatWorkflow(status)}</SelectItem>)}</SelectContent></Select><div className="flex w-full flex-wrap gap-2 sm:w-auto">{archiveState === "archived" ? <Button type="button" variant="outline" onClick={onRestore} disabled={disabled}>Restore</Button> : <AdminArchiveDialog recordName={recordName} onArchive={onArchive} disabled={disabled} />}</div></ControlGroup>;
 }
 
 export { PublicLifecycleControls, TaxonomyLifecycleControls, OperationalLifecycleControls };

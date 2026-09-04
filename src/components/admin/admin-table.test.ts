@@ -99,5 +99,12 @@ describe("AdminTableShell", () => {
     rerender(table({ data: [], state: "server-error", onRetry }));
     fireEvent.click(screen.getByRole("button", { name: /retry/i }));
     expect(onRetry).toHaveBeenCalledOnce();
+
+    rerender(table({ state: "loading-more" }));
+    expect(screen.getByText("Loading more records")).toBeTruthy();
+    rerender(table({ data: [], state: "unauthorized" }));
+    expect(screen.getByText("Access unavailable")).toBeTruthy();
+    rerender(table({ data: [], state: "expired-session" }));
+    expect(screen.getByText("Your session expired")).toBeTruthy();
   });
 });

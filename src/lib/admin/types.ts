@@ -24,6 +24,7 @@ export type PractitionerInterestWorkflow =
 export type ArchiveState = "active" | "archived";
 
 export type RelationshipBlocker = {
+  type: string;
   name: string;
   href: string;
   reason: string;

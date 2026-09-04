@@ -14,12 +14,13 @@ describe("admin archive and deletion patterns", () => {
     render(
       createElement(AdminRelationshipSummary, {
         relationships: [
-          { name: "Practitioner term links", href: "/admin/taxonomy/area", reason: "Remove links first." },
+          { type: "Practitioner", name: "Practitioner term links", href: "/admin/taxonomy/area", reason: "Remove links first." },
         ],
       }),
     );
 
     expect(screen.getByRole("link", { name: "Practitioner term links" }).getAttribute("href")).toBe("/admin/taxonomy/area");
+    expect(screen.getByText("Practitioner")).toBeTruthy();
     expect(screen.getByText("Remove links first.")).toBeTruthy();
   });
 
@@ -49,8 +50,8 @@ describe("admin archive and deletion patterns", () => {
       createElement(AdminPermanentDeleteDialog, {
         recordName: "Area term",
         relationships: [
-          { name: "Maya Hart", href: "/admin/practitioners/maya", reason: "Practitioner uses this term." },
-          { name: "Rani Sari", href: "/admin/practitioners/rani", reason: "Practitioner uses this term." },
+          { type: "Practitioner", name: "Maya Hart", href: "/admin/practitioners/maya", reason: "Practitioner uses this term." },
+          { type: "Practitioner", name: "Rani Sari", href: "/admin/practitioners/rani", reason: "Practitioner uses this term." },
         ],
         onDelete: vi.fn(),
       }),

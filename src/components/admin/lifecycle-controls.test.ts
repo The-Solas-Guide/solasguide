@@ -62,12 +62,21 @@ describe("admin lifecycle controls", () => {
 
   it("keeps operational submissions workflow-only and exposes archive separately", () => {
     const onArchive = vi.fn();
-    render(createElement(OperationalLifecycleControls, { value: "new", onChange: vi.fn(), onArchive, isSubmission: true, recordName: "Enquiry" }));
+    render(createElement(OperationalLifecycleControls, { value: "new", onChange: vi.fn(), onArchive, onRestore: vi.fn(), archiveState: "active", statuses: ["new", "contacted", "closed"], isSubmission: true, recordName: "Enquiry" }));
 
     expect(screen.queryByText(/publish/i)).toBeNull();
     fireEvent.click(screen.getByRole("button", { name: "Archive" }));
     fireEvent.click(screen.getByRole("button", { name: "Confirm archive" }));
     expect(onArchive).toHaveBeenCalledOnce();
     expect(screen.getByRole("combobox", { name: "Workflow status" })).toBeTruthy();
+  });
+
+  it("requires workflow options and restores archived operational records", () => {
+    const onRestore = vi.fn();
+    render(createElement(OperationalLifecycleControls, { value: "reviewing", onChange: vi.fn(), onArchive: vi.fn(), onRestore, archiveState: "archived", statuses: ["new", "reviewing", "accepted", "declined", "closed"], isSubmission: true, recordName: "Interest" }));
+
+    expect(screen.queryByRole("button", { name: "Archive" })).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Restore" }));
+    expect(onRestore).toHaveBeenCalledOnce();
   });
 });
