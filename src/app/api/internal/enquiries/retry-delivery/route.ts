@@ -15,6 +15,7 @@ async function retryDelivery(request: Request) {
   const supabase = createClient<Database>(url, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
   const pending = await supabase.from("customer_enquiries")
     .select("id")
+    .eq("source", "website")
     .or("customer_confirmation_status.neq.sent,internal_notification_status.neq.sent")
     .order("updated_at", { ascending: true })
     .limit(25);

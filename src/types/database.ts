@@ -369,6 +369,22 @@ export type Database = {
           type: string
         }[]
       }
+      remove_admin_customer_enquiry: {
+        Args: {
+          p_acknowledged: boolean
+          p_confirmation: string
+          p_enquiry_id: string
+        }
+        Returns: string
+      }
+      remove_admin_practitioner_interest: {
+        Args: {
+          p_acknowledged: boolean
+          p_confirmation: string
+          p_interest_id: string
+        }
+        Returns: string
+      }
       reorder_admin_featured: {
         Args: { p_practitioner_ids: string[] }
         Returns: undefined

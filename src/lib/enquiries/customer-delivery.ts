@@ -56,9 +56,12 @@ async function sendEmail(to: Recipient[], subject: string, text: string, replyTo
 
 export async function processCustomerEnquiryDelivery(supabase: SupabaseClient<Database>, enquiryId: string) {
   const stored = await supabase.from("customer_enquiries")
-    .select("id, full_name, email, phone, contact_preference, questionnaire_answers, customer_confirmation_status, internal_notification_status")
+    .select("id, source, full_name, email, phone, contact_preference, questionnaire_answers, customer_confirmation_status, internal_notification_status")
     .eq("id", enquiryId).single();
   if (stored.error) return { error: "read_failed", deliveryPending: true } as const;
+
+  // Manual CMS records never enter the website confirmation workflow.
+  if (stored.data.source !== "website") return { deliveryPending: false } as const;
 
   const deliveryClaim = await supabase.rpc("claim_customer_enquiry_delivery", { p_enquiry_id: enquiryId }).single();
   if (deliveryClaim.error) return { error: "claim_failed", deliveryPending: true } as const;

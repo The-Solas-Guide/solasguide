@@ -1,12 +1,7 @@
-import { HeartHandshakeIcon } from "lucide-react";
-import { AdminPlaceholder } from "@/components/admin/admin-placeholder";
+import { OperationalManager } from "@/components/admin/operational-manager";
+import { getOperationalRecords } from "@/lib/admin/operational-actions";
 
-export default function PractitionerInterestAdminPage() {
-  return (
-    <AdminPlaceholder
-      icon={HeartHandshakeIcon}
-      title="Practitioner Interest"
-      description="Private practitioner interest records will be managed here in a later stage."
-    />
-  );
+export default async function OperationalListPage() {
+  const result = await getOperationalRecords("practitioner-interest");
+  return <OperationalManager kind="practitioner-interest" initialRecords={result.data ?? []} error={result.ok ? undefined : result.error ?? "Records could not be loaded."} />;
 }
