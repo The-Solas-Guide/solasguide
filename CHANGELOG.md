@@ -15,3 +15,4 @@ This file records pull requests merged into `main`. Entries are added automatica
 - 2026-09-01 — feat: add practitioner directory prototype ([#33](https://github.com/The-Solas-Guide/solasguide/pull/33)) — `0ea8d6d549fa60534c3397cf1aa1e07b1934aa84`
 - 2026-09-01 — Add dynamic practitioner directory ([#34](https://github.com/The-Solas-Guide/solasguide/pull/34)) — `533ba0bdeb96465dc23b04bd0c205e8d4c65e1fd`
 - 2026-09-01 — Complete public practitioner discovery ([#35](https://github.com/The-Solas-Guide/solasguide/pull/35)) — `8c17fede026edd11cfd027f1714737fb71f69cb7`
+- 2026-09-04 — Secure the Solas Admin CMS foundation ([#45](https://github.com/The-Solas-Guide/solasguide/pull/45)) — `b7147761c2747c1915ae1ff1c2e160190b2b4fcd`
