@@ -46,7 +46,16 @@ async function expectStorageMutationDenied(operation, label, admin, objectPath, 
   const objectName = objectPath.slice(objectPath.lastIndexOf("/") + 1);
   const present = listing.data?.some((object) => object.name === objectName) ?? false;
   assert(present === expectedPresent, `${label} changed storage state unexpectedly`);
-  assert(result.error || present === expectedPresent, `${label} unexpectedly succeeded`);
+  return result.error;
+}
+
+async function expectStorageUpdateDenied(operation, label, admin, objectPath, expectedBytes) {
+  const result = await operation();
+  const downloaded = await admin.storage.from("profile-images").download(objectPath);
+  assert(!downloaded.error, `${label} verification download failed: ${downloaded.error?.message}`);
+  assert(downloaded.data, `${label} verification download returned no data`);
+  const actualBytes = Buffer.from(await downloaded.data.arrayBuffer());
+  assert(actualBytes.equals(expectedBytes), `${label} changed the object bytes`);
   return result.error;
 }
 
@@ -70,6 +79,7 @@ const anonymousPath = `${path}.anonymous`;
 const nonAdminPath = `${path}.non-admin`;
 const invalidPath = `integration/${suffix}.txt`;
 const oversizedPath = `integration/${suffix}-oversized.jpg`;
+const originalContent = Buffer.from("initial image");
 
 const service = createClient(apiUrl, serviceRoleKey, {
   auth: { persistSession: false, autoRefreshToken: false },
@@ -125,7 +135,7 @@ try {
   });
   await user.auth.setSession(userLogin.data.session);
 
-  const uploaded = await admin.storage.from("profile-images").upload(path, Buffer.from("initial image"), {
+  const uploaded = await admin.storage.from("profile-images").upload(path, originalContent, {
     contentType: "image/png",
     upsert: false,
   });
@@ -142,12 +152,12 @@ try {
     anonymousPath,
     false,
   );
-  await expectStorageMutationDenied(
+  await expectStorageUpdateDenied(
     () => anonymous.storage.from("profile-images").update(path, Buffer.from("anonymous update"), { contentType: "image/png" }),
     "anonymous profile image update",
     admin,
     path,
-    true,
+    originalContent,
   );
   await expectStorageMutationDenied(
     () => anonymous.storage.from("profile-images").remove([path]),
@@ -168,12 +178,12 @@ try {
     nonAdminPath,
     false,
   );
-  await expectStorageMutationDenied(
+  await expectStorageUpdateDenied(
     () => user.storage.from("profile-images").update(path, Buffer.from("non-admin update"), { contentType: "image/png" }),
     "non-admin profile image update",
     admin,
     path,
-    true,
+    originalContent,
   );
   await expectStorageMutationDenied(
     () => user.storage.from("profile-images").remove([path]),
