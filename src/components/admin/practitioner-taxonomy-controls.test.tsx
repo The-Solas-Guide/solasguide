@@ -106,6 +106,21 @@ describe("practitioner and taxonomy CMS controls", () => {
     expect(screen.getAllByText("1 / 8")).toHaveLength(1);
   });
 
+  it("paginates practitioner records", () => {
+    const records = Array.from({ length: 11 }, (_, index) => ({
+      ...practitioner,
+      id: `00000000-0000-4000-8000-${String(index + 1).padStart(12, "0")}`,
+      name: `Practitioner ${String(index + 1).padStart(2, "0")}`,
+      slug: `practitioner-${index + 1}`,
+    }));
+    render(<PractitionerManager initialRecords={records} />);
+    expect(screen.getByText("Page 1")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Next" }));
+    expect(screen.getByText("Page 2")).toBeTruthy();
+    expect(screen.getAllByText("Practitioner 11").length).toBeGreaterThan(0);
+    expect(screen.queryByText("Practitioner 01")).toBeNull();
+  });
+
   it("shows exact linked practitioner names and links on taxonomy screens", () => {
     render(<TaxonomyEditor record={taxonomy} />);
     expect(screen.getByRole("link", { name: practitioner.name }).getAttribute("href")).toBe(`/admin/practitioners/${practitionerId}`);
