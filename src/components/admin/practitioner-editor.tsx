@@ -39,6 +39,11 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
   const [pending, startTransition] = useTransition();
 
   const markDirty = () => { setDirty(true); setSaved(false); };
+  const guardLifecycleAction = () => {
+    if (!dirty) return true;
+    toast.warning("Save or cancel your changes before archiving or restoring this practitioner.");
+    return false;
+  };
   const updateSelection = (id: string, checked: boolean) => {
     setSelectedTerms((current) => {
       const next = new Set(current);
@@ -74,12 +79,14 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
   const changeStatus = (next: typeof status) => { setStatus(next); markDirty(); };
   const archive = (restore = false) => startTransition(async () => {
     if (!record) return;
+    if (!guardLifecycleAction()) return;
     const result = await archivePractitioner(record.id, restore);
     if (!result.ok) toast.error(result.error ?? "The practitioner lifecycle could not be saved.");
     else { setStatus(restore ? "draft" : "archived"); setDirty(false); setSaved(true); }
   });
   const remove = () => startTransition(async () => {
     if (!record) return;
+    if (!guardLifecycleAction()) return;
     const result = await deletePractitioner(record.id);
     if (!result.ok) toast.error(result.error ?? "The practitioner could not be deleted.");
     else router.replace("/admin/practitioners");
@@ -94,7 +101,7 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
       toast.success(next === null ? "Removed from featured." : "Featured position saved.");
     }
   });
-  const activeTerms = terms.filter((term) => !term.archived_at);
+  const activeTerms = terms.filter((term) => !term.archived_at || selectedTerms.has(term.id));
   const grouped = new Map<string, TaxonomyRow[]>();
   for (const term of activeTerms) grouped.set(term.type, [...(grouped.get(term.type) ?? []), term]);
   const currentImage = file ? URL.createObjectURL(file) : imageUrl(record?.image_path ?? null);
@@ -115,7 +122,7 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
         <div className="grid gap-5 sm:grid-cols-2"><AdminFormField name="websiteUrl" label="Website"><Input type="url" defaultValue={record?.website_url ?? ""} onChange={markDirty} /></AdminFormField><AdminFormField name="instagramUrl" label="Instagram"><Input type="url" defaultValue={record?.instagram_url ?? ""} onChange={markDirty} /></AdminFormField></div>
       </div></AdminFormSection>
       <AdminFormSection title="Portrait" description="Use one approved JPEG, PNG, or WebP portrait up to 5 MB. The image becomes public after upload."><div className="grid gap-4 sm:grid-cols-[10rem_1fr]"><div className="flex min-h-40 items-center justify-center overflow-hidden rounded-md border bg-muted/30">{currentImage ? <img src={currentImage} alt={record?.image_alt ?? "Current portrait"} className="h-full max-h-48 w-full object-cover" style={{ objectPosition: portraitObjectPosition(focalX, focalY) }} /> : <span className="p-4 text-center text-sm text-muted-foreground">No portrait uploaded</span>}</div><div className="grid content-start gap-4"><AdminFormField name="portrait" label="Portrait file" error={fieldErrors.image}><Input type="file" accept="image/jpeg,image/png,image/webp" onChange={(event) => { const next = event.currentTarget.files?.[0] ?? null; setFile(next); setApproved(false); markDirty(); setFieldErrors((current) => ({ ...current, image: next ? validatePortraitFile(next) ?? "" : "" })); }} /></AdminFormField>{file && <label className="flex min-h-11 items-center gap-2 text-sm"><input type="checkbox" checked={approved} onChange={(event) => { setApproved(event.currentTarget.checked); markDirty(); }} /> I confirm this portrait is approved for public use.</label>}<AdminFormField name="imageAlt" label="Portrait alt text"><Input defaultValue={record?.image_alt ?? ""} onChange={markDirty} /></AdminFormField><div className="grid gap-4 sm:grid-cols-2"><AdminFormField name="imageFocalX" label="Focal X (0–100)"><Input type="number" min="0" max="100" step="1" value={focalX} onChange={(event) => { setFocalX(Math.min(100, Math.max(0, Number(event.currentTarget.value) || 0))); markDirty(); }} /></AdminFormField><AdminFormField name="imageFocalY" label="Focal Y (0–100)"><Input type="number" min="0" max="100" step="1" value={focalY} onChange={(event) => { setFocalY(Math.min(100, Math.max(0, Number(event.currentTarget.value) || 0))); markDirty(); }} /></AdminFormField></div>{record?.image_path && <a className="inline-flex min-h-11 items-center gap-2 text-sm font-medium underline" href={imageUrl(record.image_path) ?? "#"} target="_blank" rel="noreferrer">Open current portrait <ExternalLinkIcon className="size-4" /></a>}</div></div></AdminFormSection>
-      <AdminFormSection title="Taxonomy" description="Select active terms for this practitioner. A published record needs at least one active location."><div className="grid gap-5">{[...grouped.entries()].map(([type, items]) => <fieldset key={type} className="grid gap-2"><legend className="text-sm font-semibold">{type.replaceAll("_", " ").replace(/(^|\s)\S/g, (letter) => letter.toUpperCase())}</legend><div className="grid gap-2 sm:grid-cols-2">{items.map((term) => <label key={term.id} className="flex min-h-11 items-center gap-2 rounded-md border px-3 text-sm"><input type="checkbox" checked={selectedTerms.has(term.id)} onChange={(event) => updateSelection(term.id, event.currentTarget.checked)} />{term.name}</label>)}</div></fieldset>)}{fieldErrors.location && <p className="text-sm text-destructive" role="alert">{fieldErrors.location}</p>}</div></AdminFormSection>
+      <AdminFormSection title="Taxonomy" description="Select active terms for this practitioner. Linked archived terms stay visible until you remove them. A published record needs at least one active location."><div className="grid gap-5">{[...grouped.entries()].map(([type, items]) => <fieldset key={type} className="grid gap-2"><legend className="text-sm font-semibold">{type.replaceAll("_", " ").replace(/(^|\s)\S/g, (letter) => letter.toUpperCase())}</legend><div className="grid gap-2 sm:grid-cols-2">{items.map((term) => <label key={term.id} className="flex min-h-11 items-center gap-2 rounded-md border px-3 text-sm"><input type="checkbox" checked={selectedTerms.has(term.id)} onChange={(event) => updateSelection(term.id, event.currentTarget.checked)} /><span>{term.name}{term.archived_at && <span className="ml-2 text-xs font-semibold uppercase tracking-[0.1em] text-muted-foreground">Archived</span>}</span></label>)}</div></fieldset>)}{fieldErrors.location && <p className="text-sm text-destructive" role="alert">{fieldErrors.location}</p>}</div></AdminFormSection>
       <div className="grid gap-4"><section className="rounded-md border bg-card p-4"><PublicLifecycleControls value={status} onChange={changeStatus} onArchive={() => archive(false)} disabled={pending} recordName={record?.name ?? "this practitioner"} /></section>
         {record && status === "published" && <section className="grid gap-3 rounded-md border bg-card p-4"><div><h2 className="font-semibold">Featured placement</h2><p className="mt-1 text-sm text-muted-foreground">Choose a position from 1 to 8, or remove this practitioner from Featured.</p></div><div className="flex flex-wrap items-end gap-3"><label className="grid gap-2 text-sm font-medium">Position<select aria-label="Featured position" className="h-11 rounded-md border bg-background px-3" value={featuredPosition} onChange={(event) => { setFeaturedPosition(Number(event.currentTarget.value)); markDirty(); }}>{[1, 2, 3, 4, 5, 6, 7, 8].map((position) => <option key={position} value={position}>{position}</option>)}</select></label>{isFeatured ? <><Button type="button" onClick={() => updateFeatured(featuredPosition)} disabled={pending}>Save featured position</Button><Button type="button" variant="outline" onClick={() => updateFeatured(null)} disabled={pending}>Unfeature</Button></> : <Button type="button" onClick={() => updateFeatured(featuredPosition)} disabled={pending}>Feature</Button>}</div></section>}
         {record && <section className="rounded-md border bg-card p-4"><div className="flex flex-wrap items-center justify-between gap-3"><div><h2 className="font-semibold">Record actions</h2><p className="mt-1 text-sm text-muted-foreground">Created {formatAdminDate(record.created_at)}. Archive before permanent deletion.</p></div>{status === "archived" && <div className="flex flex-wrap gap-2"><Button type="button" variant="outline" onClick={() => archive(true)} disabled={pending}>Restore to draft</Button><AdminPermanentDeleteDialog recordName={record.name} onDelete={remove} disabled={pending} /></div>}</div></section>}
