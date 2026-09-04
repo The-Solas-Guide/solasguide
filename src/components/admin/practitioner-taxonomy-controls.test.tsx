@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { PractitionerEditor } from "@/components/admin/practitioner-editor";
 import { PractitionerManager } from "@/components/admin/practitioner-manager";
 import { TaxonomyEditor } from "@/components/admin/taxonomy-editor";
+import { TaxonomyManager } from "@/components/admin/taxonomy-manager";
 import type { AdminPractitionerRecord } from "@/lib/admin/practitioner-actions";
 import type { AdminTaxonomyRecord } from "@/lib/admin/taxonomy-actions";
 
@@ -159,6 +160,22 @@ describe("practitioner and taxonomy CMS controls", () => {
     fireEvent.click(screen.getByRole("button", { name: "Confirm archive" }));
     await waitFor(() => expect(mocks.archiveTaxonomy).toHaveBeenCalledWith(activeTaxonomy.id, false));
     await waitFor(() => expect(container.querySelector('[data-lifecycle="archived"]')?.textContent).toBe("archived"));
+  });
+
+  it("paginates taxonomy records", () => {
+    const records = Array.from({ length: 11 }, (_, index) => ({
+      ...activeTaxonomy,
+      id: `00000000-0000-4000-8000-${String(index + 1).padStart(12, "0")}`,
+      name: `Taxonomy ${String(index + 1).padStart(2, "0")}`,
+      slug: `taxonomy-${index + 1}`,
+      sort_order: index,
+    }));
+    render(<TaxonomyManager initialRecords={records} />);
+    expect(screen.getByText("Page 1")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Next" }));
+    expect(screen.getByText("Page 2")).toBeTruthy();
+    expect(screen.getAllByText("Taxonomy 11").length).toBeGreaterThan(0);
+    expect(screen.queryByText("Taxonomy 01")).toBeNull();
   });
 
   it("keeps linked archived taxonomy terms visible, but hides unrelated archived terms", () => {
