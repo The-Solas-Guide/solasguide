@@ -76,7 +76,11 @@ describe("AdminTableShell", () => {
     expect(desktop.className).toContain("md:block");
     expect(desktop.querySelectorAll('[data-table-action-surface="desktop"]').length).toBe(2);
     expect(mobile.querySelectorAll('[data-table-action-surface="mobile"]').length).toBe(2);
-    expect(screen.getByTestId("admin-status-navigation").className).toContain("overflow-x-auto");
+    const statusNavigation = screen.getByTestId("admin-status-navigation");
+    expect(statusNavigation.className).toContain("overflow-x-auto");
+    expect(statusNavigation.className).toContain("overflow-y-hidden");
+    expect(statusNavigation.className).toContain("min-h-[52px]");
+    expect(screen.getAllByRole("tab").every((tab) => tab.className.includes("min-h-11"))).toBe(true);
   });
 
   it("renders mobile cards and actions without horizontal table overflow", () => {

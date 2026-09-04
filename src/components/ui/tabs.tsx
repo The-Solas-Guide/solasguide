@@ -9,7 +9,7 @@ function Tabs({ className, ...props }: React.ComponentProps<typeof TabsPrimitive
 }
 
 function TabsList({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.List>) {
-  return <TabsPrimitive.List data-slot="tabs-list" className={cn("inline-flex h-11 max-w-full items-center gap-1 overflow-x-auto rounded-md border border-border bg-muted/50 p-1", className)} {...props} />;
+  return <TabsPrimitive.List data-slot="tabs-list" className={cn("inline-flex min-h-[52px] max-w-full items-center gap-1 overflow-x-auto overflow-y-hidden rounded-md border border-border bg-muted/50 p-1", className)} {...props} />;
 }
 
 function TabsTrigger({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.Trigger>) {
