@@ -39,6 +39,7 @@ describe("useUnsavedChanges", () => {
   it("guards Back cancellation, allows confirmed navigation, and cleans up", () => {
     const confirm = vi.spyOn(window, "confirm").mockReturnValue(false);
     const historyGo = vi.spyOn(window.history, "go").mockImplementation(() => undefined);
+    const historyBack = vi.spyOn(window.history, "back").mockImplementation(() => undefined);
     const { unmount } = renderHook(() => useUnsavedChanges(true));
     window.dispatchEvent(new PopStateEvent("popstate", { state: null }));
     expect(historyGo).toHaveBeenCalledWith(1);
@@ -47,12 +48,26 @@ describe("useUnsavedChanges", () => {
     confirm.mockReturnValue(true);
     window.dispatchEvent(new PopStateEvent("popstate", { state: null }));
     expect(historyGo).toHaveBeenCalledOnce();
+    expect(historyBack).toHaveBeenCalledOnce();
 
     unmount();
     confirm.mockClear();
     window.dispatchEvent(new PopStateEvent("popstate", { state: null }));
     expect(confirm).not.toHaveBeenCalled();
     expect(historyGo).toHaveBeenCalledOnce();
+    expect(historyBack).toHaveBeenCalledOnce();
+  });
+
+  it("removes the guard entry when changes are saved", () => {
+    vi.spyOn(window, "confirm").mockReturnValue(false);
+    const historyBack = vi.spyOn(window.history, "back").mockImplementation(() => undefined);
+    const { rerender } = renderHook(({ dirty }) => useUnsavedChanges(dirty), {
+      initialProps: { dirty: true },
+    });
+
+    rerender({ dirty: false });
+
+    expect(historyBack).toHaveBeenCalledOnce();
   });
 
   it("guards router navigation without a separate click", () => {

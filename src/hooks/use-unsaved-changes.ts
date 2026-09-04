@@ -37,6 +37,7 @@ export function useUnsavedChanges(isDirty: boolean) {
       : { __solasUnsavedGuard: guardId };
     window.history.pushState(guardState, "", originalUrl);
     let restoringHistory = false;
+    let navigationApproved = false;
 
     const warnBeforeLeave = (event: BeforeUnloadEvent) => {
       event.preventDefault();
@@ -55,7 +56,12 @@ export function useUnsavedChanges(isDirty: boolean) {
         restoringHistory = false;
         return;
       }
-      if (guardNavigation()) return;
+      if (guardNavigation()) {
+        navigationApproved = true;
+        window.removeEventListener("popstate", guardHistoryNavigation);
+        window.history.back();
+        return;
+      }
       restoringHistory = true;
       window.history.go(1);
     };
@@ -67,8 +73,8 @@ export function useUnsavedChanges(isDirty: boolean) {
       window.removeEventListener("beforeunload", warnBeforeLeave);
       document.removeEventListener("click", guardSameOriginLink, true);
       window.removeEventListener("popstate", guardHistoryNavigation);
-      if (window.history.state?.__solasUnsavedGuard === guardId) {
-        window.history.replaceState(originalState, "", window.location.href);
+      if (!navigationApproved && window.history.state?.__solasUnsavedGuard === guardId) {
+        window.history.back();
       }
     };
   }, [guardNavigation, isDirty]);

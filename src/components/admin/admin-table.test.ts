@@ -64,22 +64,19 @@ describe("AdminTableShell", () => {
     expect(onQueryChange).toHaveBeenCalledWith(expect.objectContaining({ sort: { id: "name", direction: "asc" } }));
   });
 
-  it("exposes sortable aria-sort state and keeps desktop and mobile action surfaces separate", () => {
-    const originalWidth = window.innerWidth;
-    Object.defineProperty(window, "innerWidth", { configurable: true, value: 390 });
+  it("exposes responsive desktop and mobile action surfaces", () => {
     const query = { ...defaultAdminTableQuery, sort: { id: "name", direction: "asc" as const } };
     render(table({ query }));
 
     expect(screen.getByRole("columnheader", { name: /Name/ }).getAttribute("aria-sort")).toBe("ascending");
     const desktop = screen.getByTestId("admin-table-desktop");
     const mobile = screen.getByTestId("admin-table-mobile");
-    expect(window.innerWidth).toBe(390);
     expect(mobile.className).toContain("md:hidden");
+    expect(desktop.className).toContain("hidden");
     expect(desktop.className).toContain("md:block");
     expect(desktop.querySelectorAll('[data-table-action-surface="desktop"]').length).toBe(2);
     expect(mobile.querySelectorAll('[data-table-action-surface="mobile"]').length).toBe(2);
     expect(screen.getByTestId("admin-status-navigation").className).toContain("overflow-x-auto");
-    Object.defineProperty(window, "innerWidth", { configurable: true, value: originalWidth });
   });
 
   it("renders mobile cards and actions without horizontal table overflow", () => {
