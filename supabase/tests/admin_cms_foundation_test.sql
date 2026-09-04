@@ -1117,5 +1117,42 @@ select throws_ok(
   'legacy portrait rows require Storage deletion and path clearing first'
 );
 
+-- Clearing image_path alone cannot bypass UUID-folder object cleanup.
+set local role postgres;
+insert into public.practitioners (
+  id, slug, name, image_path, status, archived_at
+)
+values (
+  '00000000-0000-0000-0000-00000000b107',
+  'foundation-orphaned-folder-image',
+  'Foundation Orphaned Folder Image',
+  null,
+  'archived',
+  pg_catalog.now()
+);
+insert into storage.objects (bucket_id, name, owner, metadata)
+values (
+  'profile-images',
+  '00000000-0000-0000-0000-00000000b107/orphan.png',
+  '00000000-0000-0000-0000-00000000b001',
+  '{"mimetype":"image/png"}'::jsonb
+);
+set local role authenticated;
+select set_config(
+  'request.jwt.claims',
+  json_build_object(
+    'sub', '00000000-0000-0000-0000-00000000b001',
+    'role', 'authenticated'
+  )::text,
+  true
+);
+select throws_ok(
+  $$delete from public.practitioners
+     where id = '00000000-0000-0000-0000-00000000b107'$$,
+  '23514',
+  null,
+  'practitioners cannot be deleted while their UUID Storage folder contains an object'
+);
+
 select * from finish();
 rollback;
