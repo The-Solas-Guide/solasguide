@@ -2,7 +2,10 @@ import type { Tables } from "@/types/database";
 
 export const taxonomyTypes = ["support_area", "approach", "modality", "works_with", "location", "language"] as const;
 export type TaxonomyType = (typeof taxonomyTypes)[number];
-export type TaxonomyWithUsage = Tables<"practitioner_terms"> & { usageCount: number };
+export type TaxonomyWithUsage = Tables<"practitioner_terms"> & {
+  usageCount: number;
+  practitioners: { id: string; name: string; slug: string }[];
+};
 
 const taxonomyLabels: Record<TaxonomyType, string> = {
   support_area: "Support area",
@@ -17,13 +20,12 @@ export function taxonomyTypeLabel(type: string) {
   return taxonomyLabels[type as TaxonomyType] ?? type.replaceAll("_", " ");
 }
 
-export function taxonomyDeleteBlocker(term: Pick<TaxonomyWithUsage, "name" | "usageCount">) {
+export function taxonomyDeleteBlocker(term: Pick<TaxonomyWithUsage, "id" | "name" | "usageCount">) {
   if (term.usageCount === 0) return null;
   return {
     type: "Practitioner",
     name: `${term.usageCount} practitioner record${term.usageCount === 1 ? "" : "s"}`,
-    href: `/admin/practitioners?filter.term=${encodeURIComponent(term.name.toLowerCase())}`,
+    href: `/admin/practitioners?filter.term=${encodeURIComponent(term.id)}`,
     reason: "Remove the practitioner links before permanently deleting this term.",
   };
 }
-

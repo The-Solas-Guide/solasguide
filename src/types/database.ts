@@ -7,6 +7,31 @@ export type Json =
   | Json[]
 
 export type Database = {
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
   public: {
     Tables: {
       admin_users: {
@@ -340,6 +365,35 @@ export type Database = {
           type: string
         }[]
       }
+      reorder_admin_featured: {
+        Args: { p_practitioner_ids: string[] }
+        Returns: undefined
+      }
+      save_admin_practitioner: {
+        Args: {
+          p_about?: string
+          p_credentials?: string[]
+          p_descriptor?: string
+          p_featured_position?: number
+          p_image_alt?: string
+          p_image_focal_x?: number
+          p_image_focal_y?: number
+          p_image_path?: string
+          p_instagram_url?: string
+          p_name?: string
+          p_offers_in_person?: boolean
+          p_offers_online?: boolean
+          p_practitioner_id?: string
+          p_significant_training?: string[]
+          p_slug?: string
+          p_status?: string
+          p_summary?: string
+          p_term_ids?: string[]
+          p_website_url?: string
+          p_years_active?: number
+        }
+        Returns: string
+      }
       search_published_practitioner_ids: {
         Args: {
           p_approach_slugs?: string[]
@@ -482,6 +536,9 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {
       submission_source: ["website", "admin"],

@@ -6,6 +6,8 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 import {
   createPortraitPath,
   parseListField,
+  featuredOrderIsCurrent,
+  validatePractitionerFields,
   validatePortraitFile,
   type PractitionerLinkRow,
   type PractitionerRow,
@@ -25,7 +27,10 @@ export type AdminActionResult<T = null> = {
 };
 
 export type AdminPractitionerRecord = PractitionerRow & { terms: TaxonomyRow[] };
-export type AdminTaxonomyRecord = TaxonomyRow & { usageCount: number };
+export type AdminTaxonomyRecord = TaxonomyRow & {
+  usageCount: number;
+  practitioners: { id: string; name: string; slug: string }[];
+};
 
 function stringValue(formData: FormData, key: string) {
   const value = formData.get(key);
@@ -75,21 +80,6 @@ function practitionerPayload(formData: FormData, imagePath?: string | null): Tab
     image_alt: optionalValue(formData, "imageAlt"),
     status: "draft",
   };
-}
-
-function validatePractitionerFields(formData: FormData, status: string, hasImage: boolean, hasLocation: boolean) {
-  const fieldErrors: Record<string, string> = {};
-  const name = stringValue(formData, "name");
-  const slug = stringValue(formData, "slug");
-  if (!name) fieldErrors.name = "Name is required.";
-  if (!slug || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) fieldErrors.slug = "Use lowercase words separated by hyphens.";
-  if (status === "published") {
-    if (!stringValue(formData, "summary")) fieldErrors.summary = "Summary is required before publishing.";
-    if (!stringValue(formData, "about")) fieldErrors.about = "About text is required before publishing.";
-    if (!hasImage) fieldErrors.image = "An approved portrait is required before publishing.";
-    if (!hasLocation) fieldErrors.location = "At least one active location is required before publishing.";
-  }
-  return fieldErrors;
 }
 
 async function loadTermsForPractitioners(supabase: Awaited<ReturnType<typeof createServerSupabaseClient>>, rows: PractitionerRow[]) {
@@ -186,28 +176,31 @@ export async function savePractitioner(formData: FormData): Promise<AdminActionR
     if (!practitionerId) throw new Error("The practitioner ID is missing.");
     if (file) newPath = await uploadPortrait(supabase, practitionerId, file);
 
-    const currentLinksResult = await supabase.from("practitioner_term_links").select("*").eq("practitioner_id", practitionerId);
-    if (currentLinksResult.error) throw new Error(currentLinksResult.error.message);
-    const currentLinks = (currentLinksResult.data ?? []) as PractitionerLinkRow[];
-    const currentIds = new Set(currentLinks.map((link) => link.term_id));
-    const linksToAdd = termIds.filter((termId) => !currentIds.has(termId)).map((termId, index) => ({ practitioner_id: practitionerId as string, term_id: termId, display_order: index }));
-    if (linksToAdd.length) {
-      const { error } = await supabase.from("practitioner_term_links").insert(linksToAdd);
-      if (error) throw new Error(error.message);
-    }
-
-    const update: TablesUpdate<"practitioners"> = {
-      ...practitionerPayload(formData, newPath ?? oldPath),
-      status,
-      image_path: newPath ?? oldPath,
-    };
-    const { error: updateError } = await supabase.from("practitioners").update(update).eq("id", practitionerId);
-    if (updateError) throw new Error(updateError.message);
-    const linksToRemove = currentLinks.filter((link) => !termIds.includes(link.term_id)).map((link) => link.term_id);
-    if (linksToRemove.length) {
-      const { error } = await supabase.from("practitioner_term_links").delete().eq("practitioner_id", practitionerId).in("term_id", linksToRemove);
-      if (error) throw new Error(error.message);
-    }
+    const payload = practitionerPayload(formData, newPath ?? oldPath);
+    const { data: savedId, error: saveError } = await supabase.rpc("save_admin_practitioner", {
+      p_practitioner_id: practitionerId,
+      p_slug: payload.slug,
+      p_name: payload.name,
+      p_descriptor: payload.descriptor ?? undefined,
+      p_years_active: payload.years_active ?? undefined,
+      p_summary: payload.summary ?? undefined,
+      p_about: payload.about ?? undefined,
+      p_credentials: payload.credentials ?? undefined,
+      p_significant_training: payload.significant_training ?? undefined,
+      p_offers_in_person: payload.offers_in_person,
+      p_offers_online: payload.offers_online,
+      p_website_url: payload.website_url ?? undefined,
+      p_instagram_url: payload.instagram_url ?? undefined,
+      p_image_path: payload.image_path ?? undefined,
+      p_image_alt: payload.image_alt ?? undefined,
+      p_image_focal_x: numberValue(formData, "imageFocalX") ?? existing?.image_focal_x ?? 50,
+      p_image_focal_y: numberValue(formData, "imageFocalY") ?? existing?.image_focal_y ?? 50,
+      p_status: status,
+      p_featured_position: existing?.featured_position ?? undefined,
+      p_term_ids: termIds,
+    });
+    if (saveError || !savedId) throw new Error(saveError?.message ?? "The practitioner could not be saved.");
+    practitionerId = savedId;
 
     let warning: string | undefined;
     if (newPath && oldPath && oldPath !== newPath) {
@@ -253,19 +246,22 @@ export async function setPractitionerFeaturedPosition(id: string, position: numb
 
 export async function reorderFeaturedPractitioners(ids: string[]): Promise<AdminActionResult> {
   await requireAdmin();
-  const orderedIds = [...new Set(ids)].slice(0, 8);
-  const supabase = await createServerSupabaseClient();
-  const { data: rows, error: loadError } = await supabase.from("practitioners").select("id,status").in("id", orderedIds);
-  if (loadError) return { ok: false, error: loadError.message };
-  if ((rows ?? []).some((row) => row.status !== "published")) return { ok: false, error: "Only published practitioners can be featured." };
-  if (orderedIds.length) {
-    const { error: clearError } = await supabase.from("practitioners").update({ featured_position: null }).in("id", orderedIds);
-    if (clearError) return { ok: false, error: clearError.message };
-    for (const [index, practitionerId] of orderedIds.entries()) {
-      const { error } = await supabase.from("practitioners").update({ featured_position: index + 1 }).eq("id", practitionerId);
-      if (error) return { ok: false, error: error.message };
-    }
+  if (!Array.isArray(ids) || ids.length > 8 || ids.some((id) => !/^[0-9a-f-]{36}$/i.test(id))) {
+    return { ok: false, error: "Choose up to eight valid featured practitioners." };
   }
+  if (new Set(ids).size !== ids.length) return { ok: false, error: "Featured ordering contains duplicate practitioners." };
+  const orderedIds = ids;
+  const supabase = await createServerSupabaseClient();
+  const { data: rows, error: loadError } = await supabase.from("practitioners").select("id,status,featured_position").not("featured_position", "is", null);
+  if (loadError) return { ok: false, error: loadError.message };
+  const currentIds = (rows ?? []).map((row) => row.id);
+  const currentSet = new Set(currentIds);
+  if (!featuredOrderIsCurrent(orderedIds, currentIds) || orderedIds.some((id) => !currentSet.has(id))) {
+    return { ok: false, error: "Featured ordering is stale. Refresh and try again." };
+  }
+  if ((rows ?? []).some((row) => row.status !== "published")) return { ok: false, error: "Only published practitioners can be featured." };
+  const { error: reorderError } = await supabase.rpc("reorder_admin_featured", { p_practitioner_ids: orderedIds });
+  if (reorderError) return { ok: false, error: reorderError.message };
   revalidatePath("/admin/practitioners");
   revalidatePath("/practitioners");
   return { ok: true };

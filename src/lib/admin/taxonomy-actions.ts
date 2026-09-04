@@ -30,7 +30,26 @@ export async function getAdminTaxonomy(): Promise<AdminActionResult<AdminTaxonom
   if (linkError) return { ok: false, error: linkError.message };
   const counts = new Map<string, number>();
   for (const link of links ?? []) counts.set(link.term_id, (counts.get(link.term_id) ?? 0) + 1);
-  return { ok: true, data: (terms ?? []).map((term) => ({ ...(term as TaxonomyRow), usageCount: counts.get(term.id) ?? 0 })) };
+  const practitionerIds = [...new Set((links ?? []).map((link) => link.practitioner_id))];
+  const { data: practitioners, error: practitionerError } = practitionerIds.length
+    ? await supabase.from("practitioners").select("id,name,slug").in("id", practitionerIds)
+    : { data: [], error: null };
+  if (practitionerError) return { ok: false, error: practitionerError.message };
+  const practitionerMap = new Map((practitioners ?? []).map((practitioner) => [practitioner.id, practitioner]));
+  const related = new Map<string, { id: string; name: string; slug: string }[]>();
+  for (const link of links ?? []) {
+    const practitioner = practitionerMap.get(link.practitioner_id);
+    if (!practitioner) continue;
+    related.set(link.term_id, [...(related.get(link.term_id) ?? []), practitioner]);
+  }
+  return {
+    ok: true,
+    data: (terms ?? []).map((term) => ({
+      ...(term as TaxonomyRow),
+      usageCount: counts.get(term.id) ?? 0,
+      practitioners: related.get(term.id) ?? [],
+    })),
+  };
 }
 
 export async function saveTaxonomy(formData: FormData): Promise<AdminActionResult<{ id: string }>> {

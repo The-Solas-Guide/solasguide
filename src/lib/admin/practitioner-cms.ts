@@ -32,6 +32,25 @@ export function validatePortraitFile(file: File | null | undefined): string | nu
   return null;
 }
 
+export function validatePractitionerFields(formData: FormData, status: string, hasImage: boolean, hasLocation: boolean) {
+  const fieldErrors: Record<string, string> = {};
+  const name = typeof formData.get("name") === "string" ? String(formData.get("name")).trim() : "";
+  const slug = typeof formData.get("slug") === "string" ? String(formData.get("slug")).trim() : "";
+  if (!name) fieldErrors.name = "Name is required.";
+  if (!slug || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) fieldErrors.slug = "Use lowercase words separated by hyphens.";
+  if (status === "published") {
+    if (!(typeof formData.get("summary") === "string" && String(formData.get("summary")).trim())) fieldErrors.summary = "Summary is required before publishing.";
+    if (!(typeof formData.get("about") === "string" && String(formData.get("about")).trim())) fieldErrors.about = "About text is required before publishing.";
+    if (!hasImage) fieldErrors.image = "An approved portrait is required before publishing.";
+    if (!hasLocation) fieldErrors.location = "At least one active location is required before publishing.";
+  }
+  return fieldErrors;
+}
+
+export function featuredOrderIsCurrent(requestedIds: readonly string[], currentIds: readonly string[]) {
+  return requestedIds.length === currentIds.length && requestedIds.every((id) => currentIds.includes(id));
+}
+
 export function createPortraitPath(practitionerId: string, mime: string) {
   const ext = getPortraitExtension(mime) ?? "jpg";
   return `${practitionerId}/${crypto.randomUUID()}.${ext}`;
@@ -66,4 +85,3 @@ export function formatAdminDate(value: string | null | undefined) {
 export function isValidUuid(value: string) {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
 }
-
