@@ -212,6 +212,11 @@ begin
 end;
 $$;
 
+revoke all on function public.prevent_featured_practitioner_delete()
+  from public, anon, authenticated;
+grant execute on function public.prevent_featured_practitioner_delete()
+  to service_role;
+
 drop trigger if exists practitioners_prevent_featured_delete on public.practitioners;
 create trigger practitioners_prevent_featured_delete
 before delete on public.practitioners
@@ -235,6 +240,11 @@ begin
   return new;
 end;
 $$;
+
+revoke all on function public.normalize_practitioner_term_lifecycle()
+  from public, anon, authenticated;
+grant execute on function public.normalize_practitioner_term_lifecycle()
+  to service_role;
 
 drop trigger if exists practitioner_terms_normalize_lifecycle on public.practitioner_terms;
 create trigger practitioner_terms_normalize_lifecycle
@@ -274,6 +284,11 @@ begin
   return old;
 end;
 $$;
+
+revoke all on function public.prevent_unqualified_practitioner_term_delete()
+  from public, anon, authenticated;
+grant execute on function public.prevent_unqualified_practitioner_term_delete()
+  to service_role;
 
 drop trigger if exists practitioner_terms_prevent_unqualified_delete on public.practitioner_terms;
 create trigger practitioner_terms_prevent_unqualified_delete

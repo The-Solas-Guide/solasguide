@@ -502,7 +502,7 @@ async function queryPublishedPractitioners(
     profiles = await loadProfiles(client, slug);
   } else {
     const searchResult = await client.rpc("search_published_practitioner_ids", {
-      p_query: requestedFilters.query || null,
+      p_query: requestedFilters.query || undefined,
       p_area_slugs: [...requestedFilters.areas],
       p_approach_slugs: [...requestedFilters.approach],
       p_works_with_slugs: [...requestedFilters["works-with"]],

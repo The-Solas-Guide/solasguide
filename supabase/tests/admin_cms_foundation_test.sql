@@ -507,6 +507,28 @@ select is(
   1,
   'administrator can read private practitioner interest'
 );
+select is(
+  (
+    select bool_and(
+      not has_function_privilege(role_name, function_signature, 'EXECUTE')
+    )
+      from (
+        values
+          ('anon', 'public.prevent_featured_practitioner_delete()'),
+          ('authenticated', 'public.prevent_featured_practitioner_delete()'),
+          ('anon', 'public.normalize_practitioner_term_lifecycle()'),
+          ('authenticated', 'public.normalize_practitioner_term_lifecycle()'),
+          ('anon', 'public.prevent_unqualified_practitioner_term_delete()'),
+          ('authenticated', 'public.prevent_unqualified_practitioner_term_delete()'),
+          ('anon', 'public.validate_practitioner_location_links()'),
+          ('authenticated', 'public.validate_practitioner_location_links()'),
+          ('anon', 'public.validate_practitioner_term_type_changes()'),
+          ('authenticated', 'public.validate_practitioner_term_type_changes()')
+      ) as trigger_functions(role_name, function_signature)
+  ),
+  true,
+  'browser roles cannot execute new trigger functions'
+);
 select lives_ok(
   $$update public.customer_enquiries set archived_at = now()
      where id = '00000000-0000-0000-0000-00000000b201'$$,
@@ -530,6 +552,76 @@ select throws_ok(
   null,
   'administrator cannot update protected customer enquiry fields'
 );
+select throws_ok(
+  $$update public.customer_enquiries set id = '00000000-0000-0000-0000-00000000b203'
+     where id = '00000000-0000-0000-0000-00000000b201'$$,
+  '42501', null, 'customer enquiry identity is protected'
+);
+select throws_ok(
+  $$update public.customer_enquiries set full_name = 'Changed'
+     where id = '00000000-0000-0000-0000-00000000b201'$$,
+  '42501', null, 'customer enquiry name is protected'
+);
+select throws_ok(
+  $$update public.customer_enquiries set phone = '+1 555 0100'
+     where id = '00000000-0000-0000-0000-00000000b201'$$,
+  '42501', null, 'customer enquiry contact data is protected'
+);
+select throws_ok(
+  $$update public.customer_enquiries set submission_token = gen_random_uuid()
+     where id = '00000000-0000-0000-0000-00000000b201'$$,
+  '42501', null, 'customer enquiry token is protected'
+);
+select throws_ok(
+  $$update public.customer_enquiries set consent_confirmed = false
+     where id = '00000000-0000-0000-0000-00000000b201'$$,
+  '42501', null, 'customer enquiry consent is protected'
+);
+select throws_ok(
+  $$update public.customer_enquiries set consent_given_at = now()
+     where id = '00000000-0000-0000-0000-00000000b201'$$,
+  '42501', null, 'customer enquiry consent timestamp is protected'
+);
+select throws_ok(
+  $$update public.customer_enquiries set questionnaire_answers = '{"changed":true}'::jsonb
+     where id = '00000000-0000-0000-0000-00000000b201'$$,
+  '42501', null, 'customer enquiry answers are protected'
+);
+select throws_ok(
+  $$update public.customer_enquiries set source = 'website'
+     where id = '00000000-0000-0000-0000-00000000b201'$$,
+  '42501', null, 'customer enquiry source is protected'
+);
+select throws_ok(
+  $$update public.customer_enquiries set customer_confirmation_sent_at = now()
+     where id = '00000000-0000-0000-0000-00000000b201'$$,
+  '42501', null, 'customer confirmation timestamp is protected'
+);
+select throws_ok(
+  $$update public.customer_enquiries set internal_notification_sent_at = now()
+     where id = '00000000-0000-0000-0000-00000000b201'$$,
+  '42501', null, 'internal notification timestamp is protected'
+);
+select throws_ok(
+  $$update public.customer_enquiries set customer_confirmation_status = 'sent'
+     where id = '00000000-0000-0000-0000-00000000b201'$$,
+  '42501', null, 'customer delivery status is protected'
+);
+select throws_ok(
+  $$update public.customer_enquiries set internal_notification_status = 'sent'
+     where id = '00000000-0000-0000-0000-00000000b201'$$,
+  '42501', null, 'internal delivery status is protected'
+);
+select throws_ok(
+  $$update public.customer_enquiries set created_at = now()
+     where id = '00000000-0000-0000-0000-00000000b201'$$,
+  '42501', null, 'customer enquiry creation timestamp is protected'
+);
+select throws_ok(
+  $$update public.customer_enquiries set updated_at = now()
+     where id = '00000000-0000-0000-0000-00000000b201'$$,
+  '42501', null, 'customer enquiry update timestamp is protected'
+);
 select lives_ok(
   $$update public.practitioner_expressions_of_interest set archived_at = now()
      where id = '00000000-0000-0000-0000-00000000b202'$$,
@@ -543,11 +635,82 @@ select is(
   'archiving preserves practitioner interest workflow status'
 );
 select throws_ok(
+  $$update public.practitioner_expressions_of_interest set id = '00000000-0000-0000-0000-00000000b204'
+     where id = '00000000-0000-0000-0000-00000000b202'$$,
+  '42501', null, 'practitioner interest identity is protected'
+);
+select throws_ok(
+  $$update public.practitioner_expressions_of_interest set full_name = 'Changed'
+     where id = '00000000-0000-0000-0000-00000000b202'$$,
+  '42501', null, 'practitioner interest name is protected'
+);
+select throws_ok(
+  $$update public.practitioner_expressions_of_interest set email = 'changed@example.com'
+     where id = '00000000-0000-0000-0000-00000000b202'$$,
+  '42501', null, 'practitioner interest email is protected'
+);
+select throws_ok(
+  $$update public.practitioner_expressions_of_interest set phone = '+1 555 0101'
+     where id = '00000000-0000-0000-0000-00000000b202'$$,
+  '42501', null, 'practitioner interest contact data is protected'
+);
+select throws_ok(
+  $$update public.practitioner_expressions_of_interest set submission_token = gen_random_uuid()
+     where id = '00000000-0000-0000-0000-00000000b202'$$,
+  '42501', null, 'practitioner interest token is protected'
+);
+select throws_ok(
+  $$update public.practitioner_expressions_of_interest set consent_confirmed = false
+     where id = '00000000-0000-0000-0000-00000000b202'$$,
+  '42501', null, 'practitioner interest consent is protected'
+);
+select throws_ok(
+  $$update public.practitioner_expressions_of_interest set consent_given_at = now()
+     where id = '00000000-0000-0000-0000-00000000b202'$$,
+  '42501', null, 'practitioner interest consent timestamp is protected'
+);
+select throws_ok(
+  $$update public.practitioner_expressions_of_interest set questionnaire_answers = '{"changed":true}'::jsonb
+     where id = '00000000-0000-0000-0000-00000000b202'$$,
+  '42501', null, 'practitioner interest answers are protected'
+);
+select throws_ok(
+  $$update public.practitioner_expressions_of_interest set source = 'website'
+     where id = '00000000-0000-0000-0000-00000000b202'$$,
+  '42501', null, 'practitioner interest source is protected'
+);
+select throws_ok(
+  $$update public.practitioner_expressions_of_interest set customer_confirmation_sent_at = now()
+     where id = '00000000-0000-0000-0000-00000000b202'$$,
+  '42501', null, 'practitioner confirmation timestamp is protected'
+);
+select throws_ok(
+  $$update public.practitioner_expressions_of_interest set internal_notification_sent_at = now()
+     where id = '00000000-0000-0000-0000-00000000b202'$$,
+  '42501', null, 'practitioner notification timestamp is protected'
+);
+select throws_ok(
+  $$update public.practitioner_expressions_of_interest set created_at = now()
+     where id = '00000000-0000-0000-0000-00000000b202'$$,
+  '42501', null, 'practitioner interest creation timestamp is protected'
+);
+select throws_ok(
+  $$update public.practitioner_expressions_of_interest set updated_at = now()
+     where id = '00000000-0000-0000-0000-00000000b202'$$,
+  '42501', null, 'practitioner interest update timestamp is protected'
+);
+select throws_ok(
   $$delete from public.customer_enquiries
      where id = '00000000-0000-0000-0000-00000000b201'$$,
   '42501',
   null,
   'administrators cannot permanently delete customer enquiries'
+);
+select throws_ok(
+  $$delete from public.practitioner_expressions_of_interest
+     where id = '00000000-0000-0000-0000-00000000b202'$$,
+  '42501', null,
+  'administrators cannot permanently delete practitioner interest'
 );
 
 -- Storage policies permit only allowlisted administrators to mutate objects.
