@@ -40,7 +40,6 @@ export function OperationalPrivacyRemoval({ kind, record, disabled }: { kind: Op
       toast.success("Private record removed");
       setOpen(false);
       router.replace(`/admin/${kind}`);
-      router.refresh();
     } catch { setError("Privacy removal failed. Try again."); }
   });
   return <section aria-label="Privacy removal" className="mx-auto mt-8 w-full max-w-4xl rounded-md border border-destructive/30 p-4 md:p-6"><h2 className="font-semibold">Privacy removal</h2><p className="mt-2 text-sm text-muted-foreground">Use this only for an authorised privacy or retention request. Removal cannot be undone.</p>{!record.archived_at && <p className="mt-2 text-sm text-muted-foreground">Archive this record before requesting privacy removal.</p>}<AlertDialog open={open} onOpenChange={(next) => { if (pending) return; setOpen(next); setConfirmation(""); setAcknowledged(false); setError(undefined); }}><AlertDialogTrigger asChild><Button type="button" variant="outline" className="mt-4" disabled={disabled || !record.archived_at}>Remove for privacy</Button></AlertDialogTrigger><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Remove this private record?</AlertDialogTitle><AlertDialogDescription>The contact details, submitted answers, consent evidence, and internal notes will be permanently removed.</AlertDialogDescription></AlertDialogHeader><label className="grid gap-2 text-sm">Type {record.full_name} to confirm<Input aria-label="Privacy removal confirmation" value={confirmation} onChange={(event) => setConfirmation(event.target.value)} autoComplete="off" disabled={pending} /></label><label className="flex items-start gap-3 text-sm leading-relaxed"><input type="checkbox" className="mt-1 size-5 shrink-0 accent-primary" checked={acknowledged} onChange={(event) => setAcknowledged(event.target.checked)} disabled={pending} />I have authority to remove this record. I have removed any manually copied CRM record, or confirmed none exists.</label>{error && <p role="alert" className="text-sm text-destructive">{error}</p>}<AlertDialogFooter><AlertDialogCancel disabled={pending}>Cancel</AlertDialogCancel><Button type="button" className="bg-destructive text-white hover:bg-destructive/90" disabled={pending || confirmation !== record.full_name || !acknowledged} onClick={remove}>{pending ? "Removing…" : "Confirm privacy removal"}</Button></AlertDialogFooter></AlertDialogContent></AlertDialog></section>;
@@ -72,9 +71,15 @@ export function OperationalEditor({ kind, record }: { kind: OperationalKind; rec
       try {
         const result = await saveOperationalRecord(kind, data);
         if (!result.ok) { setError(result.error); setFieldErrors(result.fieldErrors ?? {}); return; }
-        setDirty(false); setSaved(true);
-        if (!record && result.data?.id) router.replace(`/admin/${kind}/${result.data.id}`);
-        else router.refresh();
+        setSaved(true);
+        if (!record && result.data?.id) {
+          // Let navigation unmount the dirty form. Clearing it first makes the
+          // shared history guard go back while replace is still in flight.
+          router.replace(`/admin/${kind}/${result.data.id}`);
+        } else {
+          setDirty(false);
+          router.refresh();
+        }
       } catch { setError("The record could not be saved. Try again."); }
     });
   };

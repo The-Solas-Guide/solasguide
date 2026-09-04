@@ -30,3 +30,11 @@ describe("operational CMS configuration", () => {
   });
 });
 
+
+
+it("accepts canonical database UUIDs including seeded IDs", async () => {
+  const { isOperationalRecordId } = await import("./operational-cms");
+  expect(isOperationalRecordId("00000000-0000-0000-0000-000000000001")).toBe(true);
+  expect(isOperationalRecordId("12345678-1234-4123-8123-123456789abc")).toBe(true);
+  expect(isOperationalRecordId("not-a-record")).toBe(false);
+});

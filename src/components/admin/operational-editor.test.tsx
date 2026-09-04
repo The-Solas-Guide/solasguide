@@ -55,7 +55,8 @@ describe("private operational editor", () => {
     expect(mocks.refresh).not.toHaveBeenCalled();
   });
 
-  it("creates structured context and consent evidence without a raw JSON control", async () => {
+  it("creates structured context and keeps the history guard until record navigation", async () => {
+    mocks.save.mockResolvedValue({ ok: true, data: { id: record.id } });
     const { container } = render(<OperationalEditor kind="practitioner-interest" record={null} />);
     fireEvent.change(screen.getByLabelText("Full name"), { target: { value: "QA Person" } });
     fireEvent.change(screen.getByLabelText("Submitted context"), { target: { value: "Practice details" } });
@@ -67,6 +68,8 @@ describe("private operational editor", () => {
     expect(JSON.parse(String(data.get("questionnaire_answers")))).toEqual({ manual_context: "Practice details" });
     expect(data.get("consent_confirmed")).toBe("on");
     expect(String(data.get("consent_given_at"))).toMatch(/Z$/);
+    expect(mocks.replace).toHaveBeenCalledWith(`/admin/practitioner-interest/${record.id}`);
+    expect(container.querySelector("form")?.getAttribute("data-dirty")).toBe("true");
   });
 });
 
@@ -74,6 +77,15 @@ describe("separate privacy removal", () => {
   it("requires archive before opening", () => {
     render(<OperationalPrivacyRemoval kind="customer-enquiries" record={record} disabled={false} />);
     expect((screen.getByRole("button", { name: "Remove for privacy" }) as HTMLButtonElement).disabled).toBe(true);
+  });
+  it("navigates after removal without refreshing the deleted detail route", async () => {
+    render(<OperationalPrivacyRemoval kind="customer-enquiries" record={{ ...record, archived_at: "2026-09-04T12:00:00Z" }} disabled={false} />);
+    fireEvent.click(screen.getByRole("button", { name: "Remove for privacy" }));
+    fireEvent.change(screen.getByLabelText("Privacy removal confirmation"), { target: { value: record.full_name } });
+    fireEvent.click(screen.getByRole("checkbox"));
+    fireEvent.click(screen.getByRole("button", { name: "Confirm privacy removal" }));
+    await waitFor(() => expect(mocks.replace).toHaveBeenCalledWith("/admin/customer-enquiries"));
+    expect(mocks.refresh).not.toHaveBeenCalled();
   });
   it("requires exact name and acknowledgement and retains a failed dialog", async () => {
     mocks.remove.mockResolvedValue({ ok: false, error: "Removal failed." });
