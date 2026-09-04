@@ -85,8 +85,8 @@ select is(
     where schemaname = 'storage'
       and tablename = 'objects'
       and policyname = 'profile_images_public_read'),
-  1,
-  'profile images have an explicit public read policy'
+  0,
+  'profile images do not expose anonymous object listing'
 );
 select is(
   (select count(*)::integer
@@ -130,7 +130,7 @@ values (
   'Schema Test Published',
   'A published schema fixture.',
   'A published schema fixture with complete required copy.',
-  'schema-test-published.jpg',
+  '00000000-0000-0000-0000-000000009001/schema-test-published.jpg',
   'draft'
 );
 
@@ -157,7 +157,7 @@ values (
   'schema-test-incomplete',
   'Schema Test Incomplete',
   'Only the optional publication fields are present.',
-  'schema-test-incomplete.jpg',
+  '00000000-0000-0000-0000-000000009003/schema-test-incomplete.jpg',
   'draft'
 );
 
@@ -168,7 +168,7 @@ values (
   'Schema Test Multiple Locations',
   'A draft with multiple locations.',
   'A draft with complete publication copy.',
-  'schema-test-multi-location.jpg',
+  '00000000-0000-0000-0000-000000009004/schema-test-multi-location.jpg',
   'draft'
 );
 
@@ -179,7 +179,7 @@ values (
   'Schema Test No Location',
   'A complete profile without a location.',
   'A complete profile without a location link.',
-  'schema-test-no-location.jpg',
+  '00000000-0000-0000-0000-000000009008/schema-test-no-location.jpg',
   'draft'
 );
 
@@ -247,7 +247,7 @@ values (
   'An online practitioner profile for search and format filtering.',
   false,
   true,
-  'schema-test-online.jpg',
+  '00000000-0000-0000-0000-000000009010/schema-test-online.jpg',
   'draft'
 );
 
@@ -295,7 +295,7 @@ values (
   'Schema Test Inactive Only',
   'A complete profile with an inactive location only.',
   'A complete profile whose only location is inactive.',
-  'schema-test-inactive-only.jpg',
+  '00000000-0000-0000-0000-000000009009/schema-test-inactive-only.jpg',
   'draft'
 );
 
