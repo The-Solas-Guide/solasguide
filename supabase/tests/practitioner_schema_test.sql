@@ -85,8 +85,8 @@ select is(
     where schemaname = 'storage'
       and tablename = 'objects'
       and policyname = 'profile_images_public_read'),
-  1,
-  'profile images have an explicit public read policy'
+  0,
+  'profile images do not expose anonymous object listing'
 );
 select is(
   (select count(*)::integer

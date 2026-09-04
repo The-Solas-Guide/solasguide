@@ -26,6 +26,7 @@ export type Database = {
       }
       customer_enquiries: {
         Row: {
+          archived_at: string | null
           consent_confirmed: boolean
           consent_given_at: string
           contact_preference: string
@@ -46,6 +47,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          archived_at?: string | null
           consent_confirmed: boolean
           consent_given_at?: string
           contact_preference?: string
@@ -66,6 +68,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          archived_at?: string | null
           consent_confirmed?: boolean
           consent_given_at?: string
           contact_preference?: string
@@ -89,6 +92,7 @@ export type Database = {
       }
       practitioner_expressions_of_interest: {
         Row: {
+          archived_at: string | null
           consent_confirmed: boolean
           consent_given_at: string
           contact_preference: string
@@ -110,6 +114,7 @@ export type Database = {
           website_url: string | null
         }
         Insert: {
+          archived_at?: string | null
           consent_confirmed: boolean
           consent_given_at?: string
           contact_preference?: string
@@ -131,6 +136,7 @@ export type Database = {
           website_url?: string | null
         }
         Update: {
+          archived_at?: string | null
           consent_confirmed?: boolean
           consent_given_at?: string
           contact_preference?: string
@@ -188,37 +194,48 @@ export type Database = {
       }
       practitioner_terms: {
         Row: {
+          archived_at: string | null
+          created_at: string
           id: string
           is_active: boolean
           name: string
           slug: string
           sort_order: number
           type: string
+          updated_at: string
         }
         Insert: {
+          archived_at?: string | null
+          created_at?: string
           id?: string
           is_active?: boolean
           name: string
           slug: string
           sort_order?: number
           type: string
+          updated_at?: string
         }
         Update: {
+          archived_at?: string | null
+          created_at?: string
           id?: string
           is_active?: boolean
           name?: string
           slug?: string
           sort_order?: number
           type?: string
+          updated_at?: string
         }
         Relationships: []
       }
       practitioners: {
         Row: {
           about: string | null
+          archived_at: string | null
           created_at: string
           credentials: string[] | null
           descriptor: string | null
+          featured_position: number | null
           id: string
           image_alt: string | null
           image_focal_x: number
@@ -239,9 +256,11 @@ export type Database = {
         }
         Insert: {
           about?: string | null
+          archived_at?: string | null
           created_at?: string
           credentials?: string[] | null
           descriptor?: string | null
+          featured_position?: number | null
           id?: string
           image_alt?: string | null
           image_focal_x?: number
@@ -262,9 +281,11 @@ export type Database = {
         }
         Update: {
           about?: string | null
+          archived_at?: string | null
           created_at?: string
           credentials?: string[] | null
           descriptor?: string | null
+          featured_position?: number | null
           id?: string
           image_alt?: string | null
           image_focal_x?: number
@@ -311,7 +332,7 @@ export type Database = {
         }[]
       }
       list_active_practitioner_taxonomy_terms: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           id: string
           name: string
@@ -321,13 +342,13 @@ export type Database = {
       }
       search_published_practitioner_ids: {
         Args: {
-          p_area_slugs: string[]
-          p_approach_slugs: string[]
-          p_format_values: string[]
-          p_language_slugs: string[]
-          p_location_slugs: string[]
-          p_query: string | null
-          p_works_with_slugs: string[]
+          p_approach_slugs?: string[]
+          p_area_slugs?: string[]
+          p_format_values?: string[]
+          p_language_slugs?: string[]
+          p_location_slugs?: string[]
+          p_query?: string
+          p_works_with_slugs?: string[]
         }
         Returns: {
           practitioner_id: string
