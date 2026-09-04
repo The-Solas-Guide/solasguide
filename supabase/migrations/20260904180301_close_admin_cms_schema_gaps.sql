@@ -42,16 +42,17 @@ revoke all on function public.prevent_featured_practitioner_delete()
 grant execute on function public.prevent_featured_practitioner_delete()
   to service_role;
 
--- Enforce a single practitioner-owned portrait path in the directory table.
+-- Keep the existing shape check so already stored legacy paths remain valid.
+-- New and changed paths are restricted to practitioner UUID folders below.
 alter table public.practitioners
   drop constraint practitioners_image_path_check,
   add constraint practitioners_image_path_check
     check (
       image_path is null
       or (
-        length(btrim(image_path)) between 39 and 500
+        length(btrim(image_path)) between 1 and 500
         and image_path = btrim(image_path)
-        and image_path ~ '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/[a-z0-9][a-z0-9._-]*\.(jpe?g|png|webp)$'
+        and image_path ~ '^[a-z0-9][a-z0-9._/-]*$'
       )
     );
 
@@ -66,11 +67,21 @@ security invoker
 set search_path = ''
 as $$
 begin
-  if new.image_path is not null
-     and split_part(new.image_path, '/', 1) is distinct from new.id::text then
+  if new.image_path is null then
+    return new;
+  end if;
+
+  if tg_op = 'UPDATE'
+     and new.id = old.id
+     and new.image_path is not distinct from old.image_path then
+    return new;
+  end if;
+
+  if new.image_path !~ '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/[a-z0-9][a-z0-9._-]*\.(jpe?g|png|webp)$'
+     or split_part(new.image_path, '/', 1) is distinct from new.id::text then
     raise exception using
       errcode = '23514',
-      message = 'A practitioner image path must use its practitioner UUID folder';
+      message = 'A new practitioner image path must use its practitioner UUID folder and a supported filename';
   end if;
 
   return new;
@@ -109,6 +120,28 @@ $$;
 revoke all on function admin_private.is_valid_practitioner_image_path(text)
   from public, anon, authenticated;
 grant execute on function admin_private.is_valid_practitioner_image_path(text)
+  to authenticated, service_role;
+
+-- Existing legacy objects may be managed only while their exact path remains
+-- referenced by a practitioner. New objects use the strict helper above.
+create or replace function admin_private.is_referenced_practitioner_image_path(p_path text)
+returns boolean
+language sql
+stable
+security invoker
+set search_path = ''
+as $$
+  select p_path is not null
+    and exists (
+      select 1
+        from public.practitioners as p
+       where p.image_path = p_path
+    );
+$$;
+
+revoke all on function admin_private.is_referenced_practitioner_image_path(text)
+  from public, anon, authenticated;
+grant execute on function admin_private.is_referenced_practitioner_image_path(text)
   to authenticated, service_role;
 
 -- Admin creation is limited to business-input columns. Source must be admin,
@@ -201,7 +234,10 @@ to authenticated
 using (
   (select admin_private.is_admin())
   and bucket_id = 'profile-images'
-  and (select admin_private.is_valid_practitioner_image_path(name))
+  and (
+    (select admin_private.is_valid_practitioner_image_path(name))
+    or (select admin_private.is_referenced_practitioner_image_path(name))
+  )
 );
 
 drop policy if exists profile_images_admin_insert on storage.objects;
@@ -241,5 +277,8 @@ to authenticated
 using (
   (select admin_private.is_admin())
   and bucket_id = 'profile-images'
-  and (select admin_private.is_valid_practitioner_image_path(name))
+  and (
+    (select admin_private.is_valid_practitioner_image_path(name))
+    or (select admin_private.is_referenced_practitioner_image_path(name))
+  )
 );

@@ -1040,5 +1040,68 @@ select throws_ok(
   'administrator cannot insert a profile image for an unknown practitioner'
 );
 
+-- Production already contains legacy portrait paths. Simulate one existing
+-- row inside this rollback-only test so ordinary edits remain compatible.
+set local role postgres;
+alter table public.practitioners drop constraint practitioners_image_path_check;
+alter table public.practitioners disable trigger practitioners_validate_image_path;
+insert into public.practitioners (
+  id, slug, name, image_path, status
+)
+values (
+  '00000000-0000-0000-0000-00000000b106',
+  'foundation-legacy-image',
+  'Foundation Legacy Image',
+  'legacy/foundation-legacy.jpg',
+  'draft'
+);
+insert into storage.objects (bucket_id, name, owner, metadata)
+values (
+  'profile-images',
+  'legacy/foundation-legacy.jpg',
+  '00000000-0000-0000-0000-00000000b001',
+  '{"mimetype":"image/jpeg"}'::jsonb
+);
+alter table public.practitioners enable trigger practitioners_validate_image_path;
+set local role authenticated;
+select set_config(
+  'request.jwt.claims',
+  json_build_object(
+    'sub', '00000000-0000-0000-0000-00000000b001',
+    'role', 'authenticated'
+  )::text,
+  true
+);
+select is(
+  (select count(*)::integer
+     from storage.objects
+    where bucket_id = 'profile-images'
+      and name = 'legacy/foundation-legacy.jpg'),
+  1,
+  'administrators can select a referenced legacy portrait object'
+);
+select lives_ok(
+  $$update public.practitioners
+       set descriptor = 'Edited while retaining the legacy portrait path',
+           image_path = image_path
+     where id = '00000000-0000-0000-0000-00000000b106'$$,
+  'ordinary practitioner edits preserve referenced legacy portrait paths'
+);
+select throws_ok(
+  $$update public.practitioners
+       set image_path = 'legacy/changed.jpg'
+     where id = '00000000-0000-0000-0000-00000000b106'$$,
+  '23514',
+  null,
+  'legacy portrait paths cannot be changed to another legacy path'
+);
+select throws_ok(
+  $$delete from public.practitioners
+     where id = '00000000-0000-0000-0000-00000000b106'$$,
+  '23514',
+  null,
+  'legacy portrait rows require Storage deletion and path clearing first'
+);
+
 select * from finish();
 rollback;
