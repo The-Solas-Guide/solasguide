@@ -137,6 +137,10 @@ async function removePortrait(supabase: Awaited<ReturnType<typeof createServerSu
   return error?.message;
 }
 
+function errorMessage(error: unknown, fallback: string) {
+  return error instanceof Error ? error.message : fallback;
+}
+
 export async function savePractitioner(formData: FormData): Promise<AdminActionResult<{ id: string }>> {
   await requireAdmin();
   const supabase = await createServerSupabaseClient();
@@ -177,7 +181,7 @@ export async function savePractitioner(formData: FormData): Promise<AdminActionR
   const oldPath: string | null = existing?.image_path ?? null;
   try {
     if (!practitionerId) {
-      const { data, error } = await supabase.schema("admin_api").rpc("reserve_admin_practitioner");
+      const { data, error } = await supabase.rpc("reserve_admin_practitioner");
       if (error || !data) throw new Error(error?.message ?? "The practitioner could not be created.");
       practitionerId = data;
       reserved = true;
@@ -185,7 +189,7 @@ export async function savePractitioner(formData: FormData): Promise<AdminActionR
     if (file) newPath = await uploadPortrait(supabase, practitionerId, file);
 
     const payload = practitionerPayload(formData, newPath ?? oldPath);
-    const { data: savedId, error: saveError } = await supabase.schema("admin_api").rpc("save_admin_practitioner", {
+    const { data: savedId, error: saveError } = await supabase.rpc("save_admin_practitioner", {
       p_practitioner_id: practitionerId,
       p_slug: payload.slug,
       p_name: payload.name,
@@ -209,21 +213,49 @@ export async function savePractitioner(formData: FormData): Promise<AdminActionR
     });
     if (saveError || !savedId) throw new Error(saveError?.message ?? "The practitioner could not be saved.");
     practitionerId = savedId;
+  } catch (error) {
+    const originalError = errorMessage(error, "The practitioner could not be saved.");
+    const cleanupErrors: string[] = [];
+    if (newPath) {
+      try {
+        const cleanupError = await removePortrait(supabase, newPath);
+        if (cleanupError) cleanupErrors.push(`uploaded image cleanup failed: ${cleanupError}`);
+      } catch (cleanupError) {
+        cleanupErrors.push(`uploaded image cleanup failed: ${errorMessage(cleanupError, "the image could not be removed")}`);
+      }
+    }
+    if (reserved && practitionerId) {
+      try {
+        const { error: reservationCleanupError } = await supabase.rpc("delete_admin_practitioner_reservation", { p_practitioner_id: practitionerId });
+        if (reservationCleanupError) cleanupErrors.push(`reservation cleanup failed: ${reservationCleanupError.message}`);
+      } catch (cleanupError) {
+        cleanupErrors.push(`reservation cleanup failed: ${errorMessage(cleanupError, "the reservation could not be removed")}`);
+      }
+    }
+    return {
+      ok: false,
+      error: cleanupErrors.length ? `${originalError} Cleanup warning: ${cleanupErrors.join("; ")}` : originalError,
+    };
+  }
 
-    let warning: string | undefined;
-    if (newPath && oldPath && oldPath !== newPath) {
+  let warning: string | undefined;
+  if (newPath && oldPath && oldPath !== newPath) {
+    try {
       const cleanupError = await removePortrait(supabase, oldPath);
       if (cleanupError) warning = `Saved the new portrait, but the previous image could not be removed: ${cleanupError}`;
+    } catch (cleanupError) {
+      warning = `Saved the new portrait, but the previous image could not be removed: ${errorMessage(cleanupError, "the image could not be removed")}`;
     }
+  }
+  try {
     revalidatePath("/admin/practitioners");
     revalidatePath(`/admin/practitioners/${practitionerId}`);
     revalidatePath("/practitioners");
-    return { ok: true, data: { id: practitionerId }, warning };
-  } catch (error) {
-    if (newPath) await removePortrait(supabase, newPath);
-    if (reserved && practitionerId) await supabase.schema("admin_api").rpc("delete_admin_practitioner_reservation", { p_practitioner_id: practitionerId });
-    return { ok: false, error: error instanceof Error ? error.message : "The practitioner could not be saved." };
+  } catch (revalidationError) {
+    const revalidationWarning = `Saved the practitioner, but its pages could not be refreshed: ${errorMessage(revalidationError, "page refresh failed")}`;
+    warning = warning ? `${warning} ${revalidationWarning}` : revalidationWarning;
   }
+  return { ok: true, data: { id: practitionerId }, warning };
 }
 
 export async function archivePractitioner(id: string, restore = false): Promise<AdminActionResult> {
@@ -268,7 +300,7 @@ export async function reorderFeaturedPractitioners(ids: string[]): Promise<Admin
     return { ok: false, error: "Featured ordering is stale. Refresh and try again." };
   }
   if ((rows ?? []).some((row) => row.status !== "published")) return { ok: false, error: "Only published practitioners can be featured." };
-  const { error: reorderError } = await supabase.schema("admin_api").rpc("reorder_admin_featured", { p_practitioner_ids: orderedIds });
+  const { error: reorderError } = await supabase.rpc("reorder_admin_featured", { p_practitioner_ids: orderedIds });
   if (reorderError) return { ok: false, error: reorderError.message };
   revalidatePath("/admin/practitioners");
   revalidatePath("/practitioners");

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useReducer, useRef } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import {
   adminTableQueryKey,
   defaultAdminTableQuery,
@@ -66,7 +66,6 @@ export function useAdminTableQuery(
   defaults: Partial<AdminTableQueryState> = {},
 ) {
   const pathname = usePathname();
-  const router = useRouter();
   const searchParams = useSearchParams();
   const callerDefaults = useMemo(
     () => ({ ...defaultAdminTableQuery, ...defaults, filters: { ...defaultAdminTableQuery.filters, ...defaults.filters } }),
@@ -104,10 +103,11 @@ export function useAdminTableQuery(
         new URLSearchParams(searchParams.toString()),
         state,
       ).toString();
-      router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
+      // Filtering is local. Update the URL without refetching server records.
+      window.history.replaceState(null, "", query ? `${pathname}?${query}` : pathname);
       pendingUrlKey.current = stateKey;
     }
-  }, [pathname, router, searchParams, state, urlState]);
+  }, [pathname, searchParams, state, urlState]);
 
   const update = useCallback((action: AdminTableQueryAction) => dispatch(action), []);
   const reset = useCallback(() => dispatch({ type: "reset", defaults }), [defaults]);

@@ -81,6 +81,7 @@ describe("AdminTableShell", () => {
     expect(statusNavigation.className).toContain("overflow-y-hidden");
     expect(statusNavigation.className).toContain("min-h-[52px]");
     expect(screen.getAllByRole("tab").every((tab) => tab.className.includes("min-h-11"))).toBe(true);
+    expect(screen.getAllByRole("tab").every((tab) => tab.className.includes("text-xs") && tab.className.includes("font-semibold"))).toBe(true);
   });
 
   it("renders mobile cards and actions without horizontal table overflow", () => {

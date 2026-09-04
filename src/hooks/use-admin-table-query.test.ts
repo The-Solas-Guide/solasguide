@@ -72,20 +72,24 @@ describe("admin table query state", () => {
   it("hydrates URL changes and preserves unrelated query parameters", () => {
     navigation.params = new URLSearchParams("q=old&keep=1");
     navigation.router.replace.mockClear();
+    const replaceState = vi.spyOn(window.history, "replaceState");
     const { result, rerender } = renderHook(() =>
       useAdminTableQuery({ status: "active", pageSize: 25 }),
     );
 
     expect(result.current.state.search).toBe("old");
     act(() => result.current.dispatch({ type: "search", value: "new" }));
-    expect(navigation.router.replace).toHaveBeenCalledWith(
+    expect(replaceState).toHaveBeenCalledWith(
+      null,
+      "",
       "/admin/practitioners?keep=1&q=new&status=active&pageSize=25",
-      { scroll: false },
     );
+    expect(navigation.router.replace).not.toHaveBeenCalled();
 
     navigation.params = new URLSearchParams("q=later&keep=1&status=closed");
     rerender();
     expect(result.current.state.search).toBe("later");
     expect(result.current.state.status).toBe("closed");
+    replaceState.mockRestore();
   });
 });

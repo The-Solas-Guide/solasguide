@@ -7,56 +7,6 @@ export type Json =
   | Json[]
 
 export type Database = {
-  admin_api: {
-    Tables: {
-      [_ in never]: never
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      delete_admin_practitioner_reservation: {
-        Args: { p_practitioner_id: string }
-        Returns: undefined
-      }
-      reorder_admin_featured: {
-        Args: { p_practitioner_ids: string[] }
-        Returns: undefined
-      }
-      reserve_admin_practitioner: { Args: never; Returns: string }
-      save_admin_practitioner: {
-        Args: {
-          p_about?: string
-          p_credentials?: string[]
-          p_descriptor?: string
-          p_featured_position?: number
-          p_image_alt?: string
-          p_image_focal_x?: number
-          p_image_focal_y?: number
-          p_image_path?: string
-          p_instagram_url?: string
-          p_name?: string
-          p_offers_in_person?: boolean
-          p_offers_online?: boolean
-          p_practitioner_id?: string
-          p_significant_training?: string[]
-          p_slug?: string
-          p_status?: string
-          p_summary?: string
-          p_term_ids?: string[]
-          p_website_url?: string
-          p_years_active?: number
-        }
-        Returns: string
-      }
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
-  }
   graphql_public: {
     Tables: {
       [_ in never]: never
@@ -397,6 +347,10 @@ export type Database = {
           send_internal: boolean
         }[]
       }
+      delete_admin_practitioner_reservation: {
+        Args: { p_practitioner_id: string }
+        Returns: undefined
+      }
       get_active_practitioner_taxonomy_term: {
         Args: { p_slug: string; p_type: string }
         Returns: {
@@ -414,6 +368,36 @@ export type Database = {
           slug: string
           type: string
         }[]
+      }
+      reorder_admin_featured: {
+        Args: { p_practitioner_ids: string[] }
+        Returns: undefined
+      }
+      reserve_admin_practitioner: { Args: never; Returns: string }
+      save_admin_practitioner: {
+        Args: {
+          p_about?: string
+          p_credentials?: string[]
+          p_descriptor?: string
+          p_featured_position?: number
+          p_image_alt?: string
+          p_image_focal_x?: number
+          p_image_focal_y?: number
+          p_image_path?: string
+          p_instagram_url?: string
+          p_name?: string
+          p_offers_in_person?: boolean
+          p_offers_online?: boolean
+          p_practitioner_id?: string
+          p_significant_training?: string[]
+          p_slug?: string
+          p_status?: string
+          p_summary?: string
+          p_term_ids?: string[]
+          p_website_url?: string
+          p_years_active?: number
+        }
+        Returns: string
       }
       search_published_practitioner_ids: {
         Args: {
@@ -557,9 +541,6 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
-  admin_api: {
-    Enums: {},
-  },
   graphql_public: {
     Enums: {},
   },

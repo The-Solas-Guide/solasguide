@@ -1,10 +1,10 @@
 // @vitest-environment jsdom
 
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { toast } from "sonner";
 import { PractitionerEditor } from "@/components/admin/practitioner-editor";
-import { firstFreeFeaturedPosition, PractitionerManager } from "@/components/admin/practitioner-manager";
+import { firstFreeFeaturedPosition, imageProps, PractitionerManager } from "@/components/admin/practitioner-manager";
 import { TaxonomyEditor } from "@/components/admin/taxonomy-editor";
 import { TaxonomyManager } from "@/components/admin/taxonomy-manager";
 import type { AdminPractitionerRecord } from "@/lib/admin/practitioner-actions";
@@ -21,6 +21,7 @@ const mocks = vi.hoisted(() => ({
   saveTaxonomy: vi.fn(async () => ({ ok: true, data: { id: "00000000-0000-4000-8000-000000000011" } })),
   replace: vi.fn(),
   refresh: vi.fn(),
+  searchParams: new URLSearchParams(),
 }));
 
 vi.mock("sonner", () => ({ toast: { error: vi.fn(), success: vi.fn(), warning: vi.fn() } }));
@@ -28,7 +29,7 @@ vi.mock("sonner", () => ({ toast: { error: vi.fn(), success: vi.fn(), warning: v
 vi.mock("next/navigation", () => ({
   usePathname: () => "/admin/practitioners",
   useRouter: () => ({ replace: mocks.replace, refresh: mocks.refresh }),
-  useSearchParams: () => new URLSearchParams(),
+  useSearchParams: () => mocks.searchParams,
 }));
 vi.mock("@/lib/admin/practitioner-actions", () => ({
   archivePractitioner: mocks.archivePractitioner,
@@ -89,7 +90,10 @@ const archivedUnlinkedTerm = { ...taxonomy, id: "00000000-0000-4000-8000-0000000
 const activeTaxonomy = { ...taxonomy, is_active: true, archived_at: null, practitioners: [], usageCount: 0 };
 
 describe("practitioner and taxonomy CMS controls", () => {
-  beforeEach(() => vi.clearAllMocks());
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mocks.searchParams = new URLSearchParams();
+  });
   afterEach(() => cleanup());
 
   it("shows editor preview, focal controls, and feature controls", () => {
@@ -115,6 +119,23 @@ describe("practitioner and taxonomy CMS controls", () => {
     expect(firstFreeFeaturedPosition([other, practitioner, candidate])).toBe(3);
   });
 
+  it("returns no available position when all featured slots are filled", () => {
+    const records = Array.from({ length: 8 }, (_, index) => ({
+      ...practitioner,
+      id: `00000000-0000-0000-0000-${String(index + 1).padStart(12, "0")}`,
+      name: `Featured Practitioner ${index + 1}`,
+      slug: `featured-practitioner-${index + 1}`,
+      featured_position: index + 1,
+    }));
+    expect(firstFreeFeaturedPosition(records)).toBeNull();
+  });
+
+  it("renders refreshed practitioner props instead of keeping the initial records", () => {
+    const { rerender } = render(<PractitionerManager initialRecords={[practitioner]} />);
+    rerender(<PractitionerManager initialRecords={[{ ...practitioner, name: "Updated Practitioner" }]} />);
+    expect(screen.getAllByText("Updated Practitioner").length).toBeGreaterThan(0);
+  });
+
   it("paginates practitioner records", () => {
     const records = Array.from({ length: 11 }, (_, index) => ({
       ...practitioner,
@@ -130,10 +151,60 @@ describe("practitioner and taxonomy CMS controls", () => {
     expect(screen.queryByText("Practitioner 01")).toBeNull();
   });
 
+  it("uses the page size from the table query", () => {
+    mocks.searchParams = new URLSearchParams("pageSize=25");
+    const records = Array.from({ length: 11 }, (_, index) => ({
+      ...practitioner,
+      id: `00000000-0000-0000-0000-${String(index + 1).padStart(12, "0")}`,
+      name: `Practitioner ${String(index + 1).padStart(2, "0")}`,
+      slug: `practitioner-${index + 1}`,
+    }));
+    render(<PractitionerManager initialRecords={records} />);
+    expect(screen.getAllByText("Practitioner 11").length).toBeGreaterThan(0);
+    expect((screen.getByRole("button", { name: "Next" }) as HTMLButtonElement).disabled).toBe(true);
+  });
+
+  it("renders resized table portrait props", () => {
+    const previousUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    process.env.NEXT_PUBLIC_SUPABASE_URL = "http://127.0.0.1:54321";
+    const props = imageProps("portrait/avatar.jpg", "Approved portrait");
+
+    expect(props?.width).toBe(40);
+    expect(props?.height).toBe(40);
+    expect(props?.src).toContain("w=96");
+    expect(props?.srcSet).toContain("w=48");
+    if (previousUrl === undefined) delete process.env.NEXT_PUBLIC_SUPABASE_URL;
+    else process.env.NEXT_PUBLIC_SUPABASE_URL = previousUrl;
+  });
+
+  it("sorts practitioner updated dates in both directions", async () => {
+    const older = { ...practitioner, id: "00000000-0000-0000-0000-000000000021", name: "Older Practitioner", slug: "older-practitioner", updated_at: "2026-09-01T00:00:00Z" };
+    const newer = { ...practitioner, id: "00000000-0000-0000-0000-000000000022", name: "Newer Practitioner", slug: "newer-practitioner", updated_at: "2026-09-03T00:00:00Z" };
+    render(<PractitionerManager initialRecords={[newer, older]} />);
+    const table = screen.getByTestId("admin-table-desktop");
+    const sortButton = within(table).getByRole("button", { name: "Sort by Updated" });
+
+    fireEvent.click(sortButton);
+    await waitFor(() => expect(within(table).getAllByRole("row")[1].textContent).toContain("Older Practitioner"));
+    fireEvent.click(sortButton);
+    await waitFor(() => expect(within(table).getAllByRole("row")[1].textContent).toContain("Newer Practitioner"));
+  });
+
   it("shows exact linked practitioner names and links on taxonomy screens", () => {
     render(<TaxonomyEditor record={taxonomy} />);
     expect(screen.getByRole("link", { name: practitioner.name }).getAttribute("href")).toBe(`/admin/practitioners/${practitionerId}`);
     expect(screen.getByText(/Used by 1 practitioner/)).toBeTruthy();
+  });
+
+  it("clears the saved state when an existing taxonomy term is edited", async () => {
+    render(<TaxonomyEditor record={activeTaxonomy} />);
+    fireEvent.click(screen.getByRole("button", { name: "Save changes" }));
+    await waitFor(() => expect(mocks.saveTaxonomy).toHaveBeenCalled());
+    await waitFor(() => expect(screen.getByRole("button", { name: "Saved" })).toBeTruthy());
+    expect(mocks.refresh).toHaveBeenCalledTimes(1);
+
+    fireEvent.change(screen.getByLabelText("Name"), { target: { value: "Changed term" } });
+    expect(screen.getByRole("button", { name: "Save changes" })).toBeTruthy();
   });
 
   it("blocks practitioner archive while the editor has unsaved changes", async () => {
@@ -184,6 +255,23 @@ describe("practitioner and taxonomy CMS controls", () => {
     expect(screen.getByText("Page 2")).toBeTruthy();
     expect(screen.getAllByText("Taxonomy 11").length).toBeGreaterThan(0);
     expect(screen.queryByText("Taxonomy 01")).toBeNull();
+  });
+
+  it("sorts taxonomy state, usage, and order through sortable accessors", async () => {
+    const records = [
+      { ...activeTaxonomy, id: "00000000-0000-0000-0000-000000000031", name: "Low usage", slug: "low-usage", usageCount: 1, sort_order: 20 },
+      { ...activeTaxonomy, id: "00000000-0000-0000-0000-000000000032", name: "High usage", slug: "high-usage", usageCount: 3, sort_order: 10, is_active: false },
+    ];
+    render(<TaxonomyManager initialRecords={records} />);
+    const table = screen.getByTestId("admin-table-desktop");
+    const rowText = () => within(table).getAllByRole("row").slice(1).map((row) => row.textContent ?? "");
+
+    fireEvent.click(within(table).getByRole("button", { name: "Sort by Practitioners" }));
+    await waitFor(() => expect(rowText()[0]).toContain("Low usage"));
+    fireEvent.click(within(table).getByRole("button", { name: "Sort by Status" }));
+    await waitFor(() => expect(rowText()[0]).toContain("Low usage"));
+    fireEvent.click(within(table).getByRole("button", { name: "Sort by Order" }));
+    await waitFor(() => expect(rowText()[0]).toContain("High usage"));
   });
 
   it("keeps linked archived taxonomy terms visible, but hides unrelated archived terms", () => {
