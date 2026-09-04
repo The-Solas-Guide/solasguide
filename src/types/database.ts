@@ -15,11 +15,6 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      create_admin_practitioner_draft: { Args: never; Returns: string }
-      delete_failed_admin_practitioner_draft: {
-        Args: { p_practitioner_id: string }
-        Returns: undefined
-      }
       reorder_admin_featured: {
         Args: { p_practitioner_ids: string[] }
         Returns: undefined

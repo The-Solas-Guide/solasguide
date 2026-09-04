@@ -171,23 +171,15 @@ export async function savePractitioner(formData: FormData): Promise<AdminActionR
   const fieldErrors = validatePractitionerFields(formData, status, Boolean(file || existing?.image_path), hasLocation);
   if (Object.keys(fieldErrors).length) return { ok: false, fieldErrors };
 
-  let practitionerId = existing?.id;
-  let created = false;
+  let practitionerId = existing?.id ?? crypto.randomUUID();
   let newPath: string | null = null;
   const oldPath: string | null = existing?.image_path ?? null;
   try {
-    if (!practitionerId) {
-      const { data, error } = await supabase.schema("admin_api").rpc("create_admin_practitioner_draft");
-      if (error || !data) throw new Error(error?.message ?? "The practitioner could not be created.");
-      practitionerId = data;
-      created = true;
-    }
-    if (!practitionerId) throw new Error("The practitioner ID is missing.");
     if (file) newPath = await uploadPortrait(supabase, practitionerId, file);
 
     const payload = practitionerPayload(formData, newPath ?? oldPath);
     const { data: savedId, error: saveError } = await supabase.schema("admin_api").rpc("save_admin_practitioner", {
-      p_practitioner_id: practitionerId,
+      p_practitioner_id: existing ? practitionerId : undefined,
       p_slug: payload.slug,
       p_name: payload.name,
       p_descriptor: payload.descriptor ?? undefined,
@@ -222,7 +214,6 @@ export async function savePractitioner(formData: FormData): Promise<AdminActionR
     return { ok: true, data: { id: practitionerId }, warning };
   } catch (error) {
     if (newPath) await removePortrait(supabase, newPath);
-    if (created && practitionerId) await supabase.schema("admin_api").rpc("delete_failed_admin_practitioner_draft", { p_practitioner_id: practitionerId });
     return { ok: false, error: error instanceof Error ? error.message : "The practitioner could not be saved." };
   }
 }
