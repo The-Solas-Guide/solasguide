@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeftIcon, ExternalLinkIcon } from "lucide-react";
 import { toast } from "sonner";
@@ -72,8 +72,11 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
       }
       setDirty(false);
       setSaved(true);
+      setFile(null);
+      setApproved(false);
       if (result.warning) toast.warning(result.warning);
       if (isNew && result.data?.id) router.replace(`/admin/practitioners/${result.data.id}`);
+      else router.refresh();
     });
   };
   const changeStatus = (next: typeof status) => {
@@ -105,10 +108,12 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
       toast.success(next === null ? "Removed from featured." : "Featured position saved.");
     }
   });
-  const activeTerms = terms.filter((term) => !term.archived_at || selectedTerms.has(term.id));
+  const activeTerms = terms.filter((term) => term.is_active || selectedTerms.has(term.id));
   const grouped = new Map<string, TaxonomyRow[]>();
   for (const term of activeTerms) grouped.set(term.type, [...(grouped.get(term.type) ?? []), term]);
-  const currentImage = file ? URL.createObjectURL(file) : imageUrl(record?.image_path ?? null);
+  const selectedImage = useMemo(() => file ? URL.createObjectURL(file) : null, [file]);
+  useEffect(() => () => { if (selectedImage) URL.revokeObjectURL(selectedImage); }, [selectedImage]);
+  const currentImage = selectedImage ?? imageUrl(record?.image_path ?? null);
 
   return <div className="mx-auto flex w-full min-w-0 max-w-4xl flex-col gap-6">
     <div className="flex flex-wrap items-center gap-3"><Button asChild variant="ghost"><Link href="/admin/practitioners"><ArrowLeftIcon />Practitioners</Link></Button>{record && <Button asChild variant="outline"><Link href={`/admin/practitioners/${record.id}/preview`}>Preview</Link></Button>}</div>

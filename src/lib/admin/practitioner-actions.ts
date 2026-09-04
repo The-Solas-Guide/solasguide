@@ -153,6 +153,15 @@ export async function savePractitioner(formData: FormData): Promise<AdminActionR
   if (termError) return { ok: false, error: termError.message };
   const validTerms = (terms ?? []) as Pick<TaxonomyRow, "id" | "type" | "is_active" | "archived_at">[];
   if (validTerms.length !== termIds.length) return { ok: false, error: "One or more selected taxonomy terms no longer exist." };
+  const existingTermIds = new Set<string>();
+  if (existing) {
+    const { data: existingLinks, error: linkError } = await supabase.from("practitioner_term_links").select("term_id").eq("practitioner_id", existing.id);
+    if (linkError) return { ok: false, error: linkError.message };
+    for (const link of existingLinks ?? []) existingTermIds.add(link.term_id);
+  }
+  if (validTerms.some((term) => (!term.is_active || term.archived_at) && !existingTermIds.has(term.id))) {
+    return { ok: false, error: "Only active taxonomy terms can be added to a practitioner." };
+  }
   const hasLocation = validTerms.some((term) => term.type === "location" && term.is_active && !term.archived_at);
   const fileEntry = formData.get("portrait");
   const file = fileEntry instanceof File && fileEntry.size > 0 ? fileEntry : null;
@@ -177,7 +186,7 @@ export async function savePractitioner(formData: FormData): Promise<AdminActionR
     if (file) newPath = await uploadPortrait(supabase, practitionerId, file);
 
     const payload = practitionerPayload(formData, newPath ?? oldPath);
-    const { data: savedId, error: saveError } = await supabase.rpc("save_admin_practitioner", {
+    const { data: savedId, error: saveError } = await supabase.schema("admin_api").rpc("save_admin_practitioner", {
       p_practitioner_id: practitionerId,
       p_slug: payload.slug,
       p_name: payload.name,
@@ -260,7 +269,7 @@ export async function reorderFeaturedPractitioners(ids: string[]): Promise<Admin
     return { ok: false, error: "Featured ordering is stale. Refresh and try again." };
   }
   if ((rows ?? []).some((row) => row.status !== "published")) return { ok: false, error: "Only published practitioners can be featured." };
-  const { error: reorderError } = await supabase.rpc("reorder_admin_featured", { p_practitioner_ids: orderedIds });
+  const { error: reorderError } = await supabase.schema("admin_api").rpc("reorder_admin_featured", { p_practitioner_ids: orderedIds });
   if (reorderError) return { ok: false, error: reorderError.message };
   revalidatePath("/admin/practitioners");
   revalidatePath("/practitioners");

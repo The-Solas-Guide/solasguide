@@ -36,6 +36,11 @@ function imageUrl(path: string | null) {
   return base && path ? `${base}/storage/v1/object/public/profile-images/${path}` : null;
 }
 
+export function firstFreeFeaturedPosition(records: Pick<AdminPractitionerRecord, "featured_position">[]) {
+  const occupied = new Set(records.map((item) => item.featured_position).filter((position): position is number => position !== null));
+  return [1, 2, 3, 4, 5, 6, 7, 8].find((position) => !occupied.has(position)) ?? null;
+}
+
 type PractitionerRowActionsProps = {
   record: AdminPractitionerRecord;
   disabled: boolean;
@@ -111,7 +116,7 @@ export function PractitionerManager({ initialRecords }: { initialRecords: AdminP
   const pageRecords = filtered.slice(pageStart, pageStart + pageSize);
 
   const feature = (record: AdminPractitionerRecord) => {
-    const next = record.featured_position === null ? Math.min(8, records.filter((item) => item.featured_position !== null).length + 1) : null;
+    const next = record.featured_position === null ? firstFreeFeaturedPosition(records) : null;
     startTransition(async () => {
       const result = await setPractitionerFeaturedPosition(record.id, next);
       if (!result.ok) toast.error(result.error ?? "Featured status could not be saved.");

@@ -4,7 +4,7 @@ import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/re
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { toast } from "sonner";
 import { PractitionerEditor } from "@/components/admin/practitioner-editor";
-import { PractitionerManager } from "@/components/admin/practitioner-manager";
+import { firstFreeFeaturedPosition, PractitionerManager } from "@/components/admin/practitioner-manager";
 import { TaxonomyEditor } from "@/components/admin/taxonomy-editor";
 import { TaxonomyManager } from "@/components/admin/taxonomy-manager";
 import type { AdminPractitionerRecord } from "@/lib/admin/practitioner-actions";
@@ -20,13 +20,14 @@ const mocks = vi.hoisted(() => ({
   deleteTaxonomy: vi.fn(async () => ({ ok: true })),
   saveTaxonomy: vi.fn(async () => ({ ok: true, data: { id: "00000000-0000-4000-8000-000000000011" } })),
   replace: vi.fn(),
+  refresh: vi.fn(),
 }));
 
 vi.mock("sonner", () => ({ toast: { error: vi.fn(), success: vi.fn(), warning: vi.fn() } }));
 
 vi.mock("next/navigation", () => ({
   usePathname: () => "/admin/practitioners",
-  useRouter: () => ({ replace: mocks.replace }),
+  useRouter: () => ({ replace: mocks.replace, refresh: mocks.refresh }),
   useSearchParams: () => new URLSearchParams(),
 }));
 vi.mock("@/lib/admin/practitioner-actions", () => ({
@@ -108,6 +109,12 @@ describe("practitioner and taxonomy CMS controls", () => {
     expect(screen.getAllByText("1 / 8")).toHaveLength(1);
   });
 
+  it("uses the first free featured position when the current order has gaps", async () => {
+    const other = { ...practitioner, id: "00000000-0000-4000-8000-000000000003", name: "Other Practitioner", slug: "other-practitioner", featured_position: 1 };
+    const candidate = { ...practitioner, id: "00000000-0000-4000-8000-000000000004", name: "Candidate Practitioner", slug: "candidate-practitioner", featured_position: null };
+    expect(firstFreeFeaturedPosition([other, practitioner, candidate])).toBe(3);
+  });
+
   it("paginates practitioner records", () => {
     const records = Array.from({ length: 11 }, (_, index) => ({
       ...practitioner,
@@ -186,5 +193,12 @@ describe("practitioner and taxonomy CMS controls", () => {
     expect(screen.queryByText("Archived Tokyo")).toBeNull();
     fireEvent.click(screen.getByLabelText(/Archived Bali/));
     expect(screen.queryByText("Archived Bali")).toBeNull();
+  });
+
+  it("hides unlinked inactive taxonomy terms", () => {
+    const inactiveTerm = { ...activeTaxonomy, id: "00000000-0000-4000-8000-000000000013", name: "Inactive Tokyo", slug: "inactive-tokyo", is_active: false };
+    render(<PractitionerEditor record={practitioner} terms={[activeTaxonomy, inactiveTerm]} />);
+    expect(screen.getByText("Bali")).toBeTruthy();
+    expect(screen.queryByText("Inactive Tokyo")).toBeNull();
   });
 });

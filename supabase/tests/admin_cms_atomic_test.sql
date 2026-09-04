@@ -2,28 +2,40 @@ begin;
 
 select no_plan();
 
+select has_schema('admin_api', 'administrator mutation schema exists');
+select ok(
+  to_regprocedure('public.save_admin_practitioner(uuid,text,text,text,integer,text,text,text[],text[],boolean,boolean,text,text,text,text,numeric,numeric,text,smallint,uuid[])') is null,
+  'practitioner save mutation is not exposed in the public schema'
+);
+select ok(
+  to_regprocedure('public.reorder_admin_featured(uuid[])') is null,
+  'featured reorder mutation is not exposed in the public schema'
+);
+
 select is(
-  (select prosecdef from pg_proc where oid = 'public.save_admin_practitioner(uuid,text,text,text,integer,text,text,text[],text[],boolean,boolean,text,text,text,text,numeric,numeric,text,smallint,uuid[])'::regprocedure),
+  (select prosecdef from pg_proc where oid = 'admin_api.save_admin_practitioner(uuid,text,text,text,integer,text,text,text[],text[],boolean,boolean,text,text,text,text,numeric,numeric,text,smallint,uuid[])'::regprocedure),
   false,
   'practitioner save RPC is security invoker'
 );
 select is(
-  (select prosecdef from pg_proc where oid = 'public.reorder_admin_featured(uuid[])'::regprocedure),
+  (select prosecdef from pg_proc where oid = 'admin_api.reorder_admin_featured(uuid[])'::regprocedure),
   false,
   'featured reorder RPC is security invoker'
 );
 select ok(
-  exists (select 1 from pg_proc, unnest(coalesce(proconfig, array[]::text[])) as setting where oid = 'public.save_admin_practitioner(uuid,text,text,text,integer,text,text,text[],text[],boolean,boolean,text,text,text,text,numeric,numeric,text,smallint,uuid[])'::regprocedure and setting = 'search_path=""'),
+  exists (select 1 from pg_proc, unnest(coalesce(proconfig, array[]::text[])) as setting where oid = 'admin_api.save_admin_practitioner(uuid,text,text,text,integer,text,text,text[],text[],boolean,boolean,text,text,text,text,numeric,numeric,text,smallint,uuid[])'::regprocedure and setting = 'search_path=""'),
   'practitioner save RPC uses an empty search path'
 );
 select ok(
-  exists (select 1 from pg_proc, unnest(coalesce(proconfig, array[]::text[])) as setting where oid = 'public.reorder_admin_featured(uuid[])'::regprocedure and setting = 'search_path=""'),
+  exists (select 1 from pg_proc, unnest(coalesce(proconfig, array[]::text[])) as setting where oid = 'admin_api.reorder_admin_featured(uuid[])'::regprocedure and setting = 'search_path=""'),
   'featured reorder RPC uses an empty search path'
 );
-select ok(not has_function_privilege('anon', 'public.save_admin_practitioner(uuid,text,text,text,integer,text,text,text[],text[],boolean,boolean,text,text,text,text,numeric,numeric,text,smallint,uuid[])', 'EXECUTE'), 'anonymous users cannot execute practitioner save RPC');
-select ok(has_function_privilege('authenticated', 'public.save_admin_practitioner(uuid,text,text,text,integer,text,text,text[],text[],boolean,boolean,text,text,text,text,numeric,numeric,text,smallint,uuid[])', 'EXECUTE'), 'authenticated users can request practitioner save RPC');
-select ok(not has_function_privilege('anon', 'public.reorder_admin_featured(uuid[])', 'EXECUTE'), 'anonymous users cannot execute featured reorder RPC');
-select ok(has_function_privilege('authenticated', 'public.reorder_admin_featured(uuid[])', 'EXECUTE'), 'authenticated users can request featured reorder RPC');
+select ok(not has_schema_privilege('anon', 'admin_api', 'USAGE'), 'anonymous users cannot use the administrator mutation schema');
+select ok(has_schema_privilege('authenticated', 'admin_api', 'USAGE'), 'authenticated users can use the administrator mutation schema');
+select ok(not has_function_privilege('anon', 'admin_api.save_admin_practitioner(uuid,text,text,text,integer,text,text,text[],text[],boolean,boolean,text,text,text,text,numeric,numeric,text,smallint,uuid[])', 'EXECUTE'), 'anonymous users cannot execute practitioner save RPC');
+select ok(has_function_privilege('authenticated', 'admin_api.save_admin_practitioner(uuid,text,text,text,integer,text,text,text[],text[],boolean,boolean,text,text,text,text,numeric,numeric,text,smallint,uuid[])', 'EXECUTE'), 'authenticated users can request practitioner save RPC');
+select ok(not has_function_privilege('anon', 'admin_api.reorder_admin_featured(uuid[])', 'EXECUTE'), 'anonymous users cannot execute featured reorder RPC');
+select ok(has_function_privilege('authenticated', 'admin_api.reorder_admin_featured(uuid[])', 'EXECUTE'), 'authenticated users can request featured reorder RPC');
 
 set local role postgres;
 insert into auth.users (id, instance_id, aud, role, email)
@@ -53,17 +65,17 @@ update public.practitioners set featured_position = 2 where id = '00000000-0000-
 set local role authenticated;
 select set_config('request.jwt.claims', json_build_object('sub', '00000000-0000-0000-0000-00000000c002', 'role', 'authenticated')::text, true);
 select throws_ok(
-  $$select public.save_admin_practitioner(p_practitioner_id => '00000000-0000-0000-0000-00000000c101'::uuid, p_slug => 'blocked', p_name => 'Blocked')$$,
+  $$select admin_api.save_admin_practitioner(p_practitioner_id => '00000000-0000-0000-0000-00000000c101'::uuid, p_slug => 'blocked', p_name => 'Blocked')$$,
   '42501', null, 'non-admin users cannot call practitioner save RPC'
 );
 select throws_ok(
-  $$select public.reorder_admin_featured(array['00000000-0000-0000-0000-00000000c102'::uuid, '00000000-0000-0000-0000-00000000c103'::uuid])$$,
+  $$select admin_api.reorder_admin_featured(array['00000000-0000-0000-0000-00000000c102'::uuid, '00000000-0000-0000-0000-00000000c103'::uuid])$$,
   '42501', null, 'non-admin users cannot call featured reorder RPC'
 );
 
 select set_config('request.jwt.claims', json_build_object('sub', '00000000-0000-0000-0000-00000000c001', 'role', 'authenticated')::text, true);
 select is(
-  public.save_admin_practitioner(
+  admin_api.save_admin_practitioner(
     p_practitioner_id => '00000000-0000-0000-0000-00000000c101'::uuid,
     p_slug => 'atomic-practitioner-updated', p_name => 'Atomic Practitioner Updated',
     p_summary => 'A saved summary', p_about => 'Saved about text',
@@ -76,23 +88,23 @@ select is((select name from public.practitioners where id = '00000000-0000-0000-
 select is((select image_focal_x from public.practitioners where id = '00000000-0000-0000-0000-00000000c101'), 31::numeric, 'atomic save persists focal X');
 select is((select count(*)::integer from public.practitioner_term_links where practitioner_id = '00000000-0000-0000-0000-00000000c101'), 1, 'atomic save persists practitioner links');
 select throws_ok(
-  $$select public.save_admin_practitioner(p_practitioner_id => '00000000-0000-0000-0000-00000000c101'::uuid, p_slug => 'should-roll-back', p_name => 'Should Roll Back', p_term_ids => array['00000000-0000-0000-0000-00000000c999'::uuid])$$,
+  $$select admin_api.save_admin_practitioner(p_practitioner_id => '00000000-0000-0000-0000-00000000c101'::uuid, p_slug => 'should-roll-back', p_name => 'Should Roll Back', p_term_ids => array['00000000-0000-0000-0000-00000000c999'::uuid])$$,
   '23503', null, 'invalid practitioner link rolls back the atomic save'
 );
 select is((select name from public.practitioners where id = '00000000-0000-0000-0000-00000000c101'), 'Atomic Practitioner Updated', 'failed atomic save leaves practitioner fields unchanged');
 
 select throws_ok(
-  $$select public.reorder_admin_featured(array['00000000-0000-0000-0000-00000000c102'::uuid])$$,
+  $$select admin_api.reorder_admin_featured(array['00000000-0000-0000-0000-00000000c102'::uuid])$$,
   'P0002', null, 'featured reorder rejects missing current IDs'
 );
 select throws_ok(
-  $$select public.reorder_admin_featured(array['00000000-0000-0000-0000-00000000c102'::uuid, '00000000-0000-0000-0000-00000000c104'::uuid])$$,
+  $$select admin_api.reorder_admin_featured(array['00000000-0000-0000-0000-00000000c102'::uuid, '00000000-0000-0000-0000-00000000c104'::uuid])$$,
   'P0002', null, 'featured reorder rejects stale unpublished IDs'
 );
 select is((select featured_position from public.practitioners where id = '00000000-0000-0000-0000-00000000c102'), 1::smallint, 'failed featured reorder preserves first position');
 select is((select featured_position from public.practitioners where id = '00000000-0000-0000-0000-00000000c103'), 2::smallint, 'failed featured reorder preserves second position');
 select lives_ok(
-  $$select public.reorder_admin_featured(array['00000000-0000-0000-0000-00000000c103'::uuid, '00000000-0000-0000-0000-00000000c102'::uuid])$$,
+  $$select admin_api.reorder_admin_featured(array['00000000-0000-0000-0000-00000000c103'::uuid, '00000000-0000-0000-0000-00000000c102'::uuid])$$,
   'administrator can atomically reorder featured practitioners'
 );
 select is((select featured_position from public.practitioners where id = '00000000-0000-0000-0000-00000000c103'), 1::smallint, 'featured reorder assigns requested first position');
