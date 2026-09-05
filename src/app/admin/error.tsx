@@ -10,13 +10,13 @@ export default function AdminError({ reset }: { reset: () => void }) {
         <div>
           <h1 className="admin-title">This page could not load</h1>
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-            Try again. If the problem continues, check the local Supabase connection.
+            Try again. If the problem continues, contact your website administrator.
           </p>
         </div>
         <Alert variant="destructive">
           <AlertTitle>The admin page could not load</AlertTitle>
           <AlertDescription>
-            Try again. If the problem continues, check the Supabase connection.
+            The page is temporarily unavailable.
           </AlertDescription>
         </Alert>
         <Button type="button" onClick={reset} className="self-start">
