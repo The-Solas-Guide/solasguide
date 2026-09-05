@@ -3,8 +3,9 @@
 import Link from "next/link";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeftIcon, ExternalLinkIcon } from "lucide-react";
+import { ExternalLinkIcon } from "lucide-react";
 import { toast } from "sonner";
+import { AdminBackLink, AdminPanel } from "@/components/admin/admin-page";
 import {
   AdminFormField,
   AdminFormLayout,
@@ -200,13 +201,8 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
 
   return (
     <div className="mx-auto flex w-full min-w-0 max-w-4xl flex-col gap-6">
-      <div className="flex flex-wrap items-center gap-3">
-        <Button asChild variant="ghost">
-          <Link href="/admin/practitioners">
-            <ArrowLeftIcon />
-            Practitioners
-          </Link>
-        </Button>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <AdminBackLink href="/admin/practitioners">Practitioners</AdminBackLink>
         {record && (
           <Button asChild variant="outline">
             <Link href={`/admin/practitioners/${record.id}/preview`}>
@@ -462,7 +458,7 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
           <div className="grid gap-5">
             {[...grouped.entries()].map(([type, items]) => (
               <fieldset key={type} className="grid gap-2">
-                <legend className="text-sm font-semibold">
+                <legend className="text-sm font-medium">
                   {type
                     .replaceAll("_", " ")
                     .replace(/(^|\s)\S/g, (letter) => letter.toUpperCase())}
@@ -471,7 +467,7 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
                   {items.map((term) => (
                     <label
                       key={term.id}
-                      className="flex min-h-11 items-center gap-2 rounded-md border px-3 text-sm"
+                      className="flex min-h-11 items-center gap-2 text-sm"
                     >
                       <input
                         type="checkbox"
@@ -483,7 +479,7 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
                       <span>
                         {term.name}
                         {term.archived_at && (
-                          <span className="ml-2 text-xs font-semibold uppercase tracking-[0.1em] text-muted-foreground">
+                          <span className="ml-2 text-xs text-muted-foreground">
                             Archived
                           </span>
                         )}
@@ -500,105 +496,93 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
             )}
           </div>
         </AdminFormSection>
-        <div className="grid gap-4">
-          <section className="rounded-md border bg-card p-4">
-            <PublicLifecycleControls
-              value={status}
-              onChange={changeStatus}
-              onArchive={() => archive(false)}
-              disabled={pending}
-              recordName={record?.name ?? "this practitioner"}
-            />
-          </section>
-          {record && status === "published" && (
-            <section className="grid gap-3 rounded-md border bg-card p-4">
-              <div>
-                <h2 className="font-semibold">Featured placement</h2>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  Choose a position from 1 to 8, or remove this practitioner
-                  from Featured.
-                </p>
-              </div>
-              <div className="flex flex-wrap items-end gap-3">
-                <label className="grid gap-2 text-sm font-medium">
-                  Position
-                  <select
-                    aria-label="Featured position"
-                    className="h-11 rounded-md border bg-background px-3"
-                    value={featuredPosition}
-                    onChange={(event) => {
-                      setFeaturedPosition(Number(event.currentTarget.value));
-                      markDirty();
-                    }}
-                  >
-                    {[1, 2, 3, 4, 5, 6, 7, 8].map((position) => (
-                      <option key={position} value={position}>
-                        {position}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                {isFeatured ? (
-                  <>
-                    <Button
-                      type="button"
-                      onClick={() => updateFeatured(featuredPosition)}
-                      disabled={pending}
-                    >
-                      Save featured position
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => updateFeatured(null)}
-                      disabled={pending}
-                    >
-                      Unfeature
-                    </Button>
-                  </>
-                ) : (
+        <AdminPanel title="Public lifecycle">
+          <PublicLifecycleControls
+            value={status}
+            onChange={changeStatus}
+            onArchive={() => archive(false)}
+            disabled={pending}
+            recordName={record?.name ?? "this practitioner"}
+          />
+        </AdminPanel>
+        {record && status === "published" && (
+          <AdminPanel
+            title="Featured placement"
+            description="Choose a position from 1 to 8, or remove this practitioner from Featured."
+          >
+            <div className="flex flex-wrap items-end gap-3">
+              <label className="grid gap-2 text-sm font-medium">
+                Position
+                <select
+                  aria-label="Featured position"
+                  className="h-11 rounded-md border bg-background px-3"
+                  value={featuredPosition}
+                  onChange={(event) => {
+                    setFeaturedPosition(Number(event.currentTarget.value));
+                    markDirty();
+                  }}
+                >
+                  {[1, 2, 3, 4, 5, 6, 7, 8].map((position) => (
+                    <option key={position} value={position}>
+                      {position}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              {isFeatured ? (
+                <>
                   <Button
                     type="button"
                     onClick={() => updateFeatured(featuredPosition)}
                     disabled={pending}
                   >
-                    Feature
+                    Save featured position
                   </Button>
-                )}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => updateFeatured(null)}
+                    disabled={pending}
+                  >
+                    Unfeature
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  type="button"
+                  onClick={() => updateFeatured(featuredPosition)}
+                  disabled={pending}
+                >
+                  Feature
+                </Button>
+              )}
+            </div>
+          </AdminPanel>
+        )}
+        {record && (
+          <AdminPanel
+            title="Record actions"
+            description={`Created ${formatAdminDate(record.created_at)}. Archive before permanent deletion.`}
+          >
+            {status === "archived" ? (
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => archive(true)}
+                  disabled={pending}
+                >
+                  Restore to draft
+                </Button>
+                <AdminPermanentDeleteDialog
+                  recordName={record.name}
+                  onDelete={remove}
+                  disabled={pending}
+                />
               </div>
-            </section>
-          )}
-          {record && (
-            <section className="rounded-md border bg-card p-4">
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <div>
-                  <h2 className="font-semibold">Record actions</h2>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    Created {formatAdminDate(record.created_at)}. Archive before
-                    permanent deletion.
-                  </p>
-                </div>
-                {status === "archived" && (
-                  <div className="flex flex-wrap gap-2">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => archive(true)}
-                      disabled={pending}
-                    >
-                      Restore to draft
-                    </Button>
-                    <AdminPermanentDeleteDialog
-                      recordName={record.name}
-                      onDelete={remove}
-                      disabled={pending}
-                    />
-                  </div>
-                )}
-              </div>
-            </section>
-          )}
-        </div>
+            ) : null}
+          </AdminPanel>
+        )}
       </AdminFormLayout>
     </div>
   );

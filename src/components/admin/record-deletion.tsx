@@ -7,7 +7,7 @@ import type { RelationshipBlocker } from "@/lib/admin/types";
 
 function AdminRelationshipSummary({ relationships }: { relationships: readonly RelationshipBlocker[] }) {
   if (!relationships.length) return null;
-  return <section aria-label="Blocking relationships" className="rounded-md border border-destructive/30 bg-destructive/5 p-4"><h3 className="font-semibold">Blocking relationships</h3><ul className="mt-3 grid gap-3">{relationships.map((relationship) => <li key={`${relationship.type}-${relationship.href}-${relationship.name}`} className="grid gap-1 text-sm"><span className="text-xs font-semibold uppercase tracking-[0.1em] text-muted-foreground">{relationship.type}</span><a className="font-medium underline underline-offset-4" href={relationship.href}>{relationship.name}</a><span className="text-muted-foreground">{relationship.reason}</span></li>)}</ul></section>;
+  return <section aria-label="Blocking relationships" className="border border-destructive/30 bg-destructive/5 p-4"><h3 className="text-sm font-medium">Blocking relationships</h3><ul className="mt-3 grid gap-3">{relationships.map((relationship) => <li key={`${relationship.type}-${relationship.href}-${relationship.name}`} className="grid gap-1 text-sm"><span className="text-xs text-muted-foreground">{relationship.type}</span><a className="font-medium underline underline-offset-4" href={relationship.href}>{relationship.name}</a><span className="text-muted-foreground">{relationship.reason}</span></li>)}</ul></section>;
 }
 
 type AdminArchiveConfirmationProps = {

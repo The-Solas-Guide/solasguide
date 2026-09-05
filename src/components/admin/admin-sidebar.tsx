@@ -3,24 +3,15 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  FileTextIcon,
-  HeartHandshakeIcon,
-  InboxIcon,
-  LayoutDashboardIcon,
-  LogOutIcon,
-  TagsIcon,
-  UsersIcon,
-} from "lucide-react";
+import { LogOutIcon } from "lucide-react";
+import { adminNavigation } from "@/components/admin/admin-navigation";
 import { signOutAdmin } from "@/lib/admin/auth-actions";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -29,26 +20,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 
-export const adminNavigation = [
-  { title: "Overview", href: "/admin", icon: LayoutDashboardIcon },
-  { title: "Practitioners", href: "/admin/practitioners", icon: UsersIcon },
-  { title: "Pages & Content", href: "/admin/content", icon: FileTextIcon },
-  { title: "Taxonomy", href: "/admin/taxonomy", icon: TagsIcon },
-  {
-    title: "Customer Enquiries",
-    href: "/admin/customer-enquiries",
-    icon: InboxIcon,
-  },
-  {
-    title: "Practitioner Interest",
-    href: "/admin/practitioner-interest",
-    icon: HeartHandshakeIcon,
-  },
-] as const;
-
-function getInitials(email: string) {
-  return email.slice(0, 2).toUpperCase();
-}
+export { adminNavigation } from "@/components/admin/admin-navigation";
 
 export function AdminSidebar({ email }: { email: string }) {
   const pathname = usePathname();
@@ -56,33 +28,29 @@ export function AdminSidebar({ email }: { email: string }) {
 
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton asChild size="lg" tooltip="Solas Admin">
-              <Link href="/admin">
-                <Image
-                  src="/brand/solas-mark-pebble.png"
-                  alt=""
-                  width={64}
-                  height={64}
-                  className="size-8 object-contain"
-                />
-                <span className="flex flex-col gap-0.5 leading-none">
-                  <span className="font-medium">The Solas Guide</span>
-                  <span className="text-xs text-muted-foreground">Admin CMS</span>
-                </span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
+      <SidebarHeader className="px-3 py-5">
+        <Link
+          href="/admin"
+          className="flex min-h-11 items-center gap-3 px-2 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0"
+        >
+          <Image
+            src="/brand/solas-mark-pebble.png"
+            alt=""
+            width={64}
+            height={64}
+            className="size-7 object-contain"
+          />
+          <span className="flex min-w-0 flex-col leading-none group-data-[collapsible=icon]:hidden">
+            <span className="truncate text-sm font-medium">The Solas Guide</span>
+            <span className="mt-1 text-xs text-muted-foreground">Administrator</span>
+          </span>
+        </Link>
       </SidebarHeader>
 
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Content</SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
+            <SidebarMenu className="gap-1">
               {adminNavigation.map((item) => {
                 const isActive =
                   item.href === "/admin"
@@ -96,6 +64,7 @@ export function AdminSidebar({ email }: { email: string }) {
                       asChild
                       isActive={isActive}
                       tooltip={item.title}
+                      className="min-h-11"
                     >
                       <Link
                         href={item.href}
@@ -113,21 +82,19 @@ export function AdminSidebar({ email }: { email: string }) {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter>
+      <SidebarFooter className="border-t border-sidebar-border">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" tooltip={email}>
-              <Avatar className="size-8">
-                <AvatarFallback>{getInitials(email)}</AvatarFallback>
-              </Avatar>
-              <span className="min-w-0 flex-1 truncate text-left text-sm">
-                {email}
-              </span>
-            </SidebarMenuButton>
+            <p
+              className="truncate px-2 py-2 text-xs text-muted-foreground group-data-[collapsible=icon]:hidden"
+              title={email}
+            >
+              {email}
+            </p>
           </SidebarMenuItem>
           <SidebarMenuItem>
             <form action={signOutAdmin}>
-              <SidebarMenuButton asChild tooltip="Sign out">
+              <SidebarMenuButton asChild tooltip="Sign out" className="min-h-11">
                 <button type="submit" className="w-full">
                   <LogOutIcon />
                   <span>Sign out</span>

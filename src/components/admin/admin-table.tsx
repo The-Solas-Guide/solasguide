@@ -8,7 +8,6 @@ import {
   type ColumnDef,
 } from "@tanstack/react-table";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/ui/empty";
 import { Input } from "@/components/ui/input";
@@ -62,20 +61,59 @@ function resultLabel(count: number) {
   return `${count} result${count === 1 ? "" : "s"}`;
 }
 
-function readableColumnLabel<T extends object>(column: ReturnType<ReturnType<typeof useReactTable<T>>["getAllColumns"]>[number]) {
+function readableColumnLabel<T extends object>(
+  column: ReturnType<ReturnType<typeof useReactTable<T>>["getAllColumns"]>[number],
+) {
   const header = column.columnDef.header;
   return typeof header === "string" ? header : column.id.replaceAll("_", " ");
 }
 
-function AdminTableEmptyState({ state, onRetry }: { state: AdminTableState; onRetry?: () => void }) {
+function AdminTableEmptyState({
+  state,
+  onRetry,
+}: {
+  state: AdminTableState;
+  onRetry?: () => void;
+}) {
   if (state === "server-error" || state === "unauthorized" || state === "expired-session") {
-    const title = state === "server-error" ? "Records could not be loaded" : state === "unauthorized" ? "Access unavailable" : "Your session expired";
-    const description = state === "server-error" ? "Try again, or return later if the problem continues." : state === "unauthorized" ? "You do not have permission to view these records." : "Sign in again to continue managing records.";
-    return <Alert variant="destructive"><AlertTitle>{title}</AlertTitle><AlertDescription>{description}</AlertDescription>{onRetry && <Button className="mt-3" variant="outline" onClick={onRetry}>Retry</Button>}</Alert>;
+    const title =
+      state === "server-error"
+        ? "Records could not be loaded"
+        : state === "unauthorized"
+          ? "Access unavailable"
+          : "Your session expired";
+    const description =
+      state === "server-error"
+        ? "Try again, or return later if the problem continues."
+        : state === "unauthorized"
+          ? "You do not have permission to view these records."
+          : "Sign in again to continue managing records.";
+    return (
+      <Alert variant="destructive">
+        <AlertTitle>{title}</AlertTitle>
+        <AlertDescription>{description}</AlertDescription>
+        {onRetry ? (
+          <Button className="mt-3" variant="outline" onClick={onRetry}>
+            Retry
+          </Button>
+        ) : null}
+      </Alert>
+    );
   }
+
   const title = state === "no-results" ? "No matching records" : "No records yet";
-  const description = state === "no-results" ? "Try a different search or clear a filter." : "Records will appear here when they are available.";
-  return <Empty className="min-h-48 border"><EmptyHeader><EmptyTitle>{title}</EmptyTitle><EmptyDescription>{description}</EmptyDescription></EmptyHeader></Empty>;
+  const description =
+    state === "no-results"
+      ? "Try a different search or clear a filter."
+      : "Records will appear here when they are available.";
+  return (
+    <Empty className="min-h-48 items-start px-0 text-left">
+      <EmptyHeader className="items-start">
+        <EmptyTitle>{title}</EmptyTitle>
+        <EmptyDescription>{description}</EmptyDescription>
+      </EmptyHeader>
+    </Empty>
+  );
 }
 
 function AdminTableShell<T extends object>({
@@ -108,7 +146,9 @@ function AdminTableShell<T extends object>({
     },
   });
   const count = totalCount ?? data.length;
-  const hasSearchOrFilters = Boolean(query.search || query.status !== "all" || Object.values(query.filters).some((values) => values.length));
+  const hasSearchOrFilters = Boolean(
+    query.search || query.status !== "all" || Object.values(query.filters).some((values) => values.length),
+  );
   const allTab = statusTabs.find((tab) => tab.value === "all");
 
   const update = (next: Partial<AdminTableQueryState>) => onQueryChange({ ...query, ...next });
@@ -119,27 +159,266 @@ function AdminTableShell<T extends object>({
   };
 
   return (
-    <section data-testid="admin-table-shell" className="flex min-w-0 w-full flex-col gap-4 overflow-hidden">
-      <div className="flex min-w-0 flex-col gap-3">
+    <section
+      data-testid="admin-table-shell"
+      className="flex min-w-0 w-full flex-col gap-5 overflow-hidden"
+    >
+      <div className="flex min-w-0 flex-col gap-4">
         <div className="flex min-w-0 flex-col gap-3 lg:flex-row lg:items-center">
-          <Input type="search" role="searchbox" aria-label="Search records" value={query.search} onChange={(event) => update({ search: event.currentTarget.value, page: 1 })} placeholder={searchPlaceholder} className="min-w-0 lg:max-w-sm" />
+          <Input
+            type="search"
+            role="searchbox"
+            aria-label="Search records"
+            value={query.search}
+            onChange={(event) => update({ search: event.currentTarget.value, page: 1 })}
+            placeholder={searchPlaceholder}
+            className="min-w-0 lg:max-w-sm"
+          />
           {filters.map((filter) => {
             const selected = query.filters[filter.id]?.[0] ?? "all";
-            return <Select key={filter.id} value={selected} onValueChange={(value) => update({ filters: { ...query.filters, [filter.id]: value === "all" ? [] : [value] }, page: 1 })}><SelectTrigger aria-label={filter.label} className="w-full lg:w-48"><SelectValue placeholder={filter.label} /></SelectTrigger><SelectContent><SelectItem value="all">All {filter.label.toLowerCase()}</SelectItem>{filter.options.map((option) => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}</SelectContent></Select>;
+            return (
+              <Select
+                key={filter.id}
+                value={selected}
+                onValueChange={(value) =>
+                  update({
+                    filters: { ...query.filters, [filter.id]: value === "all" ? [] : [value] },
+                    page: 1,
+                  })
+                }
+              >
+                <SelectTrigger aria-label={filter.label} className="w-full lg:w-48">
+                  <SelectValue placeholder={filter.label} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All {filter.label.toLowerCase()}</SelectItem>
+                  {filter.options.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            );
           })}
+          <div className="flex min-h-7 items-center justify-between gap-3 text-sm text-muted-foreground lg:ml-auto">
+            <span aria-live="polite">{resultLabel(count)}</span>
+            {hasSearchOrFilters ? (
+              <Button
+                type="button"
+                variant="link"
+                onClick={() =>
+                  onQueryChange({ ...query, search: "", filters: {}, status: "all", page: 1 })
+                }
+              >
+                Clear filters
+              </Button>
+            ) : null}
+          </div>
         </div>
-        {statusTabs.length > 0 && <Tabs value={query.status} onValueChange={(status) => update({ status, page: 1 })}><TabsList data-testid="admin-status-navigation" aria-label="Record status" className="max-w-full overflow-x-auto"><TabsTrigger value="all" className="text-xs tracking-[0.13em]">{allTab?.label ?? "All"}{typeof allTab?.count === "number" && <Badge variant="outline" className="ml-1 min-h-5 px-1.5 text-[11px]">{allTab.count}</Badge>}</TabsTrigger>{statusTabs.filter((tab) => tab.value !== "all").map((tab) => <TabsTrigger key={tab.value} value={tab.value} className="text-xs tracking-[0.13em]">{tab.label}{typeof tab.count === "number" && <Badge variant="outline" className="ml-1 min-h-5 px-1.5 text-[11px]">{tab.count}</Badge>}</TabsTrigger>)}</TabsList></Tabs>}
+        {statusTabs.length > 0 ? (
+          <Tabs value={query.status} onValueChange={(status) => update({ status, page: 1 })}>
+            <TabsList
+              data-testid="admin-status-navigation"
+              aria-label="Record status"
+              className="max-w-full min-h-[52px] overflow-x-auto overflow-y-hidden rounded-none border-0 border-b bg-transparent p-0"
+            >
+              <TabsTrigger
+                value="all"
+                className="min-h-11 rounded-none border-b-2 border-transparent px-3 text-xs font-semibold tracking-normal normal-case shadow-none data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+              >
+                {allTab?.label ?? "All"}
+                {typeof allTab?.count === "number" ? (
+                  <span className="text-muted-foreground">{allTab.count}</span>
+                ) : null}
+              </TabsTrigger>
+              {statusTabs
+                .filter((tab) => tab.value !== "all")
+                .map((tab) => (
+                  <TabsTrigger
+                    key={tab.value}
+                    value={tab.value}
+                    className="min-h-11 rounded-none border-b-2 border-transparent px-3 text-xs font-semibold tracking-normal normal-case shadow-none data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+                  >
+                    {tab.label}
+                    {typeof tab.count === "number" ? (
+                      <span className="text-muted-foreground">{tab.count}</span>
+                    ) : null}
+                  </TabsTrigger>
+                ))}
+            </TabsList>
+          </Tabs>
+        ) : null}
       </div>
 
-      <div className="flex min-h-7 items-center justify-between gap-3 text-sm text-muted-foreground"><span aria-live="polite">{resultLabel(count)}</span>{hasSearchOrFilters && <Button type="button" variant="link" onClick={() => onQueryChange({ ...query, search: "", filters: {}, status: "all", page: 1 })}>Clear filters</Button>}</div>
+      {state === "loading" ? (
+        <div className="grid gap-3" aria-label="Loading records">
+          <Skeleton className="h-12 w-full" />
+          <Skeleton className="h-12 w-full" />
+          <Skeleton className="h-12 w-full" />
+          <span className="sr-only">Loading records</span>
+        </div>
+      ) : state === "empty" ||
+        state === "no-results" ||
+        state === "server-error" ||
+        state === "unauthorized" ||
+        state === "expired-session" ||
+        (state === "ready" && data.length === 0) ? (
+        <AdminTableEmptyState
+          state={state === "ready" ? (hasSearchOrFilters ? "no-results" : "empty") : state}
+          onRetry={onRetry}
+        />
+      ) : (
+        <>
+          <div
+            data-testid="admin-table-desktop"
+            className="hidden min-w-0 overflow-hidden border-y md:block"
+          >
+            <Table>
+              <TableHeader>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <TableRow key={headerGroup.id} className="hover:bg-transparent">
+                    {headerGroup.headers.map((header) => {
+                      const sortable = header.column.getCanSort();
+                      const sort =
+                        query.sort?.id === header.column.id
+                          ? query.sort.direction === "asc"
+                            ? "ascending"
+                            : "descending"
+                          : "none";
+                      return (
+                        <TableHead key={header.id} aria-sort={sortable ? sort : undefined}>
+                          {header.isPlaceholder ? null : sortable ? (
+                            <button
+                              type="button"
+                              className="inline-flex min-h-11 items-center text-left focus-visible:ring-2 focus-visible:ring-ring/40"
+                              aria-label={`Sort by ${readableColumnLabel(header.column)}`}
+                              onClick={() =>
+                                update({
+                                  sort:
+                                    query.sort?.id === header.column.id &&
+                                    query.sort.direction === "asc"
+                                      ? { id: header.column.id, direction: "desc" }
+                                      : query.sort?.id === header.column.id
+                                        ? undefined
+                                        : { id: header.column.id, direction: "asc" },
+                                  page: 1,
+                                })
+                              }
+                            >
+                              {flexRender(header.column.columnDef.header, header.getContext())}
+                              {query.sort?.id === header.column.id ? (
+                                <span aria-hidden="true" className="ml-1">
+                                  {query.sort.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              ) : null}
+                            </button>
+                          ) : (
+                            flexRender(header.column.columnDef.header, header.getContext())
+                          )}
+                        </TableHead>
+                      );
+                    })}
+                    {rowActions ? (
+                      <TableHead className="w-14 text-right">
+                        <span className="sr-only">Actions</span>
+                      </TableHead>
+                    ) : null}
+                  </TableRow>
+                ))}
+              </TableHeader>
+              <TableBody>
+                {table.getRowModel().rows.map((row) => (
+                  <TableRow key={row.id} className="h-16">
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
+                    ))}
+                    {rowActions ? (
+                      <TableCell className="w-14 whitespace-nowrap text-right">
+                        <div
+                          data-table-action-surface="desktop"
+                          className="flex min-h-11 items-center justify-end [&>*]:min-h-11 [&>*]:min-w-11"
+                        >
+                          {rowActions(row.original)}
+                        </div>
+                      </TableCell>
+                    ) : null}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+          <div data-testid="admin-table-mobile" className="grid min-w-0 md:hidden">
+            {table.getRowModel().rows.map((row) => (
+              <article key={row.id} className="min-w-0 overflow-hidden border-b py-4 last:border-b-0">
+                <div className="min-w-0">
+                  {renderMobileCard
+                    ? renderMobileCard(row.original)
+                    : row.getVisibleCells().map((cell) => (
+                        <div
+                          key={cell.id}
+                          className="flex min-w-0 justify-between gap-3 border-b border-border/60 py-2 last:border-0"
+                        >
+                          <span className="shrink-0 text-xs text-muted-foreground">
+                            {readableColumnLabel(cell.column)}
+                          </span>
+                          <span className="min-w-0 truncate text-right">
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                          </span>
+                        </div>
+                      ))}
+                </div>
+                {rowActions ? (
+                  <div className="mt-3 pt-3">
+                    <div
+                      data-table-action-surface="mobile"
+                      className="flex min-h-11 items-center [&>*]:min-h-11 [&>*]:min-w-11"
+                    >
+                      {rowActions(row.original)}
+                    </div>
+                  </div>
+                ) : null}
+              </article>
+            ))}
+          </div>
+        </>
+      )}
 
-      {state === "loading" ? <div className="grid gap-3" aria-label="Loading records"><Skeleton className="h-12 w-full" /><Skeleton className="h-12 w-full" /><Skeleton className="h-12 w-full" /><span className="sr-only">Loading records</span></div> : state === "empty" || state === "no-results" || state === "server-error" || state === "unauthorized" || state === "expired-session" || (state === "ready" && data.length === 0) ? <AdminTableEmptyState state={state === "ready" ? (hasSearchOrFilters ? "no-results" : "empty") : state} onRetry={onRetry} /> : <>
-        <div data-testid="admin-table-desktop" className="hidden min-w-0 overflow-hidden rounded-md border bg-card md:block"><Table><TableHeader>{table.getHeaderGroups().map((headerGroup) => <TableRow key={headerGroup.id}>{headerGroup.headers.map((header) => { const sortable = header.column.getCanSort(); const sort = query.sort?.id === header.column.id ? query.sort.direction === "asc" ? "ascending" : "descending" : "none"; return <TableHead key={header.id} aria-sort={sortable ? sort : undefined}>{header.isPlaceholder ? null : sortable ? <button type="button" className="inline-flex min-h-11 items-center text-left focus-visible:ring-2 focus-visible:ring-ring/40" aria-label={`Sort by ${readableColumnLabel(header.column)}`} onClick={() => update({ sort: query.sort?.id === header.column.id && query.sort.direction === "asc" ? { id: header.column.id, direction: "desc" } : query.sort?.id === header.column.id ? undefined : { id: header.column.id, direction: "asc" }, page: 1 })}>{flexRender(header.column.columnDef.header, header.getContext())}{query.sort?.id === header.column.id && <span aria-hidden="true" className="ml-1">{query.sort.direction === "asc" ? "↑" : "↓"}</span>}</button> : flexRender(header.column.columnDef.header, header.getContext())}</TableHead>; })}{rowActions && <TableHead className="w-14 text-right"><span className="sr-only">Actions</span></TableHead>}</TableRow>)}</TableHeader><TableBody>{table.getRowModel().rows.map((row) => <TableRow key={row.id} className="h-16">{row.getVisibleCells().map((cell) => <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>)}{rowActions && <TableCell className="w-14 whitespace-nowrap text-right"><div data-table-action-surface="desktop" className="flex min-h-11 items-center justify-end [&>*]:min-h-11 [&>*]:min-w-11">{rowActions(row.original)}</div></TableCell>}</TableRow>)}</TableBody></Table></div>
-        <div data-testid="admin-table-mobile" className="grid min-w-0 gap-3 md:hidden">{table.getRowModel().rows.map((row) => <article key={row.id} className="min-w-0 overflow-hidden rounded-md border bg-card p-4"><div className="min-w-0">{renderMobileCard ? renderMobileCard(row.original) : row.getVisibleCells().map((cell) => <div key={cell.id} className="flex min-w-0 justify-between gap-3 border-b py-2 last:border-0"><span className="shrink-0 text-xs font-semibold uppercase tracking-[0.1em] text-muted-foreground">{readableColumnLabel(cell.column)}</span><span className="min-w-0 truncate text-right">{flexRender(cell.column.columnDef.cell, cell.getContext())}</span></div>)}</div>{rowActions && <div className="mt-3 border-t pt-3"><div data-table-action-surface="mobile" className="flex min-h-11 items-center [&>*]:min-h-11 [&>*]:min-w-11">{rowActions(row.original)}</div></div>}</article>)}</div>
-      </>}
-
-      {state === "loading-more" && <div className="flex min-h-11 items-center justify-center gap-2 text-sm text-muted-foreground" aria-live="polite"><Skeleton className="size-4 rounded-full" />Loading more records</div>}
-      <nav aria-label="Record pagination" className="flex flex-wrap items-center justify-between gap-3 border-t pt-4"><span className="text-xs text-muted-foreground">Page {query.page}</span><div className="flex gap-2"><Button type="button" variant="outline" onClick={() => changePage(query.page - 1)} disabled={query.page <= 1}>Previous</Button><Button type="button" variant="outline" onClick={() => changePage(query.page + 1)} disabled={!hasNextPage}>Next</Button></div></nav>
+      {state === "loading-more" ? (
+        <div
+          className="flex min-h-11 items-center justify-center gap-2 text-sm text-muted-foreground"
+          aria-live="polite"
+        >
+          <Skeleton className="size-4 rounded-full" />
+          Loading more records
+        </div>
+      ) : null}
+      <nav
+        aria-label="Record pagination"
+        className="flex flex-wrap items-center justify-between gap-3 pt-1"
+      >
+        <span className="text-sm text-muted-foreground">Page {query.page}</span>
+        <div className="flex gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => changePage(query.page - 1)}
+            disabled={query.page <= 1}
+          >
+            Previous
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => changePage(query.page + 1)}
+            disabled={!hasNextPage}
+          >
+            Next
+          </Button>
+        </div>
+      </nav>
     </section>
   );
 }

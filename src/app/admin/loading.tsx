@@ -2,11 +2,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function AdminLoading() {
   return (
-    <main className="flex min-h-svh">
-      <Skeleton className="hidden w-64 rounded-none md:block" />
-      <div className="flex flex-1 flex-col gap-6 p-6">
-        <Skeleton className="h-10 w-48" />
-        <Skeleton className="min-h-[28rem] w-full" />
+    <main className="flex min-h-svh items-center justify-center px-5 py-10">
+      <div className="flex w-full max-w-md flex-col gap-4">
+        <Skeleton className="h-8 w-36" />
+        <Skeleton className="h-4 w-64 max-w-full" />
+        <Skeleton className="mt-4 h-11 w-full" />
+        <Skeleton className="h-11 w-full" />
       </div>
     </main>
   );
