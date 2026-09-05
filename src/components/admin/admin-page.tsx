@@ -67,7 +67,7 @@ export function AdminMetricRow({
     <dl className="grid grid-cols-3 divide-x overflow-hidden rounded-lg border bg-card">
       {items.map((item) => (
         <div key={item.label} className="min-w-0 p-3 sm:p-5">
-          <dt className="text-xs text-muted-foreground sm:text-sm">{item.label}</dt>
+          <dt className="min-h-8 text-xs text-muted-foreground sm:min-h-0 sm:text-sm">{item.label}</dt>
           <dd className="mt-2 text-2xl font-semibold tabular-nums sm:text-3xl tracking-tight text-foreground">
             {item.value}
           </dd>
