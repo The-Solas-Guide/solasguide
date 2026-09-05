@@ -5,9 +5,9 @@ import { useId, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { EllipsisIcon, PlusIcon } from "lucide-react";
 import { toast } from "sonner";
+import { AdminPage, AdminPageHeader, AdminStatus } from "@/components/admin/admin-page";
 import { AdminTableEmptyState, AdminTableShell } from "@/components/admin/admin-table";
 import { AdminArchiveConfirmation } from "@/components/admin/record-deletion";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useAdminTableQuery } from "@/hooks/use-admin-table-query";
@@ -18,7 +18,7 @@ import { setOperationalArchive } from "@/lib/admin/operational-actions";
 function label(value: string) { return value.charAt(0).toUpperCase() + value.slice(1); }
 
 function WorkflowBadges({ record }: { record: OperationalRecord }) {
-  return <div className="flex flex-wrap gap-2"><Badge variant="outline">{label(record.status)}</Badge>{record.archived_at && <Badge variant="secondary">Archived</Badge>}</div>;
+  return <div className="flex flex-wrap items-center gap-3"><AdminStatus value={record.status} label={label(record.status)} />{record.archived_at ? <span className="text-sm text-muted-foreground">Archived</span> : null}</div>;
 }
 
 function RowActions({ kind, record, pending, onArchive }: { kind: OperationalKind; record: OperationalRecord; pending: boolean; onArchive: (record: OperationalRecord, archive: boolean) => void }) {
@@ -60,9 +60,9 @@ export function OperationalManager({ kind, initialRecords, error }: { kind: Oper
     { accessorKey: "status", header: "Workflow", enableSorting: true, cell: ({ row }: { row: { original: OperationalRecord } }) => <WorkflowBadges record={row.original} /> },
     { accessorKey: "created_at", header: "Received", enableSorting: true, cell: ({ row }: { row: { original: OperationalRecord } }) => formatAdminDate(row.original.created_at) },
   ];
-  return <div className="mx-auto flex w-full min-w-0 max-w-7xl flex-col gap-6">
-    <header className="flex flex-wrap items-start justify-between gap-4 border-b pb-5"><div className="min-w-0"><p className="text-sm font-medium text-muted-foreground">Private operational records</p><h1 className="break-words font-display text-4xl leading-tight">{config.title}</h1><p className="mt-2 max-w-2xl text-sm text-muted-foreground">Review submissions, update workflow status, and keep internal notes.</p></div><Button asChild><Link href={`/admin/${kind}/new`}><PlusIcon />New {config.singular}</Link></Button></header>
+  return <AdminPage>
+    <AdminPageHeader title={config.title} description="Review submissions, update workflow status, and keep internal notes." actions={<Button asChild><Link href={`/admin/${kind}/new`}><PlusIcon />New {config.singular}</Link></Button>} />
     {error ? <AdminTableEmptyState state="server-error" onRetry={() => router.refresh()} /> : <AdminTableShell data={filtered.slice(start, start + query.pageSize)} columns={columns} getRowId={(row) => row.id} query={{ ...query, page }} onQueryChange={(next) => dispatch({ type: "hydrate", state: next })} onRetry={() => router.refresh()} totalCount={filtered.length} hasNextPage={start + query.pageSize < filtered.length} searchPlaceholder="Search name, email, or phone" filters={[{ id: "archive", label: "Archive state", options: [{ value: "active", label: "Active records" }, { value: "archived", label: "Archived records" }] }]} statusTabs={[{ value: "all", label: "All workflows" }, ...config.statuses.map((status) => ({ value: status, label: label(status) }))]} rowActions={(record) => <RowActions kind={kind} record={record} pending={pending} onArchive={archive} />} renderMobileCard={(record) => <div className="grid min-w-0 gap-3"><Link className="break-words font-medium underline underline-offset-4" href={`/admin/${kind}/${record.id}`}>{record.full_name}</Link><p className="break-all text-sm text-muted-foreground">{record.email}</p><WorkflowBadges record={record} /><p className="text-xs text-muted-foreground">Received {formatAdminDate(record.created_at)}</p></div>} />}
     <p role="status" className="sr-only">{pending ? "Saving archive state" : ""}</p>
-  </div>;
+  </AdminPage>;
 }

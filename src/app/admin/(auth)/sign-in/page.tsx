@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
+import Image from "next/image";
 import { AdminSignInForm } from "@/components/admin/admin-sign-in-form";
-import { BrandWordmark } from "@/components/brand/brand-wordmark";
 import {
   getAuthenticatedUser,
   isAdminUser,
@@ -21,14 +21,23 @@ export default async function AdminSignInPage({
   }
 
   return (
-    <main className="flex min-h-svh items-center justify-center p-6 md:p-10">
-      <div className="flex w-full max-w-sm flex-col gap-8">
-        <BrandWordmark caption="Admin CMS" className="p-0" priority />
-        <div className="flex flex-col gap-2 text-center">
-          <h1 className="font-display text-4xl">Welcome back</h1>
-          <p className="text-sm text-muted-foreground">
-            Sign in to manage The Solas Guide.
-          </p>
+    <main className="flex min-h-svh items-center justify-center px-5 py-10 md:px-10">
+      <div className="flex w-full max-w-md flex-col gap-10">
+        <div className="flex flex-col gap-6">
+          <Image
+            src="/brand/solas-logo-4-pebble.png"
+            alt="The Solas Guide"
+            width={1600}
+            height={606}
+            priority
+            className="h-auto w-[180px]"
+          />
+          <div className="max-w-sm">
+            <h1 className="admin-title">Sign in</h1>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              Request a six-digit code for an approved administrator email.
+            </p>
+          </div>
         </div>
         <AdminSignInForm
           nextPath={nextPath}

@@ -1,30 +1,15 @@
-import type { LucideIcon } from "lucide-react";
-import {
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from "@/components/ui/empty";
-
 export function AdminPlaceholder({
   title,
   description,
-  icon: Icon,
 }: {
   title: string;
   description: string;
-  icon: LucideIcon;
+  icon?: unknown;
 }) {
   return (
-    <Empty className="min-h-[28rem] border">
-      <EmptyHeader>
-        <EmptyMedia variant="icon">
-          <Icon />
-        </EmptyMedia>
-        <EmptyTitle>{title}</EmptyTitle>
-        <EmptyDescription>{description}</EmptyDescription>
-      </EmptyHeader>
-    </Empty>
+    <div className="max-w-xl py-6">
+      <h1 className="admin-title">{title}</h1>
+      <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{description}</p>
+    </div>
   );
 }

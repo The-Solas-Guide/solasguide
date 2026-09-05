@@ -92,7 +92,7 @@ export function AdminSignInForm({
             <FieldError>{requestState.message}</FieldError>
           </Field>
           <Field>
-            <Button type="submit" disabled={requestPending}>
+            <Button type="submit" className="w-full" disabled={requestPending}>
               {requestPending ? <Spinner data-icon="inline-start" /> : null}
               {requestPending ? "Sending code" : "Send sign-in code"}
             </Button>
@@ -139,7 +139,7 @@ export function AdminSignInForm({
             <FieldError>{verifyState.message}</FieldError>
           </Field>
           <Field>
-            <Button type="submit" disabled={verifyPending}>
+            <Button type="submit" className="w-full" disabled={verifyPending}>
               {verifyPending ? <Spinner data-icon="inline-start" /> : null}
               {verifyPending ? "Checking code" : "Continue"}
             </Button>
