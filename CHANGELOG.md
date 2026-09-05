@@ -23,3 +23,4 @@ This file records pull requests merged into `main`. Entries are added automatica
 - 2026-09-05 — Make practitioner editing feel like a profile page ([#52](https://github.com/The-Solas-Guide/solasguide/pull/52)) — `ea539ab88754c5cc2c23a1d936f9bc433d45a21b`
 - 2026-09-05 — Polish the admin portal layout and editing experience ([#53](https://github.com/The-Solas-Guide/solasguide/pull/53)) — `4bfaef652458805a9faa3b5b903f58bae1331693`
 - 2026-09-05 — fix: match private previews to the public profile ([#54](https://github.com/The-Solas-Guide/solasguide/pull/54)) — `48f6a8e60b6e808d78fe539c71b6c61695a27dc6`
+- 2026-09-05 — fix: resolve shared control styling conflicts ([#55](https://github.com/The-Solas-Guide/solasguide/pull/55)) — `323c80b09271e4ae2ce963f58d15a6ba004b79ab`
