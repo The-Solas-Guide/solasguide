@@ -64,15 +64,15 @@ export function AdminMetricRow({
   }[];
 }) {
   return (
-    <dl className="grid overflow-hidden rounded-lg border bg-card sm:grid-cols-3 sm:divide-x">
+    <dl className="grid grid-cols-3 divide-x overflow-hidden rounded-lg border bg-card">
       {items.map((item) => (
-        <div key={item.label} className="min-w-0 border-b p-5 last:border-b-0 sm:border-b-0">
-          <dt className="text-sm text-muted-foreground">{item.label}</dt>
-          <dd className="mt-1 text-3xl font-semibold tabular-nums tracking-tight text-foreground">
+        <div key={item.label} className="min-w-0 p-3 sm:p-5">
+          <dt className="text-xs text-muted-foreground sm:text-sm">{item.label}</dt>
+          <dd className="mt-2 text-2xl font-semibold tabular-nums sm:text-3xl tracking-tight text-foreground">
             {item.value}
           </dd>
           {item.hint ? (
-            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+            <p className="mt-2 hidden text-sm leading-relaxed text-muted-foreground sm:block">
               {item.hint}
             </p>
           ) : null}
