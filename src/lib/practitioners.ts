@@ -323,54 +323,65 @@ export function mapPractitionerRows(
 
   return rows
     .filter((row) => row.status === "published")
-    .map((row) => {
-      const terms = [...(linksByPractitioner.get(row.id) ?? [])].sort(
-        (left, right) =>
-          left.displayOrder - right.displayOrder ||
-          left.type.localeCompare(right.type) ||
-          left.name.localeCompare(right.name),
-      );
-      const namesForType = (type: PractitionerTermType) =>
-        terms.filter((term) => term.type === type).map((term) => term.name);
-      const locations = namesForType("location");
-      const approaches = namesForType("approach");
-      const modalities = namesForType("modality");
-
-      return {
-        id: row.id,
-        slug: row.slug,
-        name: row.name,
-        location: locations.length ? locations.join(", ") : undefined,
-        descriptor: cleanOptionalString(row.descriptor),
-        modalities,
-        primaryModality: modalities[0],
-        summary: cleanOptionalString(row.summary),
-        about: cleanOptionalString(row.about),
-        areasOfSupport: cleanOptionalStringList(namesForType("support_area")),
-        approach: approaches[0],
-        approaches: approaches.length ? approaches : undefined,
-        worksWith: cleanOptionalStringList(namesForType("works_with")),
-        languages: cleanOptionalStringList(namesForType("language")),
-        delivery: [
-          ...(row.offers_in_person ? ["In-person"] : []),
-          ...(row.offers_online ? ["Online"] : []),
-        ],
-        yearsActive: row.years_active ?? undefined,
-        credentials: cleanOptionalStringList(row.credentials),
-        significantTraining: cleanOptionalStringList(row.significant_training),
-        image: buildImageUrl(client, row.image_path),
-        imageAlt: cleanOptionalString(row.image_alt),
-        imageFocalX: row.image_focal_x,
-        imageFocalY: row.image_focal_y,
-        websiteUrl: cleanOptionalString(row.website_url),
-        instagramUrl: cleanOptionalString(row.instagram_url),
-        offersInPerson: row.offers_in_person,
-        offersOnline: row.offers_online,
-        terms,
-        hasPublishedProfile: true as const,
-      } satisfies Practitioner;
-    })
+    .map((row) =>
+      mapPractitionerRow(
+        row,
+        linksByPractitioner.get(row.id) ?? [],
+        buildImageUrl(client, row.image_path),
+      ),
+    )
     .sort((left, right) => left.name.localeCompare(right.name));
+}
+
+export function mapPractitionerRow(
+  row: PractitionerRow,
+  linkedTerms: readonly PractitionerTerm[],
+  image?: string,
+): Practitioner {
+  const terms = [...linkedTerms].sort(
+    (left, right) =>
+      left.displayOrder - right.displayOrder ||
+      left.type.localeCompare(right.type) ||
+      left.name.localeCompare(right.name),
+  );
+  const namesForType = (type: PractitionerTermType) =>
+    terms.filter((term) => term.type === type).map((term) => term.name);
+  const locations = namesForType("location");
+  const approaches = namesForType("approach");
+  const modalities = namesForType("modality");
+  return {
+    id: row.id,
+    slug: row.slug,
+    name: row.name,
+    location: locations.length ? locations.join(", ") : undefined,
+    descriptor: cleanOptionalString(row.descriptor),
+    modalities,
+    primaryModality: modalities[0],
+    summary: cleanOptionalString(row.summary),
+    about: cleanOptionalString(row.about),
+    areasOfSupport: cleanOptionalStringList(namesForType("support_area")),
+    approach: approaches[0],
+    approaches: approaches.length ? approaches : undefined,
+    worksWith: cleanOptionalStringList(namesForType("works_with")),
+    languages: cleanOptionalStringList(namesForType("language")),
+    delivery: [
+      ...(row.offers_in_person ? ["In-person"] : []),
+      ...(row.offers_online ? ["Online"] : []),
+    ],
+    yearsActive: row.years_active ?? undefined,
+    credentials: cleanOptionalStringList(row.credentials),
+    significantTraining: cleanOptionalStringList(row.significant_training),
+    image,
+    imageAlt: cleanOptionalString(row.image_alt),
+    imageFocalX: row.image_focal_x,
+    imageFocalY: row.image_focal_y,
+    websiteUrl: cleanOptionalString(row.website_url),
+    instagramUrl: cleanOptionalString(row.instagram_url),
+    offersInPerson: row.offers_in_person,
+    offersOnline: row.offers_online,
+    terms,
+    hasPublishedProfile: true as const,
+  };
 }
 
 async function loadLinkedTerms(

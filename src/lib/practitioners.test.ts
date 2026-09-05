@@ -252,6 +252,20 @@ describe("public practitioner directory data", () => {
     expect(termQuery.eq).toHaveBeenCalledWith("is_active", true);
   });
 
+  it("previews draft content identically while excluding drafts from public results", async () => {
+    const { client } = mockedClient();
+    const { mapPractitionerRow, mapPractitionerRows } = await import("@/lib/practitioners");
+    const published = mapPractitionerRows([profileRow], termRows, linkRows, client as never)[0];
+    const draft = { ...profileRow, status: "draft" as const };
+    const preview = mapPractitionerRow(draft, [...published.terms].reverse(), published.image);
+
+    expect(preview).toEqual(published);
+    expect(preview.credentials).toEqual(["Credential"]);
+    expect(preview.significantTraining).toEqual(["Training"]);
+    expect(preview.delivery).toEqual(["In-person"]);
+    expect(mapPractitionerRows([draft], termRows, linkRows, client as never)).toEqual([]);
+  });
+
   it("returns a generic error when the public database is unavailable", async () => {
     const { createPublicSupabaseClient, getPublishedPractitioners } = await import(
       "@/lib/practitioners"

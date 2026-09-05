@@ -13,9 +13,5 @@ export const metadata: Metadata = {
 export default function AdminRootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  return (
-    <div data-admin className="min-h-svh bg-background text-foreground">
-      {children}
-    </div>
-  );
+  return children;
 }

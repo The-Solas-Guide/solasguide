@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 
 export default function AdminError({ reset }: { reset: () => void }) {
   return (
-    <main className="flex min-h-svh items-center justify-center px-5 py-8">
+    <main data-admin className="flex min-h-svh items-center justify-center px-5 py-8">
       <div className="flex w-full max-w-md flex-col gap-5 rounded-2xl border border-border/80 bg-card p-6 shadow-sm md:p-8">
         <div>
           <h1 className="admin-title">This page could not load</h1>
