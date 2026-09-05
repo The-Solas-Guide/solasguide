@@ -161,11 +161,6 @@
   --primary-foreground: var(--accent-foreground);
 }
 
-* {
-  box-sizing: border-box;
-  border-color: var(--border);
-}
-
 html {
   min-height: 100%;
   scroll-behavior: smooth;
@@ -180,14 +175,20 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-button,
-input,
-textarea,
-select {
-  font: inherit;
-}
-
+/* Defaults stay below utilities so control variants can override them. */
 @layer base {
+  * {
+    box-sizing: border-box;
+    border-color: var(--border);
+  }
+
+  button,
+  input,
+  textarea,
+  select {
+    font: inherit;
+  }
+
   a {
     color: inherit;
     text-decoration: none;
@@ -325,42 +326,42 @@ body:has([data-admin]) {
   --sidebar-ring: #527563;
 }
 
-[data-admin] .uppercase { text-transform: none; }
-[data-admin] .admin-title {
+body:has([data-admin]) .uppercase { text-transform: none; letter-spacing: 0; }
+body:has([data-admin]) .admin-title {
   font-family: var(--font-body);
   font-size: clamp(1.4rem, 2vw, 1.75rem);
   font-weight: 650;
   letter-spacing: -0.035em;
   line-height: 1.25;
 }
-[data-admin] th {
+body:has([data-admin]) th {
   font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0;
   text-transform: none;
 }
-[data-admin] [data-slot="field-group"] { gap: 1.25rem; }
-[data-admin] input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
-[data-admin] textarea { background-color: var(--card); }
-[data-admin] input[type="checkbox"],
-[data-admin] input[type="radio"] { accent-color: var(--accent); }
+body:has([data-admin]) [data-slot="field-group"] { gap: 1.25rem; }
+body:has([data-admin]) input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+body:has([data-admin]) textarea { background-color: var(--card); }
+body:has([data-admin]) input[type="checkbox"],
+body:has([data-admin]) input[type="radio"] { accent-color: var(--accent); }
 
-/* The public theme's unlayered control rules need explicit admin overrides. */
-[data-admin] button,
-[data-admin] a.uppercase { letter-spacing: 0; }
-[data-admin] .uppercase { font-size: 0.8125rem; font-weight: 600; }
-[data-admin] [data-slot="tabs-trigger"] {
+/* Keep the admin treatment consistent in the page and body-mounted portals. */
+body:has([data-admin]) button,
+body:has([data-admin]) a.uppercase { letter-spacing: 0; }
+body:has([data-admin]) .uppercase { font-size: 0.8125rem; font-weight: 600; }
+body:has([data-admin]) [data-slot="tabs-trigger"] {
   border-color: transparent;
   font-size: 0.8125rem;
   font-weight: 600;
 }
-[data-admin] [data-slot="tabs-trigger"][data-state="active"] {
+body:has([data-admin]) [data-slot="tabs-trigger"][data-state="active"] {
   border-bottom-color: var(--primary);
   color: var(--primary);
 }
-[data-admin] aside section[aria-label="Public lifecycle"] > div,
-[data-admin] aside section[aria-label="Operational workflow"] > div {
+body:has([data-admin]) aside section[aria-label="Public lifecycle"] > div,
+body:has([data-admin]) aside section[aria-label="Operational workflow"] > div {
   flex-direction: column;
   align-items: stretch;
 }
-[data-admin] aside [data-slot="select-trigger"] { width: 100%; }
+body:has([data-admin]) aside [data-slot="select-trigger"] { width: 100%; }
