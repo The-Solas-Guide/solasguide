@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { ArrowLeftIcon } from "lucide-react";
+import { AdminBackLink, AdminPanel } from "@/components/admin/admin-page";
 import {
   AdminFormField,
   AdminFormLayout,
@@ -119,12 +119,7 @@ export function TaxonomyEditor({
   const blocker = record ? taxonomyDeleteBlocker(record) : null;
   return (
     <div className="mx-auto flex w-full min-w-0 max-w-4xl flex-col gap-6">
-      <Button asChild variant="ghost" className="self-start">
-        <Link href="/admin/taxonomy">
-          <ArrowLeftIcon />
-          Taxonomy
-        </Link>
-      </Button>
+      <AdminBackLink href="/admin/taxonomy">Taxonomy</AdminBackLink>
       <AdminFormLayout
         title={
           isNew
@@ -200,7 +195,7 @@ export function TaxonomyEditor({
             </AdminFormField>
           </div>
         </AdminFormSection>
-        <section className="rounded-md border bg-card p-4">
+        <AdminPanel title="Taxonomy lifecycle">
           <TaxonomyLifecycleControls
             value={state}
             onChange={updateState}
@@ -208,45 +203,38 @@ export function TaxonomyEditor({
             disabled={pending}
             recordName={record?.name ?? "this term"}
           />
-        </section>
+        </AdminPanel>
         {record && (
-          <section className="grid gap-5 rounded-md border bg-card p-4">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <h2 className="font-semibold">Record actions</h2>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  Used by {record.usageCount} practitioner
-                  {record.usageCount === 1 ? "" : "s"}. Updated{" "}
-                  {formatAdminDate(record.updated_at)}.
-                </p>
+          <AdminPanel
+            title="Record actions"
+            description={`Used by ${record.usageCount} practitioner${record.usageCount === 1 ? "" : "s"}. Updated ${formatAdminDate(record.updated_at)}.`}
+          >
+            {state === "archived" ? (
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => lifecycle(true)}
+                  disabled={pending}
+                >
+                  Restore to inactive
+                </Button>
+                <AdminPermanentDeleteDialog
+                  recordName={record.name}
+                  relationships={blocker ? [blocker] : []}
+                  onDelete={remove}
+                  disabled={pending}
+                />
               </div>
-              {state === "archived" && (
-                <div className="flex flex-wrap gap-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => lifecycle(true)}
-                    disabled={pending}
-                  >
-                    Restore to inactive
-                  </Button>
-                  <AdminPermanentDeleteDialog
-                    recordName={record.name}
-                    relationships={blocker ? [blocker] : []}
-                    onDelete={remove}
-                    disabled={pending}
-                  />
-                </div>
-              )}
-            </div>
-            {record.practitioners.length > 0 && (
-              <section>
-                <h2 className="text-sm font-semibold">Linked practitioners</h2>
+            ) : null}
+            {record.practitioners.length > 0 ? (
+              <div>
+                <h3 className="text-sm font-medium">Linked practitioners</h3>
                 <ul className="mt-2 grid gap-2 text-sm">
                   {record.practitioners.map((practitioner) => (
                     <li key={practitioner.id}>
                       <Link
-                        className="underline"
+                        className="underline underline-offset-4"
                         href={`/admin/practitioners/${practitioner.id}`}
                       >
                         {practitioner.name}
@@ -254,9 +242,9 @@ export function TaxonomyEditor({
                     </li>
                   ))}
                 </ul>
-              </section>
-            )}
-          </section>
+              </div>
+            ) : null}
+          </AdminPanel>
         )}
       </AdminFormLayout>
     </div>

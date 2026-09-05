@@ -1,35 +1,12 @@
 "use client";
 
-import { usePathname } from "next/navigation";
-import { adminNavigation } from "@/components/admin/admin-sidebar";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbList,
-  BreadcrumbPage,
-} from "@/components/ui/breadcrumb";
-import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 
 export function AdminHeader() {
-  const pathname = usePathname();
-  const current = adminNavigation.find((item) =>
-    item.href === "/admin"
-      ? pathname === item.href
-      : pathname.startsWith(item.href),
-  );
-
   return (
-    <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4 md:px-6">
+    <header className="flex h-14 shrink-0 items-center gap-3 border-b border-border/80 px-5 md:px-8">
       <SidebarTrigger className="-ml-1" />
-      <Separator orientation="vertical" className="mr-2 h-4" />
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbPage>{current?.title ?? "Admin"}</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
+      <p className="text-sm text-muted-foreground md:hidden">The Solas Guide</p>
     </header>
   );
 }

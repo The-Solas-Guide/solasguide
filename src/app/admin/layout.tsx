@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Admin CMS",
+  title: "Administrator",
   robots: {
     index: false,
     follow: false,
@@ -13,5 +13,9 @@ export const metadata: Metadata = {
 export default function AdminRootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  return children;
+  return (
+    <div data-admin className="min-h-svh bg-background text-foreground">
+      {children}
+    </div>
+  );
 }
