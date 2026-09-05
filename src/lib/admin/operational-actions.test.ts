@@ -15,7 +15,6 @@ vi.mock("next/cache", () => ({ revalidatePath: mocks.revalidatePath }));
 import {
   getOperationalRecord,
   getOperationalRecords,
-  removeOperationalRecord,
   saveOperationalRecord,
   setOperationalArchive,
 } from "@/lib/admin/operational-actions";
@@ -53,19 +52,16 @@ function clientFor({
   list = [enquiry],
   record = enquiry,
   saveId = recordId,
-  rpcResult = { data: recordId, error: null },
 }: {
   list?: unknown[];
   record?: unknown;
   saveId?: string;
-  rpcResult?: { data: unknown; error: { message: string } | null };
 } = {}) {
   const queries: Record<string, ReturnType<typeof queryFor>> = {};
   const from = vi.fn((table: string) => {
     queries[table] ??= queryFor(table);
     return queries[table];
   });
-  const rpc = vi.fn(async () => rpcResult);
   function queryFor(table: string) {
     const query: Record<string, ReturnType<typeof vi.fn>> = {};
     query.select = vi.fn(() => query);
@@ -76,10 +72,9 @@ function clientFor({
     query.single = vi.fn(async () => ({ data: { id: saveId }, error: null }));
     query.insert = vi.fn(() => query);
     query.update = vi.fn(() => query);
-    query.delete = vi.fn(() => query);
     return query;
   }
-  return { client: { from, rpc }, from, rpc, queries };
+  return { client: { from }, from, queries };
 }
 
 describe("operational admin actions", () => {
@@ -149,26 +144,5 @@ describe("operational admin actions", () => {
     mocks.createClient.mockResolvedValue(mocked.client);
     await expect(setOperationalArchive("customer-enquiries", recordId, true)).resolves.toEqual({ ok: true });
     expect(mocked.queries.customer_enquiries.update).toHaveBeenCalledWith({ archived_at: expect.any(String) });
-  });
-
-  it("requires an archived record, exact name, and CRM acknowledgement before privacy removal", async () => {
-    const mocked = clientFor();
-    mocks.createClient.mockResolvedValue(mocked.client);
-    await expect(removeOperationalRecord("customer-enquiries", recordId, "Ava Example", false)).resolves.toMatchObject({ ok: false });
-    expect(mocked.rpc).not.toHaveBeenCalled();
-    await expect(removeOperationalRecord("customer-enquiries", recordId, "Wrong", true)).resolves.toMatchObject({ ok: false });
-    expect(mocked.rpc).not.toHaveBeenCalled();
-  });
-
-  it("uses the guarded privacy removal RPC after local checks", async () => {
-    const archivedRecord = { ...enquiry, archived_at: "2026-09-04T00:00:00.000Z" };
-    const mocked = clientFor({ record: archivedRecord });
-    mocks.createClient.mockResolvedValue(mocked.client);
-    await expect(removeOperationalRecord("customer-enquiries", recordId, "Ava Example", true)).resolves.toEqual({ ok: true });
-    expect(mocked.rpc).toHaveBeenCalledWith("remove_admin_customer_enquiry", {
-      p_enquiry_id: recordId,
-      p_confirmation: "Ava Example",
-      p_acknowledged: true,
-    });
   });
 });

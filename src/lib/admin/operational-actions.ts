@@ -281,38 +281,3 @@ export async function setOperationalArchive(kind: OperationalKind, id: string, a
   revalidateOperational(kind, id);
   return { ok: true };
 }
-
-export async function removeOperationalRecord(
-  kind: OperationalKind,
-  id: string,
-  confirmation: string,
-  acknowledged: boolean,
-): Promise<AdminActionResult> {
-  await requireAdmin();
-  if (!isOperationalKind(kind)) return { ok: false, error: "This operational record type is invalid." };
-  if (!isUuid(id)) return invalidIdResult();
-  if (acknowledged !== true) {
-    return { ok: false, error: "Confirm that any manually copied CRM record will also be removed." };
-  }
-  const supabase = await createServerSupabaseClient();
-  const table = operationalConfig(kind).table;
-  const existing = await supabase.from(table).select("id,full_name,archived_at").eq("id", id).maybeSingle();
-  if (existing.error) return { ok: false, error: existing.error.message };
-  if (!existing.data) return recordMissingResult();
-  if (!existing.data.archived_at) return { ok: false, error: "Archive this record before permanently removing it." };
-  if (confirmation !== existing.data.full_name) return { ok: false, error: "Type the full name exactly to confirm privacy removal." };
-  const result = kind === "customer-enquiries"
-    ? await supabase.rpc("remove_admin_customer_enquiry", {
-      p_enquiry_id: id,
-      p_confirmation: confirmation,
-      p_acknowledged: acknowledged,
-    })
-    : await supabase.rpc("remove_admin_practitioner_interest", {
-      p_interest_id: id,
-      p_confirmation: confirmation,
-      p_acknowledged: acknowledged,
-    });
-  if (result.error) return { ok: false, error: result.error.message };
-  revalidateOperational(kind, id);
-  return { ok: true };
-}

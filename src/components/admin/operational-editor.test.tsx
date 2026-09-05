@@ -1,12 +1,12 @@
 // @vitest-environment jsdom
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { OperationalEditor, OperationalPrivacyRemoval } from "./operational-editor";
+import { OperationalEditor } from "./operational-editor";
 import type { OperationalRecord } from "@/lib/admin/operational-cms";
 
-const mocks = vi.hoisted(() => ({ save: vi.fn(), archive: vi.fn(), remove: vi.fn(), refresh: vi.fn(), replace: vi.fn() }));
+const mocks = vi.hoisted(() => ({ save: vi.fn(), archive: vi.fn(), refresh: vi.fn(), replace: vi.fn() }));
 vi.mock("next/navigation", () => ({ useRouter: () => ({ refresh: mocks.refresh, replace: mocks.replace, push: vi.fn() }) }));
-vi.mock("@/lib/admin/operational-actions", () => ({ saveOperationalRecord: mocks.save, setOperationalArchive: mocks.archive, removeOperationalRecord: mocks.remove }));
+vi.mock("@/lib/admin/operational-actions", () => ({ saveOperationalRecord: mocks.save, setOperationalArchive: mocks.archive }));
 const record: OperationalRecord = {
   id: "12345678-1234-4123-8123-123456789abc", full_name: "QA Person", email: "qa@example.test", phone: null,
   contact_preference: "email", consent_confirmed: true, consent_given_at: "2026-09-01T12:00:00Z", questionnaire_answers: { context: "Original answer" },
@@ -15,7 +15,7 @@ const record: OperationalRecord = {
   customer_confirmation_sent_at: null, internal_notification_sent_at: null, customer_confirmation_status: "pending", internal_notification_status: "pending",
 };
 
-beforeEach(() => { vi.clearAllMocks(); mocks.save.mockResolvedValue({ ok: true }); mocks.remove.mockResolvedValue({ ok: true }); });
+beforeEach(() => { vi.clearAllMocks(); mocks.save.mockResolvedValue({ ok: true }); });
 afterEach(cleanup);
 
 describe("private operational editor", () => {
@@ -70,36 +70,5 @@ describe("private operational editor", () => {
     expect(String(data.get("consent_given_at"))).toMatch(/Z$/);
     expect(mocks.replace).toHaveBeenCalledWith(`/admin/practitioner-interest/${record.id}`);
     expect(container.querySelector("form")?.getAttribute("data-dirty")).toBe("true");
-  });
-});
-
-describe("separate privacy removal", () => {
-  it("requires archive before opening", () => {
-    render(<OperationalPrivacyRemoval kind="customer-enquiries" record={record} disabled={false} />);
-    expect((screen.getByRole("button", { name: "Remove for privacy" }) as HTMLButtonElement).disabled).toBe(true);
-  });
-  it("navigates after removal without refreshing the deleted detail route", async () => {
-    render(<OperationalPrivacyRemoval kind="customer-enquiries" record={{ ...record, archived_at: "2026-09-04T12:00:00Z" }} disabled={false} />);
-    fireEvent.click(screen.getByRole("button", { name: "Remove for privacy" }));
-    fireEvent.change(screen.getByLabelText("Privacy removal confirmation"), { target: { value: record.full_name } });
-    fireEvent.click(screen.getByRole("checkbox"));
-    fireEvent.click(screen.getByRole("button", { name: "Confirm privacy removal" }));
-    await waitFor(() => expect(mocks.replace).toHaveBeenCalledWith("/admin/customer-enquiries"));
-    expect(mocks.refresh).not.toHaveBeenCalled();
-  });
-  it("requires exact name and acknowledgement and retains a failed dialog", async () => {
-    mocks.remove.mockResolvedValue({ ok: false, error: "Removal failed." });
-    render(<OperationalPrivacyRemoval kind="customer-enquiries" record={{ ...record, archived_at: "2026-09-04T12:00:00Z" }} disabled={false} />);
-    fireEvent.click(screen.getByRole("button", { name: "Remove for privacy" }));
-    const confirm = screen.getByRole("button", { name: "Confirm privacy removal" }) as HTMLButtonElement;
-    expect(confirm.disabled).toBe(true);
-    fireEvent.change(screen.getByLabelText("Privacy removal confirmation"), { target: { value: record.full_name } });
-    expect(confirm.disabled).toBe(true);
-    fireEvent.click(screen.getByRole("checkbox"));
-    expect(confirm.disabled).toBe(false);
-    fireEvent.click(confirm);
-    await waitFor(() => expect(screen.getByRole("alert").textContent).toBe("Removal failed."));
-    expect(mocks.remove).toHaveBeenCalledWith("customer-enquiries", record.id, record.full_name, true);
-    expect(mocks.replace).not.toHaveBeenCalled();
   });
 });
