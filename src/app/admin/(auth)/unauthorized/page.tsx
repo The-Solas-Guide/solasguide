@@ -13,8 +13,8 @@ export default async function UnauthorizedPage() {
   if (await isAdminUser(user.id)) redirect("/admin");
 
   return (
-    <main className="flex min-h-svh items-center justify-center px-5 py-10">
-      <div className="flex w-full max-w-md flex-col gap-6">
+    <main className="flex min-h-svh items-center justify-center px-5 py-8">
+      <div className="flex w-full max-w-md flex-col gap-6 rounded-2xl border border-border/80 bg-card p-6 shadow-sm md:p-8">
         <div>
           <h1 className="admin-title">Access not available</h1>
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground">

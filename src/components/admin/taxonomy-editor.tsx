@@ -126,6 +126,11 @@ export function TaxonomyEditor({
             ? "New taxonomy term"
             : `Edit ${record?.name ?? "taxonomy term"}`
         }
+        description={
+          isNew
+            ? "Create a shared term for practitioner records."
+            : "Keep this shared term clear and consistent wherever it appears."
+        }
         status={taxonomyTypeLabel(state)}
         statusKind={state}
         pending={pending}
@@ -138,8 +143,11 @@ export function TaxonomyEditor({
         saveLabel={isNew ? "Create term" : "Save changes"}
       >
         <input type="hidden" name="id" value={record?.id ?? ""} />
-        <AdminFormSection title="Term details">
-          <div className="grid gap-5">
+        <AdminFormSection
+          title="Term identity"
+          description="The name and slug appear wherever practitioners use this term."
+        >
+          <div className="grid gap-5 sm:grid-cols-2">
             <AdminFormField name="name" label="Name" error={fieldErrors.name}>
               <Input
                 name="name"
@@ -195,7 +203,10 @@ export function TaxonomyEditor({
             </AdminFormField>
           </div>
         </AdminFormSection>
-        <AdminPanel title="Taxonomy lifecycle">
+        <AdminPanel
+          title="Availability"
+          description="Choose whether this term can be selected on practitioner records."
+        >
           <TaxonomyLifecycleControls
             value={state}
             onChange={updateState}
@@ -207,7 +218,7 @@ export function TaxonomyEditor({
         {record && (
           <AdminPanel
             title="Record actions"
-            description={`Used by ${record.usageCount} practitioner${record.usageCount === 1 ? "" : "s"}. Updated ${formatAdminDate(record.updated_at)}.`}
+            description={`Used by ${record.usageCount} practitioner${record.usageCount === 1 ? "" : "s"}. Last updated ${formatAdminDate(record.updated_at)}.`}
           >
             {state === "archived" ? (
               <div className="flex flex-wrap gap-2">
@@ -228,9 +239,10 @@ export function TaxonomyEditor({
               </div>
             ) : null}
             {record.practitioners.length > 0 ? (
-              <div>
+              <div className="border-t border-border/70 pt-5">
                 <h3 className="text-sm font-medium">Linked practitioners</h3>
-                <ul className="mt-2 grid gap-2 text-sm">
+                <p className="mt-1 text-sm text-muted-foreground">Remove these links before permanently deleting the term.</p>
+                <ul className="mt-3 grid gap-2 text-sm">
                   {record.practitioners.map((practitioner) => (
                     <li key={practitioner.id}>
                       <Link

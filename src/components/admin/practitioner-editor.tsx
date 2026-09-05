@@ -200,8 +200,8 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
     : imageUrl(record?.image_path ?? null);
 
   return (
-    <div className="mx-auto flex w-full min-w-0 max-w-6xl flex-col gap-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+    <div className="mx-auto flex w-full min-w-0 max-w-6xl flex-col gap-5">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/80 pb-3">
         <AdminBackLink href="/admin/practitioners">Practitioners</AdminBackLink>
         {record && (
           <Button asChild variant="outline">
@@ -228,10 +228,10 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
         width="wide"
       >
         <input type="hidden" name="id" value={record?.id ?? ""} />
-        <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_19rem] lg:gap-x-10">
-          <div className="grid min-w-0 gap-8">
+        <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_19rem] lg:gap-x-6">
+          <div className="grid min-w-0 gap-6">
             <AdminFormSection title="Public profile">
-              <div className="grid gap-5">
+              <div className="grid gap-4">
                 <AdminFormField
                   name="name"
                   label="Name"
@@ -279,7 +279,7 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
               </AdminFormField>
             </AdminFormSection>
             <AdminFormSection title="Experience">
-              <div className="grid gap-5">
+              <div className="grid gap-4">
                 <AdminFormField name="yearsActive" label="Years active">
                   <Input
                     type="number"
@@ -313,7 +313,7 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
               </div>
             </AdminFormSection>
             <AdminFormSection title="Links">
-              <div className="grid gap-5 sm:grid-cols-2">
+              <div className="grid gap-4 sm:grid-cols-2">
                 <AdminFormField name="websiteUrl" label="Website">
                   <Input
                     type="url"
@@ -331,7 +331,7 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
               </div>
             </AdminFormSection>
             <AdminFormSection title="Practice details">
-              <div className="grid gap-2">
+              <div className="grid gap-1">
                 <span className="text-sm font-medium">Delivery</span>
                 <label className="flex min-h-11 items-center gap-2 text-sm">
                   <input
@@ -357,7 +357,7 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
               title="Practice areas"
               description="Select active terms for this practitioner. Linked archived terms stay visible until you remove them. A published record needs at least one active location."
             >
-              <div className="grid gap-5">
+              <div className="grid gap-4">
                 {[...grouped.entries()].map(([type, items]) => (
                   <details
                     key={type}
@@ -423,13 +423,13 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
               </div>
             </AdminFormSection>
           </div>
-          <aside className="grid min-w-0 gap-8">
+          <aside className="grid min-w-0 gap-6">
             <AdminFormSection
               title="Portrait"
               description="Use one approved JPEG, PNG, or WebP portrait up to 5 MB. The image becomes public after upload."
             >
-              <div className="grid gap-4">
-                <div className="flex aspect-[4/5] min-h-40 items-center justify-center overflow-hidden rounded-md border bg-muted/30">
+              <div className="grid gap-3">
+                <div className="flex aspect-[4/5] min-h-40 items-center justify-center overflow-hidden rounded-lg border border-border/80 bg-muted/30">
                   {currentImage ? (
                     <img
                       src={currentImage}
@@ -445,7 +445,7 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
                     </span>
                   )}
                 </div>
-                <div className="grid content-start gap-4">
+                <div className="grid content-start gap-3">
                   <AdminFormField
                     name="portrait"
                     label="Portrait file"
@@ -477,7 +477,7 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
                       onChange={markDirty}
                     />
                   </AdminFormField>
-                  <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="grid gap-3 sm:grid-cols-2">
                     <AdminFormField
                       name="imageFocalX"
                       label="Horizontal position"
@@ -559,7 +559,7 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
                 />
               </AdminFormField>
             </AdminFormSection>
-            <div className="grid gap-5">
+            <div className="grid gap-6">
               <AdminPanel title="Public lifecycle">
                 <PublicLifecycleControls
                   value={status}

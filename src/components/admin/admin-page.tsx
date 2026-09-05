@@ -13,7 +13,7 @@ export function AdminPage({
   return (
     <div
       className={cn(
-        "mx-auto flex w-full min-w-0 flex-col gap-8",
+        "mx-auto flex w-full min-w-0 flex-col gap-6",
         width === "wide" ? "max-w-7xl" : "max-w-4xl",
         className,
       )}
@@ -35,7 +35,7 @@ export function AdminPageHeader({
   aside?: React.ReactNode;
 }) {
   return (
-    <header className="flex min-w-0 flex-col gap-4 border-b border-border/80 pb-6 sm:flex-row sm:items-end sm:justify-between">
+    <header className="flex min-w-0 flex-col gap-4 pb-1 sm:flex-row sm:items-end sm:justify-between">
       <div className="min-w-0 max-w-2xl">
         <h1 className="admin-title break-words text-foreground">{title}</h1>
         {description ? (
@@ -64,15 +64,15 @@ export function AdminMetricRow({
   }[];
 }) {
   return (
-    <dl className="grid gap-6 border-b border-border/80 py-5 sm:grid-cols-3">
+    <dl className="grid grid-cols-3 divide-x overflow-hidden rounded-lg border bg-card">
       {items.map((item) => (
-        <div key={item.label} className="min-w-0">
-          <dt className="text-sm text-muted-foreground">{item.label}</dt>
-          <dd className="mt-1 font-display text-[1.65rem] font-thin tracking-tight text-foreground">
+        <div key={item.label} className="min-w-0 p-3 sm:p-5">
+          <dt className="min-h-8 text-xs text-muted-foreground sm:min-h-0 sm:text-sm">{item.label}</dt>
+          <dd className="mt-2 text-2xl font-semibold tabular-nums sm:text-3xl tracking-tight text-foreground">
             {item.value}
           </dd>
           {item.hint ? (
-            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+            <p className="mt-2 hidden text-sm leading-relaxed text-muted-foreground sm:block">
               {item.hint}
             </p>
           ) : null}
@@ -111,7 +111,7 @@ export function AdminStatus({
 }) {
   return (
     <span
-      className={cn("inline-flex items-center gap-2 text-sm", className)}
+      className={cn("inline-flex w-fit items-center gap-1.5 rounded-md border border-border/70 bg-muted/50 px-2 py-1 text-xs font-medium", className)}
       data-lifecycle={value}
     >
       <span
@@ -155,10 +155,10 @@ export function AdminPanel({
   className?: string;
 }) {
   return (
-    <section className={cn("grid gap-5 border-b border-border/80 pb-8 last:border-b-0", className)}>
+    <section className={cn("grid gap-5 rounded-lg border border-border bg-card p-5", className)}>
       {title ? (
         <div className="max-w-2xl">
-          <h2 className="text-sm font-medium">{title}</h2>
+          <h2 className="text-sm font-semibold">{title}</h2>
           {description ? (
             <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
               {description}

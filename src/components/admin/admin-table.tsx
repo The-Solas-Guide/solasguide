@@ -107,7 +107,7 @@ function AdminTableEmptyState({
       ? "Try a different search or clear a filter."
       : "Records will appear here when they are available.";
   return (
-    <Empty className="min-h-48 items-start px-0 text-left">
+    <Empty className="min-h-48 items-start px-5 text-left">
       <EmptyHeader className="items-start">
         <EmptyTitle>{title}</EmptyTitle>
         <EmptyDescription>{description}</EmptyDescription>
@@ -161,9 +161,9 @@ function AdminTableShell<T extends object>({
   return (
     <section
       data-testid="admin-table-shell"
-      className="flex min-w-0 w-full flex-col gap-5 overflow-hidden"
+      className="flex min-w-0 w-full flex-col overflow-hidden rounded-lg border bg-card shadow-xs"
     >
-      <div className="flex min-w-0 flex-col gap-4">
+      <div className="flex min-w-0 flex-col gap-3 px-4 pt-4">
         <div className="flex min-w-0 flex-col gap-3 lg:flex-row lg:items-center">
           <Input
             type="search"
@@ -272,10 +272,10 @@ function AdminTableShell<T extends object>({
         <>
           <div
             data-testid="admin-table-desktop"
-            className="hidden min-w-0 overflow-hidden border-y md:block"
+            className="hidden min-w-0 overflow-hidden border-b md:block"
           >
             <Table>
-              <TableHeader>
+              <TableHeader className="bg-muted/60 [&_th]:px-4">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id} className="hover:bg-transparent">
                     {headerGroup.headers.map((header) => {
@@ -331,7 +331,7 @@ function AdminTableShell<T extends object>({
                 {table.getRowModel().rows.map((row) => (
                   <TableRow key={row.id} className="h-16">
                     {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
+                      <TableCell key={cell.id} className="px-4">
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </TableCell>
                     ))}
@@ -350,7 +350,7 @@ function AdminTableShell<T extends object>({
               </TableBody>
             </Table>
           </div>
-          <div data-testid="admin-table-mobile" className="grid min-w-0 md:hidden">
+          <div data-testid="admin-table-mobile" className="grid min-w-0 px-4 md:hidden">
             {table.getRowModel().rows.map((row) => (
               <article key={row.id} className="min-w-0 overflow-hidden border-b py-4 last:border-b-0">
                 <div className="min-w-0">
@@ -397,7 +397,7 @@ function AdminTableShell<T extends object>({
       ) : null}
       <nav
         aria-label="Record pagination"
-        className="flex flex-wrap items-center justify-between gap-3 pt-1"
+        className="flex flex-wrap items-center justify-between gap-3 bg-muted/20 px-4 py-3"
       >
         <span className="text-sm text-muted-foreground">Page {query.page}</span>
         <div className="flex gap-2">

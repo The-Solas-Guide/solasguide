@@ -1,6 +1,6 @@
 import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
-import { Barlow_Condensed, Inter } from "next/font/google";
+import { Barlow_Condensed, Inter, Manrope } from "next/font/google";
 import { Suspense } from "react";
 import { DesignReviewGate } from "@/components/design-system/design-review-gate";
 import { Toaster } from "@/components/ui/sonner";
@@ -16,6 +16,12 @@ const barlowCondensed = Barlow_Condensed({
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
+});
+
+const manrope = Manrope({
+  variable: "--font-admin",
+  subsets: ["latin"],
+  preload: false,
 });
 
 const siteTitle = "The Solas Guide | Curated Bali experiences";
@@ -73,7 +79,7 @@ export default function RootLayout({
       lang="en"
       data-theme="aman"
       data-scroll-behavior="smooth"
-      className={`${barlowCondensed.variable} ${inter.variable}`}
+      className={`${barlowCondensed.variable} ${inter.variable} ${manrope.variable}`}
       style={
         {
           "--font-display": "var(--font-barlow-condensed), Arial Narrow, sans-serif",
