@@ -10,14 +10,18 @@ export default async function AdminPortalLayout({
   const user = await requireAdmin();
 
   return (
-    <TooltipProvider>
-      <SidebarProvider>
-        <AdminSidebar email={user.email ?? "Administrator"} />
-        <SidebarInset>
-          <AdminHeader />
-          <main className="flex flex-1 flex-col px-5 py-6 md:px-8 md:py-8">{children}</main>
-        </SidebarInset>
-      </SidebarProvider>
-    </TooltipProvider>
+    <div data-admin className="min-h-svh bg-background text-foreground">
+      <TooltipProvider>
+        <SidebarProvider>
+          <AdminSidebar email={user.email ?? "Administrator"} />
+          <SidebarInset>
+            <AdminHeader />
+            <main className="flex flex-1 flex-col px-5 py-6 md:px-8 md:py-8">
+              {children}
+            </main>
+          </SidebarInset>
+        </SidebarProvider>
+      </TooltipProvider>
+    </div>
   );
 }

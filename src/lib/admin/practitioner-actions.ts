@@ -26,7 +26,7 @@ export type AdminActionResult<T = null> = {
   warning?: string;
 };
 
-export type AdminPractitionerRecord = PractitionerRow & { terms: TaxonomyRow[] };
+export type AdminPractitionerRecord = PractitionerRow & { terms: (TaxonomyRow & { displayOrder?: number })[] };
 export type AdminTaxonomyRecord = TaxonomyRow & {
   usageCount: number;
   practitioners: { id: string; name: string; slug: string }[];
@@ -91,12 +91,12 @@ async function loadTermsForPractitioners(supabase: Awaited<ReturnType<typeof cre
   const { data: terms, error: termsError } = await supabase.from("practitioner_terms").select(taxonomySelect).in("id", typedLinks.map((link) => link.term_id));
   if (termsError) throw new Error(termsError.message);
   const termMap = new Map((terms ?? []).map((term) => [term.id, term as TaxonomyRow]));
-  const linksMap = new Map<string, TaxonomyRow[]>();
+  const linksMap = new Map<string, (TaxonomyRow & { displayOrder?: number })[]>();
   for (const link of typedLinks) {
     const term = termMap.get(link.term_id);
     if (!term) continue;
     const current = linksMap.get(link.practitioner_id) ?? [];
-    current.push(term);
+    current.push({ ...term, displayOrder: link.display_order });
     linksMap.set(link.practitioner_id, current);
   }
   return rows.map((row) => ({ ...row, terms: linksMap.get(row.id) ?? [] }));
