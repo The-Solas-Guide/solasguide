@@ -5,16 +5,31 @@ import { toast } from "sonner";
 import { AdminPageHeader, AdminStatus } from "@/components/admin/admin-page";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { Field, FieldDescription, FieldError, FieldGroup, FieldTitle } from "@/components/ui/field";
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldTitle,
+} from "@/components/ui/field";
 import { Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import type { ArchiveState, OperationalWorkflow, PublicLifecycle, TaxonomyLifecycle } from "@/lib/admin/types";
+import type {
+  ArchiveState,
+  OperationalWorkflow,
+  PublicLifecycle,
+  TaxonomyLifecycle,
+} from "@/lib/admin/types";
 import { useUnsavedChanges } from "@/hooks/use-unsaved-changes";
 
-export type AdminFormStatus = PublicLifecycle | TaxonomyLifecycle | OperationalWorkflow | ArchiveState;
+export type AdminFormStatus =
+  PublicLifecycle | TaxonomyLifecycle | OperationalWorkflow | ArchiveState;
 
-export type AdminFormValidationErrors = Record<string, string | readonly string[]>;
+export type AdminFormValidationErrors = Record<
+  string,
+  string | readonly string[]
+>;
 
 export type AdminProtectedField = {
   label: string;
@@ -36,6 +51,8 @@ type AdminFormLayoutProps = {
   onSubmit?: React.FormEventHandler<HTMLFormElement>;
   onCancel?: () => void;
   saveLabel?: string;
+  /** Optional wider canvas for editors with a primary column and sidebar. */
+  width?: "default" | "wide";
   children?: React.ReactNode;
 };
 
@@ -57,18 +74,24 @@ type AdminFormControlProps = React.HTMLAttributes<HTMLElement> & {
 function AdminFormSection({
   title,
   description,
+  className,
   children,
 }: {
   title: React.ReactNode;
   description?: React.ReactNode;
+  className?: string;
   children?: React.ReactNode;
 }) {
   return (
-    <section className="grid gap-5 border-b border-border/80 pb-8">
+    <section
+      className={`grid gap-5 border-b border-border/80 pb-8 ${className ?? ""}`}
+    >
       <div className="max-w-2xl">
         <h2 className="text-sm font-medium">{title}</h2>
         {description ? (
-          <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{description}</p>
+          <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+            {description}
+          </p>
         ) : null}
       </div>
       <FieldGroup>{children}</FieldGroup>
@@ -76,10 +99,17 @@ function AdminFormSection({
   );
 }
 
-function ProtectedFields({ fields }: { fields: readonly AdminProtectedField[] }) {
+function ProtectedFields({
+  fields,
+}: {
+  fields: readonly AdminProtectedField[];
+}) {
   if (!fields.length) return null;
   return (
-    <AdminFormSection title="Protected fields" description="These system values cannot be edited.">
+    <AdminFormSection
+      title="Protected fields"
+      description="These system values cannot be edited."
+    >
       <div className="grid gap-4 sm:grid-cols-2">
         {fields.map((field) => (
           <Field key={field.label}>
@@ -91,7 +121,9 @@ function ProtectedFields({ fields }: { fields: readonly AdminProtectedField[] })
               aria-readonly="true"
               className="bg-muted/40"
             />
-            {field.description ? <FieldDescription>{field.description}</FieldDescription> : null}
+            {field.description ? (
+              <FieldDescription>{field.description}</FieldDescription>
+            ) : null}
           </Field>
         ))}
       </div>
@@ -103,16 +135,26 @@ function validationMessage(value: string | readonly string[]) {
   return Array.isArray(value) ? value.map(String).join(" ") : value;
 }
 
-const AdminFormValidationContext = React.createContext<AdminFormValidationErrors>({});
+const AdminFormValidationContext =
+  React.createContext<AdminFormValidationErrors>({});
 
-function AdminFormField({ name, label, description, error, children }: AdminFormFieldProps) {
+function AdminFormField({
+  name,
+  label,
+  description,
+  error,
+  children,
+}: AdminFormFieldProps) {
   const validationErrors = React.useContext(AdminFormValidationContext);
   const fieldError = error ?? validationErrors[name];
-  const message = fieldError === undefined ? undefined : validationMessage(fieldError);
+  const message =
+    fieldError === undefined ? undefined : validationMessage(fieldError);
   if (!children) return null;
   const inputId = children.props.id ?? name;
   const describedBy = message
-    ? [children.props["aria-describedby"], `${name}-error`].filter(Boolean).join(" ")
+    ? [children.props["aria-describedby"], `${name}-error`]
+        .filter(Boolean)
+        .join(" ")
     : children.props["aria-describedby"];
   const control = React.cloneElement(children, {
     id: inputId,
@@ -151,6 +193,7 @@ function AdminFormLayout({
   onSubmit,
   onCancel,
   saveLabel = "Save",
+  width = "default",
   children,
 }: AdminFormLayoutProps) {
   const { guardNavigation } = useUnsavedChanges(isDirty);
@@ -169,10 +212,12 @@ function AdminFormLayout({
 
   return (
     <Form
-      data-state={pending ? "saving" : saved ? "saved" : error ? "server-error" : "idle"}
+      data-state={
+        pending ? "saving" : saved ? "saved" : error ? "server-error" : "idle"
+      }
       data-dirty={isDirty ? "true" : "false"}
       onSubmit={handleSubmit}
-      className="mx-auto flex w-full min-w-0 max-w-4xl flex-col gap-8 pb-28"
+      className={`mx-auto flex w-full min-w-0 flex-col gap-8 pb-28 ${width === "wide" ? "max-w-6xl" : "max-w-4xl"}`}
     >
       <AdminPageHeader
         title={title}
@@ -211,7 +256,11 @@ function AdminFormLayout({
       </AdminFormValidationContext.Provider>
       <ProtectedFields fields={protectedFields} />
       {Object.entries(validationErrors).map(([name, message]) => (
-        <FieldError key={name} id={`${name}-summary-error`} data-field-error={name}>
+        <FieldError
+          key={name}
+          id={`${name}-summary-error`}
+          data-field-error={name}
+        >
           {validationMessage(message)}
         </FieldError>
       ))}
