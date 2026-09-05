@@ -20,3 +20,4 @@ This file records pull requests merged into `main`. Entries are added automatica
 - 2026-09-04 — Build shared Admin CMS interface patterns ([#48](https://github.com/The-Solas-Guide/solasguide/pull/48)) — `3cf6b2a9eaf4d484b86d20b8558149a8688e20c1`
 - 2026-09-04 — feat: add practitioner and taxonomy CMS ([#49](https://github.com/The-Solas-Guide/solasguide/pull/49)) — `61319cbb230485e7e90962a670084f99d42e05fc`
 - 2026-09-05 — feat: add private enquiry and practitioner interest CMS ([#50](https://github.com/The-Solas-Guide/solasguide/pull/50)) — `3f0f62eb50facc13079c680014fb17f82974477b`
+- 2026-09-05 — Make practitioner editing feel like a profile page ([#52](https://github.com/The-Solas-Guide/solasguide/pull/52)) — `ea539ab88754c5cc2c23a1d936f9bc433d45a21b`
