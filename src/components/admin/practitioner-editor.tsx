@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { ExternalLinkIcon } from "lucide-react";
+import { ChevronDownIcon, ExternalLinkIcon } from "lucide-react";
 import { toast } from "sonner";
 import { AdminBackLink, AdminPanel } from "@/components/admin/admin-page";
 import {
@@ -361,28 +361,31 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
                 {[...grouped.entries()].map(([type, items]) => (
                   <details
                     key={type}
-                    open
                     className="group rounded-md border border-border/70 px-3"
                   >
                     <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 text-sm font-medium [&::-webkit-details-marker]:hidden">
-                      <span>
-                        {type
+                      <span className="min-w-0 py-2">
+                        <span className="block">{type
                           .replaceAll("_", " ")
                           .replace(/(^|\s)\S/g, (letter) =>
                             letter.toUpperCase(),
-                          )}
+                          )}</span>
+                        <span className="mt-1 block text-xs font-normal leading-relaxed text-muted-foreground">
+                          {items.filter((term) => selectedTerms.has(term.id)).map((term) => term.name).join(", ") || "Select terms"}
+                        </span>
                       </span>
-                      <span className="text-xs font-normal text-muted-foreground">
+                      <span className="shrink-0 text-xs font-normal text-muted-foreground">
                         {
                           items.filter((term) => selectedTerms.has(term.id))
                             .length
                         }{" "}
                         selected
                       </span>
+                      <ChevronDownIcon aria-hidden="true" className="size-4 shrink-0 transition-transform group-open:rotate-180" />
                     </summary>
                     <fieldset className="grid gap-2 border-t border-border/60 py-3">
                       <legend className="sr-only">{type}</legend>
-                      <div className="grid gap-1">
+                      <div className="grid gap-1 sm:grid-cols-2">
                         {items.map((term) => (
                           <label
                             key={term.id}

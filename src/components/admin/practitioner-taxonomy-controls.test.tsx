@@ -276,7 +276,7 @@ describe("practitioner and taxonomy CMS controls", () => {
 
   it("keeps linked archived taxonomy terms visible, but hides unrelated archived terms", () => {
     render(<PractitionerEditor record={{ ...practitioner, terms: [archivedLinkedTerm] }} terms={[archivedLinkedTerm, archivedUnlinkedTerm]} />);
-    expect(screen.getByText("Archived Bali")).toBeTruthy();
+    expect((screen.getByLabelText(/Archived Bali/) as HTMLInputElement).checked).toBe(true);
     expect(screen.getAllByText("Archived", { selector: "span" }).length).toBeGreaterThan(0);
     expect(screen.queryByText("Archived Tokyo")).toBeNull();
     fireEvent.click(screen.getByLabelText(/Archived Bali/));
