@@ -99,8 +99,8 @@ describe("practitioner and taxonomy CMS controls", () => {
   it("shows editor preview, focal controls, and feature controls", () => {
     render(<PractitionerEditor record={practitioner} terms={[]} />);
     expect(screen.getByRole("link", { name: "Preview" }).getAttribute("href")).toBe(`/admin/practitioners/${practitionerId}/preview`);
-    expect((screen.getByLabelText("Focal X (0–100)") as HTMLInputElement).value).toBe("35");
-    expect((screen.getByLabelText("Focal Y (0–100)") as HTMLInputElement).value).toBe("65");
+    expect((screen.getByLabelText("Horizontal position") as HTMLInputElement).value).toBe("35");
+    expect((screen.getByLabelText("Vertical position") as HTMLInputElement).value).toBe("65");
     expect(screen.getByRole("button", { name: "Save featured position" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Unfeature" })).toBeTruthy();
   });
