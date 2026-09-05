@@ -10,12 +10,16 @@ The current release is focused on:
 - A guided Find a Match enquiry journey.
 - A practitioner expression-of-interest journey.
 - Structured submission storage in Supabase.
+- A curated public practitioner directory with searchable profiles and controlled publication states.
+- Admin Portal V1 for one authorised administrator to create, edit, preview, publish, unpublish, archive, and restore practitioner listings.
 - Customer confirmations and internal notifications through MailerSend.
 - Responsive, accessible public pages and form states.
 
-The MVP does not include a public practitioner directory, public practitioner profiles, customer or practitioner accounts, payments, automated matching, direct messaging, or a custom administration portal.
+The MVP does not include customer or practitioner accounts, automated matching, booking, payments, subscriptions, billing, or ticketing. It does not include direct messaging or venue and event directories.
 
 The detailed delivery scope and acceptance criteria are maintained in [`docs/source-of-truth/mvp-scope.md`](docs/source-of-truth/mvp-scope.md). Commercial agreements, pricing, transcripts, private research, and internal planning do not belong in this repository.
+
+This scope describes intended delivery. Confirm code, Preview, provider, and production evidence separately.
 
 ## Technology
 
@@ -33,7 +37,7 @@ Approved integration direction:
 - Vercel Web Analytics for page views and custom events
 - MailerSend for transactional email
 
-Supabase is the application runtime data store and source of truth. Airtable receives a one-way CRM projection through a Vercel Workflow; it is never read by the public application and never syncs operational CRM changes back to Supabase.
+Supabase is the application runtime data store and source of truth. After submission persistence, a Vercel Workflow sends a one-way CRM projection to Airtable. The public application never reads Airtable. CRM changes never sync back to Supabase.
 
 ## Local development
 

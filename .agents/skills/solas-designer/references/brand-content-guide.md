@@ -1,5 +1,5 @@
 ---
-last_updated: "2026-08-05T12:56:10-04:00"
+last_updated: "2026-09-04T21:11:01-04:00"
 ---
 
 # The Solas Guide brand and content guide
@@ -8,11 +8,11 @@ This is a living implementation guide. It contains distilled direction only; pri
 
 ## Current brand position
 
-- Present The Solas Guide as a knowledgeable human guide and curator, not a directory, booking marketplace, or automated matching service.
+- Present The Solas Guide as a knowledgeable human guide and curator with a curated public directory. It is not a booking marketplace or automated matching service.
 - Build trust visually through clarity, restraint, and an understandable journey rather than badges, luxury signalling, or implied authority.
 - Lead the composition with the visitor's context and desired outcome, then make the real next step visually clear.
 - Communicate selectivity without social exclusivity or status theatre.
-- Keep the current experience focused on the MVP enquiry journey. Historical practitioner profiles and directory concepts do not define active scope.
+- Keep the active experience focused on the MVP journeys, including the approved practitioner directory, profiles, and Admin Portal V1. Historical prototype profiles and directory concepts do not define production implementation.
 
 ## Audience
 
@@ -21,7 +21,7 @@ The initial audience includes affluent travellers, retreat organisers, travel co
 ## Design principles
 
 1. Use quiet editorial authority: generous space, controlled typography, restrained decoration, and concise copy.
-2. Prefer an edited narrative over catalogue-like grids or marketplace mechanics.
+2. Prefer an edited narrative on editorial pages. Use structured listings where the active directory scope requires them, without marketplace mechanics.
 3. Balance calm, established structure with warm and organic composition.
 4. Let grounded natural imagery carry the atmosphere: real places, natural light, material texture, landscape, and understated human presence.
 5. Avoid generic wellness stock, influencer aesthetics, rigid listing cards, status theatre, and excessive luxury signalling.

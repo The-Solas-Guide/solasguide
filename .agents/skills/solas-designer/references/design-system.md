@@ -1,5 +1,5 @@
 ---
-last_updated: "2026-08-05T12:54:15-04:00"
+last_updated: "2026-09-04T21:11:01-04:00"
 ---
 
 # The Solas Guide design system
@@ -22,9 +22,9 @@ last_updated: "2026-08-05T12:54:15-04:00"
 
 ## Product presentation
 
-- Treat The Solas Guide as a knowledgeable guide and curator, not a public directory or marketplace.
+- Treat The Solas Guide as a knowledgeable guide and curator with a curated public directory. It is not a booking marketplace or automated matching service.
 - Lead with the visitor's context, the enquiry process, and a clear account of what happens next.
-- Do not introduce practitioner profiles, browseable listings, filters, or direct-contact affordances unless they enter the approved MVP scope.
+- Use practitioner profiles, browseable listings, filters, and Admin Portal V1 controls where the active MVP scope requires them. Do not introduce direct-contact affordances or unapproved capabilities.
 - Treat identity marks and placeholder imagery as provisional until final artwork or content is approved.
 
 ## Copy integration

@@ -1,5 +1,5 @@
 ---
-last_updated: "2026-08-05T12:54:15-04:00"
+last_updated: "2026-09-04T21:11:01-04:00"
 ---
 
 # The Solas Guide editorial direction
@@ -11,7 +11,7 @@ This reference governs how copy is integrated into a design. For writing, editin
 - Own hierarchy, placement, wrapping, line length, contrast, and responsive behaviour.
 - Preserve the meaning and claim strength of approved copy.
 - If copy cannot fit clearly, adjust the composition first or ask `solas-copywriter` for a bounded revision.
-- Keep calls to action aligned with the real MVP enquiry journey; do not create directory, profile, booking, payment, or direct-contact affordances.
+- Keep calls to action and controls aligned with the active MVP journeys. This includes approved directory and profile browsing and Admin Portal V1 lifecycle controls. Do not create booking, payment, or direct-contact affordances.
 - Mark provisional copy visibly during review and do not present it as client-approved.
 
 Keep detailed voice, terminology, evidence, and claims guidance in `solas-copywriter`; do not duplicate it here.

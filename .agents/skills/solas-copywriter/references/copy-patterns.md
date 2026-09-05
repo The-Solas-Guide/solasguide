@@ -1,5 +1,5 @@
 ---
-last_updated: "2026-08-05T12:52:37-04:00"
+last_updated: "2026-09-04T21:11:01-04:00"
 ---
 
 # Solas copy patterns
@@ -20,13 +20,13 @@ Prefer:
 - Tell us what you're looking for
 - Start a conversation
 - Begin your enquiry
+- Browse practitioners
 - Continue
 - Review your enquiry
 
 Avoid unless the product changes:
 
 - Book now
-- Browse practitioners
 - Find your perfect match
 - Get matched instantly
 - Unlock exclusive access

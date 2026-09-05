@@ -32,7 +32,7 @@ Write with quiet authority while keeping every claim accurate to the active prod
 
 - Do not treat private transcripts, conversations, archived prototypes, or commercial material as repository content.
 - Do not invent credentials, practitioner facts, testimonials, verification processes, availability, or outcomes.
-- Do not restore directory, public profile, booking, account, or automated matching language outside the active MVP scope.
-- Distinguish the manual concierge service from the software: human review, recommendations, and curated introductions are the current operating model; automated matching, booking, profiles, and direct messaging are not application capabilities.
+- Do not restore booking, account, or automated matching language outside the active MVP scope.
+- Distinguish the manual concierge service from the software. Human review, recommendations, and curated introductions are the current operating model. The active application scope also includes approved practitioner directory and profile content. Automated matching, verification, booking, and direct messaging are not application capabilities.
 - Do not use luxury or spiritual language as a substitute for specific, useful information.
 - Preserve local names and terminology without exoticising people, places, or traditions.

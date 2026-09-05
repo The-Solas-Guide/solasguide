@@ -1,5 +1,5 @@
 ---
-last_updated: "2026-08-05T13:08:39-04:00"
+last_updated: "2026-09-04T21:11:01-04:00"
 ---
 
 # Solas voice and brand direction
@@ -8,7 +8,7 @@ This is distilled implementation guidance. Private transcripts and client conver
 
 ## Position
 
-- Present The Solas Guide as a knowledgeable human guide and curator, not a directory, booking marketplace, or automated matching service.
+- Present The Solas Guide as a knowledgeable human guide and curator with a curated public directory. It is not a booking marketplace or automated matching service.
 - Make trust the central promise. Demonstrate it through a clear process, careful language, and specific evidence.
 - Lead with the visitor's context and desired outcome, then explain the considered next step.
 - Communicate selectivity without status theatre. Prefer `considered` and `selected with care` over `elite` or `exclusive` when the operating process supports the claim.
@@ -64,7 +64,8 @@ Avoid:
 ## Current operating model
 
 - Human review, recommendations, and curated introductions are part of the MVP service delivered manually by The Solas Guide.
-- The application explains the service and captures structured buyer and practitioner enquiries; it does not automate matching, verification, booking, profiles, or direct messaging.
+- The active product scope includes a curated public practitioner directory and profiles, plus Admin Portal V1 listing lifecycle controls. Treat this as intended scope and confirm implementation and deployment separately.
+- The application explains the service and captures structured buyer and practitioner enquiries; it does not automate matching, verification, booking, or direct messaging.
 
 ## Open client decisions
 
