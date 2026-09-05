@@ -293,39 +293,74 @@ html[data-motion-ready="true"] [data-reveal][data-reveal-state="visible"] {
 }
 
 /* Administrator desk: scoped so public pages keep their own type and controls. */
-[data-admin] {
-  --admin-title: clamp(1.7rem, 2.4vw, 2.05rem);
-  --sidebar: #efeae1;
-  --sidebar-accent: #e6dfd2;
-  --sidebar-border: #d8d0c2;
+/* Apply admin tokens to portals as well as the page. Public routes keep their theme. */
+body:has([data-admin]) {
+  --font-body: var(--font-admin), system-ui, sans-serif;
+  --font-display: var(--font-admin), system-ui, sans-serif;
+  --background: #f5f7f6;
+  --foreground: #1e2a25;
+  --card: #ffffff;
+  --card-foreground: #1e2a25;
+  --popover: #ffffff;
+  --popover-foreground: #1e2a25;
+  --primary: #294e3e;
+  --primary-foreground: #ffffff;
+  --secondary: #edf1ee;
+  --secondary-foreground: #294e3e;
+  --muted: #eef2ef;
+  --muted-foreground: #637269;
+  --accent: #294e3e;
+  --accent-foreground: #ffffff;
+  --border: #dfe6e1;
+  --input: #d3ddd6;
+  --ring: #527563;
+  --radius: 0.5rem;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #3d4d43;
+  --sidebar-primary: #294e3e;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #eaf1ec;
+  --sidebar-accent-foreground: #294e3e;
+  --sidebar-border: #dfe6e1;
+  --sidebar-ring: #527563;
 }
 
-[data-admin] .uppercase {
-  text-transform: none;
+[data-admin] .uppercase { text-transform: none; }
+[data-admin] .admin-title {
+  font-family: var(--font-body);
+  font-size: clamp(1.4rem, 2vw, 1.75rem);
+  font-weight: 650;
+  letter-spacing: -0.035em;
+  line-height: 1.25;
 }
-
-[data-admin] .tracking-\[0\.13em\],
-[data-admin] .tracking-\[0\.11em\],
-[data-admin] .tracking-\[0\.1em\] {
-  letter-spacing: 0.01em;
-}
-
 [data-admin] th {
   font-size: 0.75rem;
-  font-weight: 500;
-  letter-spacing: 0.02em;
+  font-weight: 600;
+  letter-spacing: 0;
   text-transform: none;
 }
-
-[data-admin] .admin-title {
-  font-family: var(--font-display);
-  font-size: var(--admin-title);
-  font-weight: 100;
-  letter-spacing: -0.03em;
-  line-height: 1.12;
-}
-
+[data-admin] [data-slot="field-group"] { gap: 1.25rem; }
+[data-admin] input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+[data-admin] textarea { background-color: var(--card); }
 [data-admin] input[type="checkbox"],
-[data-admin] input[type="radio"] {
-  accent-color: var(--accent);
+[data-admin] input[type="radio"] { accent-color: var(--accent); }
+
+/* The public theme's unlayered control rules need explicit admin overrides. */
+[data-admin] button,
+[data-admin] a.uppercase { letter-spacing: 0; }
+[data-admin] .uppercase { font-size: 0.8125rem; font-weight: 600; }
+[data-admin] [data-slot="tabs-trigger"] {
+  border-color: transparent;
+  font-size: 0.8125rem;
+  font-weight: 600;
 }
+[data-admin] [data-slot="tabs-trigger"][data-state="active"] {
+  border-bottom-color: var(--primary);
+  color: var(--primary);
+}
+[data-admin] aside section[aria-label="Public lifecycle"] > div,
+[data-admin] aside section[aria-label="Operational workflow"] > div {
+  flex-direction: column;
+  align-items: stretch;
+}
+[data-admin] aside [data-slot="select-trigger"] { width: 100%; }

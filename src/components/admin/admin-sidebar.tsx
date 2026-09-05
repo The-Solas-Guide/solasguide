@@ -63,8 +63,9 @@ export function AdminSidebar({ email }: { email: string }) {
                     <SidebarMenuButton
                       asChild
                       isActive={isActive}
+                      data-active={isActive ? true : undefined}
                       tooltip={item.title}
-                      className="min-h-11"
+                      className="min-h-11 rounded-lg"
                     >
                       <Link
                         href={item.href}
@@ -94,7 +95,7 @@ export function AdminSidebar({ email }: { email: string }) {
           </SidebarMenuItem>
           <SidebarMenuItem>
             <form action={signOutAdmin}>
-              <SidebarMenuButton asChild tooltip="Sign out" className="min-h-11">
+              <SidebarMenuButton data-active={undefined} asChild tooltip="Sign out" className="min-h-11 rounded-lg">
                 <button type="submit" className="w-full">
                   <LogOutIcon />
                   <span>Sign out</span>

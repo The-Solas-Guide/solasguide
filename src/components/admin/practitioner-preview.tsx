@@ -1,4 +1,6 @@
-import { AdminBackLink, AdminStatus } from "@/components/admin/admin-page";
+import Link from "next/link";
+import { AdminBackLink, AdminPanel, AdminStatus } from "@/components/admin/admin-page";
+import { Button } from "@/components/ui/button";
 import { formatAdminDate, type TaxonomyRow } from "@/lib/admin/practitioner-cms";
 import { portraitObjectPosition } from "@/lib/practitioners";
 import type { AdminPractitionerRecord } from "@/lib/admin/practitioner-actions";
@@ -12,12 +14,16 @@ export function PractitionerPreview({ record }: { record: AdminPractitionerRecor
   const termsByType = new Map<string, TaxonomyRow[]>();
   for (const term of record.terms) termsByType.set(term.type, [...(termsByType.get(term.type) ?? []), term]);
   return (
-    <div className="mx-auto flex w-full min-w-0 max-w-4xl flex-col gap-8">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+    <div className="mx-auto flex w-full min-w-0 max-w-5xl flex-col gap-5">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/80 pb-3">
         <AdminBackLink href={`/admin/practitioners/${record.id}`}>Back to editor</AdminBackLink>
-        <AdminStatus value={record.status} label={`Private preview · ${record.status}`} />
+        <div className="flex items-center gap-3">
+          <AdminStatus value={record.status} label={`Private preview · ${record.status}`} />
+          <Button asChild variant="outline" size="sm"><Link href={`/admin/practitioners/${record.id}`}>Return to editor</Link></Button>
+        </div>
       </div>
-      <article className="grid gap-8 border-t pt-8 md:grid-cols-[minmax(0,18rem)_1fr] md:gap-10">
+      <AdminPanel title="Practitioner preview" description="Review the stored public profile content before publishing.">
+      <article className="grid gap-6 md:grid-cols-[minmax(0,18rem)_1fr] md:gap-8">
         {record.image_path ? (
           // Preview must show the stored crop, including unoptimised local files.
           // eslint-disable-next-line @next/next/no-img-element
@@ -34,7 +40,7 @@ export function PractitionerPreview({ record }: { record: AdminPractitionerRecor
         )}
         <div className="grid content-start gap-6">
           <div>
-            <h1 className="admin-title break-words">{record.name}</h1>
+            <h1 className="admin-title break-words tracking-tight">{record.name}</h1>
             {record.descriptor ? (
               <p className="mt-2 text-base text-muted-foreground">{record.descriptor}</p>
             ) : null}
@@ -59,6 +65,7 @@ export function PractitionerPreview({ record }: { record: AdminPractitionerRecor
           </p>
         </div>
       </article>
+      </AdminPanel>
     </div>
   );
 }

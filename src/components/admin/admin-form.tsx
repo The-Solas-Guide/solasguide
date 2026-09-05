@@ -84,10 +84,10 @@ function AdminFormSection({
 }) {
   return (
     <section
-      className={`grid gap-5 border-b border-border/80 pb-8 ${className ?? ""}`}
+      className={`grid gap-5 rounded-lg border border-border bg-card p-5 ${className ?? ""}`}
     >
       <div className="max-w-2xl">
-        <h2 className="text-sm font-medium">{title}</h2>
+        <h2 className="text-sm font-semibold">{title}</h2>
         {description ? (
           <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
             {description}
@@ -106,11 +106,10 @@ function ProtectedFields({
 }) {
   if (!fields.length) return null;
   return (
-    <AdminFormSection
-      title="Protected fields"
-      description="These system values cannot be edited."
-    >
-      <div className="grid gap-4 sm:grid-cols-2">
+    <details className="rounded-lg border bg-card px-5 py-4">
+      <summary className="cursor-pointer text-sm font-medium">Protected fields</summary>
+      <p className="mt-2 text-xs text-muted-foreground">These system values cannot be edited.</p>
+      <div className="mt-4 grid gap-4 sm:grid-cols-2">
         {fields.map((field) => (
           <Field key={field.label}>
             <FieldTitle>{field.label}</FieldTitle>
@@ -127,7 +126,7 @@ function ProtectedFields({
           </Field>
         ))}
       </div>
-    </AdminFormSection>
+    </details>
   );
 }
 
@@ -217,7 +216,7 @@ function AdminFormLayout({
       }
       data-dirty={isDirty ? "true" : "false"}
       onSubmit={handleSubmit}
-      className={`mx-auto flex w-full min-w-0 flex-col gap-8 pb-28 ${width === "wide" ? "max-w-6xl" : "max-w-4xl"}`}
+      className={`mx-auto flex w-full min-w-0 flex-col gap-5 pb-4 ${width === "wide" ? "max-w-6xl" : "max-w-4xl"}`}
     >
       <AdminPageHeader
         title={title}
@@ -227,7 +226,6 @@ function AdminFormLayout({
             <AdminStatus
               value={statusKind ?? "draft"}
               label={status}
-              className="min-h-11"
             />
           ) : null
         }
@@ -264,7 +262,10 @@ function AdminFormLayout({
           {validationMessage(message)}
         </FieldError>
       ))}
-      <footer className="sticky bottom-0 z-10 -mx-5 flex flex-wrap items-center justify-end gap-2 border-t bg-background/95 px-5 py-4 backdrop-blur md:-mx-8 md:px-8">
+      <footer className="sticky bottom-0 z-10 flex flex-wrap items-center justify-end gap-2 rounded-lg border bg-card/95 px-4 py-3 shadow-sm backdrop-blur">
+        <span className="mr-auto text-xs text-muted-foreground" aria-live="polite">
+          {pending ? "Saving changes…" : isDirty ? "Unsaved changes" : saved ? "Changes saved" : "No unsaved changes"}
+        </span>
         {onCancel ? (
           <Button
             type="button"

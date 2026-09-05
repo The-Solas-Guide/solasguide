@@ -81,13 +81,16 @@ function FeaturedSheet({ records, onChanged }: { records: AdminPractitionerRecor
   return <Sheet open={open} onOpenChange={setOpen}>
     <SheetTrigger asChild><Button type="button" variant="outline"><SlidersHorizontalIcon />Manage featured</Button></SheetTrigger>
     <SheetContent side="right" className="w-full overflow-y-auto sm:max-w-lg">
-      <SheetHeader><SheetTitle>Featured practitioners</SheetTitle><SheetDescription>Move practitioners up or down to change their order on the public site.</SheetDescription></SheetHeader>
+      <SheetHeader className="border-b pb-4">
+        <SheetTitle>Featured practitioners</SheetTitle>
+        <SheetDescription>Move practitioners up or down to change their order on the public site.</SheetDescription>
+      </SheetHeader>
       <div className="grid gap-5 px-4">
-        <div className="border-y py-4 text-sm">
-          <p className={cn("font-medium", readiness.ready ? "text-foreground" : "text-foreground")}>{readiness.count} of {readiness.required} positions filled</p>
-          <p className="mt-1 text-muted-foreground">Add eight published practitioners before launch.</p>
+        <div className="border-b py-1 text-sm">
+          <p className={cn("font-medium", readiness.ready ? "text-foreground" : "text-muted-foreground")}>{readiness.count} of {readiness.required} positions filled</p>
+          <p className="mt-1 text-xs text-muted-foreground">Add eight published practitioners before launch.</p>
         </div>
-        {featured.length === 0 ? <p className="py-4 text-sm text-muted-foreground">No published practitioners are featured yet.</p> : <ol className="grid gap-0" aria-label="Featured practitioner order">{featured.map((record, index) => <li key={record.id} className="flex min-h-14 items-center gap-3 border-b py-3 last:border-b-0"><span className="w-6 shrink-0 tabular-nums text-sm text-muted-foreground">{index + 1}</span><span className="min-w-0 flex-1 truncate font-medium">{record.name}</span><div className="flex gap-1"><Button type="button" variant="ghost" size="icon" aria-label={`Move ${record.name} up`} disabled={pending || index === 0} onClick={() => move(index, -1)}><ArrowUpIcon /></Button><Button type="button" variant="ghost" size="icon" aria-label={`Move ${record.name} down`} disabled={pending || index === featured.length - 1} onClick={() => move(index, 1)}><ArrowDownIcon /></Button></div></li>)}</ol>}
+        {featured.length === 0 ? <p className="py-4 text-sm text-muted-foreground">No published practitioners are featured yet.</p> : <ol className="grid gap-0" aria-label="Featured practitioner order">{featured.map((record, index) => <li key={record.id} className="flex min-h-14 items-center gap-3 border-b py-3 last:border-b-0"><span className="w-6 shrink-0 tabular-nums text-sm text-muted-foreground">{index + 1}</span><Avatar size="sm"><AvatarImage {...imageProps(record.image_path, record.image_alt ?? "")} /><AvatarFallback>{initials(record.name)}</AvatarFallback></Avatar><span className="min-w-0 flex-1 truncate font-medium">{record.name}</span><div className="flex gap-1"><Button type="button" variant="ghost" size="icon" aria-label={`Move ${record.name} up`} disabled={pending || index === 0} onClick={() => move(index, -1)}><ArrowUpIcon /></Button><Button type="button" variant="ghost" size="icon" aria-label={`Move ${record.name} down`} disabled={pending || index === featured.length - 1} onClick={() => move(index, 1)}><ArrowDownIcon /></Button></div></li>)}</ol>}
       </div>
       <SheetFooter><Button type="button" variant="outline" onClick={() => setOpen(false)}>Done</Button></SheetFooter>
     </SheetContent>

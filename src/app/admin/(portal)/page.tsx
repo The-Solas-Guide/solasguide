@@ -1,6 +1,10 @@
 import Link from "next/link";
-import { adminNavigation } from "@/components/admin/admin-navigation";
-import { AdminMetricRow, AdminPage, AdminPageHeader } from "@/components/admin/admin-page";
+import {
+  AdminMetricRow,
+  AdminPage,
+  AdminPageHeader,
+  AdminPanel,
+} from "@/components/admin/admin-page";
 import { getOperationalRecords } from "@/lib/admin/operational-actions";
 import { getAdminPractitioners } from "@/lib/admin/practitioner-actions";
 import {
@@ -9,36 +13,6 @@ import {
   getTaxonomyLifecycle,
 } from "@/lib/admin/practitioner-cms";
 import { getAdminTaxonomy } from "@/lib/admin/taxonomy-actions";
-
-const destinations: Record<
-  string,
-  { description: string; href: string }
-> = {
-  Overview: {
-    href: "/admin",
-    description: "A quiet register of public records and private submissions.",
-  },
-  Practitioners: {
-    href: "/admin/practitioners",
-    description: "Listings, portraits, visibility, and featured order.",
-  },
-  "Pages & Content": {
-    href: "/admin/content",
-    description: "The public website pages. Editing is not in this release.",
-  },
-  Taxonomy: {
-    href: "/admin/taxonomy",
-    description: "The terms that describe practice, people, and place.",
-  },
-  "Customer Enquiries": {
-    href: "/admin/customer-enquiries",
-    description: "Private buyer submissions, workflow, and notes.",
-  },
-  "Practitioner Interest": {
-    href: "/admin/practitioner-interest",
-    description: "Private expressions of interest and review.",
-  },
-};
 
 export default async function AdminOverviewPage() {
   const [practitioners, taxonomy, enquiries, interest] = await Promise.all([
@@ -66,19 +40,12 @@ export default async function AdminOverviewPage() {
     (record) => getTaxonomyLifecycle(record) === "active",
   ).length;
 
-  const summaries: Record<string, string> = {
-    Practitioners: practitioners.ok
-      ? `${published} published · ${featuredReadiness.count} of ${featuredReadiness.required} featured`
-      : "Could not load counts",
-    Taxonomy: taxonomy.ok ? `${activeTerms} active terms` : "Could not load counts",
-    "Customer Enquiries": enquiries.ok
-      ? `${newEnquiries} new`
-      : "Could not load counts",
-    "Practitioner Interest": interest.ok
-      ? `${newInterest} new`
-      : "Could not load counts",
-    "Pages & Content": "Read-only in this release",
-  };
+  const recentSubmissions = [
+    ...(enquiries.ok ? enquiries.data ?? [] : []).map((record) => ({ ...record, area: "customer-enquiries", label: "Customer enquiry" })),
+    ...(interest.ok ? interest.data ?? [] : []).map((record) => ({ ...record, area: "practitioner-interest", label: "Practitioner interest" })),
+  ].filter((record) => record.status === "new" && !record.archived_at)
+    .sort((left, right) => right.created_at.localeCompare(left.created_at))
+    .slice(0, 4);
 
   return (
     <AdminPage>
@@ -108,33 +75,109 @@ export default async function AdminOverviewPage() {
           },
         ]}
       />
-      <nav aria-label="Administrator areas">
-        <ul className="divide-y divide-border/80">
-          {adminNavigation
-            .filter((item) => item.title !== "Overview")
-            .map((item) => {
-              const copy = destinations[item.title];
-              return (
-                <li key={item.href}>
-                  <Link
-                    href={copy.href}
-                    className="flex min-h-16 flex-col gap-1 py-4 sm:flex-row sm:items-baseline sm:justify-between sm:gap-8"
-                  >
-                    <span className="min-w-0">
-                      <span className="font-medium">{item.title}</span>
-                      <span className="mt-1 block text-sm leading-relaxed text-muted-foreground">
-                        {copy.description}
-                      </span>
-                    </span>
-                    <span className="shrink-0 text-sm text-muted-foreground">
-                      {summaries[item.title]}
-                    </span>
-                  </Link>
-                </li>
-              );
-            })}
-        </ul>
-      </nav>
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1.25fr)_minmax(18rem,0.75fr)] lg:items-start">
+        <AdminPanel
+          title="Needs attention"
+          description="Start with private submissions, then return to public records when the queue is clear."
+        >
+          <div className="grid divide-y">
+            {[
+              {
+                href: "/admin/customer-enquiries?status=new&filter.archive=active",
+                label: "Customer enquiries",
+                value: enquiries.ok ? newEnquiries : "Unknown",
+                note: "New buyer submissions",
+              },
+              {
+                href: "/admin/practitioner-interest?status=new&filter.archive=active",
+                label: "Practitioner interest",
+                value: interest.ok ? newInterest : "Unknown",
+                note: "New practitioner submissions",
+              },
+            ].map((queue) => (
+              <Link
+                key={queue.href}
+                href={queue.href}
+                className="group flex min-h-20 items-center justify-between gap-4 py-3 transition-colors hover:bg-muted/30"
+              >
+                <span className="min-w-0">
+                  <span className="block font-medium">{queue.label}</span>
+                  <span className="mt-1 block text-sm text-muted-foreground">
+                    {queue.note}
+                  </span>
+                </span>
+                <span className="shrink-0 text-right">
+                  <span className="block text-2xl font-semibold tabular-nums tracking-tight">
+                    {queue.value}
+                  </span>
+                  <span className="text-xs text-muted-foreground group-hover:text-foreground">
+                    Review queue →
+                  </span>
+                </span>
+              </Link>
+            ))}
+          </div>
+          {recentSubmissions.length > 0 ? (
+            <div className="border-t pt-4">
+              <h3 className="mb-2 text-xs font-semibold text-muted-foreground">Latest new submissions</h3>
+              <ul className="divide-y">
+                {recentSubmissions.map((record) => (
+                  <li key={`${record.area}-${record.id}`}>
+                    <Link href={`/admin/${record.area}/${record.id}`} className="flex min-h-14 items-center justify-between gap-4 py-2 text-sm hover:text-primary">
+                      <span className="min-w-0 truncate font-medium">{record.full_name}</span>
+                      <span className="shrink-0 text-xs text-muted-foreground">{record.label}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+        </AdminPanel>
+        <AdminPanel
+          title="Publication readiness"
+          description="A quick view of the public catalogue before you open a record."
+        >
+          <div className="grid gap-3">
+            {[
+              {
+                label: "Featured order",
+                value: practitioners.ok
+                  ? `${featuredReadiness.count} / ${featuredReadiness.required}`
+                  : "Unknown",
+                href: "/admin/practitioners",
+              },
+              {
+                label: "Active taxonomy",
+                value: taxonomy.ok ? activeTerms : "Unknown",
+                href: "/admin/taxonomy?status=active",
+              },
+            ].map((item) => (
+              <Link
+                key={item.label}
+                href={item.href}
+                className="rounded-lg border border-border/80 bg-background px-4 py-3 hover:border-foreground/30"
+              >
+                <span className="block text-sm text-muted-foreground">
+                  {item.label}
+                </span>
+                <span className="mt-1 block text-2xl font-semibold tabular-nums tracking-tight">
+                  {item.value}
+                </span>
+                {item.label === "Featured order" ? (
+                  <span className="mt-1 block text-xs text-muted-foreground">
+                    {practitioners.ok
+                      ? featuredReadiness.ready
+                        ? "Launch requirement met."
+                        : `${featuredReadiness.required - featuredReadiness.count} more featured records needed.`
+                      : "Practitioner readiness could not be checked."}
+                  </span>
+                ) : null}
+              </Link>
+            ))}
+          </div>
+        </AdminPanel>
+      </div>
+
     </AdminPage>
   );
 }

@@ -21,8 +21,8 @@ export default async function AdminSignInPage({
   }
 
   return (
-    <main className="flex min-h-svh items-center justify-center px-5 py-10 md:px-10">
-      <div className="flex w-full max-w-md flex-col gap-10">
+    <main className="flex min-h-svh items-center justify-center px-5 py-8 md:px-10">
+      <div className="flex w-full max-w-md flex-col gap-8 rounded-2xl border border-border/80 bg-card p-6 shadow-sm md:p-8">
         <div className="flex flex-col gap-6">
           <Image
             src="/brand/solas-logo-4-pebble.png"
@@ -30,7 +30,7 @@ export default async function AdminSignInPage({
             width={1600}
             height={606}
             priority
-            className="h-auto w-[180px]"
+            className="h-auto w-[156px]"
           />
           <div className="max-w-sm">
             <h1 className="admin-title">Sign in</h1>
