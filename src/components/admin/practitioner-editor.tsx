@@ -432,6 +432,8 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
                     key={id}
                     href={`#${id}`}
                     data-scrollspy-anchor={id}
+                    // Portrait shares the profile row; its offset keeps both links distinct.
+                    data-scrollspy-offset={id === "section-portrait" ? 128 : undefined}
                     onClick={() => {
                       requestAnimationFrame(() => {
                         document.getElementById(id)?.focus({ preventScroll: true });
