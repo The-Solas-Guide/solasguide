@@ -1,5 +1,12 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
+const mocks = vi.hoisted(() => ({ sendTransactionalEmail: vi.fn() }));
+vi.mock("@/lib/enquiries/delivery-email", () => ({ sendTransactionalEmail: mocks.sendTransactionalEmail }));
 import { customerAnswerSummary, processCustomerEnquiryDelivery } from "@/lib/enquiries/customer-delivery";
+
+afterEach(() => {
+  vi.unstubAllEnvs();
+  vi.clearAllMocks();
+});
 
 describe("customer enquiry delivery summaries", () => {
   it("keeps legacy v2 answers readable", () => {
@@ -63,5 +70,46 @@ describe("manual enquiry delivery protection", () => {
     const client = { from: vi.fn().mockReturnValue(query), rpc: vi.fn().mockReturnValue({ single: vi.fn().mockResolvedValue({ data: { send_customer: false, send_internal: false }, error: null }) }) };
     expect(await processCustomerEnquiryDelivery(client as unknown as Parameters<typeof processCustomerEnquiryDelivery>[0], "website-id")).toEqual({ deliveryPending: false });
     expect(client.rpc).toHaveBeenCalledWith("claim_customer_enquiry_delivery", { p_enquiry_id: "website-id" });
+  });
+
+  it("does not resend a successful customer message when the internal message fails", async () => {
+    vi.stubEnv("SOLAS_OPERATIONS_EMAIL", "ops@example.test");
+    mocks.sendTransactionalEmail
+      .mockResolvedValueOnce(undefined)
+      .mockRejectedValueOnce(new Error("provider rejected internal message"))
+      .mockResolvedValueOnce(undefined);
+    const stored = {
+      data: {
+        id: "website-id",
+        source: "website",
+        full_name: "Customer QA",
+        email: "customer@example.test",
+        phone: "+1 416 555 0100",
+        contact_preference: "whatsapp",
+        questionnaire_answers: {},
+        customer_confirmation_status: "pending",
+        internal_notification_status: "pending",
+      },
+      error: null,
+    };
+    const single = vi.fn()
+      .mockResolvedValueOnce(stored)
+      .mockResolvedValueOnce({ ...stored, data: { ...stored.data, customer_confirmation_status: "sent", internal_notification_status: "failed" } });
+    const update = vi.fn().mockReturnThis();
+    const query = { select: vi.fn().mockReturnThis(), eq: vi.fn().mockReturnThis(), single, update };
+    const claimSingle = vi.fn()
+      .mockResolvedValueOnce({ data: { send_customer: true, send_internal: true }, error: null })
+      .mockResolvedValueOnce({ data: { send_customer: false, send_internal: true }, error: null });
+    const client = { from: vi.fn().mockReturnValue(query), rpc: vi.fn().mockReturnValue({ single: claimSingle }) };
+
+    await expect(processCustomerEnquiryDelivery(client as never, "website-id")).resolves.toEqual({ deliveryPending: true });
+    await expect(processCustomerEnquiryDelivery(client as never, "website-id")).resolves.toEqual({ deliveryPending: false });
+
+    expect(mocks.sendTransactionalEmail).toHaveBeenCalledTimes(3);
+    expect(mocks.sendTransactionalEmail.mock.calls[0][1]).toBe("We have received your Solas Guide enquiry");
+    expect(mocks.sendTransactionalEmail.mock.calls[1][1]).toContain("New Solas enquiry");
+    expect(mocks.sendTransactionalEmail.mock.calls[2][1]).toContain("New Solas enquiry");
+    expect(update.mock.calls[0][0]).toMatchObject({ customer_confirmation_status: "sent", internal_notification_status: "failed" });
+    expect(update.mock.calls[1][0]).toMatchObject({ internal_notification_status: "sent" });
   });
 });
