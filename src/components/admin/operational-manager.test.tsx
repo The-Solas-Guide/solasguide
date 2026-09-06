@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { OperationalManager } from "./operational-manager";
 import type { OperationalRecord } from "@/lib/admin/operational-cms";
@@ -14,17 +14,39 @@ const mocks = vi.hoisted(() => ({
     pageSize: 10,
     sort: undefined as { id: string; direction: "asc" | "desc" } | undefined,
   },
+  archive: vi.fn(),
+  save: vi.fn(),
+  refresh: vi.fn(),
 }));
-vi.mock("next/navigation", () => ({ useRouter: () => ({ refresh: vi.fn() }) }));
+vi.mock("next/navigation", () => ({ useRouter: () => ({ refresh: mocks.refresh }) }));
 vi.mock("@/hooks/use-admin-table-query", () => ({
   useAdminTableQuery: () => ({ state: mocks.query, dispatch: vi.fn() }),
 }));
 vi.mock("@/lib/admin/operational-actions", () => ({
-  setOperationalArchive: vi.fn(),
+  setOperationalArchive: mocks.archive,
+  saveOperationalRecord: mocks.save,
+}));
+vi.mock("@/components/admin/record-deletion", () => ({
+  AdminArchiveConfirmation: ({ open, onArchive }: { open: boolean; onArchive: () => void }) =>
+    open ? <button type="button" onClick={onArchive}>Confirm archive</button> : null,
+}));
+vi.mock("@/components/ui/dropdown-menu", () => ({
+  DropdownMenu: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  DropdownMenuTrigger: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  DropdownMenuContent: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  DropdownMenuItem: ({ children, onSelect, asChild }: { children: React.ReactNode; onSelect?: () => void; asChild?: boolean }) =>
+    asChild ? <>{children}</> : <button type="button" onClick={onSelect}>{children}</button>,
+  DropdownMenuSeparator: () => <hr />,
+  DropdownMenuSub: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  DropdownMenuSubTrigger: ({ children }: { children: React.ReactNode }) => <span>{children}</span>,
+  DropdownMenuSubContent: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }));
 afterEach(() => {
   cleanup();
-  mocks.query = { ...defaultAdminTableQuery, pageSize: 10, sort: undefined };
+  mocks.query = { ...defaultAdminTableQuery, filters: { archive: ["active"] }, pageSize: 10, sort: undefined };
+  mocks.archive.mockReset();
+  mocks.save.mockReset();
+  mocks.refresh.mockReset();
 });
 const records = [
   {
@@ -57,6 +79,7 @@ describe("operational list", () => {
     expect(screen.getAllByText("Archived Person").length).toBeGreaterThan(0);
     expect(screen.queryByText("Active Person")).toBeNull();
     expect(screen.getAllByText("Contacted").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Archived").length).toBeGreaterThan(0);
     expect(screen.queryByText("Published")).toBeNull();
   });
   it("keeps workflow counts scoped to search and archive filters", () => {
@@ -113,5 +136,43 @@ describe("operational list", () => {
     );
     expect(screen.getAllByText("Active Person").length).toBeGreaterThan(0);
     expect(screen.getByText("Page 1")).toBeTruthy();
+  });
+
+  it("reconciles optimistic archive and workflow changes when refreshed records arrive", async () => {
+    mocks.archive.mockResolvedValue({ ok: true });
+    mocks.save.mockResolvedValue({ ok: true, data: { id: "one" } });
+    const { rerender } = render(
+      <OperationalManager kind="customer-enquiries" initialRecords={records} />,
+    );
+
+    fireEvent.click(screen.getAllByRole("button", { name: "Set to Closed" })[0]);
+    await waitFor(() => expect(screen.getAllByText("Closed").length).toBeGreaterThan(0));
+    expect(mocks.save.mock.calls[0][1].get("status")).toBe("closed");
+
+    rerender(
+      <OperationalManager
+        kind="customer-enquiries"
+        initialRecords={[{ ...records[0], status: "new" }, records[1]] as OperationalRecord[]}
+      />,
+    );
+    await waitFor(() => expect(screen.getAllByText("New").length).toBeGreaterThan(0));
+
+    fireEvent.click(screen.getAllByRole("button", { name: "Archive record" })[0]);
+    fireEvent.click(screen.getAllByRole("button", { name: "Confirm archive" })[0]);
+    await waitFor(() => expect(screen.queryByText("Active Person")).toBeNull());
+
+    rerender(
+      <OperationalManager
+        kind="customer-enquiries"
+        initialRecords={[{ ...records[0], status: "new", archived_at: "2026-09-06T12:00:00Z" }, records[1]] as OperationalRecord[]}
+      />,
+    );
+    rerender(
+      <OperationalManager
+        kind="customer-enquiries"
+        initialRecords={[{ ...records[0], status: "new", archived_at: null }, records[1]] as OperationalRecord[]}
+      />,
+    );
+    await waitFor(() => expect(screen.getAllByText("Active Person").length).toBeGreaterThan(0));
   });
 });

@@ -55,6 +55,8 @@ type AdminTableShellProps<T extends object> = {
   renderMobileCard?: (row: T) => React.ReactNode;
   onRetry?: () => void;
   onPageChange?: (page: number) => void;
+  defaultQuery?: Partial<Pick<AdminTableQueryState, "search" | "filters" | "status">>;
+  preserveAllFilterSelection?: boolean;
 };
 
 function resultLabel(count: number) {
@@ -132,6 +134,8 @@ function AdminTableShell<T extends object>({
   renderMobileCard,
   onRetry,
   onPageChange,
+  defaultQuery,
+  preserveAllFilterSelection = false,
 }: AdminTableShellProps<T>) {
   // TanStack owns the table instance lifecycle and returns stable state helpers.
   // eslint-disable-next-line react-hooks/incompatible-library
@@ -146,9 +150,16 @@ function AdminTableShell<T extends object>({
     },
   });
   const count = totalCount ?? data.length;
-  const hasSearchOrFilters = Boolean(
-    query.search || query.status !== "all" || Object.values(query.filters).some((values) => values.length),
-  );
+  const defaultSearch = defaultQuery?.search ?? "";
+  const defaultStatus = defaultQuery?.status ?? "all";
+  const defaultFilters = defaultQuery?.filters ?? {};
+  const hasSearchOrFilters =
+    query.search !== defaultSearch ||
+    query.status !== defaultStatus ||
+    new Set([...Object.keys(query.filters), ...Object.keys(defaultFilters)]).size > 0 &&
+      [...new Set([...Object.keys(query.filters), ...Object.keys(defaultFilters)])].some(
+        (id) => (query.filters[id] ?? []).join(",") !== (defaultFilters[id] ?? []).join(","),
+      );
   const allTab = statusTabs.find((tab) => tab.value === "all");
 
   const update = (next: Partial<AdminTableQueryState>) => onQueryChange({ ...query, ...next });
@@ -175,14 +186,23 @@ function AdminTableShell<T extends object>({
             className="min-w-0 lg:max-w-sm"
           />
           {filters.map((filter) => {
-            const selected = query.filters[filter.id]?.[0] ?? "all";
+            const selected =
+              query.filters[filter.id]?.[0] ??
+              defaultFilters[filter.id]?.[0] ??
+              "all";
             return (
               <Select
                 key={filter.id}
                 value={selected}
                 onValueChange={(value) =>
                   update({
-                    filters: { ...query.filters, [filter.id]: value === "all" ? [] : [value] },
+                    filters: {
+                      ...query.filters,
+                      [filter.id]:
+                        value === "all" && !preserveAllFilterSelection
+                          ? []
+                          : [value],
+                    },
                     page: 1,
                   })
                 }
@@ -208,7 +228,13 @@ function AdminTableShell<T extends object>({
                 type="button"
                 variant="link"
                 onClick={() =>
-                  onQueryChange({ ...query, search: "", filters: {}, status: "all", page: 1 })
+                  onQueryChange({
+                    ...query,
+                    search: defaultSearch,
+                    filters: defaultFilters,
+                    status: defaultStatus,
+                    page: 1,
+                  })
                 }
               >
                 Clear filters
