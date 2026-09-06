@@ -193,6 +193,8 @@ export type Practitioner = {
   imageFocalY?: number;
   websiteUrl?: string;
   instagramUrl?: string;
+  /** Admin-managed ordering used by the curated homepage preview. */
+  featuredPosition?: number;
   offersInPerson: boolean;
   offersOnline: boolean;
   terms: readonly PractitionerTerm[];
@@ -229,6 +231,7 @@ const practitionerColumns = [
   "image_focal_x",
   "image_focal_y",
   "status",
+  "featured_position",
 ].join(",");
 
 const termColumns = "id,type,name,slug,sort_order,is_active";
@@ -377,11 +380,26 @@ export function mapPractitionerRow(
     imageFocalY: row.image_focal_y,
     websiteUrl: cleanOptionalString(row.website_url),
     instagramUrl: cleanOptionalString(row.instagram_url),
+    featuredPosition: row.featured_position ?? undefined,
     offersInPerson: row.offers_in_person,
     offersOnline: row.offers_online,
     terms,
     hasPublishedProfile: true as const,
   };
+}
+
+export function getFeaturedPractitioners(
+  practitioners: readonly Practitioner[],
+): readonly Practitioner[] {
+  return practitioners
+    .filter((practitioner) => practitioner.featuredPosition !== undefined)
+    .slice()
+    .sort(
+      (left, right) =>
+        (left.featuredPosition ?? Number.POSITIVE_INFINITY) -
+          (right.featuredPosition ?? Number.POSITIVE_INFINITY) ||
+        left.name.localeCompare(right.name),
+    );
 }
 
 async function loadLinkedTerms(

@@ -3,14 +3,20 @@ import { connection } from "next/server";
 import { PractitionerCard } from "@/components/practitioners/practitioner-card";
 import { PractitionerDirectoryError } from "@/components/practitioners/practitioner-status";
 import { Button } from "@/components/ui/button";
-import { getPublishedPractitioners } from "@/lib/practitioners";
+import {
+  getFeaturedPractitioners,
+  getPublishedPractitioners,
+} from "@/lib/practitioners";
 
 const HOMEPAGE_PREVIEW_LIMIT = 8;
 
 export async function RegistryPreview() {
   await connection();
   const result = await getPublishedPractitioners();
-  const preview = result.data.slice(0, HOMEPAGE_PREVIEW_LIMIT);
+  const preview = getFeaturedPractitioners(result.data).slice(
+    0,
+    HOMEPAGE_PREVIEW_LIMIT,
+  );
 
   return (
     <section

@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import type { Practitioner } from "@/lib/practitioners";
+import { getAbsoluteUrl } from "@/lib/site-config";
 
-const fallbackAppUrl = "http://localhost:3000";
+export { getAbsoluteUrl, getAppUrl } from "@/lib/site-config";
 const directoryDescription =
   "Explore the founding practitioners included in The Solas Guide and review the information listed for each practitioner.";
 
@@ -28,36 +29,6 @@ export type ProfilePageJsonLd = {
     sameAs?: readonly string[];
   };
 };
-
-/** Resolve the configured public origin, keeping local development usable. */
-export function getAppUrl() {
-  const configured = process.env.NEXT_PUBLIC_APP_URL?.trim();
-  if (!configured) return new URL(fallbackAppUrl);
-
-  try {
-    const url = new URL(configured);
-    if (
-      (url.protocol !== "http:" && url.protocol !== "https:") ||
-      url.username ||
-      url.password
-    ) {
-      return new URL(fallbackAppUrl);
-    }
-    url.search = "";
-    url.hash = "";
-    return url;
-  } catch {
-    return new URL(fallbackAppUrl);
-  }
-}
-
-/** Build an absolute public URL without allowing route query state into canonicals. */
-export function getAbsoluteUrl(path: string) {
-  const url = new URL(path, getAppUrl());
-  url.search = "";
-  url.hash = "";
-  return url.toString();
-}
 
 /** Keep only HTTPS links supplied by published profiles. */
 export function safeExternalUrl(value: string | undefined) {

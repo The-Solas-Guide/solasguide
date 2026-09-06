@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { getAbsoluteUrl } from "@/lib/practitioner-metadata";
+import { getAbsoluteUrl } from "@/lib/site-config";
 import {
   getActivePublicDiscoveryTerms,
   getPublishedPractitioners,

@@ -76,6 +76,16 @@ describe("public practitioner metadata", () => {
     );
   });
 
+  it("normalizes the production apex origin to the www canonical host", async () => {
+    vi.stubEnv("NEXT_PUBLIC_APP_URL", "https://solasguide.com");
+    const { getAbsoluteUrl, getAppUrl } = await import(
+      "@/lib/practitioner-metadata"
+    );
+
+    expect(getAppUrl().toString()).toBe("https://www.solasguide.com/");
+    expect(getAbsoluteUrl("/")).toBe("https://www.solasguide.com/");
+  });
+
   it("uses published profile facts and safe external URLs", async () => {
     const { getPractitionerMetadata } = await import(
       "@/lib/practitioner-metadata"
