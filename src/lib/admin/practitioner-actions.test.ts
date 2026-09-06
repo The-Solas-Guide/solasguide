@@ -150,6 +150,45 @@ describe("practitioner admin actions", () => {
     expect(rpc).toHaveBeenLastCalledWith("delete_admin_practitioner_reservation", { p_practitioner_id: reservationId });
   });
 
+  it("creates an incomplete draft with an accent-safe fallback slug", async () => {
+    const reservationId = "00000000-0000-0000-0000-000000000007";
+    const rpc = vi.fn(async (name: string) => {
+      if (name === "reserve_admin_practitioner") return { data: reservationId, error: null };
+      return { data: reservationId, error: null };
+    });
+    mocks.createClient.mockResolvedValue({
+      from: vi.fn(() => ({ select: vi.fn(() => ({ in: vi.fn(async () => ({ data: [], error: null })) })) })),
+      storage: { from: vi.fn() },
+      rpc,
+    });
+    const result = await savePractitioner(form({ name: "Ana María", slug: "", status: "published", termIds: "[]" }));
+    expect(result).toEqual(expect.objectContaining({ ok: true, data: { id: reservationId } }));
+    expect(rpc).toHaveBeenCalledWith("save_admin_practitioner", expect.objectContaining({
+      p_slug: "ana-maria",
+      p_status: "draft",
+    }));
+  });
+
+  it("returns a friendly field error for a duplicate profile URL", async () => {
+    const reservationId = "00000000-0000-0000-0000-000000000008";
+    const rpc = vi.fn(async (name: string) => {
+      if (name === "reserve_admin_practitioner") return { data: reservationId, error: null };
+      if (name === "save_admin_practitioner") return { data: null, error: { message: 'duplicate key value violates unique constraint "practitioners_slug_key"' } };
+      return { error: null };
+    });
+    mocks.createClient.mockResolvedValue({
+      from: vi.fn(() => ({ select: vi.fn(() => ({ in: vi.fn(async () => ({ data: [], error: null })) })) })),
+      storage: { from: vi.fn(() => ({ remove: vi.fn(async () => ({ error: null })) })) },
+      rpc,
+    });
+    const result = await savePractitioner(form({ name: "Duplicate", slug: "duplicate", termIds: "[]" }));
+    expect(result).toEqual(expect.objectContaining({
+      ok: false,
+      error: "That profile URL is already in use. Choose another.",
+      fieldErrors: { slug: "That profile URL is already in use. Choose another." },
+    }));
+  });
+
   it("keeps the saved portrait when old image cleanup throws", async () => {
     const oldPath = `${adminId}/old.jpg`;
     const practitionerQuery = { eq: vi.fn(() => ({ maybeSingle: vi.fn(async () => ({ data: { id: adminId, image_path: oldPath, featured_position: null }, error: null })) })) };

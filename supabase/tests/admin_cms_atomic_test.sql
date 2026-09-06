@@ -7,7 +7,7 @@ select ok(
   'legacy administrator mutation schema is removed'
 );
 select ok(
-  to_regprocedure('public.save_admin_practitioner(uuid,text,text,text,integer,text,text,text[],text[],boolean,boolean,text,text,text,text,numeric,numeric,text,smallint,uuid[])') is not null,
+  to_regprocedure('public.save_admin_practitioner(uuid,text,text,text,integer,text,text,text[],text[],boolean,boolean,text,text,text,text,numeric,numeric,text,smallint,uuid[],boolean)') is not null,
   'practitioner save mutation is available in the public schema'
 );
 select ok(
@@ -16,7 +16,7 @@ select ok(
 );
 
 select is(
-  (select prosecdef from pg_proc where oid = 'public.save_admin_practitioner(uuid,text,text,text,integer,text,text,text[],text[],boolean,boolean,text,text,text,text,numeric,numeric,text,smallint,uuid[])'::regprocedure),
+  (select prosecdef from pg_proc where oid = 'public.save_admin_practitioner(uuid,text,text,text,integer,text,text,text[],text[],boolean,boolean,text,text,text,text,numeric,numeric,text,smallint,uuid[],boolean)'::regprocedure),
   false,
   'practitioner save RPC is security invoker'
 );
@@ -26,15 +26,15 @@ select is(
   'featured reorder RPC is security invoker'
 );
 select ok(
-  exists (select 1 from pg_proc, unnest(coalesce(proconfig, array[]::text[])) as setting where oid = 'public.save_admin_practitioner(uuid,text,text,text,integer,text,text,text[],text[],boolean,boolean,text,text,text,text,numeric,numeric,text,smallint,uuid[])'::regprocedure and setting = 'search_path=""'),
+  exists (select 1 from pg_proc, unnest(coalesce(proconfig, array[]::text[])) as setting where oid = 'public.save_admin_practitioner(uuid,text,text,text,integer,text,text,text[],text[],boolean,boolean,text,text,text,text,numeric,numeric,text,smallint,uuid[],boolean)'::regprocedure and setting = 'search_path=""'),
   'practitioner save RPC uses an empty search path'
 );
 select ok(
   exists (select 1 from pg_proc, unnest(coalesce(proconfig, array[]::text[])) as setting where oid = 'public.reorder_admin_featured(uuid[])'::regprocedure and setting = 'search_path=""'),
   'featured reorder RPC uses an empty search path'
 );
-select ok(not has_function_privilege('anon', 'public.save_admin_practitioner(uuid,text,text,text,integer,text,text,text[],text[],boolean,boolean,text,text,text,text,numeric,numeric,text,smallint,uuid[])', 'EXECUTE'), 'anonymous users cannot execute practitioner save RPC');
-select ok(has_function_privilege('authenticated', 'public.save_admin_practitioner(uuid,text,text,text,integer,text,text,text[],text[],boolean,boolean,text,text,text,text,numeric,numeric,text,smallint,uuid[])', 'EXECUTE'), 'authenticated users can request practitioner save RPC');
+select ok(not has_function_privilege('anon', 'public.save_admin_practitioner(uuid,text,text,text,integer,text,text,text[],text[],boolean,boolean,text,text,text,text,numeric,numeric,text,smallint,uuid[],boolean)', 'EXECUTE'), 'anonymous users cannot execute practitioner save RPC');
+select ok(has_function_privilege('authenticated', 'public.save_admin_practitioner(uuid,text,text,text,integer,text,text,text[],text[],boolean,boolean,text,text,text,text,numeric,numeric,text,smallint,uuid[],boolean)', 'EXECUTE'), 'authenticated users can request practitioner save RPC');
 select ok(not has_function_privilege('anon', 'public.reorder_admin_featured(uuid[])', 'EXECUTE'), 'anonymous users cannot execute featured reorder RPC');
 select ok(has_function_privilege('authenticated', 'public.reorder_admin_featured(uuid[])', 'EXECUTE'), 'authenticated users can request featured reorder RPC');
 
@@ -59,7 +59,14 @@ select id_to_link, id from public.practitioner_terms cross join (values
   ('00000000-0000-0000-0000-00000000c104'::uuid)
 ) as records(id_to_link)
 where type = 'location' and slug = 'bali';
-update public.practitioners set status = 'published' where id in ('00000000-0000-0000-0000-00000000c102', '00000000-0000-0000-0000-00000000c103');
+insert into storage.objects (bucket_id, name, owner, metadata)
+values
+  ('profile-images', '00000000-0000-0000-0000-00000000c102/one.jpg', '00000000-0000-0000-0000-00000000c001', '{"mimetype":"image/jpeg"}'::jsonb),
+  ('profile-images', '00000000-0000-0000-0000-00000000c103/two.jpg', '00000000-0000-0000-0000-00000000c001', '{"mimetype":"image/jpeg"}'::jsonb);
+update public.practitioners
+   set portrait_approved_at = now(),
+       status = 'published'
+ where id in ('00000000-0000-0000-0000-00000000c102', '00000000-0000-0000-0000-00000000c103');
 update public.practitioners set featured_position = 1 where id = '00000000-0000-0000-0000-00000000c102';
 update public.practitioners set featured_position = 2 where id = '00000000-0000-0000-0000-00000000c103';
 

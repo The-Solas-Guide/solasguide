@@ -12,13 +12,17 @@ import {
   AdminFormSection,
 } from "@/components/admin/admin-form";
 import { AdminPermanentDeleteDialog } from "@/components/admin/record-deletion";
-import { PublicLifecycleControls } from "@/components/admin/lifecycle-controls";
+import {
+  PractitionerPublicationControls,
+  type PractitionerPublicationRequirement,
+} from "@/components/admin/practitioner-publication-controls";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
   formatAdminDate,
   getPractitionerLifecycle,
+  slugifyTerm,
   validatePortraitFile,
   type TaxonomyRow,
 } from "@/lib/admin/practitioner-cms";
@@ -26,6 +30,7 @@ import { portraitObjectPosition } from "@/lib/practitioners";
 import {
   archivePractitioner,
   deletePractitioner,
+  publishPractitioner,
   savePractitioner,
   setPractitionerFeaturedPosition,
   type AdminPractitionerRecord,
@@ -38,6 +43,10 @@ function imageUrl(path: string | null) {
     : null;
 }
 
+function slugifyName(value: string) {
+  return slugifyTerm(value);
+}
+
 type Props = {
   record: AdminPractitionerRecord | null;
   terms: TaxonomyRow[];
@@ -46,6 +55,7 @@ type Props = {
 
 export function PractitionerEditor({ record, terms, isNew = false }: Props) {
   const router = useRouter();
+  const editorRoot = useRef<HTMLDivElement>(null);
   const [status, setStatus] = useState(
     record ? getPractitionerLifecycle(record) : "draft",
   );
@@ -56,6 +66,17 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
   const portraitInput = useRef<HTMLInputElement>(null);
   const previewUrl = useRef<string | null>(null);
   const [approved, setApproved] = useState(false);
+  const [summaryValue, setSummaryValue] = useState(record?.summary ?? "");
+  const [aboutValue, setAboutValue] = useState(record?.about ?? "");
+  const [slug, setSlug] = useState(record?.slug ?? "");
+  const slugManuallyEdited = useRef(Boolean(record?.slug));
+  const [persistedPortraitApproved, setPersistedPortraitApproved] = useState(
+    Boolean(
+      record &&
+        (record.portrait_approval_required === false ||
+          record.portrait_approved_at),
+    ),
+  );
   const [dirty, setDirty] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string>();
@@ -73,6 +94,18 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
   const markDirty = () => {
     setDirty(true);
     setSaved(false);
+  };
+  const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const nextName = event.currentTarget.value;
+    if (isNew && !slugManuallyEdited.current) {
+      setSlug(slugifyName(nextName));
+    }
+    markDirty();
+  };
+  const handleSlugChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    slugManuallyEdited.current = true;
+    setSlug(event.currentTarget.value);
+    markDirty();
   };
   const selectPortrait = (event: React.ChangeEvent<HTMLInputElement>) => {
     const next = event.currentTarget.files?.[0] ?? null;
@@ -125,6 +158,7 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
       setDirty(false);
       setSaved(true);
       setFile(null);
+      if (approved) setPersistedPortraitApproved(true);
       if (portraitInput.current) portraitInput.current.value = "";
       if (previewUrl.current) URL.revokeObjectURL(previewUrl.current);
       previewUrl.current = null;
@@ -136,11 +170,54 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
       else router.refresh();
     });
   };
-  const changeStatus = (next: typeof status) => {
-    if (next !== "draft" && next !== "published" && next !== "archived") return;
-    setStatus(next);
-    markDirty();
-  };
+  const publish = () =>
+    startTransition(async () => {
+      if (!record || status !== "draft") return;
+      if (dirty) {
+        toast.warning("Save your changes before publishing this practitioner.");
+        return;
+      }
+      setError(undefined);
+      setFieldErrors({});
+      const result = await publishPractitioner(record.id);
+      if (!result.ok) {
+        setError(result.error);
+        toast.error(result.error ?? "The practitioner could not be published.");
+        return;
+      }
+      setStatus("published");
+      setSaved(true);
+      router.refresh();
+    });
+  const unpublish = () =>
+    startTransition(async () => {
+      if (!record || status !== "published") return;
+      if (!guardLifecycleAction()) return;
+      const formElement = editorRoot.current?.querySelector<HTMLFormElement>("form");
+      if (!formElement) {
+        toast.error("The practitioner form could not be found.");
+        return;
+      }
+      const form = new FormData(formElement);
+      form.set("id", record.id);
+      form.set("termIds", JSON.stringify([...selectedTerms]));
+      form.set("status", "draft");
+      form.delete("portrait");
+      form.delete("imageApproved");
+      setError(undefined);
+      setFieldErrors({});
+      const result = await savePractitioner(form);
+      if (!result.ok) {
+        setFieldErrors(result.fieldErrors ?? {});
+        setError(result.error);
+        toast.error(result.error ?? "The practitioner could not be unpublished.");
+        return;
+      }
+      setStatus("draft");
+      setDirty(false);
+      setSaved(true);
+      router.refresh();
+    });
   const archive = (restore = false) =>
     startTransition(async () => {
       if (!record) return;
@@ -198,9 +275,34 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
   const currentImage = file
     ? selectedImage
     : imageUrl(record?.image_path ?? null);
+  const hasPortrait = Boolean(file || record?.image_path);
+  const portraitApprovalComplete = file ? approved : persistedPortraitApproved;
+  const hasActiveLocation = [...selectedTerms].some((termId) =>
+    terms.some(
+      (term) =>
+        term.id === termId &&
+        term.type === "location" &&
+        term.is_active &&
+        !term.archived_at,
+    ),
+  );
+  const publicationRequirements: PractitionerPublicationRequirement[] = [
+    { id: "summary", label: "Add a summary", complete: Boolean(summaryValue.trim()) },
+    { id: "about", label: "Add about text", complete: Boolean(aboutValue.trim()) },
+    {
+      id: "portrait",
+      label: "Upload an approved portrait",
+      complete: hasPortrait && portraitApprovalComplete,
+    },
+    {
+      id: "location",
+      label: "Select an active location",
+      complete: hasActiveLocation,
+    },
+  ];
 
   return (
-    <div className="mx-auto flex w-full min-w-0 max-w-6xl flex-col gap-5">
+    <div ref={editorRoot} className="mx-auto flex w-full min-w-0 max-w-6xl flex-col gap-5">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/80 pb-3">
         <AdminBackLink href="/admin/practitioners">Practitioners</AdminBackLink>
         {record && (
@@ -224,7 +326,7 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
         validationErrors={fieldErrors}
         onSubmit={submit}
         onCancel={() => router.replace("/admin/practitioners")}
-        saveLabel={isNew ? "Create practitioner" : "Save changes"}
+        saveLabel={isNew ? "Create draft" : "Save changes"}
         width="wide"
       >
         <input type="hidden" name="id" value={record?.id ?? ""} />
@@ -240,7 +342,7 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
                   <Input
                     defaultValue={record?.name ?? ""}
                     required
-                    onChange={markDirty}
+                    onChange={handleNameChange}
                   />
                 </AdminFormField>
                 <AdminFormField name="descriptor" label="Descriptor">
@@ -258,7 +360,10 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
                   <Textarea
                     defaultValue={record?.summary ?? ""}
                     required={status === "published"}
-                    onChange={markDirty}
+                    onChange={(event) => {
+                      setSummaryValue(event.currentTarget.value);
+                      markDirty();
+                    }}
                   />
                 </AdminFormField>
               </div>
@@ -274,7 +379,10 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
                   className="min-h-40"
                   defaultValue={record?.about ?? ""}
                   required={status === "published"}
-                  onChange={markDirty}
+                  onChange={(event) => {
+                    setAboutValue(event.currentTarget.value);
+                    markDirty();
+                  }}
                 />
               </AdminFormField>
             </AdminFormSection>
@@ -458,7 +566,10 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
                       onChange={selectPortrait}
                     />
                   </AdminFormField>
-                  {file && (
+                  {(file ||
+                    (record?.image_path &&
+                      record.portrait_approval_required &&
+                      !persistedPortraitApproved)) && (
                     <label className="flex min-h-11 items-center gap-2 text-sm">
                       <input
                         type="checkbox"
@@ -468,7 +579,9 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
                           markDirty();
                         }}
                       />{" "}
-                      I confirm this portrait is approved for public use.
+                      {file
+                        ? "I confirm this portrait is approved for public use."
+                        : "I confirm this saved portrait is approved for public use."}
                     </label>
                   )}
                   <AdminFormField name="imageAlt" label="Portrait alt text">
@@ -549,26 +662,34 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
               <AdminFormField
                 name="slug"
                 label="Profile URL"
-                description="Use lowercase words separated by hyphens."
+                description={
+                  record
+                    ? "Changing this value changes the public profile link. Existing links will not redirect."
+                    : "Generated from the name. You can edit it before creating the draft."
+                }
                 error={fieldErrors.slug}
               >
                 <Input
-                  defaultValue={record?.slug ?? ""}
+                  value={slug}
                   required
-                  onChange={markDirty}
+                  onChange={handleSlugChange}
                 />
               </AdminFormField>
             </AdminFormSection>
             <div className="grid gap-6">
-              <AdminPanel title="Public lifecycle">
-                <PublicLifecycleControls
-                  value={status}
-                  onChange={changeStatus}
+              {record && (
+                <PractitionerPublicationControls
+                  status={status}
+                  requirements={publicationRequirements}
+                  dirty={dirty}
+                  pending={pending}
+                  recordName={record.name}
+                  onPublish={publish}
+                  onUnpublish={unpublish}
                   onArchive={() => archive(false)}
-                  disabled={pending}
-                  recordName={record?.name ?? "this practitioner"}
+                  onRestore={() => archive(true)}
                 />
-              </AdminPanel>
+              )}
               {record && status === "published" && (
                 <AdminPanel
                   title="Featured placement"
@@ -632,14 +753,6 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
                 >
                   {status === "archived" ? (
                     <div className="flex flex-wrap gap-2">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => archive(true)}
-                        disabled={pending}
-                      >
-                        Restore to draft
-                      </Button>
                       <AdminPermanentDeleteDialog
                         recordName={record.name}
                         onDelete={remove}

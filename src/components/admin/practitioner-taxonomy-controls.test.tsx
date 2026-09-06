@@ -65,6 +65,8 @@ const practitioner = {
   image_focal_x: 35,
   image_focal_y: 65,
   status: "published",
+  portrait_approval_required: false,
+  portrait_approved_at: null,
   archived_at: null,
   published_at: "2026-09-04T00:00:00Z",
   featured_position: 2,

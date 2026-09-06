@@ -58,7 +58,7 @@ describe("useUnsavedChanges", () => {
     expect(historyBack).toHaveBeenCalledOnce();
   });
 
-  it("removes the guard entry when changes are saved", () => {
+  it("clears the guard without navigating when changes are saved", () => {
     vi.spyOn(window, "confirm").mockReturnValue(false);
     const historyBack = vi.spyOn(window.history, "back").mockImplementation(() => undefined);
     const { rerender } = renderHook(({ dirty }) => useUnsavedChanges(dirty), {
@@ -67,7 +67,20 @@ describe("useUnsavedChanges", () => {
 
     rerender({ dirty: false });
 
-    expect(historyBack).toHaveBeenCalledOnce();
+    expect(historyBack).not.toHaveBeenCalled();
+    expect(window.history.state?.__solasUnsavedGuard).toBeUndefined();
+  });
+
+  it("does not undo a post-save redirect when the editor unmounts", () => {
+    const historyBack = vi.spyOn(window.history, "back").mockImplementation(() => undefined);
+    const { unmount } = renderHook(() => useUnsavedChanges(true));
+    window.history.replaceState(window.history.state, "", "/admin/practitioners/saved-record");
+
+    unmount();
+
+    expect(historyBack).not.toHaveBeenCalled();
+    expect(window.location.pathname).toBe("/admin/practitioners/saved-record");
+    expect(window.history.state?.__solasUnsavedGuard).toBeUndefined();
   });
 
   it("guards router navigation without a separate click", () => {

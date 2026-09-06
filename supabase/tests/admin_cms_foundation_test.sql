@@ -381,7 +381,14 @@ select set_config(
 
 -- Practitioner lifecycle and featured ordering.
 select lives_ok(
-  $$update public.practitioners set status = 'published'
+  $$insert into storage.objects (bucket_id, name, owner, metadata)
+    values
+      ('profile-images', '00000000-0000-0000-0000-00000000b101/foundation-practitioner.jpg', '00000000-0000-0000-0000-00000000b001', '{"mimetype":"image/jpeg"}'::jsonb),
+      ('profile-images', '00000000-0000-0000-0000-00000000b102/foundation-second-practitioner.jpg', '00000000-0000-0000-0000-00000000b001', '{"mimetype":"image/jpeg"}'::jsonb)$$,
+  'administrator can create fixture portrait objects before publication'
+);
+select lives_ok(
+  $$update public.practitioners set portrait_approved_at = now(), status = 'published'
      where id = '00000000-0000-0000-0000-00000000b101'$$,
   'administrator can publish a complete practitioner'
 );
@@ -448,7 +455,7 @@ select throws_ok(
   'draft practitioners cannot be featured'
 );
 select lives_ok(
-  $$update public.practitioners set status = 'published'
+  $$update public.practitioners set portrait_approved_at = now(), status = 'published'
      where id = '00000000-0000-0000-0000-00000000b101'$$,
   'administrator can republish a restored practitioner'
 );
@@ -567,7 +574,7 @@ select lives_ok(
   'administrator can remove a featured position'
 );
 select lives_ok(
-  $$update public.practitioners set status = 'published'
+  $$update public.practitioners set portrait_approved_at = now(), status = 'published'
      where id = '00000000-0000-0000-0000-00000000b102'$$,
   'administrator can publish a second complete practitioner'
 );
@@ -1000,8 +1007,8 @@ select throws_ok(
 -- Storage policies permit only allowlisted administrators to mutate objects.
 select is(
   (select count(*)::integer from storage.objects where bucket_id = 'profile-images'),
-  0,
-  'administrator storage fixture starts empty'
+  2,
+  'administrator can see the two publication portrait fixtures'
 );
 select lives_ok(
   $$insert into storage.objects (bucket_id, name, owner, metadata)
