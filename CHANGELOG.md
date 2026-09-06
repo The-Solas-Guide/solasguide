@@ -27,3 +27,4 @@ This file records pull requests merged into `main`. Entries are added automatica
 - 2026-09-06 — feat: complete transactional email journeys ([#56](https://github.com/The-Solas-Guide/solasguide/pull/56)) — `bf24d034754bc07d3e9ff3852ae791ddb5855377`
 - 2026-09-06 — test: cover independent email retry recovery ([#57](https://github.com/The-Solas-Guide/solasguide/pull/57)) — `d86550a4860ccf23ab230ef47273135d60628591`
 - 2026-09-06 — style: brand the admin sign-in email ([#58](https://github.com/The-Solas-Guide/solasguide/pull/58)) — `3284aac4d0a4d8d3e9aaae0218840b0db7f49019`
+- 2026-09-06 — fix: align public content with saved admin changes ([#59](https://github.com/The-Solas-Guide/solasguide/pull/59)) — `85d626a5195a5f2772730549e6985c65c012ae2b`
