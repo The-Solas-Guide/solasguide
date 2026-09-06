@@ -166,6 +166,7 @@ export async function POST(request: Request) {
   const submission = result.data;
   const insert = await supabase.from("customer_enquiries").insert({
     submission_token: submission.submissionToken,
+    delivery_enabled: true,
     full_name: submission.fullName,
     email: submission.email,
     phone: submission.phone,

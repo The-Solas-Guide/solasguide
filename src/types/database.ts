@@ -56,6 +56,7 @@ export type Database = {
           consent_given_at: string
           contact_preference: string
           created_at: string
+          delivery_enabled?: boolean
           customer_confirmation_sent_at: string | null
           customer_confirmation_status: string
           email: string
@@ -77,6 +78,7 @@ export type Database = {
           consent_given_at?: string
           contact_preference?: string
           created_at?: string
+          delivery_enabled?: boolean
           customer_confirmation_sent_at?: string | null
           customer_confirmation_status?: string
           email: string
@@ -98,6 +100,7 @@ export type Database = {
           consent_given_at?: string
           contact_preference?: string
           created_at?: string
+          delivery_enabled?: boolean
           customer_confirmation_sent_at?: string | null
           customer_confirmation_status?: string
           email?: string
@@ -122,12 +125,15 @@ export type Database = {
           consent_given_at: string
           contact_preference: string
           created_at: string
+          delivery_enabled?: boolean
           customer_confirmation_sent_at: string | null
+          customer_confirmation_status?: string
           email: string
           full_name: string
           id: string
           internal_notes: string | null
           internal_notification_sent_at: string | null
+          internal_notification_status?: string
           location: string | null
           phone: string | null
           practice_name: string | null
@@ -144,12 +150,15 @@ export type Database = {
           consent_given_at?: string
           contact_preference?: string
           created_at?: string
+          delivery_enabled?: boolean
           customer_confirmation_sent_at?: string | null
+          customer_confirmation_status?: string
           email: string
           full_name: string
           id?: string
           internal_notes?: string | null
           internal_notification_sent_at?: string | null
+          internal_notification_status?: string
           location?: string | null
           phone?: string | null
           practice_name?: string | null
@@ -166,12 +175,15 @@ export type Database = {
           consent_given_at?: string
           contact_preference?: string
           created_at?: string
+          delivery_enabled?: boolean
           customer_confirmation_sent_at?: string | null
+          customer_confirmation_status?: string
           email?: string
           full_name?: string
           id?: string
           internal_notes?: string | null
           internal_notification_sent_at?: string | null
+          internal_notification_status?: string
           location?: string | null
           phone?: string | null
           practice_name?: string | null
@@ -342,6 +354,13 @@ export type Database = {
       }
       claim_customer_enquiry_delivery: {
         Args: { p_enquiry_id: string }
+        Returns: {
+          send_customer: boolean
+          send_internal: boolean
+        }[]
+      }
+      claim_practitioner_expression_delivery: {
+        Args: { p_expression_id: string }
         Returns: {
           send_customer: boolean
           send_internal: boolean

@@ -1,4 +1,4 @@
-import { EmailParams, MailerSend, Recipient, Sender } from "mailersend";
+import { Recipient } from "mailersend";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import {
   CUSTOMER_QUESTIONNAIRE_FORM_VERSION,
@@ -6,7 +6,7 @@ import {
   type CustomerQuestionKey,
 } from "@/lib/enquiries/customer-questionnaire";
 import type { Database } from "@/types/database";
-
+import { sendTransactionalEmail } from "@/lib/enquiries/delivery-email";
 function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value && typeof value === "object" && !Array.isArray(value));
 }
@@ -41,19 +41,6 @@ export function customerAnswerSummary(answers: Record<string, unknown>) {
   ].join("\n");
 }
 
-async function sendEmail(to: Recipient[], subject: string, text: string, replyTo?: Recipient) {
-  const apiKey = process.env.MAILERSEND_API_KEY;
-  const fromEmail = process.env.MAILERSEND_FROM_EMAIL;
-  if (!apiKey || !fromEmail) throw new Error("MailerSend is not configured");
-  const params = new EmailParams()
-    .setFrom(new Sender(fromEmail, process.env.MAILERSEND_FROM_NAME || "The Solas Guide"))
-    .setTo(to)
-    .setSubject(subject)
-    .setText(text);
-  if (replyTo) params.setReplyTo(replyTo);
-  await new MailerSend({ apiKey }).email.send(params);
-}
-
 export async function processCustomerEnquiryDelivery(supabase: SupabaseClient<Database>, enquiryId: string) {
   const stored = await supabase.from("customer_enquiries")
     .select("id, source, full_name, email, phone, contact_preference, questionnaire_answers, customer_confirmation_status, internal_notification_status")
@@ -72,11 +59,11 @@ export async function processCustomerEnquiryDelivery(supabase: SupabaseClient<Da
   const customerText = `Hello ${persisted.full_name},\n\nThank you for sharing what you are looking for. We have received your enquiry and will review it personally. You can expect to hear from us within two business days.\n\nThe Solas Guide`;
   const operationsEmail = process.env.SOLAS_OPERATIONS_EMAIL;
   const customerResult = deliveryClaim.data.send_customer
-    ? await sendEmail([new Recipient(persisted.email, persisted.full_name)], "We have received your Solas Guide enquiry", customerText).then(() => "sent" as const).catch((error) => { console.error("Customer confirmation failed", error instanceof Error ? error.message : "Unknown error"); return "failed" as const; })
+    ? await sendTransactionalEmail([new Recipient(persisted.email, persisted.full_name)], "We have received your Solas Guide enquiry", customerText, operationsEmail ? new Recipient(operationsEmail, "Solas operations") : undefined).then(() => "sent" as const).catch((error) => { console.error("Customer confirmation failed", error instanceof Error ? error.name : "UnknownError"); return "failed" as const; })
     : persisted.customer_confirmation_status;
   const internalResult = deliveryClaim.data.send_internal
     ? operationsEmail
-      ? await sendEmail([new Recipient(operationsEmail, "Solas operations")], `New Solas enquiry from ${persisted.full_name}`, `Contact preference: WhatsApp\nEmail: ${persisted.email}\nWhatsApp: ${persisted.phone || "Not provided"}\n\n${summary}`, new Recipient(persisted.email, persisted.full_name)).then(() => "sent" as const).catch((error) => { console.error("Internal notification failed", error instanceof Error ? error.message : "Unknown error"); return "failed" as const; })
+      ? await sendTransactionalEmail([new Recipient(operationsEmail, "Solas operations")], `New Solas enquiry from ${persisted.full_name}`, `Contact preference: ${persisted.contact_preference}\nEmail: ${persisted.email}\nWhatsApp: ${persisted.phone || "Not provided"}\n\n${summary}`, new Recipient(persisted.email, persisted.full_name)).then(() => "sent" as const).catch((error) => { console.error("Internal notification failed", error instanceof Error ? error.name : "UnknownError"); return "failed" as const; })
       : "failed" as const
     : persisted.internal_notification_status;
 

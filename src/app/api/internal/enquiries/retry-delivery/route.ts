@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { processCustomerEnquiryDelivery } from "@/lib/enquiries/customer-delivery";
+import { processPractitionerExpressionDelivery } from "@/lib/enquiries/practitioner-delivery";
 import type { Database } from "@/types/database";
 
 export const runtime = "nodejs";
@@ -15,13 +16,25 @@ async function retryDelivery(request: Request) {
   const supabase = createClient<Database>(url, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
   const pending = await supabase.from("customer_enquiries")
     .select("id")
+    .eq("delivery_enabled", true)
     .eq("source", "website")
     .or("customer_confirmation_status.neq.sent,internal_notification_status.neq.sent")
     .order("updated_at", { ascending: true })
     .limit(25);
   if (pending.error) return Response.json({ error: "Delivery recovery could not be prepared." }, { status: 500 });
+  const practitionerPending = await supabase.from("practitioner_expressions_of_interest")
+    .select("id")
+    .eq("delivery_enabled", true)
+    .eq("source", "website")
+    .or("customer_confirmation_status.neq.sent,internal_notification_status.neq.sent")
+    .order("updated_at", { ascending: true })
+    .limit(25);
+  if (practitionerPending.error) return Response.json({ error: "Delivery recovery could not be prepared." }, { status: 500 });
 
-  const results = await Promise.all(pending.data.map(async ({ id }) => ({ id, ...(await processCustomerEnquiryDelivery(supabase, id)) })));
+  const results = await Promise.all([
+    ...pending.data.map(async ({ id }) => ({ id, type: "customer" as const, ...(await processCustomerEnquiryDelivery(supabase, id)) })),
+    ...practitionerPending.data.map(async ({ id }) => ({ id, type: "practitioner" as const, ...(await processPractitionerExpressionDelivery(supabase, id)) })),
+  ]);
   return Response.json({ processed: results.length, pending: results.filter((result) => result.deliveryPending).length });
 }
 
