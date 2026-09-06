@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { start } from "workflow/api";
+import { processPractitionerExpressionDelivery } from "@/lib/enquiries/practitioner-delivery";
 import type { Database, Json } from "@/types/database";
 import { airtableSubmissionWorkflow } from "@/workflows/airtable-sync";
 
@@ -150,6 +151,7 @@ export async function POST(request: Request) {
   const location = `${allowedAreas.get(area)}${locationDetail ? ` — ${locationDetail}` : ""}`;
   const insert = await supabase.from("practitioner_expressions_of_interest").insert({
     submission_token: submission.submissionToken,
+    delivery_enabled: true,
     full_name: submission.fullName,
     email: submission.email,
     phone: submission.phone ?? null,
@@ -179,7 +181,8 @@ export async function POST(request: Request) {
         console.error("Practitioner Airtable workflow failed to start", error instanceof Error ? error.message : "unknown");
         return Response.json({ error: "Your expression of interest was saved, but processing could not start. Please try again." }, { status: 503 });
       }
-      return Response.json({ ok: true, duplicate: true });
+      const delivery = await processPractitionerExpressionDelivery(supabase, existing.data.id);
+      return Response.json({ ok: true, duplicate: true, deliveryPending: delivery.deliveryPending });
     }
     console.error("Practitioner expression of interest insert failed", insert.error.code);
     return Response.json({ error: "We could not save your expression of interest. Please try again." }, { status: 500 });
@@ -196,5 +199,6 @@ export async function POST(request: Request) {
     console.error("Practitioner Airtable workflow failed to start", error instanceof Error ? error.message : "unknown");
     return Response.json({ error: "Your expression of interest was saved, but processing could not start. Please try again." }, { status: 503 });
   }
-  return Response.json({ ok: true, duplicate: false });
+  const delivery = await processPractitionerExpressionDelivery(supabase, insert.data.id);
+  return Response.json({ ok: true, duplicate: false, deliveryPending: delivery.deliveryPending });
 }
