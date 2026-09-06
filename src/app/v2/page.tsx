@@ -9,12 +9,10 @@ import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { RevealObserver } from "@/components/motion/reveal-observer";
 import { buttonVariants } from "@/components/ui/button";
+import { homepageMetadata } from "@/lib/site-config";
 import { cn } from "@/lib/utils";
 
-export const metadata: Metadata = {
-  description:
-    "The Solas Guide is a trusted guide to exceptional wellness practitioners in Bali.",
-};
+export const metadata: Metadata = homepageMetadata;
 
 const navLinks = [
   { label: "Why Solas", href: "#why-solas" },

@@ -13,6 +13,8 @@ vi.mock("@/lib/supabase/server", () => ({ createServerSupabaseClient: mocks.crea
 vi.mock("next/cache", () => ({ revalidatePath: mocks.revalidatePath }));
 
 import {
+  archivePractitioner,
+  setPractitionerFeaturedPosition,
   deletePractitioner,
   reorderFeaturedPractitioners,
   savePractitioner,
@@ -63,6 +65,7 @@ describe("practitioner admin actions", () => {
     const result = await reorderFeaturedPractitioners([termId, adminId]);
     expect(result).toEqual({ ok: true });
     expect(rpc).toHaveBeenCalledWith("reorder_admin_featured", { p_practitioner_ids: [termId, adminId] });
+    expect(mocks.revalidatePath).toHaveBeenCalledWith("/");
   });
 
   it("returns a cleanup warning after replacing a portrait", async () => {
@@ -81,6 +84,9 @@ describe("practitioner admin actions", () => {
     const result = await savePractitioner(form({ id: adminId, name: "Updated practitioner", slug: "updated-practitioner", status: "draft", termIds: JSON.stringify([termId]), imageApproved: "on" }, new File([new Uint8Array([1])], "new.jpg", { type: "image/jpeg" })));
     expect(result.ok).toBe(true);
     expect(result.warning).toContain("previous image could not be removed");
+    expect(mocks.revalidatePath).toHaveBeenCalledWith("/");
+    expect(mocks.revalidatePath).toHaveBeenCalledWith("/practitioners", "layout");
+    expect(mocks.revalidatePath).toHaveBeenCalledWith("/sitemap.xml");
     expect(rpc).toHaveBeenCalledWith("save_admin_practitioner", expect.objectContaining({ p_image_path: expect.stringMatching(new RegExp(`^${adminId}/[0-9a-f-]{36}\\.jpg$`)), p_term_ids: [termId] }));
     vi.restoreAllMocks();
   });
@@ -205,6 +211,24 @@ describe("practitioner admin actions", () => {
     expect(result).toEqual({ ok: true });
     expect(remove).toHaveBeenCalledWith([`${adminId}/portrait.jpg`]);
     expect(clear).toHaveBeenCalledWith("id", adminId);
+  });
+
+  it.each([false, true])("refreshes public routes after archive or restore (restore=%s)", async (restore) => {
+    const eq = vi.fn(async () => ({ error: null }));
+    mocks.createClient.mockResolvedValue({ from: vi.fn(() => ({ update: vi.fn(() => ({ eq })) })) });
+    expect(await archivePractitioner(adminId, restore)).toEqual({ ok: true });
+    expect(mocks.revalidatePath).toHaveBeenCalledWith("/");
+    expect(mocks.revalidatePath).toHaveBeenCalledWith("/practitioners", "layout");
+    expect(mocks.revalidatePath).toHaveBeenCalledWith("/sitemap.xml");
+  });
+
+  it.each([1, null])("refreshes the homepage after changing Featured to %s", async (position) => {
+    mocks.createClient.mockResolvedValue({ from: vi.fn(() => ({
+      select: vi.fn(() => ({ eq: vi.fn(() => ({ maybeSingle: vi.fn(async () => ({ data: { status: "published" }, error: null })) })) })),
+      update: vi.fn(() => ({ eq: vi.fn(async () => ({ error: null })) })),
+    })) });
+    expect(await setPractitionerFeaturedPosition(adminId, position)).toEqual({ ok: true });
+    expect(mocks.revalidatePath).toHaveBeenCalledWith("/");
   });
 
   it("compares featured IDs as a set for stale-order protection", () => {

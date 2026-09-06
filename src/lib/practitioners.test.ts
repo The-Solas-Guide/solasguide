@@ -213,6 +213,9 @@ describe("public practitioner directory data", () => {
       imageFocalY: 65,
       websiteUrl: "https://example.test",
     });
+    expect(profileQuery.select).toHaveBeenCalledWith(
+      expect.stringContaining("featured_position"),
+    );
     expect(practitioner.terms.map((term) => term.slug)).toEqual([
       "bali",
       "primary-modality",
@@ -264,6 +267,55 @@ describe("public practitioner directory data", () => {
     expect(preview.significantTraining).toEqual(["Training"]);
     expect(preview.delivery).toEqual(["In-person"]);
     expect(mapPractitionerRows([draft], termRows, linkRows, client as never)).toEqual([]);
+  });
+
+  it("selects published featured practitioners in saved order without changing directory order", async () => {
+    const { client } = mockedClient();
+    const { getFeaturedPractitioners, mapPractitionerRows } = await import(
+      "@/lib/practitioners"
+    );
+    const rows: PractitionerRow[] = [
+      {
+        ...profileRow,
+        id: "featured-first",
+        slug: "zoe-featured",
+        name: "Zoe Featured",
+        featured_position: 1,
+      },
+      {
+        ...profileRow,
+        id: "featured-second",
+        slug: "ava-featured",
+        name: "Ava Featured",
+        featured_position: 2,
+      },
+      {
+        ...profileRow,
+        id: "unfeatured",
+        slug: "aaron-unfeatured",
+        name: "Aaron Unfeatured",
+        featured_position: null,
+      },
+      {
+        ...profileRow,
+        id: "draft-featured",
+        slug: "draft-featured",
+        name: "Draft Featured",
+        featured_position: 3,
+        status: "draft",
+      },
+    ];
+
+    const mapped = mapPractitionerRows(rows, [], [], client as never);
+
+    expect(mapped.map((practitioner) => practitioner.name)).toEqual([
+      "Aaron Unfeatured",
+      "Ava Featured",
+      "Zoe Featured",
+    ]);
+    expect(
+      getFeaturedPractitioners(mapped).map((practitioner) => practitioner.name),
+    ).toEqual(["Zoe Featured", "Ava Featured"]);
   });
 
   it("returns a generic error when the public database is unavailable", async () => {

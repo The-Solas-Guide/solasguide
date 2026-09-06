@@ -6,6 +6,18 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe("homepage", () => {
+  test("includes canonical and complete social metadata", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", /^http:\/\/localhost:3000\/?$/);
+    await expect(page.locator('meta[property="og:url"]')).toHaveAttribute("content", /^http:\/\/localhost:3000\/?$/);
+    await expect(page.locator('meta[property="og:description"]')).toHaveAttribute("content", "The Solas Guide is a trusted guide to exceptional wellness practitioners in Bali.");
+    await expect(page.locator('meta[name="twitter:description"]')).toHaveAttribute("content", "The Solas Guide is a trusted guide to exceptional wellness practitioners in Bali.");
+    await expect(page.locator('meta[property="og:image"]')).toHaveAttribute("content", /solas-facebook\.png$/);
+    await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute("content", "summary_large_image");
+    await page.goto("/practitioners");
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "http://localhost:3000/practitioners");
+  });
+
   test("follows the approved client flow", async ({ page }) => {
     await page.goto("/");
 
@@ -62,6 +74,9 @@ test.describe("homepage", () => {
     await expect(registry.getByRole("heading", { level: 3, name: "Kartika Alexandra" })).toBeVisible();
     await expect(registry.getByRole("heading", { level: 3, name: "Sandra Echemendia" })).toBeVisible();
     await expect(registry.getByRole("heading", { level: 3, name: "Indri Hapsari" })).toBeVisible();
+    await expect(registry.locator("article").nth(0)).toContainText("Kartika Alexandra");
+    await expect(registry.locator("article").nth(1)).toContainText("Indri Hapsari");
+    await expect(registry.locator("article").nth(2)).toContainText("Sandra Echemendia");
     await expect(registry.locator("img")).toHaveCount(3);
     await expect(registry.getByRole("link", { name: /Kartika Alexandra/ })).toHaveAttribute(
       "href",

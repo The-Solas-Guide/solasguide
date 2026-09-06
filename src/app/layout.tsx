@@ -4,6 +4,11 @@ import { Barlow_Condensed, Inter, Manrope } from "next/font/google";
 import { Suspense } from "react";
 import { DesignReviewGate } from "@/components/design-system/design-review-gate";
 import { Toaster } from "@/components/ui/sonner";
+import {
+  getAppUrl,
+  siteDescription,
+  siteTitle,
+} from "@/lib/site-config";
 import "./globals.css";
 
 const barlowCondensed = Barlow_Condensed({
@@ -24,13 +29,10 @@ const manrope = Manrope({
   preload: false,
 });
 
-const siteTitle = "The Solas Guide | Curated Bali experiences";
-const siteDescription =
-  "Tell us about your Bali trip. The Solas Guide recommends relevant practitioners, venues, experiences and events, then helps make the introductions.";
-const siteUrl = process.env.NEXT_PUBLIC_APP_URL?.trim() || "http://localhost:3000";
+const siteUrl = getAppUrl();
 
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase: siteUrl,
   title: {
     default: siteTitle,
     template: "%s | The Solas Guide",

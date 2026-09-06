@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { getAbsoluteUrl } from "@/lib/site-config";
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -7,6 +8,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: "/admin",
     },
-    sitemap: `${process.env.NEXT_PUBLIC_APP_URL?.trim() || "http://localhost:3000"}/sitemap.xml`,
+    sitemap: getAbsoluteUrl("/sitemap.xml"),
   };
 }

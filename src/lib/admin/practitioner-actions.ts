@@ -18,6 +18,14 @@ import type { TablesInsert, TablesUpdate } from "@/types/database";
 const practitionerSelect = "*";
 const taxonomySelect = "*";
 
+function revalidatePublicPractitioners() {
+  revalidatePath("/");
+  revalidatePath("/v2");
+  // Include profiles and discovery pages, including an old slug after a rename.
+  revalidatePath("/practitioners", "layout");
+  revalidatePath("/sitemap.xml");
+}
+
 export type AdminActionResult<T = null> = {
   ok: boolean;
   data?: T;
@@ -250,7 +258,7 @@ export async function savePractitioner(formData: FormData): Promise<AdminActionR
   try {
     revalidatePath("/admin/practitioners");
     revalidatePath(`/admin/practitioners/${practitionerId}`);
-    revalidatePath("/practitioners");
+    revalidatePublicPractitioners();
   } catch (revalidationError) {
     const revalidationWarning = `Saved the practitioner, but its pages could not be refreshed: ${errorMessage(revalidationError, "page refresh failed")}`;
     warning = warning ? `${warning} ${revalidationWarning}` : revalidationWarning;
@@ -266,7 +274,7 @@ export async function archivePractitioner(id: string, restore = false): Promise<
   if (error) return { ok: false, error: error.message };
   revalidatePath("/admin/practitioners");
   revalidatePath(`/admin/practitioners/${id}`);
-  revalidatePath("/practitioners");
+  revalidatePublicPractitioners();
   return { ok: true };
 }
 
@@ -280,7 +288,7 @@ export async function setPractitionerFeaturedPosition(id: string, position: numb
   const { error } = await supabase.from("practitioners").update({ featured_position: position }).eq("id", id);
   if (error) return { ok: false, error: error.message };
   revalidatePath("/admin/practitioners");
-  revalidatePath("/practitioners");
+  revalidatePublicPractitioners();
   return { ok: true };
 }
 
@@ -303,7 +311,7 @@ export async function reorderFeaturedPractitioners(ids: string[]): Promise<Admin
   const { error: reorderError } = await supabase.rpc("reorder_admin_featured", { p_practitioner_ids: orderedIds });
   if (reorderError) return { ok: false, error: reorderError.message };
   revalidatePath("/admin/practitioners");
-  revalidatePath("/practitioners");
+  revalidatePublicPractitioners();
   return { ok: true };
 }
 
