@@ -94,13 +94,17 @@ const activeTaxonomy = { ...taxonomy, is_active: true, archived_at: null, practi
 describe("practitioner and taxonomy CMS controls", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.stubGlobal("CSS", { escape: (value: string) => value });
     mocks.searchParams = new URLSearchParams();
   });
-  afterEach(() => cleanup());
+  afterEach(() => {
+    cleanup();
+    vi.unstubAllGlobals();
+  });
 
   it("shows editor preview, focal controls, and feature controls", () => {
     render(<PractitionerEditor record={practitioner} terms={[]} />);
-    expect(screen.getByRole("link", { name: "Preview" }).getAttribute("href")).toBe(`/admin/practitioners/${practitionerId}/preview`);
+    expect(screen.getByRole("link", { name: "Preview saved version" }).getAttribute("href")).toBe(`/admin/practitioners/${practitionerId}/preview`);
     expect((screen.getByLabelText("Horizontal position") as HTMLInputElement).value).toBe("35");
     expect((screen.getByLabelText("Vertical position") as HTMLInputElement).value).toBe("65");
     expect(screen.getByRole("button", { name: "Save featured position" })).toBeTruthy();
@@ -224,6 +228,9 @@ describe("practitioner and taxonomy CMS controls", () => {
     fireEvent.click(screen.getByRole("button", { name: "Confirm archive" }));
     await waitFor(() => expect(mocks.archivePractitioner).toHaveBeenCalledWith(practitionerId, false));
     await waitFor(() => expect(container.querySelector('[data-lifecycle="archived"]')?.textContent).toBe("Archived"));
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: "Profile archived" })).toBeTruthy(),
+    );
   });
 
   it("blocks taxonomy archive while the editor has unsaved changes", async () => {

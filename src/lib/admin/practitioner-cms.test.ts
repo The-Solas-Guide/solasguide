@@ -38,8 +38,15 @@ describe("admin practitioner and taxonomy helpers", () => {
   });
 
   it("normalizes list fields and term slugs", () => {
-    expect(parseListField(" Yoga, breathwork\nYoga ")).toEqual(["Yoga", "breathwork"]);
+    expect(parseListField(" Diploma, Counselling\r\n Yoga \n\nDiploma, Counselling "))
+      .toEqual(["Diploma, Counselling", "Yoga"]);
     expect(slugifyTerm("Women's Wellbeing & Care")).toBe("womens-wellbeing-and-care");
+  });
+
+  it("round-trips stored list entries without splitting punctuation", () => {
+    const entries = ["Diploma, Counselling", "Training with Smith, Jones & Co."];
+    expect(parseListField(entries.join("\n"))).toEqual(entries);
+    expect(parseListField(null)).toEqual([]);
   });
 
   it("reports initial featured readiness without requiring eight records", () => {

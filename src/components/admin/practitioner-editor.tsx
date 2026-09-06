@@ -19,6 +19,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Scrollspy } from "@/components/reui/scrollspy";
 import {
   formatAdminDate,
   getPractitionerLifecycle,
@@ -53,9 +54,25 @@ type Props = {
   isNew?: boolean;
 };
 
+const editorSections = [
+  ["section-profile", "Profile"],
+  ["section-about", "About"],
+  ["section-experience", "Experience"],
+  ["section-links", "Links"],
+  ["section-practice-details", "Practice details"],
+  ["section-practice-areas", "Practice areas"],
+  ["section-portrait", "Portrait"],
+  ["section-settings", "Settings"],
+  ["section-publication", "Publication"],
+  ["section-featured", "Featured"],
+] as const;
+
 export function PractitionerEditor({ record, terms, isNew = false }: Props) {
   const router = useRouter();
   const editorRoot = useRef<HTMLDivElement>(null);
+  const documentRef = useRef<Document | null>(
+    typeof document === "undefined" ? null : document,
+  );
   const [status, setStatus] = useState(
     record ? getPractitionerLifecycle(record) : "draft",
   );
@@ -79,6 +96,7 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
   );
   const [dirty, setDirty] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [savedMessage, setSavedMessage] = useState<string>();
   const [error, setError] = useState<string>();
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [focalX, setFocalX] = useState(record?.image_focal_x ?? 50);
@@ -89,6 +107,10 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
   const [isFeatured, setIsFeatured] = useState(
     record?.featured_position != null,
   );
+  const [savedFeaturedPosition, setSavedFeaturedPosition] = useState(
+    record?.featured_position ?? null,
+  );
+  const [taxonomyQuery, setTaxonomyQuery] = useState("");
   const [pending, startTransition] = useTransition();
 
   const markDirty = () => {
@@ -156,6 +178,13 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
         return;
       }
       setDirty(false);
+      setSavedMessage(
+        isNew
+          ? "Draft created"
+          : status === "published"
+            ? "Live profile updated"
+            : "Draft saved",
+      );
       setSaved(true);
       setFile(null);
       if (approved) setPersistedPortraitApproved(true);
@@ -173,6 +202,7 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
   const publish = () =>
     startTransition(async () => {
       if (!record || status !== "draft") return;
+      setSaved(false);
       if (dirty) {
         toast.warning("Save your changes before publishing this practitioner.");
         return;
@@ -186,12 +216,14 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
         return;
       }
       setStatus("published");
+      setSavedMessage("Profile published");
       setSaved(true);
       router.refresh();
     });
   const unpublish = () =>
     startTransition(async () => {
       if (!record || status !== "published") return;
+      setSaved(false);
       if (!guardLifecycleAction()) return;
       const formElement = editorRoot.current?.querySelector<HTMLFormElement>("form");
       if (!formElement) {
@@ -215,12 +247,14 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
       }
       setStatus("draft");
       setDirty(false);
+      setSavedMessage("Profile returned to draft");
       setSaved(true);
       router.refresh();
     });
   const archive = (restore = false) =>
     startTransition(async () => {
       if (!record) return;
+      setSaved(false);
       if (!guardLifecycleAction()) return;
       const result = await archivePractitioner(record.id, restore);
       if (!result.ok)
@@ -230,6 +264,9 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
       else {
         setStatus(restore ? "draft" : "archived");
         setDirty(false);
+        setSavedMessage(
+          restore ? "Profile restored to draft" : "Profile archived",
+        );
         setSaved(true);
       }
     });
@@ -250,6 +287,7 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
         toast.error(result.error ?? "Featured status could not be saved.");
       else {
         setIsFeatured(next !== null);
+        setSavedFeaturedPosition(next);
         if (next !== null) setFeaturedPosition(next);
         toast.success(
           next === null ? "Removed from featured." : "Featured position saved.",
@@ -265,6 +303,26 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
     group.push(term);
     grouped.set(term.type, group);
   }
+  const normalizedTaxonomyQuery = taxonomyQuery.trim().toLocaleLowerCase();
+  const visibleGroups = [...grouped.entries()]
+    .map(([type, items]) => [
+      type,
+      [...items]
+        .filter(
+          (term) =>
+            selectedTerms.has(term.id) ||
+            !normalizedTaxonomyQuery ||
+            term.name.toLocaleLowerCase().includes(normalizedTaxonomyQuery),
+        )
+        .sort(
+          (a, b) =>
+            Number(selectedTerms.has(b.id)) - Number(selectedTerms.has(a.id)) ||
+            a.name.localeCompare(b.name),
+        ),
+    ] as const)
+    .filter(([, items]) => items.length > 0);
+  const hasFeaturedPositionChange =
+    isFeatured && featuredPosition !== savedFeaturedPosition;
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   useEffect(
     () => () => {
@@ -306,9 +364,16 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/80 pb-3">
         <AdminBackLink href="/admin/practitioners">Practitioners</AdminBackLink>
         {record && (
-          <Button asChild variant="outline">
-            <Link href={`/admin/practitioners/${record.id}/preview`}>
-              Preview
+          <Button asChild variant="outline" className={dirty ? "opacity-60" : undefined}>
+            <Link
+              href={`/admin/practitioners/${record.id}/preview`}
+              aria-disabled={dirty}
+              tabIndex={dirty ? -1 : undefined}
+              onClick={(event) => {
+                if (dirty) event.preventDefault();
+              }}
+            >
+              Preview saved version
             </Link>
           </Button>
         )}
@@ -323,15 +388,64 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
         saved={saved}
         isDirty={dirty}
         error={error}
+        notifyOnError={false}
         validationErrors={fieldErrors}
         onSubmit={submit}
         onCancel={() => router.replace("/admin/practitioners")}
-        saveLabel={isNew ? "Create draft" : "Save changes"}
+        saveLabel={
+          isNew
+            ? "Create draft"
+            : status === "published"
+              ? "Update live profile"
+              : "Save draft"
+        }
+        successMessage={savedMessage ?? "Saved"}
+        savedLabel={savedMessage ?? "Saved"}
         width="wide"
       >
         <input type="hidden" name="id" value={record?.id ?? ""} />
-        <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_19rem] lg:gap-x-6">
+        {record && (
+          <p className="text-sm text-muted-foreground" role="status">
+            {dirty
+              ? "Preview shows the last saved version. Save changes to update it."
+              : "Preview shows the latest saved version."}
+          </p>
+        )}
+        <div className="grid items-start gap-6 lg:grid-cols-[10rem_minmax(0,1fr)_19rem] lg:gap-x-6">
+          <Scrollspy
+            key={status}
+            targetRef={documentRef}
+            offset={112}
+            smooth={false}
+            history={false}
+            className="sticky top-0 z-20 -mx-1 overflow-x-auto bg-background/95 px-1 py-2 backdrop-blur lg:top-4 lg:mx-0 lg:self-start lg:overflow-visible lg:bg-transparent lg:p-0"
+          >
+            <nav aria-label="Practitioner editor sections" className="flex min-w-max gap-1 lg:grid lg:min-w-0 lg:gap-1">
+              {editorSections
+                .filter(
+                  ([id]) =>
+                    (record || id !== "section-publication") &&
+                    (status === "published" || id !== "section-featured"),
+                )
+                .map(([id, label]) => (
+                  <a
+                    key={id}
+                    href={`#${id}`}
+                    data-scrollspy-anchor={id}
+                    onClick={() => {
+                      requestAnimationFrame(() => {
+                        document.getElementById(id)?.focus({ preventScroll: true });
+                      });
+                    }}
+                    className="min-h-11 rounded-md px-3 py-2 text-sm text-muted-foreground outline-none transition-colors hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring data-[active=true]:bg-primary/10 data-[active=true]:font-medium data-[active=true]:text-foreground lg:flex lg:items-center"
+                  >
+                    {label}
+                  </a>
+                ))}
+            </nav>
+          </Scrollspy>
           <div className="grid min-w-0 gap-6">
+            <div id="section-profile" className="scroll-mt-32" tabIndex={-1}>
             <AdminFormSection title="Public profile">
               <div className="grid gap-4">
                 <AdminFormField
@@ -368,6 +482,8 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
                 </AdminFormField>
               </div>
             </AdminFormSection>
+            </div>
+            <div id="section-about" className="scroll-mt-32" tabIndex={-1}>
             <AdminFormSection title="About">
               <AdminFormField
                 name="about"
@@ -386,6 +502,8 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
                 />
               </AdminFormField>
             </AdminFormSection>
+            </div>
+            <div id="section-experience" className="scroll-mt-32" tabIndex={-1}>
             <AdminFormSection title="Experience">
               <div className="grid gap-4">
                 <AdminFormField name="yearsActive" label="Years active">
@@ -399,7 +517,7 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
                 <AdminFormField
                   name="credentials"
                   label="Credentials"
-                  description="One item per line or comma separated."
+                  description="Add one credential per line. Commas stay within an item."
                 >
                   <Textarea
                     defaultValue={record?.credentials?.join("\n") ?? ""}
@@ -409,7 +527,7 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
                 <AdminFormField
                   name="significantTraining"
                   label="Significant training"
-                  description="One item per line or comma separated."
+                  description="Add one training item per line. Commas stay within an item."
                 >
                   <Textarea
                     defaultValue={
@@ -420,6 +538,8 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
                 </AdminFormField>
               </div>
             </AdminFormSection>
+            </div>
+            <div id="section-links" className="scroll-mt-32" tabIndex={-1}>
             <AdminFormSection title="Links">
               <div className="grid gap-4 sm:grid-cols-2">
                 <AdminFormField name="websiteUrl" label="Website">
@@ -438,6 +558,8 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
                 </AdminFormField>
               </div>
             </AdminFormSection>
+            </div>
+            <div id="section-practice-details" className="scroll-mt-32" tabIndex={-1}>
             <AdminFormSection title="Practice details">
               <div className="grid gap-1">
                 <span className="text-sm font-medium">Delivery</span>
@@ -461,17 +583,37 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
                 </label>
               </div>
             </AdminFormSection>
+            </div>
+            <div id="section-practice-areas" className="scroll-mt-32" tabIndex={-1}>
             <AdminFormSection
               title="Practice areas"
               description="Select active terms for this practitioner. Linked archived terms stay visible until you remove them. A published record needs at least one active location."
             >
               <div className="grid gap-4">
-                {[...grouped.entries()].map(([type, items]) => (
+                <Input
+                  type="search"
+                  value={taxonomyQuery}
+                  onChange={(event) => setTaxonomyQuery(event.currentTarget.value)}
+                  placeholder="Search practice areas"
+                  aria-label="Search practice areas"
+                />
+                {visibleGroups.map(([type, items]) => (
                   <details
                     key={type}
                     className="group rounded-md border border-border/70 px-3"
+                    open={normalizedTaxonomyQuery ? true : undefined}
+                    data-field-target={
+                      type === "location" ? "taxonomy-location" : undefined
+                    }
                   >
-                    <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 text-sm font-medium [&::-webkit-details-marker]:hidden">
+                    <summary
+                      className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 text-sm font-medium [&::-webkit-details-marker]:hidden"
+                      aria-describedby={
+                        type === "location" && fieldErrors.location
+                          ? "location-error"
+                          : undefined
+                      }
+                    >
                       <span className="min-w-0 py-2">
                         <span className="block">{type
                           .replaceAll("_", " ")
@@ -523,15 +665,22 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
                     </fieldset>
                   </details>
                 ))}
+                {visibleGroups.length === 0 && (
+                  <p className="text-sm text-muted-foreground" role="status">
+                    No practice areas match your search.
+                  </p>
+                )}
                 {fieldErrors.location && (
-                  <p className="text-sm text-destructive" role="alert">
+                  <p id="location-error" className="text-sm text-destructive" role="alert">
                     {fieldErrors.location}
                   </p>
                 )}
               </div>
             </AdminFormSection>
+            </div>
           </div>
           <aside className="grid min-w-0 gap-6">
+            <div id="section-portrait" className="scroll-mt-32" tabIndex={-1}>
             <AdminFormSection
               title="Portrait"
               description="Use one approved JPEG, PNG, or WebP portrait up to 5 MB. The image becomes public after upload."
@@ -658,6 +807,8 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
                 </div>
               </div>
             </AdminFormSection>
+            </div>
+            <div id="section-settings" className="scroll-mt-32" tabIndex={-1}>
             <AdminFormSection title="URL and settings">
               <AdminFormField
                 name="slug"
@@ -676,8 +827,10 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
                 />
               </AdminFormField>
             </AdminFormSection>
+            </div>
             <div className="grid gap-6">
               {record && (
+                <div id="section-publication" className="scroll-mt-32" tabIndex={-1}>
                 <PractitionerPublicationControls
                   status={status}
                   requirements={publicationRequirements}
@@ -689,8 +842,10 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
                   onArchive={() => archive(false)}
                   onRestore={() => archive(true)}
                 />
+                </div>
               )}
               {record && status === "published" && (
+                <div id="section-featured" className="scroll-mt-32" tabIndex={-1}>
                 <AdminPanel
                   title="Featured placement"
                   description="Choose a position from 1 to 8, or remove this practitioner from Featured."
@@ -706,7 +861,6 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
                           setFeaturedPosition(
                             Number(event.currentTarget.value),
                           );
-                          markDirty();
                         }}
                       >
                         {[1, 2, 3, 4, 5, 6, 7, 8].map((position) => (
@@ -718,6 +872,11 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
                     </label>
                     {isFeatured ? (
                       <>
+                        {hasFeaturedPositionChange && (
+                          <p className="basis-full text-sm text-muted-foreground" role="status">
+                            Position changed. Save featured position to apply it.
+                          </p>
+                        )}
                         <Button
                           type="button"
                           onClick={() => updateFeatured(featuredPosition)}
@@ -745,6 +904,7 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
                     )}
                   </div>
                 </AdminPanel>
+                </div>
               )}
               {record && (
                 <AdminPanel

@@ -58,7 +58,7 @@ export function createPortraitPath(practitionerId: string, mime: string) {
 
 export function parseListField(value: FormDataEntryValue | string | null | undefined): string[] {
   if (typeof value !== "string") return [];
-  return [...new Set(value.split(/[\n,]/).map((item) => item.trim()).filter(Boolean))];
+  return [...new Set(value.split(/\r?\n/).map((item) => item.trim()).filter(Boolean))];
 }
 
 export function slugifyTerm(value: string) {
