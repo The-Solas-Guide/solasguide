@@ -25,3 +25,4 @@ This file records pull requests merged into `main`. Entries are added automatica
 - 2026-09-05 — fix: match private previews to the public profile ([#54](https://github.com/The-Solas-Guide/solasguide/pull/54)) — `48f6a8e60b6e808d78fe539c71b6c61695a27dc6`
 - 2026-09-05 — fix: resolve shared control styling conflicts ([#55](https://github.com/The-Solas-Guide/solasguide/pull/55)) — `323c80b09271e4ae2ce963f58d15a6ba004b79ab`
 - 2026-09-06 — feat: complete transactional email journeys ([#56](https://github.com/The-Solas-Guide/solasguide/pull/56)) — `bf24d034754bc07d3e9ff3852ae791ddb5855377`
+- 2026-09-06 — test: cover independent email retry recovery ([#57](https://github.com/The-Solas-Guide/solasguide/pull/57)) — `d86550a4860ccf23ab230ef47273135d60628591`
