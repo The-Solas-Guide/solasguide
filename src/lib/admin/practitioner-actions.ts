@@ -7,6 +7,7 @@ import {
   createPortraitPath,
   parseListField,
   featuredOrderIsCurrent,
+  slugifyTerm,
   validatePractitionerFields,
   validatePortraitFile,
   type PractitionerLinkRow,
@@ -149,6 +150,10 @@ function errorMessage(error: unknown, fallback: string) {
   return error instanceof Error ? error.message : fallback;
 }
 
+function isSlugConflict(message: string) {
+  return message.includes("practitioners_slug_key") || message.includes("duplicate key value") && message.includes("slug");
+}
+
 export async function savePractitioner(formData: FormData): Promise<AdminActionResult<{ id: string }>> {
   await requireAdmin();
   const supabase = await createServerSupabaseClient();
@@ -159,6 +164,9 @@ export async function savePractitioner(formData: FormData): Promise<AdminActionR
   if (existingResult.error) return { ok: false, error: existingResult.error.message };
   const existing = existingResult.data as PractitionerRow | null;
   if (id && !existing) return { ok: false, error: "That practitioner no longer exists." };
+  const effectiveStatus = existing ? status : "draft";
+  const slug = stringValue(formData, "slug") || slugifyTerm(stringValue(formData, "name"));
+  formData.set("slug", slug);
 
   const termIds = parseTermIds(formData);
   const { data: terms, error: termError } = termIds.length ? await supabase.from("practitioner_terms").select("id,type,is_active,archived_at").in("id", termIds) : { data: [], error: null };
@@ -180,7 +188,7 @@ export async function savePractitioner(formData: FormData): Promise<AdminActionR
   const portraitError = file ? validatePortraitFile(file) : null;
   if (portraitError) return { ok: false, fieldErrors: { image: portraitError } };
   if (file && formData.get("imageApproved") !== "on") return { ok: false, fieldErrors: { image: "Confirm that this portrait is approved before uploading." } };
-  const fieldErrors = validatePractitionerFields(formData, status, Boolean(file || existing?.image_path), hasLocation);
+  const fieldErrors = validatePractitionerFields(formData, effectiveStatus, Boolean(file || existing?.image_path), hasLocation);
   if (Object.keys(fieldErrors).length) return { ok: false, fieldErrors };
 
   let practitionerId = existing?.id;
@@ -215,14 +223,18 @@ export async function savePractitioner(formData: FormData): Promise<AdminActionR
       p_image_alt: payload.image_alt ?? undefined,
       p_image_focal_x: numberValue(formData, "imageFocalX") ?? existing?.image_focal_x ?? 50,
       p_image_focal_y: numberValue(formData, "imageFocalY") ?? existing?.image_focal_y ?? 50,
-      p_status: status,
+      p_status: effectiveStatus,
       p_featured_position: existing?.featured_position ?? undefined,
       p_term_ids: termIds,
+      p_portrait_approval_confirmed: newPath !== null || formData.get("imageApproved") === "on",
     });
     if (saveError || !savedId) throw new Error(saveError?.message ?? "The practitioner could not be saved.");
     practitionerId = savedId;
   } catch (error) {
     const originalError = errorMessage(error, "The practitioner could not be saved.");
+    const friendlyError = isSlugConflict(originalError)
+      ? "That profile URL is already in use. Choose another."
+      : originalError;
     const cleanupErrors: string[] = [];
     if (newPath) {
       try {
@@ -242,7 +254,10 @@ export async function savePractitioner(formData: FormData): Promise<AdminActionR
     }
     return {
       ok: false,
-      error: cleanupErrors.length ? `${originalError} Cleanup warning: ${cleanupErrors.join("; ")}` : originalError,
+      error: cleanupErrors.length ? `${friendlyError} Cleanup warning: ${cleanupErrors.join("; ")}` : friendlyError,
+      fieldErrors: isSlugConflict(originalError)
+        ? { slug: "That profile URL is already in use. Choose another." }
+        : undefined,
     };
   }
 
@@ -264,6 +279,21 @@ export async function savePractitioner(formData: FormData): Promise<AdminActionR
     warning = warning ? `${warning} ${revalidationWarning}` : revalidationWarning;
   }
   return { ok: true, data: { id: practitionerId }, warning };
+}
+
+export async function publishPractitioner(id: string): Promise<AdminActionResult<{ id: string }>> {
+  await requireAdmin();
+  if (!/^[0-9a-f-]{36}$/i.test(id)) return { ok: false, error: "This practitioner ID is invalid." };
+  const supabase = await createServerSupabaseClient();
+  const { data, error } = await supabase.rpc("publish_admin_practitioner", { p_practitioner_id: id });
+  if (error || !data) {
+    const message = error?.message ?? "The practitioner could not be published.";
+    return { ok: false, error: message };
+  }
+  revalidatePath("/admin/practitioners");
+  revalidatePath(`/admin/practitioners/${id}`);
+  revalidatePublicPractitioners();
+  return { ok: true, data: { id: data } };
 }
 
 export async function archivePractitioner(id: string, restore = false): Promise<AdminActionResult> {

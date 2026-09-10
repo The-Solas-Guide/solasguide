@@ -74,7 +74,11 @@ export function useUnsavedChanges(isDirty: boolean) {
       document.removeEventListener("click", guardSameOriginLink, true);
       window.removeEventListener("popstate", guardHistoryNavigation);
       if (!navigationApproved && window.history.state?.__solasUnsavedGuard === guardId) {
-        window.history.back();
+        // Clearing dirty state must not navigate. A pending Back operation can
+        // undo the editor's post-save redirect or reload a newly opened form.
+        const state = { ...window.history.state };
+        delete state.__solasUnsavedGuard;
+        window.history.replaceState(state, "", window.location.href);
       }
     };
   }, [guardNavigation, isDirty]);

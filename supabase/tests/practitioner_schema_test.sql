@@ -139,8 +139,17 @@ select '00000000-0000-0000-0000-000000009001', id, 0
   from public.practitioner_terms
  where type = 'location' and slug = 'bali';
 
+insert into storage.objects (bucket_id, name, owner, metadata)
+values
+  ('profile-images', '00000000-0000-0000-0000-000000009001/schema-test-published.jpg', null, '{"mimetype":"image/jpeg"}'::jsonb),
+  ('profile-images', '00000000-0000-0000-0000-000000009003/schema-test-incomplete.jpg', null, '{"mimetype":"image/jpeg"}'::jsonb),
+  ('profile-images', '00000000-0000-0000-0000-000000009004/schema-test-multi-location.jpg', null, '{"mimetype":"image/jpeg"}'::jsonb),
+  ('profile-images', '00000000-0000-0000-0000-000000009008/schema-test-no-location.jpg', null, '{"mimetype":"image/jpeg"}'::jsonb),
+  ('profile-images', '00000000-0000-0000-0000-000000009009/schema-test-inactive-only.jpg', null, '{"mimetype":"image/jpeg"}'::jsonb),
+  ('profile-images', '00000000-0000-0000-0000-000000009010/schema-test-online.jpg', null, '{"mimetype":"image/jpeg"}'::jsonb);
+
 update public.practitioners
-   set status = 'published'
+   set portrait_approved_at = now(), status = 'published'
  where id = '00000000-0000-0000-0000-000000009001';
 
 insert into public.practitioners (id, slug, name, status)
@@ -267,7 +276,7 @@ select '00000000-0000-0000-0000-000000009010', id, 0
  where type = 'language' and slug = 'english';
 
 update public.practitioners
-   set status = 'published'
+   set portrait_approved_at = now(), status = 'published'
  where id = '00000000-0000-0000-0000-000000009010';
 
 update public.practitioners

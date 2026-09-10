@@ -20,6 +20,10 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAdminTableQuery } from "@/hooks/use-admin-table-query";
@@ -29,7 +33,10 @@ import {
   type OperationalKind,
   type OperationalRecord,
 } from "@/lib/admin/operational-cms";
-import { setOperationalArchive } from "@/lib/admin/operational-actions";
+import {
+  saveOperationalRecord,
+  setOperationalArchive,
+} from "@/lib/admin/operational-actions";
 
 function label(value: string) {
   return value.charAt(0).toUpperCase() + value.slice(1);
@@ -40,7 +47,7 @@ function WorkflowBadges({ record }: { record: OperationalRecord }) {
     <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
       <AdminStatus value={record.status} label={label(record.status)} />
       {record.archived_at ? (
-        <span className="text-xs text-muted-foreground">Archived</span>
+        <AdminStatus value="archived" label="Archived" />
       ) : null}
     </div>
   );
@@ -51,12 +58,15 @@ function RowActions({
   record,
   pending,
   onArchive,
+  onWorkflowChange,
 }: {
   kind: OperationalKind;
   record: OperationalRecord;
   pending: boolean;
   onArchive: (record: OperationalRecord, archive: boolean) => void;
+  onWorkflowChange: (record: OperationalRecord, status: string) => void;
 }) {
+  const config = operationalConfig(kind);
   const id = useId();
   const [open, setOpen] = useState(false);
   return (
@@ -73,23 +83,41 @@ function RowActions({
             <EllipsisIcon />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem asChild className="min-h-10">
-            <Link href={`/admin/${kind}/${record.id}`}>View record</Link>
+        <DropdownMenuContent align="end" className="w-52">
+          <DropdownMenuItem asChild className="min-h-10 px-3">
+            <Link href={`/admin/${kind}/${record.id}`}>Open record</Link>
           </DropdownMenuItem>
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger className="min-h-10 px-3">
+              Change workflow
+            </DropdownMenuSubTrigger>
+            <DropdownMenuSubContent className="w-48">
+              {config.statuses.map((status) => (
+                <DropdownMenuItem
+                  key={status}
+                  className="min-h-10 px-3"
+                  disabled={record.status === status}
+                  onSelect={() => onWorkflowChange(record, status)}
+                >
+                  Set to {label(status)}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuSubContent>
+          </DropdownMenuSub>
+          <DropdownMenuSeparator />
           {record.archived_at ? (
             <DropdownMenuItem
-              className="min-h-10"
+              className="min-h-10 px-3"
               onSelect={() => onArchive(record, false)}
             >
-              Restore
+              Restore record
             </DropdownMenuItem>
           ) : (
             <DropdownMenuItem
-              className="min-h-10"
+              className="min-h-10 px-3"
               onSelect={() => setOpen(true)}
             >
-              Archive
+              Archive record
             </DropdownMenuItem>
           )}
         </DropdownMenuContent>
@@ -117,13 +145,58 @@ export function OperationalManager({
   const config = operationalConfig(kind);
   const router = useRouter();
   const [pending, startTransition] = useTransition();
+  const [archiveUpdates, setArchiveUpdates] = useState<
+    Record<string, { source: boolean; value: boolean }>
+  >({});
+  const [workflowUpdates, setWorkflowUpdates] = useState<
+    Record<string, { source: string; value: string }>
+  >({});
+  const [previousRecords, setPreviousRecords] = useState(initialRecords);
+  if (initialRecords !== previousRecords) {
+    setPreviousRecords(initialRecords);
+    setArchiveUpdates((current) =>
+      Object.fromEntries(
+        Object.entries(current).filter(([id, update]) => {
+          const record = initialRecords.find((item) => item.id === id);
+          return record && Boolean(record.archived_at) === update.source;
+        }),
+      ),
+    );
+    setWorkflowUpdates((current) =>
+      Object.fromEntries(
+        Object.entries(current).filter(([id, update]) => {
+          const record = initialRecords.find((item) => item.id === id);
+          return record && record.status === update.source;
+        }),
+      ),
+    );
+  }
+  const records = useMemo(
+    () =>
+      initialRecords.map((record) => ({
+        ...record,
+        archived_at:
+          archiveUpdates[record.id] &&
+            Boolean(record.archived_at) === archiveUpdates[record.id].source
+            ? archiveUpdates[record.id].value
+              ? new Date().toISOString()
+              : null
+            : record.archived_at,
+        status:
+          workflowUpdates[record.id] &&
+            record.status === workflowUpdates[record.id].source
+            ? workflowUpdates[record.id].value
+            : record.status,
+      })) as OperationalRecord[],
+    [archiveUpdates, initialRecords, workflowUpdates],
+  );
   const { state: query, dispatch } = useAdminTableQuery({
-    filters: { archive: [] },
+    filters: { archive: ["active"] },
     pageSize: 10,
   });
   const searchable = useMemo(
     () =>
-      initialRecords.filter((record) => {
+      records.filter((record) => {
         const archive = query.filters.archive?.[0];
         return (
           (archive === "active"
@@ -143,7 +216,7 @@ export function OperationalManager({
             .includes(query.search.toLowerCase().trim())
         );
       }),
-    [initialRecords, query.filters.archive, query.search],
+    [records, query.filters.archive, query.search],
   );
   const filtered = useMemo(
     () =>
@@ -178,11 +251,45 @@ export function OperationalManager({
         if (!result.ok)
           toast.error(result.error ?? "The archive state could not be saved.");
         else {
+          setArchiveUpdates((current) => ({
+            ...current,
+            [record.id]: { source: Boolean(record.archived_at), value: archived },
+          }));
+          const archiveView = query.filters.archive?.[0];
+          if (
+            (archived && archiveView === "active") ||
+            (!archived && archiveView === "archived")
+          ) {
+            window.setTimeout(() => {
+              document.querySelector<HTMLInputElement>('[role="searchbox"]')?.focus();
+            }, 0);
+          }
           toast.success(archived ? "Record archived" : "Record restored");
           router.refresh();
         }
       } catch {
         toast.error("The archive state could not be saved. Try again.");
+      }
+    });
+  const changeWorkflow = (record: OperationalRecord, status: string) =>
+    startTransition(async () => {
+      try {
+        const formData = new FormData();
+        formData.set("id", record.id);
+        formData.set("status", status);
+        const result = await saveOperationalRecord(kind, formData);
+        if (!result.ok) {
+          toast.error(result.error ?? "The workflow status could not be saved.");
+          return;
+        }
+        setWorkflowUpdates((current) => ({
+          ...current,
+          [record.id]: { source: record.status, value: status },
+        }));
+        toast.success(`Workflow set to ${label(status)}`);
+        router.refresh();
+      } catch {
+        toast.error("The workflow status could not be saved. Try again.");
       }
     });
   const columns = [
@@ -268,10 +375,10 @@ export function OperationalManager({
           filters={[
             {
               id: "archive",
-              label: "Archive state",
+              label: "Archive states",
               options: [
-                { value: "active", label: "Active records" },
-                { value: "archived", label: "Archived records" },
+                { value: "active", label: "Active" },
+                { value: "archived", label: "Archived" },
               ],
             },
           ]}
@@ -289,6 +396,7 @@ export function OperationalManager({
               record={record}
               pending={pending}
               onArchive={archive}
+              onWorkflowChange={changeWorkflow}
             />
           )}
           renderMobileCard={(record) => (
@@ -316,10 +424,12 @@ export function OperationalManager({
               <WorkflowBadges record={record} />
             </div>
           )}
+          defaultQuery={{ filters: { archive: ["active"] } }}
+          preserveAllFilterSelection
         />
       )}
       <p role="status" className="sr-only">
-        {pending ? "Saving archive state" : ""}
+        {pending ? "Saving changes" : ""}
       </p>
     </AdminPage>
   );

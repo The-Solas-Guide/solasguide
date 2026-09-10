@@ -64,6 +64,33 @@ describe("AdminTableShell", () => {
     expect(onQueryChange).toHaveBeenCalledWith(expect.objectContaining({ sort: { id: "name", direction: "asc" } }));
   });
 
+  it("clears an explicit archive view back to the supplied default", () => {
+    const onQueryChange = vi.fn();
+    render(
+      table({
+        query: { ...defaultAdminTableQuery, filters: { archive: ["all"] } },
+        onQueryChange,
+        filters: [
+          {
+            id: "archive",
+            label: "Archive states",
+            options: [
+              { value: "active", label: "Active" },
+              { value: "archived", label: "Archived" },
+            ],
+          },
+        ],
+        defaultQuery: { filters: { archive: ["active"] } },
+        preserveAllFilterSelection: true,
+      }),
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Clear filters" }));
+    expect(onQueryChange).toHaveBeenCalledWith(
+      expect.objectContaining({ filters: { archive: ["active"] }, status: "all", page: 1 }),
+    );
+  });
+
   it("exposes responsive desktop and mobile action surfaces", () => {
     const query = { ...defaultAdminTableQuery, sort: { id: "name", direction: "asc" as const } };
     render(table({ query }));

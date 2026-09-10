@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { createElement } from "react";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { AdminFormField, AdminFormLayout, AdminFormSection } from "@/components/admin/admin-form";
 
@@ -107,5 +107,114 @@ describe("AdminFormLayout", () => {
     expect(field.getAttribute("aria-invalid")).toBe("true");
     expect(field.getAttribute("aria-describedby")).toBe("summary-error");
     expect(field.parentElement?.parentElement?.textContent).toContain("Summary is required");
+  });
+
+  it("links the validation summary to fields and expands a collapsed group", async () => {
+    const renderEditor = (validationErrors: Record<string, string>) =>
+      createElement(
+        AdminFormLayout,
+        { title: "Edit practitioner", validationErrors },
+        createElement(
+          "details",
+          { id: "location" },
+          createElement("summary", null, "Location"),
+          createElement("input", { type: "checkbox", name: "location-term" }),
+        ),
+        createElement(
+          AdminFormField,
+          { name: "portrait", label: "Portrait file" },
+          createElement("input", { type: "file" }),
+        ),
+      );
+
+    const { rerender } = render(
+      renderEditor({
+        location: "Select an active location",
+        image: "Upload an approved portrait",
+      }),
+    );
+
+    const locationDetails = screen.getByText("Location").closest("details");
+    const locationSummary = screen.getByText("Location");
+    const portrait = screen.getByLabelText("Portrait file");
+
+    expect(screen.getByRole("region", { name: "Review these fields before saving" })).toBeTruthy();
+    expect(screen.getByRole("link", { name: /Location: Select an active location/ }).getAttribute("href")).toBe("#location");
+    expect(screen.getByRole("link", { name: /Portrait: Upload an approved portrait/ }).getAttribute("href")).toBe("#portrait");
+    await waitFor(() => {
+      expect(locationDetails).toHaveProperty("open", true);
+      expect(document.activeElement).toBe(locationSummary);
+    });
+
+    fireEvent.click(screen.getByRole("link", { name: /Portrait: Upload an approved portrait/ }));
+    expect(document.activeElement).toBe(portrait);
+    expect(portrait.classList.contains("scroll-mt-24")).toBe(true);
+
+    if (locationDetails instanceof HTMLDetailsElement) locationDetails.open = false;
+    rerender(renderEditor({}));
+    rerender(renderEditor({ location: "Select an active location" }));
+    await waitFor(() => {
+      expect(locationDetails).toHaveProperty("open", true);
+      expect(document.activeElement).toBe(locationSummary);
+    });
+  });
+
+  it("ignores empty validation entries", () => {
+    render(
+      createElement(
+        AdminFormLayout,
+        { title: "Edit practitioner", validationErrors: { image: "" } },
+        createElement(
+          AdminFormField,
+          { name: "portrait", label: "Portrait file" },
+          createElement("input", { type: "file" }),
+        ),
+      ),
+    );
+
+    expect(screen.queryByRole("region", { name: "Review these fields before saving" })).toBeNull();
+    expect(screen.getByLabelText("Portrait file").getAttribute("aria-invalid")).toBeNull();
+  });
+
+  it("keeps legacy questionnaire errors attached to submitted context", () => {
+    render(
+      createElement(
+        AdminFormLayout,
+        {
+          title: "New record",
+          validationErrors: { questionnaire_answers: "Add submitted context." },
+        },
+        createElement(
+          AdminFormField,
+          { name: "submission_context", label: "Submitted context" },
+          createElement("textarea"),
+        ),
+      ),
+    );
+
+    const field = screen.getByRole("textbox", { name: "Submitted context" });
+    expect(field.getAttribute("aria-invalid")).toBe("true");
+    expect(
+      screen
+        .getByRole("link", {
+          name: /Submitted context: Add submitted context/,
+        })
+        .getAttribute("href"),
+    ).toBe("#submission_context");
+  });
+
+  it("supports state-specific saved labels without changing generic defaults", () => {
+    const { rerender } = render(
+      createElement(AdminFormLayout, {
+        title: "New practitioner",
+        saved: true,
+        successMessage: "Draft saved",
+        savedLabel: "Draft saved",
+      }),
+    );
+
+    expect(screen.getAllByText("Draft saved").length).toBe(2);
+    rerender(createElement(AdminFormLayout, { title: "New record", saved: true }));
+    expect(screen.getByRole("button", { name: "Saved" })).toBeTruthy();
   });
 });

@@ -282,6 +282,8 @@ export type Database = {
           name: string
           offers_in_person: boolean
           offers_online: boolean
+          portrait_approval_required: boolean
+          portrait_approved_at: string | null
           published_at: string | null
           significant_training: string[] | null
           slug: string
@@ -307,6 +309,8 @@ export type Database = {
           name: string
           offers_in_person?: boolean
           offers_online?: boolean
+          portrait_approval_required?: boolean
+          portrait_approved_at?: string | null
           published_at?: string | null
           significant_training?: string[] | null
           slug: string
@@ -332,6 +336,8 @@ export type Database = {
           name?: string
           offers_in_person?: boolean
           offers_online?: boolean
+          portrait_approval_required?: boolean
+          portrait_approved_at?: string | null
           published_at?: string | null
           significant_training?: string[] | null
           slug?: string
@@ -392,6 +398,7 @@ export type Database = {
         Args: { p_practitioner_ids: string[] }
         Returns: undefined
       }
+      publish_admin_practitioner: { Args: { p_practitioner_id: string }; Returns: string }
       reserve_admin_practitioner: { Args: never; Returns: string }
       save_admin_practitioner: {
         Args: {
@@ -413,6 +420,7 @@ export type Database = {
           p_status?: string
           p_summary?: string
           p_term_ids?: string[]
+          p_portrait_approval_confirmed?: boolean
           p_website_url?: string
           p_years_active?: number
         }

@@ -36,6 +36,8 @@ const profileRow: PractitionerRow = {
   image_focal_y: 65,
   featured_position: null,
   status: "published",
+  portrait_approval_required: false,
+  portrait_approved_at: null,
   published_at: "2026-08-27T00:00:00.000Z",
   created_at: "2026-08-27T00:00:00.000Z",
   updated_at: "2026-08-27T00:00:00.000Z",

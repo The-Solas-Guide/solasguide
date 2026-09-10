@@ -5,10 +5,13 @@ import { createHmac, randomUUID } from "node:crypto";
 import { createClient } from "@supabase/supabase-js";
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
+const supabaseWorkdir = process.env.SUPABASE_WORKDIR
+  ? resolve(process.env.SUPABASE_WORKDIR)
+  : repoRoot;
 
 function localStatus() {
   const output = execFileSync("supabase", ["status", "--output", "env"], {
-    cwd: repoRoot,
+    cwd: supabaseWorkdir,
     encoding: "utf8",
     stdio: ["ignore", "pipe", "ignore"],
   });

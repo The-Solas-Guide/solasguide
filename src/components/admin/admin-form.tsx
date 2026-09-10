@@ -31,6 +31,29 @@ export type AdminFormValidationErrors = Record<
   string | readonly string[]
 >;
 
+const validationFieldAliases: Record<string, readonly string[]> = {
+  image: ["portrait", "image"],
+  portrait: ["portrait", "image"],
+  questionnaire_answers: ["submission_context", "questionnaire_answers"],
+  location: [
+    "location",
+    "taxonomy-location",
+    "practice-areas-location",
+    "taxonomy-location-group",
+  ],
+};
+
+const validationFieldLabels: Record<string, string> = {
+  image: "Portrait",
+  portrait: "Portrait",
+  questionnaire_answers: "Submitted context",
+  location: "Location",
+  imageAlt: "Portrait alt text",
+  imageFocalX: "Horizontal position",
+  imageFocalY: "Vertical position",
+  sortOrder: "Sort order",
+};
+
 export type AdminProtectedField = {
   label: string;
   value: string;
@@ -45,8 +68,11 @@ type AdminFormLayoutProps = {
   protectedFields?: readonly AdminProtectedField[];
   validationErrors?: AdminFormValidationErrors;
   error?: React.ReactNode;
+  notifyOnError?: boolean;
   pending?: boolean;
   saved?: boolean;
+  successMessage?: string;
+  savedLabel?: string;
   isDirty?: boolean;
   onSubmit?: React.FormEventHandler<HTMLFormElement>;
   onCancel?: () => void;
@@ -130,8 +156,102 @@ function ProtectedFields({
   );
 }
 
-function validationMessage(value: string | readonly string[]) {
-  return Array.isArray(value) ? value.map(String).join(" ") : value;
+function validationMessage(value: string | readonly string[]): string {
+  return Array.isArray(value) ? value.map(String).join(" ") : String(value);
+}
+
+function validationFieldCandidates(name: string) {
+  return validationFieldAliases[name] ?? [name];
+}
+
+function validationFieldTargetId(name: string) {
+  return validationFieldCandidates(name)[0] ?? name;
+}
+
+function validationFieldLabel(name: string) {
+  if (validationFieldLabels[name]) return validationFieldLabels[name];
+  return name
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .replace(/[_-]+/g, " ")
+    .replace(/\b\w/g, (character) => character.toUpperCase());
+}
+
+function escapeAttributeValue(value: string) {
+  return value.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+}
+
+function isHTMLElement(value: Element | null): value is HTMLElement {
+  return value instanceof HTMLElement;
+}
+
+function isHiddenControl(value: HTMLElement) {
+  return value.matches('input[type="hidden"], [hidden], [aria-hidden="true"]');
+}
+
+function findValidationTarget(name: string) {
+  for (const candidate of validationFieldCandidates(name)) {
+    const byId = document.getElementById(candidate);
+    if (isHTMLElement(byId) && !isHiddenControl(byId)) return byId;
+
+    const escapedCandidate = escapeAttributeValue(candidate);
+    const byDataTarget = document.querySelector(
+      `[data-field-target="${escapedCandidate}"]`,
+    );
+    if (isHTMLElement(byDataTarget) && !isHiddenControl(byDataTarget)) {
+      return byDataTarget;
+    }
+
+    const byFieldName = document.querySelector(
+      `[data-admin-form-field="${escapedCandidate}"]`,
+    );
+    if (isHTMLElement(byFieldName) && !isHiddenControl(byFieldName)) {
+      return byFieldName;
+    }
+
+    const byName = document.querySelector(`[name="${escapedCandidate}"]`);
+    if (isHTMLElement(byName) && !isHiddenControl(byName)) return byName;
+  }
+
+  return null;
+}
+
+function firstFocusableDescendant(element: HTMLElement) {
+  return element.querySelector<HTMLElement>(
+    'input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])',
+  );
+}
+
+function focusValidationField(name: string) {
+  const target = findValidationTarget(name);
+  if (!target) return false;
+
+  const details = target.matches("details")
+    ? (target as HTMLDetailsElement)
+    : (target.closest("details") as HTMLDetailsElement | null);
+  if (details) details.open = true;
+
+  const focusTarget = target.matches("details")
+    ? details?.querySelector<HTMLElement>("summary") ??
+      firstFocusableDescendant(target) ??
+      target
+    : target.matches("input, select, textarea, button, a, summary, [tabindex]")
+      ? target
+      : firstFocusableDescendant(target) ?? target;
+
+  focusTarget.classList.add("scroll-mt-24");
+  focusTarget.focus({ preventScroll: true });
+  focusTarget.scrollIntoView?.({ behavior: "auto", block: "start" });
+  return true;
+}
+
+function validationErrorForField(
+  name: string,
+  validationErrors: AdminFormValidationErrors,
+) {
+  if (validationErrors[name] !== undefined) return validationErrors[name];
+  return Object.entries(validationErrors).find(([key]) =>
+    validationFieldCandidates(key).includes(name),
+  )?.[1];
 }
 
 const AdminFormValidationContext =
@@ -145,7 +265,7 @@ function AdminFormField({
   children,
 }: AdminFormFieldProps) {
   const validationErrors = React.useContext(AdminFormValidationContext);
-  const fieldError = error ?? validationErrors[name];
+  const fieldError = error ?? validationErrorForField(name, validationErrors);
   const message =
     fieldError === undefined ? undefined : validationMessage(fieldError);
   if (!children) return null;
@@ -160,10 +280,16 @@ function AdminFormField({
     name: children.props.name ?? name,
     "aria-invalid": message ? true : children.props["aria-invalid"],
     "aria-describedby": describedBy || undefined,
+    className: [children.props.className, "scroll-mt-24"]
+      .filter(Boolean)
+      .join(" "),
   });
 
   return (
-    <Field data-invalid={message ? "true" : undefined}>
+    <Field
+      data-admin-form-field={name}
+      data-invalid={message ? "true" : undefined}
+    >
       <FieldTitle>
         <Label htmlFor={inputId}>{label}</Label>
       </FieldTitle>
@@ -186,8 +312,11 @@ function AdminFormLayout({
   protectedFields = [],
   validationErrors = {},
   error,
+  notifyOnError = true,
   pending = false,
   saved = false,
+  successMessage = "Saved",
+  savedLabel = "Saved",
   isDirty = false,
   onSubmit,
   onCancel,
@@ -196,14 +325,40 @@ function AdminFormLayout({
   children,
 }: AdminFormLayoutProps) {
   const { guardNavigation } = useUnsavedChanges(isDirty);
+  const savedStatusMessage =
+    successMessage === "Saved" ? "Changes saved" : successMessage;
+  const validationEntries = Object.entries(validationErrors).filter(
+    ([, value]) => validationMessage(value).trim().length > 0,
+  );
+  const validationSignature = validationEntries
+    .map(([name, message]) => `${name}:${validationMessage(message)}`)
+    .join("\u0000");
+  const validationEntriesRef = React.useRef(validationEntries);
 
   React.useEffect(() => {
-    if (saved) toast.success("Saved");
-  }, [saved]);
+    validationEntriesRef.current = validationEntries;
+  }, [validationEntries]);
 
   React.useEffect(() => {
-    if (error) toast.error("The record could not be saved.");
-  }, [error]);
+    if (saved) toast.success(successMessage);
+  }, [saved, successMessage]);
+
+  React.useEffect(() => {
+    if (
+      error &&
+      notifyOnError &&
+      validationSignature.length === 0
+    ) {
+      toast.error("The record could not be saved.");
+    }
+  }, [error, notifyOnError, validationSignature]);
+
+  React.useEffect(() => {
+    const names = validationEntriesRef.current.map(([name]) => name);
+    if (!names.length) return;
+
+    focusValidationField(names[0]);
+  }, [validationSignature]);
 
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
     onSubmit?.(event);
@@ -244,27 +399,56 @@ function AdminFormLayout({
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       ) : null}
-      {Object.keys(validationErrors).length > 0 ? (
-        <div className="sr-only" role="status" aria-live="polite">
-          There are validation errors. Correct the highlighted fields.
-        </div>
+      {validationEntries.length > 0 ? (
+        <>
+          <div className="sr-only" role="status" aria-live="polite">
+            There are validation errors. Correct the highlighted fields.
+          </div>
+          <div
+            id="admin-form-validation-summary"
+            className="grid gap-2 rounded-lg border border-destructive/40 bg-destructive/5 px-4 py-3 text-sm"
+            role="region"
+            aria-labelledby="admin-form-validation-summary-title"
+          >
+            <p
+              id="admin-form-validation-summary-title"
+              className="font-medium text-destructive"
+            >
+              Review these fields before saving
+            </p>
+            <ul className="grid gap-1 text-destructive">
+              {validationEntries.map(([name, message]) => (
+                <li key={name}>
+                  <a
+                    href={`#${validationFieldTargetId(name)}`}
+                    className="underline underline-offset-4 focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    onClick={(event) => {
+                      event.preventDefault();
+                      focusValidationField(name);
+                    }}
+                  >
+                    {validationFieldLabel(name)}: {" "}
+                    <span>{validationMessage(message)}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </>
       ) : null}
       <AdminFormValidationContext.Provider value={validationErrors}>
         {children}
       </AdminFormValidationContext.Provider>
       <ProtectedFields fields={protectedFields} />
-      {Object.entries(validationErrors).map(([name, message]) => (
-        <FieldError
-          key={name}
-          id={`${name}-summary-error`}
-          data-field-error={name}
-        >
-          {validationMessage(message)}
-        </FieldError>
-      ))}
       <footer className="sticky bottom-0 z-10 flex flex-wrap items-center justify-end gap-2 rounded-lg border bg-card/95 px-4 py-3 shadow-sm backdrop-blur">
         <span className="mr-auto text-xs text-muted-foreground" aria-live="polite">
-          {pending ? "Saving changes…" : isDirty ? "Unsaved changes" : saved ? "Changes saved" : "No unsaved changes"}
+          {pending
+            ? "Saving changes…"
+            : isDirty
+              ? "Unsaved changes"
+              : saved
+                ? savedStatusMessage
+                : "No unsaved changes"}
         </span>
         {onCancel ? (
           <Button
@@ -279,7 +463,7 @@ function AdminFormLayout({
           </Button>
         ) : null}
         <Button type="submit" disabled={pending}>
-          {pending ? "Saving…" : saved ? "Saved" : saveLabel}
+          {pending ? "Saving…" : saved ? savedLabel : saveLabel}
         </Button>
       </footer>
     </Form>
