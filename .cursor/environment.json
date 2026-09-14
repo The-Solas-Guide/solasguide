@@ -1,0 +1,11 @@
+{
+  "name": "The Solas Guide",
+  "install": "./.cursor/install.sh",
+  "start": "./.cursor/start.sh",
+  "terminals": [
+    {
+      "name": "next-dev",
+      "command": "export NVM_DIR=\"$HOME/.nvm\"; . \"$NVM_DIR/nvm.sh\"; nvm use >/dev/null 2>&1 || true; npm run dev"
+    }
+  ]
+}
