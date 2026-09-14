@@ -202,10 +202,6 @@ export function CustomerEnquiryForm({
     }
   }, [draft]);
   useEffect(() => {
-    if (!contextNote) return;
-    setDraft((current) => draftWithContext(current, contextNote));
-  }, [contextNote]);
-  useEffect(() => {
     if (hydrated) headingRef.current?.focus({ preventScroll: true });
   }, [hydrated, step, submitted]);
   useEffect(() => {
@@ -313,7 +309,7 @@ export function CustomerEnquiryForm({
             q2: draft.q2,
             q3: draft.q3,
             q4: draft.q4,
-            q5: draft.q5,
+            q5: applyEnquiryContext(draft.q5, contextNote),
           },
         }),
       });
@@ -364,7 +360,7 @@ export function CustomerEnquiryForm({
     { label: "Who you are looking for", value: labelFor(draft.q2, customerQuestionnaireOptions.q2), edit: "q2" as JourneyStep },
     { label: "What you hope this helps with", value: labels(draft.q3, customerQuestionnaireOptions.q3), edit: "q3" as JourneyStep },
     { label: "When you hope to connect", value: labelFor(draft.q4, customerQuestionnaireOptions.q4), edit: "q4" as JourneyStep },
-    { label: "Anything else", value: draft.q5 || "Nothing added", edit: "q5" as JourneyStep },
+    { label: "Anything else", value: applyEnquiryContext(draft.q5, contextNote) || "Nothing added", edit: "q5" as JourneyStep },
     { label: "Contact details", value: `${name} — ${email} — WhatsApp: ${whatsapp}`, edit: "contact" as JourneyStep },
   ];
 
@@ -505,7 +501,7 @@ export function CustomerEnquiryForm({
                     <Textarea
                       id="q5"
                       maxLength={3_000}
-                      value={draft.q5}
+                      value={applyEnquiryContext(draft.q5, contextNote)}
                       onChange={(event) => set("q5", event.target.value)}
                       placeholder="Share anything else that would help us understand your enquiry."
                       className="mt-3 min-h-40 bg-card"

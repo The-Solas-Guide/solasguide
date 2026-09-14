@@ -26,10 +26,13 @@ export default async function FindAPractitionerPage({
   searchParams: FindAMatchSearchParams;
 }) {
   const params = await searchParams;
+  const practitionerName = firstSearchParam(params, "practitioner");
+  const intent = firstSearchParam(params, "intent");
   return (
     <CustomerEnquiryForm
-      practitionerName={firstSearchParam(params, "practitioner")}
-      intent={firstSearchParam(params, "intent")}
+      key={`${practitionerName ?? ""}:${intent ?? ""}`}
+      practitionerName={practitionerName}
+      intent={intent}
     />
   );
 }
