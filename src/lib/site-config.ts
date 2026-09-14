@@ -4,9 +4,9 @@ const fallbackAppUrl = "http://localhost:3000";
 const publicApexHostname = "solasguide.com";
 const publicCanonicalHostname = "www.solasguide.com";
 
-export const siteTitle = "The Solas Guide | Curated Bali experiences";
+export const siteTitle = "The Solas Guide | Curated wellness experiences";
 export const siteDescription =
-  "The Solas Guide is a trusted guide to exceptional wellness practitioners in Bali.";
+  "The Solas Guide is a trusted guide to exceptional wellness practitioners across Southeast Asia.";
 
 /** Resolve the configured public origin and keep the production host canonical. */
 export function getAppUrl() {

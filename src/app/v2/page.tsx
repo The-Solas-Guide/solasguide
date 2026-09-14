@@ -62,7 +62,7 @@ export default function HomePageV2() {
             <div className="relative flex min-h-[min(780px,calc(100svh-2rem))] items-end px-5 pt-24 pb-14 text-background sm:px-8 sm:pb-20 md:p-14 lg:p-20">
               <div className="max-w-4xl">
                 <p className="review-label text-white/75" data-reveal>
-                  Volume One <span aria-hidden="true">•</span> Bali
+                  Volume One <span aria-hidden="true">•</span> Southeast Asia
                 </p>
                 <p className="mt-5 font-display text-2xl tracking-tight text-white sm:text-3xl" data-reveal>
                   The Solas Guide
@@ -110,7 +110,7 @@ export default function HomePageV2() {
                   Wellness has grown rapidly. Trust hasn&apos;t always kept pace.
                 </h2>
                 <p className="mt-7 max-w-xl text-sm leading-7 text-muted-foreground">
-                  The Solas Guide is an independent editorial guide to exceptional wellness practitioners in Bali.
+                  The Solas Guide is an independent editorial guide to exceptional wellness practitioners across Southeast Asia.
                 </p>
                 <p className="mt-4 max-w-xl text-sm leading-7 text-muted-foreground">
                   We recognise practitioners through a careful review process, verify the claims we publish, and introduce their work to people looking for someone they can trust.

@@ -19,7 +19,7 @@ export function SiteFooter() {
             <p>
               The Solas Guide is an independent editorial publication recognising exceptional wellness practitioners through a transparent review process combining independent due diligence with editorial judgement.
             </p>
-            <p>Volume One features practitioners working across Bali.</p>
+            <p>Volume One features practitioners recognised across Southeast Asia.</p>
             <p>Future editions will recognise practitioners in other regions.</p>
           </div>
         </div>
