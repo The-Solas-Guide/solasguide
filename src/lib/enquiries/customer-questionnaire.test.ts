@@ -10,7 +10,7 @@ import {
 const validAnswers = {
   formVersion: CUSTOMER_QUESTIONNAIRE_FORM_VERSION,
   q1: "just-me",
-  q2: ["sleep", "stress-emotional-wellbeing"],
+  q2: ["stress-emotional-wellbeing", "sleep"],
   q3: ["online"],
   q4: "im-planning-ahead",
   q5: "",

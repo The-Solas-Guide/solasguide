@@ -217,7 +217,7 @@ test("keeps the enquiry until the customer starts a new enquiry after a changed 
     sessionStorage.getItem("solas-customer-enquiry-draft-v4") || "null",
   ).submissionToken)).toBe(originalToken);
 
-  await page.getByRole("button", { name: "Start a new enquiry" })).click();
+  await page.getByRole("button", { name: "Start a new enquiry" }).click();
   await expect(page.getByRole("heading", { name: "Who are you looking for support for?" })).toBeFocused();
   await expect(page.getByRole("radio", { name: "My partner" })).not.toBeChecked();
   await expect(page.getByRole("button", { name: "Start a new enquiry" })).toHaveCount(0);
