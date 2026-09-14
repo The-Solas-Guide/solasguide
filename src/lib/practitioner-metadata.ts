@@ -129,7 +129,7 @@ export function getDiscoveryMetadata(
   const description =
     kind === "area"
       ? "Explore practitioners whose published profiles include this area of support."
-      : "Explore practitioners whose published profiles include this location.";
+      : "Explore practitioners whose published profiles include this continent.";
   const url = getAbsoluteUrl(
     `/practitioners/${segment}/${encodeURIComponent(term.slug)}`,
   );

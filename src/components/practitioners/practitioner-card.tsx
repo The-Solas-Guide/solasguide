@@ -43,7 +43,7 @@ export function PractitionerCard({
       </div>
       <div className="flex flex-1 flex-col p-4">
         {practitioner.location ? (
-          <p className="text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+          <p className="max-w-full text-[0.62rem] font-semibold uppercase leading-4 tracking-[0.14em] text-pretty text-muted-foreground">
             {practitioner.location}
           </p>
         ) : null}

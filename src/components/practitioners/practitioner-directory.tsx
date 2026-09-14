@@ -138,8 +138,8 @@ export function getFacetDefinitions(
     },
     {
       id: "locations",
-      label: "Location",
-      allLabel: "All locations",
+      label: "Continent",
+      allLabel: "All continents",
       options: termOptions(practitioners, "location"),
       valuesFor: (practitioner) => termsFor(practitioner, "location"),
     },
@@ -172,6 +172,7 @@ export function matchesQuery(practitioner: Practitioner, query: string) {
     practitioner.descriptor ?? "",
     practitioner.summary ?? "",
     practitioner.about ?? "",
+    ...practitioner.searchableLocationNames,
     ...practitioner.terms.map((linkedTerm) => linkedTerm.name),
   ]
     .join(" ")

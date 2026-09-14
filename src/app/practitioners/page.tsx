@@ -4,6 +4,7 @@ import { SiteHeader } from "@/components/layout/site-header";
 import { getDirectoryMetadata } from "@/lib/practitioner-metadata";
 import {
   getPublishedPractitioners,
+  isValidLocationFilterSlug,
   parseDirectoryFilters,
   type DirectoryFacetType,
   type DirectoryFilters,
@@ -86,7 +87,10 @@ function canonicalizeFilters(
     "works-with": filters["works-with"].filter((value) =>
       available["works-with"].has(value),
     ),
-    locations: filters.locations.filter((value) => available.locations.has(value)),
+    locations: filters.locations.filter(
+      (value) =>
+        available.locations.has(value) || isValidLocationFilterSlug(value),
+    ),
     format: filters.format.filter((value) => available.format.has(value)),
     languages: filters.languages.filter((value) => available.languages.has(value)),
   };
