@@ -40,7 +40,7 @@ describe("country to public continent mapping", () => {
   });
 
   it("keeps already-derived public continents stable", () => {
-    expect(names(["southeast-asia", "europe", "willing-to-travel"])).toBe(
+    expect(names(["southeast-asia", "europe"])).toBe(
       "Southeast Asia · Europe · Willing to travel",
     );
   });

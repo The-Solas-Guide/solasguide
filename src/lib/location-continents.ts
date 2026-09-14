@@ -82,11 +82,9 @@ export function publicContinentSortOrder(slug: PublicContinentSlug) {
 export function derivePublicContinents(internalSlugs: readonly string[]) {
   const unmapped: string[] = [];
   const geographic = new Set<Exclude<PublicContinentSlug, "willing-to-travel">>();
-  let hasTravel = false;
 
   for (const slug of internalSlugs) {
     if (slug === "willing-to-travel") {
-      hasTravel = true;
       continue;
     }
     if (isPublicContinentSlug(slug) && slug !== "willing-to-travel") {
@@ -106,7 +104,7 @@ export function derivePublicContinents(internalSlugs: readonly string[]) {
       const geoWithoutInternational = [...geographic].filter(
         (slug) => slug !== "international",
       );
-      return hasTravel || geoWithoutInternational.length >= 2;
+      return geoWithoutInternational.length >= 2;
     }
     return geographic.has(continent.slug);
   });

@@ -349,7 +349,13 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
     ),
   );
   const selectedLocationSlugs = terms
-    .filter((term) => term.type === "location" && selectedTerms.has(term.id))
+    .filter(
+      (term) =>
+        term.type === "location" &&
+        selectedTerms.has(term.id) &&
+        term.is_active &&
+        !term.archived_at,
+    )
     .map((term) => term.slug)
     .filter((slug): slug is string => typeof slug === "string" && slug.length > 0);
   const publicContinentPreview = derivePublicContinents(selectedLocationSlugs);
