@@ -73,8 +73,10 @@ export function PractitionerProfile({
 }) {
   const locationTerms = getTermsByType(practitioner, "location");
   const areaTerms = getTermsByType(practitioner, "support_area");
-  const locations =
-    locationTerms.map((term) => term.name).join(", ") || undefined;
+  const locationTags = locationTerms.map((term) => ({
+    label: term.name,
+    href: `/practitioners/locations/${term.slug}`,
+  }));
   const approaches =
     practitioner.approaches ??
     (practitioner.approach ? [practitioner.approach] : []);
@@ -181,7 +183,7 @@ export function PractitionerProfile({
                 ) : null}
 
                 {practitioner.yearsActive ||
-                locations ||
+                locationTags.length ||
                 practitioner.worksWith?.length ? (
                   <dl className="mt-6 grid border-y border-border sm:grid-cols-3">
                     {practitioner.yearsActive ? (
@@ -194,12 +196,24 @@ export function PractitionerProfile({
                         </dd>
                       </div>
                     ) : null}
-                    {locations ? (
+                    {locationTags.length ? (
                       <div className="py-3.5 sm:pr-4">
                         <dt className="review-label text-muted-foreground">
                           Based
                         </dt>
-                        <dd className={dataValueClassName}>{locations}</dd>
+                        <dd className={dataValueClassName}>
+                          {locationTags.map((term, index) => (
+                            <span key={term.href}>
+                              {index > 0 ? ", " : null}
+                              <Link
+                                href={term.href}
+                                className="underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground"
+                              >
+                                {term.label}
+                              </Link>
+                            </span>
+                          ))}
+                        </dd>
                       </div>
                     ) : null}
                     {practitioner.worksWith?.length ? (
