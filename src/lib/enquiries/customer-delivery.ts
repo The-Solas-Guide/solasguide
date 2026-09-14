@@ -79,7 +79,7 @@ export async function processCustomerEnquiryDelivery(supabase: SupabaseClient<Da
   const persisted = stored.data;
   const answers = isRecord(persisted.questionnaire_answers) ? persisted.questionnaire_answers : {};
   const summary = customerAnswerSummary(answers);
-  const customerText = `Hello ${persisted.full_name},\n\nThank you for sharing what you are looking for. We have received your enquiry and will review it personally. You can expect to hear from us within two business days.\n\nThe Solas Guide`;
+  const customerText = `Hello ${persisted.full_name},\n\nThank you. We’ve received your enquiry.\n\nSomeone from Solas will review what you’ve shared and come back to you personally with the practitioners we think may be worth considering.\n\nThe Solas Guide`;
   const operationsEmail = process.env.SOLAS_OPERATIONS_EMAIL;
   const customerResult = deliveryClaim.data.send_customer
     ? await sendTransactionalEmail([new Recipient(persisted.email, persisted.full_name)], "We have received your Solas Guide enquiry", customerText, operationsEmail ? new Recipient(operationsEmail, "Solas operations") : undefined).then(() => "sent" as const).catch((error) => { console.error("Customer confirmation failed", error instanceof Error ? error.name : "UnknownError"); return "failed" as const; })

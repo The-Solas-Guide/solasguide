@@ -124,6 +124,15 @@ describe("manual enquiry delivery protection", () => {
 
     expect(mocks.sendTransactionalEmail).toHaveBeenCalledTimes(3);
     expect(mocks.sendTransactionalEmail.mock.calls[0][1]).toBe("We have received your Solas Guide enquiry");
+    expect(mocks.sendTransactionalEmail.mock.calls[0][2]).toBe([
+      "Hello Customer QA,",
+      "",
+      "Thank you. We’ve received your enquiry.",
+      "",
+      "Someone from Solas will review what you’ve shared and come back to you personally with the practitioners we think may be worth considering.",
+      "",
+      "The Solas Guide",
+    ].join("\n"));
     expect(mocks.sendTransactionalEmail.mock.calls[1][1]).toContain("New Solas enquiry");
     expect(mocks.sendTransactionalEmail.mock.calls[2][1]).toContain("New Solas enquiry");
     expect(update.mock.calls[0][0]).toMatchObject({ customer_confirmation_status: "sent", internal_notification_status: "failed" });
