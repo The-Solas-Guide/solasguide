@@ -26,19 +26,42 @@ function legacyAnswerSummary(answers: Record<string, unknown>) {
   ].join("\n");
 }
 
-export function customerAnswerSummary(answers: Record<string, unknown>) {
-  if (answers.formVersion !== CUSTOMER_QUESTIONNAIRE_FORM_VERSION) return legacyAnswerSummary(answers);
-
+function structuredAnswerSummary(
+  answers: Record<string, unknown>,
+  titles: Record<CustomerQuestionKey | "q5", string>,
+) {
   const label = (question: CustomerQuestionKey, value: unknown) => Array.isArray(value)
     ? value.map((item) => typeof item === "string" ? customerQuestionnaireLabel(question, item) : String(item)).join(", ") || "Not provided"
     : typeof value === "string" && value ? customerQuestionnaireLabel(question, value) : "Not provided";
   return [
-    `What brings you to The Solas Guide today?: ${label("q1", answers.q1)}`,
-    `Who are you looking for?: ${label("q2", answers.q2)}`,
-    `What are you hoping this helps with?: ${label("q3", answers.q3)}`,
-    `When are you hoping to connect?: ${label("q4", answers.q4)}`,
-    `Is there anything else you'd like us to know?: ${typeof answers.q5 === "string" && answers.q5 ? answers.q5 : "Not provided"}`,
+    `${titles.q1}: ${label("q1", answers.q1)}`,
+    `${titles.q2}: ${label("q2", answers.q2)}`,
+    `${titles.q3}: ${label("q3", answers.q3)}`,
+    `${titles.q4}: ${label("q4", answers.q4)}`,
+    `${titles.q5}: ${typeof answers.q5 === "string" && answers.q5 ? answers.q5 : "Not provided"}`,
   ].join("\n");
+}
+
+export function customerAnswerSummary(answers: Record<string, unknown>) {
+  if (answers.formVersion === CUSTOMER_QUESTIONNAIRE_FORM_VERSION) {
+    return structuredAnswerSummary(answers, {
+      q1: "Who are you looking for support for?",
+      q2: "What would you most like support with?",
+      q3: "Is there anything important about the kind of person or approach you’re looking for?",
+      q4: "When would you ideally like to connect?",
+      q5: "Anything else you’d like us to know?",
+    });
+  }
+  if (answers.formVersion === 3) {
+    return structuredAnswerSummary(answers, {
+      q1: "What brings you to The Solas Guide today?",
+      q2: "Who are you looking for?",
+      q3: "What are you hoping this helps with?",
+      q4: "When are you hoping to connect?",
+      q5: "Is there anything else you'd like us to know?",
+    });
+  }
+  return legacyAnswerSummary(answers);
 }
 
 export async function processCustomerEnquiryDelivery(supabase: SupabaseClient<Database>, enquiryId: string) {
@@ -56,7 +79,7 @@ export async function processCustomerEnquiryDelivery(supabase: SupabaseClient<Da
   const persisted = stored.data;
   const answers = isRecord(persisted.questionnaire_answers) ? persisted.questionnaire_answers : {};
   const summary = customerAnswerSummary(answers);
-  const customerText = `Hello ${persisted.full_name},\n\nThank you for sharing what you are looking for. We have received your enquiry and will review it personally. You can expect to hear from us within two business days.\n\nThe Solas Guide`;
+  const customerText = `Hello ${persisted.full_name},\n\nThank you. We’ve received your enquiry.\n\nSomeone from Solas will review what you’ve shared and come back to you personally with the practitioners we think may be worth considering.\n\nThe Solas Guide`;
   const operationsEmail = process.env.SOLAS_OPERATIONS_EMAIL;
   const customerResult = deliveryClaim.data.send_customer
     ? await sendTransactionalEmail([new Recipient(persisted.email, persisted.full_name)], "We have received your Solas Guide enquiry", customerText, operationsEmail ? new Recipient(operationsEmail, "Solas operations") : undefined).then(() => "sent" as const).catch((error) => { console.error("Customer confirmation failed", error instanceof Error ? error.name : "UnknownError"); return "failed" as const; })

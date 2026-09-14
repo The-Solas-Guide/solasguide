@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { CustomerEnquiryForm } from "@/components/enquiry/customer-enquiry-form";
 
 export const metadata: Metadata = {
-  title: "Start an enquiry",
+  title: "Need help choosing?",
   description:
-    "Tell us about your Bali plans and what you want from the trip. We will review the context and follow up with considered recommendations.",
+    "Tell us a little about what you’re looking for. We’ll review your enquiry personally and suggest the practitioners we think may be worth considering.",
 };
 
 type FindAMatchSearchParams = Promise<
