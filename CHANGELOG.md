@@ -31,3 +31,4 @@ This file records pull requests merged into `main`. Entries are added automatica
 - 2026-09-10 — Improve admin drafts, content editing, and inbox workflows ([#60](https://github.com/The-Solas-Guide/solasguide/pull/60)) — `3236a46f408278bdac9d38b43e286ab990c67b1b`
 - 2026-09-14 — feat: client CTA labels and homepage/profile copy (#61–#64) ([#67](https://github.com/The-Solas-Guide/solasguide/pull/67)) — `d7672f16e4a3cb515a71acb7fe835788583c0789`
 - 2026-09-14 — Reshape buyer questionnaire copy to MVP Flow Phase 1 ([#69](https://github.com/The-Solas-Guide/solasguide/pull/69)) — `86294b39c5c6ad3a9a3a7ddc6ca2a84294d18386`
+- 2026-09-14 — Show public continents, keep country locations searchable ([#71](https://github.com/The-Solas-Guide/solasguide/pull/71)) — `6cfbbe653ecee76ad757e20a38dbc435ea499c7e`
