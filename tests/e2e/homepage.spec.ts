@@ -10,8 +10,8 @@ test.describe("homepage", () => {
     await page.goto("/");
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", /^http:\/\/localhost:3000\/?$/);
     await expect(page.locator('meta[property="og:url"]')).toHaveAttribute("content", /^http:\/\/localhost:3000\/?$/);
-    await expect(page.locator('meta[property="og:description"]')).toHaveAttribute("content", "The Solas Guide is a trusted guide to exceptional wellness practitioners in Bali.");
-    await expect(page.locator('meta[name="twitter:description"]')).toHaveAttribute("content", "The Solas Guide is a trusted guide to exceptional wellness practitioners in Bali.");
+    await expect(page.locator('meta[property="og:description"]')).toHaveAttribute("content", "The Solas Guide is a trusted guide to exceptional wellness practitioners across Southeast Asia.");
+    await expect(page.locator('meta[name="twitter:description"]')).toHaveAttribute("content", "The Solas Guide is a trusted guide to exceptional wellness practitioners across Southeast Asia.");
     await expect(page.locator('meta[property="og:image"]')).toHaveAttribute("content", /solas-facebook\.png$/);
     await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute("content", "summary_large_image");
     await page.goto("/practitioners");
@@ -51,9 +51,17 @@ test.describe("homepage", () => {
       "href",
       "/find-a-match?intent=professional",
     );
+    await expect(page.getByText("Volume One").first()).toBeVisible();
+    await expect(page.getByText("Southeast Asia").first()).toBeVisible();
     await expect(
       page.getByText(
-        "The Solas Guide is an independent editorial guide to exceptional wellness practitioners in Bali.",
+        "The Solas Guide is an independent editorial guide to exceptional wellness practitioners across Southeast Asia.",
+        { exact: true },
+      ),
+    ).toBeVisible();
+    await expect(
+      page.locator("footer").getByText(
+        "Volume One features practitioners recognised across Southeast Asia.",
         { exact: true },
       ),
     ).toBeVisible();

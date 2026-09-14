@@ -8,7 +8,7 @@ describe("public site metadata configuration", () => {
   });
 
   it("keeps homepage metadata scoped to the homepage", async () => {
-    const { homepageMetadata, siteDescription } = await import(
+    const { homepageMetadata, siteDescription, siteTitle } = await import(
       "@/lib/site-config"
     );
 
@@ -18,6 +18,9 @@ describe("public site metadata configuration", () => {
     expect(homepageMetadata.openGraph).toBeUndefined();
     expect(homepageMetadata.twitter).toBeUndefined();
     expect(siteDescription).not.toMatch(/venues|events/i);
+    expect(siteDescription).not.toMatch(/Bali/i);
+    expect(siteTitle).toBe("The Solas Guide | Curated wellness experiences");
+    expect(siteTitle).not.toMatch(/Bali/i);
   });
 
   it("preserves local URL configuration for local metadata", async () => {

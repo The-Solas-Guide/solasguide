@@ -81,7 +81,7 @@ const profiles: PractitionerRow[] = [
     summary:
       "Works with breath and body-based practices to support regulation, recovery, transition and deeper self-connection.",
     about:
-      "Indri Hapsari is an Indonesian breathwork and body-based practitioner. Her work spans breathwork, Reiki, prenatal yoga and aquatic bodywork, with experience supporting people through stress, anxiety, addiction recovery and major life transitions. She has trained and practised in Bali for many years.",
+      "Indri Hapsari is an Indonesian breathwork and body-based practitioner. Her work spans breathwork, Reiki, prenatal yoga and aquatic bodywork, with experience supporting people through stress, anxiety, addiction recovery and major life transitions. She has trained and practised for many years.",
     credentials: null,
     significant_training: [
       "10-month breathwork facilitator training (2017–18)",

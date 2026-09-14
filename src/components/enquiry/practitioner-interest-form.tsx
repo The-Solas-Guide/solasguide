@@ -24,7 +24,7 @@ type Draft = {
 type StoredDraft = { expiresAt: number; draft: Draft };
 
 const steps: { key: JourneyStep; eyebrow: string; title: string }[] = [
-  { key: "practice", eyebrow: "Your practice", title: "Tell us about your work in Bali." },
+  { key: "practice", eyebrow: "Your practice", title: "Tell us about your work." },
   { key: "areas", eyebrow: "Practice areas", title: "Which practices best describe your work?" },
   { key: "experience", eyebrow: "Experience and links", title: "What would help us understand your work?" },
   { key: "contact", eyebrow: "Contact", title: "How should we contact you?" },
@@ -188,8 +188,8 @@ export function PractitionerInterestForm() {
     if (step === "practice" && professionalRole.trim().length > 120) return "Shorten your professional role or practice.";
     if (step === "practice" && practiceName.trim() && practiceName.trim().length < 2) return "Add a longer practice or business name.";
     if (step === "practice" && practiceName.trim().length > 200) return "Shorten your practice or business name.";
-    if (step === "practice" && !draft.baliRelationship) return "Tell us about your relationship to Bali.";
-    if (step === "practice" && !draft.area) return "Choose your primary area in Bali.";
+    if (step === "practice" && !draft.baliRelationship) return "Tell us where you practise.";
+    if (step === "practice" && !draft.area) return "Choose your primary area.";
     if (step === "practice" && locationDetail.trim().length > 200) return "Shorten your location detail.";
     if (step === "areas" && (draft.practiceAreas.length < 1 || draft.practiceAreas.length > 5)) return "Choose between one and five practice areas.";
     if (step === "areas" && draft.practiceAreas.includes("other") && otherPractice.trim().length < 2) return "Tell us about your other practice.";
@@ -367,10 +367,10 @@ export function PractitionerInterestForm() {
           </div>
           <div className="grid min-h-0 flex-1 border-t border-border md:grid-cols-[minmax(260px,0.78fr)_minmax(0,1.22fr)]">
             <aside className={cn("relative min-h-56 overflow-hidden bg-foreground text-background sm:min-h-64 md:min-h-0", step !== "practice" && "hidden md:block")}>
-              <Image src="/images/solas-imagery/why-solas-pavilion.png" alt="A quiet open-air pavilion surrounded by tropical greenery in Bali" fill loading="eager" className="object-cover opacity-55" sizes="(max-width: 768px) 100vw, 40vw" />
+              <Image src="/images/solas-imagery/why-solas-pavilion.png" alt="A quiet open-air pavilion surrounded by tropical greenery" fill loading="eager" className="object-cover opacity-55" sizes="(max-width: 768px) 100vw, 40vw" />
               <div className="absolute inset-0 bg-foreground/45" />
               <div className="relative flex min-h-56 flex-col justify-end p-5 sm:min-h-64 sm:p-6 md:min-h-0 md:justify-start md:p-8">
-                <div><p className="text-[10px] uppercase tracking-[0.2em] text-background/65">Your work in Bali</p><p className="mt-4 max-w-xs font-display text-2xl leading-[1.05] text-balance sm:mt-5 sm:text-3xl md:text-4xl md:leading-[1.02]">Share a clear professional introduction.</p></div>
+                <div><p className="text-[10px] uppercase tracking-[0.2em] text-background/65">Your practice</p><p className="mt-4 max-w-xs font-display text-2xl leading-[1.05] text-balance sm:mt-5 sm:text-3xl md:text-4xl md:leading-[1.02]">Share a clear professional introduction.</p></div>
               </div>
             </aside>
             <div className="scrollbar-none flex min-h-0 flex-col overflow-y-auto p-5 sm:p-6 md:p-8 lg:p-10">
@@ -383,7 +383,7 @@ export function PractitionerInterestForm() {
                   <div className="space-y-7">
                     <div><Label htmlFor="professional-role">Professional role or practice</Label><Input id="professional-role" maxLength={120} value={professionalRole} onChange={(event) => setProfessionalRole(event.target.value)} className="mt-2 h-11 bg-card" /></div>
                     <div><Label htmlFor="practice-name">Practice or business name <span className="font-normal text-muted-foreground">(optional)</span></Label><Input id="practice-name" maxLength={200} value={practiceName} onChange={(event) => setPracticeName(event.target.value)} className="mt-2 h-11 bg-card" /></div>
-                    <fieldset><legend className="text-sm font-medium">Your relationship to Bali</legend><div className="mt-3"><ChoiceGrid choices={relationshipChoices} selected={[draft.baliRelationship]} onToggle={(value) => { setError(""); setDraftValue("baliRelationship", value); }} /></div></fieldset>
+                    <fieldset><legend className="text-sm font-medium">Where you practise</legend><div className="mt-3"><ChoiceGrid choices={relationshipChoices} selected={[draft.baliRelationship]} onToggle={(value) => { setError(""); setDraftValue("baliRelationship", value); }} /></div></fieldset>
                     <fieldset><legend className="text-sm font-medium">Primary area</legend><div className="mt-3"><ChoiceGrid choices={areaChoices} selected={[draft.area]} onToggle={(value) => { setError(""); setDraftValue("area", value); }} /></div></fieldset>
                     <div><Label htmlFor="location-detail">Location detail <span className="font-normal text-muted-foreground">(optional)</span></Label><Input id="location-detail" maxLength={200} value={locationDetail} onChange={(event) => setLocationDetail(event.target.value)} className="mt-2 h-11 bg-card" /></div>
                   </div>
@@ -393,7 +393,7 @@ export function PractitionerInterestForm() {
                 )}
                 {step === "experience" && (
                   <div className="space-y-7">
-                    <div><Label htmlFor="experience-summary">Relevant experience</Label><Textarea id="experience-summary" minLength={50} maxLength={2_000} value={experienceSummary} onChange={(event) => setExperienceSummary(event.target.value)} placeholder="Share the experience, training, or approach most relevant to your work in Bali." className="mt-2 min-h-44 bg-card" /><p className="mt-2 text-xs leading-5 text-muted-foreground">Please do not include medical records or sensitive personal information.</p></div>
+                    <div><Label htmlFor="experience-summary">Relevant experience</Label><Textarea id="experience-summary" minLength={50} maxLength={2_000} value={experienceSummary} onChange={(event) => setExperienceSummary(event.target.value)} placeholder="Share the experience, training, or approach most relevant to your work." className="mt-2 min-h-44 bg-card" /><p className="mt-2 text-xs leading-5 text-muted-foreground">Please do not include medical records or sensitive personal information.</p></div>
                     <div><Label htmlFor="website-url">Primary website or profile <span className="font-normal text-muted-foreground">(optional)</span></Label><Input id="website-url" type="url" inputMode="url" placeholder="https://" value={websiteUrl} onChange={(event) => setWebsiteUrl(event.target.value)} className="mt-2 h-11 bg-card" /></div>
                     <div className="grid gap-5 sm:grid-cols-2"><div><Label htmlFor="additional-link-1">Additional link 1 <span className="font-normal text-muted-foreground">(optional)</span></Label><Input id="additional-link-1" type="url" inputMode="url" placeholder="https://" value={additionalLink1} onChange={(event) => setAdditionalLink1(event.target.value)} className="mt-2 h-11 bg-card" /></div><div><Label htmlFor="additional-link-2">Additional link 2 <span className="font-normal text-muted-foreground">(optional)</span></Label><Input id="additional-link-2" type="url" inputMode="url" placeholder="https://" value={additionalLink2} onChange={(event) => setAdditionalLink2(event.target.value)} className="mt-2 h-11 bg-card" /></div></div>
                   </div>

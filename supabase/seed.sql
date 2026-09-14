@@ -222,7 +222,7 @@ values
     $profile$Reiki · Meditation · Kirtan · Sound Healing$profile$,
     30,
     $profile$A long-standing meditation and healing practitioner working through Reiki, devotional music, sound and contemplative practice.$profile$,
-    $profile$Punnu Singh Wasu is an Indian-born meditation teacher, musician and healing practitioner whose work spans Reiki, devotional music, sound and contemplative practice. He has taught in Bali for many years through private sessions, workshops, trainings and group experiences, and is known for bringing together devotional and energetic traditions in an accessible way.$profile$,
+    $profile$Punnu Singh Wasu is an Indian-born meditation teacher, musician and healing practitioner whose work spans Reiki, devotional music, sound and contemplative practice. He has taught for many years through private sessions, workshops, trainings and group experiences, and is known for bringing together devotional and energetic traditions in an accessible way.$profile$,
     array[$profile$Senior meditation teacher$profile$, $profile$30+ years of Reiki practice$profile$, $profile$Long-standing Yoga Barn faculty$profile$],
     null, true, true, $profile$https://www.punnuwasu.com/$profile$, $profile$https://www.instagram.com/punnuwasu/$profile$, null, null, 'draft', null
   ),
@@ -233,7 +233,7 @@ values
     $profile$Vinyasa Yoga · Self-Enquiry · Teacher Development$profile$,
     null,
     $profile$A yoga educator and mentor combining Vinyasa, self-enquiry, nervous-system awareness and counselling-informed teacher development.$profile$,
-    $profile$Kimberley Utama is a Bali-based yoga educator and mentor. Her work combines Vinyasa, restorative yoga, meditation, pranayama, trauma-informed teaching and self-enquiry, with a strong focus on teacher development. She is a lead and master teacher on yoga teacher trainings and incorporates her counselling background into mentoring yoga teachers and graduates.$profile$,
+    $profile$Kimberley Utama is a yoga educator and mentor. Her work combines Vinyasa, restorative yoga, meditation, pranayama, trauma-informed teaching and self-enquiry, with a strong focus on teacher development. She is a lead and master teacher on yoga teacher trainings and incorporates her counselling background into mentoring yoga teachers and graduates.$profile$,
     array[$profile$E-RYT 500$profile$, $profile$YACEP$profile$, $profile$Lead / master teacher on 200hr and 300hr yoga teacher trainings$profile$],
     null, true, true, $profile$https://www.kimberleyutama.yoga/$profile$, $profile$https://www.instagram.com/kimberleyutamayoga/$profile$, null, null, 'draft', null
   ),
@@ -277,7 +277,7 @@ values
     $profile$Breathwork · Reiki · Prenatal Yoga · Aquatic Bodywork$profile$,
     null,
     $profile$Works with breath and body-based practices to support regulation, recovery, transition and deeper self-connection.$profile$,
-    $profile$Indri Hapsari is an Indonesian breathwork and body-based practitioner. Her work spans breathwork, Reiki, prenatal yoga and aquatic bodywork, with experience supporting people through stress, anxiety, addiction recovery and major life transitions. She has trained and practised in Bali for many years.$profile$,
+    $profile$Indri Hapsari is an Indonesian breathwork and body-based practitioner. Her work spans breathwork, Reiki, prenatal yoga and aquatic bodywork, with experience supporting people through stress, anxiety, addiction recovery and major life transitions. She has trained and practised for many years.$profile$,
     null,
     array[$profile$10-month breathwork facilitator training (2017–18)$profile$, $profile$Reiki Levels 1 & 2, Asian Healing Arts Center (2018)$profile$, $profile$Prenatal Yoga training (2018)$profile$],
     true, true, null, $profile$https://www.instagram.com/indrihapsari___/$profile$, null, null, 'draft', null
@@ -311,7 +311,7 @@ values
     $profile$Breathwork · Cold Exposure · Facilitator Training$profile$,
     10,
     $profile$Founder of Breathing Cold, combining breathwork and cold exposure through individual, group and facilitator-training experiences.$profile$,
-    $profile$Alexandre Tsuk is the founder of Breathing Cold, a Bali-based method combining breathwork and cold exposure. His work includes individual and group experiences as well as facilitator training, with Breathing Cold publicly reporting more than 7,000 people guided and almost 600 facilitators trained.$profile$,
+    $profile$Alexandre Tsuk is the founder of Breathing Cold, a method combining breathwork and cold exposure. His work includes individual and group experiences as well as facilitator training, with Breathing Cold publicly reporting more than 7,000 people guided and almost 600 facilitators trained.$profile$,
     array[$profile$Founder, Breathing Cold$profile$, $profile$10+ years in the work$profile$, $profile$Breathing Cold publicly reports 7,000+ people guided and nearly 600 facilitators trained$profile$],
     null, true, true, $profile$https://breathingcoldbali.com/$profile$, $profile$https://www.instagram.com/breathingcoldbali/$profile$, null, null, 'draft', null
   ),
@@ -377,7 +377,7 @@ values
     $profile$Young Men’s Mentorship · Rites of Passage · Youth Development$profile$,
     null,
     $profile$Mentors boys and young men through challenge, reflection, community and meaningful rites-of-passage experiences.$profile$,
-    $profile$Aaron Binning is the founder and lead mentor of The Road, a Bali-based initiative supporting boys and young men through mentorship, group experiences, challenge and rites of passage. Before founding The Road, he spent five years as a social work and youth education working with at-risk youth. His approach is grounded in lived experience, conversation, responsibility, nature and healthy male community.$profile$,
+    $profile$Aaron Binning is the founder and lead mentor of The Road, an initiative supporting boys and young men through mentorship, group experiences, challenge and rites of passage. Before founding The Road, he spent five years as a social work and youth education working with at-risk youth. His approach is grounded in lived experience, conversation, responsibility, nature and healthy male community.$profile$,
     array[$profile$Founder & Lead Mentor, The Road$profile$, $profile$Five years working in social work and youth education with at-risk youth$profile$],
     null, true, true, $profile$https://theroadbali.com/$profile$, $profile$https://www.instagram.com/theroadbali/$profile$, null, null, 'draft', null
   ),

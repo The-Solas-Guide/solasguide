@@ -3,7 +3,7 @@ import { PractitionerInterestForm } from "@/components/enquiry/practitioner-inte
 
 export const metadata: Metadata = {
   title: "Express your interest",
-  description: "Introduce your Bali practice to The Solas Guide.",
+  description: "Introduce your practice to The Solas Guide.",
 };
 
 export default function PractitionerExpressionOfInterestPage() {

@@ -89,8 +89,8 @@ function validate(body: unknown): { data?: Submission; error?: string } {
   const experienceSummary = typeof answers.experienceSummary === "string" ? answers.experienceSummary.trim() : "";
   if (answers.formVersion !== 1) return { error: "Refresh the page and try again." };
   if (professionalRole.length < 2 || professionalRole.length > 120) return { error: "Add your professional role or practice." };
-  if (typeof relationship !== "string" || !allowedRelationships.has(relationship)) return { error: "Tell us about your relationship to Bali." };
-  if (typeof area !== "string" || !allowedAreas.has(area)) return { error: "Choose your primary area in Bali." };
+  if (typeof relationship !== "string" || !allowedRelationships.has(relationship)) return { error: "Tell us where you practise." };
+  if (typeof area !== "string" || !allowedAreas.has(area)) return { error: "Choose your primary area." }
   if (locationDetail.length > 200) return { error: "Shorten your location detail." };
 
   const practiceAreas = answers.practiceAreas;
