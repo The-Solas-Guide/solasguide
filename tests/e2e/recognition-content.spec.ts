@@ -14,34 +14,34 @@ test.describe("homepage recognition content", () => {
     ).toBeVisible();
     await expect(
       recognition.getByText(
-        "Every practitioner is independently reviewed before being recognised by The Solas Guide.",
+        "Every practitioner is reviewed before being recognised by The Solas Guide.",
         { exact: true },
       ),
     ).toBeVisible();
     await expect(
       recognition.getByText(
-        "We verify the claims we can: credentials, professional history, and contribution to practice. Editorial judgement decides whether someone should be recognised.",
+        "We look at professional standing, experience, training and contribution to practice, and verify the claims we publish where they can be independently corroborated.",
         { exact: true },
       ),
     ).toBeVisible();
     const processStatement = recognition.locator("p").filter({
-      hasText: "Recognition is not purchased.",
+      hasText: "Recognition cannot be purchased.",
     });
-    await expect(processStatement).toContainText("Recognition is not purchased.");
-    await expect(processStatement).toContainText("It is earned through a transparent review process.");
+    await expect(processStatement).toContainText("Recognition cannot be purchased.");
+    await expect(processStatement).toContainText("It is the result of our review and editorial judgement.");
 
     const standards = [
       [
         "Independent Review",
-        "We independently review the information that can be verified, then assess each application against our recognition framework.",
+        "We review professional history, training and the information that can be independently verified.",
       ],
       [
         "Editorial Profile",
-        "Every profile is written and maintained by Solas so the portrait stays independent, consistent, and clear.",
+        "Every profile is written and maintained by Solas to give readers a clear and consistent picture of the practitioner and their work.",
       ],
       [
         "Thoughtful Introductions",
-        "When you ask, we review your context and introduce the practitioner we believe is the strongest fit.",
+        "If you would like help choosing, tell us what you are looking for and we’ll suggest who we think may be worth speaking to.",
       ],
     ] as const;
 

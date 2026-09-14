@@ -1,15 +1,15 @@
 const standards = [
   {
     title: "Independent Review",
-    copy: "We independently review the information that can be verified, then assess each application against our recognition framework.",
+    copy: "We review professional history, training and the information that can be independently verified.",
   },
   {
     title: "Editorial Profile",
-    copy: "Every profile is written and maintained by Solas so the portrait stays independent, consistent, and clear.",
+    copy: "Every profile is written and maintained by Solas to give readers a clear and consistent picture of the practitioner and their work.",
   },
   {
     title: "Thoughtful Introductions",
-    copy: "When you ask, we review your context and introduce the practitioner we believe is the strongest fit.",
+    copy: "If you would like help choosing, tell us what you are looking for and we’ll suggest who we think may be worth speaking to.",
   },
 ] as const;
 
@@ -36,15 +36,15 @@ export function RegistryStandards() {
           data-reveal-delay="1"
         >
           <p className="text-base leading-7 text-foreground">
-            Every practitioner is independently reviewed before being recognised by The Solas Guide.
+            Every practitioner is reviewed before being recognised by The Solas Guide.
           </p>
           <p>
-            We verify the claims we can: credentials, professional history, and contribution to practice. Editorial judgement decides whether someone should be recognised.
+            We look at professional standing, experience, training and contribution to practice, and verify the claims we publish where they can be independently corroborated.
           </p>
           <p className="border-l border-accent pl-5 text-foreground">
-            Recognition is not purchased.
+            Recognition cannot be purchased.
             <br />
-            It is earned through a transparent review process.
+            It is the result of our review and editorial judgement.
           </p>
         </div>
       </div>

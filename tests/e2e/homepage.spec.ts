@@ -53,10 +53,17 @@ test.describe("homepage", () => {
     );
     await expect(
       page.getByText(
-        "The Solas Guide is an independent editorial guide. We verify the claims we can, then introduce trusted practitioners.",
+        "The Solas Guide is an independent editorial guide to exceptional wellness practitioners in Bali.",
         { exact: true },
       ),
     ).toBeVisible();
+    await expect(
+      page.getByText(
+        "We recognise practitioners through a careful review process, verify the claims we publish, and introduce their work to people looking for someone they can trust.",
+        { exact: true },
+      ),
+    ).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Not sure who to speak to?" })).toBeVisible();
     await expect(page.getByText("Organisations", { exact: true })).toBeVisible();
     await expect(page.getByText("Corporate Teams")).toHaveCount(0);
     await expect(page.getByRole("link", { name: "Apply for Recognition" }).first()).toHaveAttribute(
@@ -72,13 +79,13 @@ test.describe("homepage", () => {
     await expect(registry).toBeVisible();
     await expect(
       registry.getByText(
-        "Volume One brings together practitioners recognised for the quality of their work and professional standing.",
+        "Volume One brings together practitioners recognised for the quality of their work, depth of practice and professional standing.",
         { exact: true },
       ),
     ).toBeVisible();
     await expect(
       registry.getByText(
-        "Browse the Guide to explore their editorial profiles and decide who may be the right fit.",
+        "Browse the Guide to explore their work, experience and approach.",
         { exact: true },
       ),
     ).toBeVisible();

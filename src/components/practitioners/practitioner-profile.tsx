@@ -461,8 +461,9 @@ export function PractitionerProfile({
               Interested in speaking with {practitioner.name}?
             </h2>
             <p className="mt-5 max-w-xl text-sm leading-7 text-muted-foreground">
-              Tell us what you are hoping for. We will review your enquiry
-              personally and help you consider the most appropriate next step.
+              Tell us briefly what you are looking for.
+              We&apos;ll review your enquiry and come back to you personally
+              about the most appropriate next step.
             </p>
             <div className="mt-8">
               <Link

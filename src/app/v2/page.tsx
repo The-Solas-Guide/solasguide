@@ -22,13 +22,13 @@ const navLinks = [
 ];
 
 const audiences = [
-  ["Individuals", "Personal support from a practitioner you can trust."],
-  ["Couples & Families", "Thoughtful help when the right person matters."],
-  ["Retreat Organisers", "Practitioners and programmes you can stand behind."],
-  ["Hotels & Travel Advisors", "Considered introductions for guests and clients."],
+  ["Individuals", "Trusted support for your wellbeing, health and personal development."],
+  ["Couples & Families", "Finding the right person for the people who matter most."],
+  ["Retreat Organisers", "Building thoughtful programmes with trusted practitioners."],
+  ["Hotels & Travel Advisors", "Making considered introductions for guests and clients."],
   [
     "Organisations",
-    "Practitioners for leadership, wellbeing, and organisational programmes.",
+    "Finding practitioners for leadership, wellbeing and team programmes.",
   ],
 ] as const;
 
@@ -110,7 +110,10 @@ export default function HomePageV2() {
                   Wellness has grown rapidly. Trust hasn&apos;t always kept pace.
                 </h2>
                 <p className="mt-7 max-w-xl text-sm leading-7 text-muted-foreground">
-                  The Solas Guide is an independent editorial guide. We verify the claims we can, then introduce trusted practitioners.
+                  The Solas Guide is an independent editorial guide to exceptional wellness practitioners in Bali.
+                </p>
+                <p className="mt-4 max-w-xl text-sm leading-7 text-muted-foreground">
+                  We recognise practitioners through a careful review process, verify the claims we publish, and introduce their work to people looking for someone they can trust.
                 </p>
                 <div className="mt-7 space-y-2 border-l border-accent pl-5 text-sm leading-6">
                   <p>We don&apos;t rank practitioners.</p>
@@ -152,9 +155,12 @@ export default function HomePageV2() {
             <div className="pointer-events-none absolute inset-0 -z-10 bg-background/78" />
             <div className="relative mx-auto max-w-3xl px-6" data-reveal>
               <p className="review-label text-muted-foreground">Need help choosing?</p>
-              <h2 className="mt-5 font-display text-4xl leading-tight text-balance sm:text-5xl">Not sure who&apos;s the right fit?</h2>
+              <h2 className="mt-5 font-display text-4xl leading-tight text-balance sm:text-5xl">Not sure who to speak to?</h2>
               <p className="mx-auto mt-6 max-w-2xl text-sm leading-7 text-muted-foreground">
-                Tell us a little about what you need. We will review your enquiry personally and suggest who to consider.
+                Tell us a little about what you are looking for.
+              </p>
+              <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-muted-foreground">
+                We&apos;ll review your enquiry personally and suggest the practitioners we think may be worth considering.
               </p>
               <Link href={needHelpChoosing.href} className={cn(buttonVariants(), "mt-8 w-full sm:w-auto")}>
                 {needHelpChoosing.label} <ArrowRight />
@@ -168,10 +174,10 @@ export default function HomePageV2() {
                 <p className="review-label text-background/55">Professional enquiries</p>
                 <h2 className="mt-5 max-w-3xl font-display text-4xl leading-tight sm:text-5xl">Looking for something more tailored?</h2>
                 <p className="mt-6 max-w-3xl text-sm leading-7 text-background/70">
-                  Planning a retreat, leadership programme, private client experience, or sourcing practitioners for an organisation?
+                  Planning a retreat, leadership programme, private client experience or looking for practitioners for your organisation?
                 </p>
                 <p className="mt-4 max-w-3xl text-sm leading-7 text-background/70">
-                  We work with retreat organisers, hotels, travel advisors, and organisations to identify practitioners, shape programmes, and make thoughtful introductions.
+                  Solas works with retreat organisers, hotels, travel advisors and organisations to identify practitioners, shape programmes and make thoughtful introductions.
                 </p>
               </div>
               <Link href={makeAnEnquiry.href} className={cn(buttonVariants(), "w-full border-background bg-background text-foreground hover:bg-background/85 sm:w-auto")}>
@@ -186,10 +192,10 @@ export default function HomePageV2() {
                 <p className="review-label text-muted-foreground">Practitioner applications</p>
                 <h2 className="mt-5 max-w-2xl font-display text-4xl leading-tight sm:text-5xl">Recognition is by application.</h2>
                 <p className="mt-6 max-w-3xl text-sm leading-7 text-muted-foreground">
-                  Recognition in The Solas Guide is earned through an independent review process.
+                  Recognition in The Solas Guide is earned through an independent review and editorial process.
                 </p>
                 <p className="mt-4 max-w-3xl text-sm leading-7 text-muted-foreground">
-                  Successful applicants become part of an editorial guide committed to professional standards and long-term credibility.
+                  We look for practitioners with depth of practice, professional standing and work that deserves to be better known.
                 </p>
                 <p className="mt-4 text-sm font-semibold">Applications are currently open for the next recognition round.</p>
               </div>

@@ -246,6 +246,9 @@ test.describe("published practitioner directory", () => {
     await expect(
       page.getByRole("heading", { name: "Interested in speaking with Kartika Alexandra?" }),
     ).toBeVisible();
+    await expect(
+      page.getByText("Tell us briefly what you are looking for.", { exact: false }),
+    ).toBeVisible();
     await expect(page.getByRole("link", { name: "Ask Solas" }).first()).toHaveAttribute(
       "href",
       "/find-a-match?practitioner=Kartika%20Alexandra",
