@@ -26,19 +26,42 @@ function legacyAnswerSummary(answers: Record<string, unknown>) {
   ].join("\n");
 }
 
-export function customerAnswerSummary(answers: Record<string, unknown>) {
-  if (answers.formVersion !== CUSTOMER_QUESTIONNAIRE_FORM_VERSION) return legacyAnswerSummary(answers);
-
+function structuredAnswerSummary(
+  answers: Record<string, unknown>,
+  titles: Record<CustomerQuestionKey | "q5", string>,
+) {
   const label = (question: CustomerQuestionKey, value: unknown) => Array.isArray(value)
     ? value.map((item) => typeof item === "string" ? customerQuestionnaireLabel(question, item) : String(item)).join(", ") || "Not provided"
     : typeof value === "string" && value ? customerQuestionnaireLabel(question, value) : "Not provided";
   return [
-    `What brings you to The Solas Guide today?: ${label("q1", answers.q1)}`,
-    `Who are you looking for?: ${label("q2", answers.q2)}`,
-    `What are you hoping this helps with?: ${label("q3", answers.q3)}`,
-    `When are you hoping to connect?: ${label("q4", answers.q4)}`,
-    `Is there anything else you'd like us to know?: ${typeof answers.q5 === "string" && answers.q5 ? answers.q5 : "Not provided"}`,
+    `${titles.q1}: ${label("q1", answers.q1)}`,
+    `${titles.q2}: ${label("q2", answers.q2)}`,
+    `${titles.q3}: ${label("q3", answers.q3)}`,
+    `${titles.q4}: ${label("q4", answers.q4)}`,
+    `${titles.q5}: ${typeof answers.q5 === "string" && answers.q5 ? answers.q5 : "Not provided"}`,
   ].join("\n");
+}
+
+export function customerAnswerSummary(answers: Record<string, unknown>) {
+  if (answers.formVersion === CUSTOMER_QUESTIONNAIRE_FORM_VERSION) {
+    return structuredAnswerSummary(answers, {
+      q1: "Who are you looking for support for?",
+      q2: "What would you most like support with?",
+      q3: "Is there anything important about the kind of person or approach you’re looking for?",
+      q4: "When would you ideally like to connect?",
+      q5: "Anything else you’d like us to know?",
+    });
+  }
+  if (answers.formVersion === 3) {
+    return structuredAnswerSummary(answers, {
+      q1: "What brings you to The Solas Guide today?",
+      q2: "Who are you looking for?",
+      q3: "What are you hoping this helps with?",
+      q4: "When are you hoping to connect?",
+      q5: "Is there anything else you'd like us to know?",
+    });
+  }
+  return legacyAnswerSummary(answers);
 }
 
 export async function processCustomerEnquiryDelivery(supabase: SupabaseClient<Database>, enquiryId: string) {

@@ -25,23 +25,29 @@ type Choice = { value: string; label: string };
 type Draft = {
   submissionToken: string;
   q1: string;
-  q2: string;
+  q2: string[];
   q3: string[];
   q4: string;
   q5: string;
 };
 
-const steps: { key: JourneyStep; eyebrow: string; title: string }[] = [
+const steps: { key: JourneyStep; eyebrow: string; title: string; description?: string }[] = [
   ...customerQuestionnaireQuestions.map((question, index) => ({
     key: question.key,
     eyebrow: `Question ${index + 1}`,
     title: question.title,
+    description: "help" in question ? question.help : undefined,
   })),
-  { key: "contact", eyebrow: "Your details", title: "How can we contact you?" },
-  { key: "review", eyebrow: "Review", title: "Check your enquiry before sending it." },
+  { key: "contact", eyebrow: "Your details", title: "Where should we send our suggestions?" },
+  {
+    key: "review",
+    eyebrow: "Review",
+    title: "Does everything look right?",
+    description: "Review the details below before sending your enquiry.",
+  },
 ];
-const DRAFT_KEY = "solas-customer-enquiry-draft-v3";
-const LEGACY_DRAFT_KEY = "solas-customer-enquiry-draft-v2";
+const DRAFT_KEY = "solas-customer-enquiry-draft-v4";
+const LEGACY_DRAFT_KEYS = ["solas-customer-enquiry-draft-v3", "solas-customer-enquiry-draft-v2"];
 const TAB_ID_KEY = "solas-customer-enquiry-tab-id";
 const TAB_NAME_PREFIX = "solas-customer-enquiry:";
 const CHANGED_SUBMISSION_ERROR = "This enquiry was already saved with different details. Please start a new enquiry.";
@@ -59,7 +65,7 @@ function emptyDraft(): Draft {
   return {
     submissionToken: createSubmissionToken(),
     q1: "",
-    q2: "",
+    q2: [],
     q3: [],
     q4: "",
     q5: "",
@@ -71,7 +77,8 @@ function isDraft(value: unknown): value is Draft {
   const draft = value as Partial<Draft>;
   return typeof draft.submissionToken === "string" &&
     typeof draft.q1 === "string" &&
-    typeof draft.q2 === "string" &&
+    Array.isArray(draft.q2) &&
+    draft.q2.every((item) => typeof item === "string") &&
     Array.isArray(draft.q3) &&
     draft.q3.every((item) => typeof item === "string") &&
     typeof draft.q4 === "string" &&
@@ -83,14 +90,14 @@ function initialDraft(): Draft {
     return {
       submissionToken: "00000000-0000-4000-8000-000000000000",
       q1: "",
-      q2: "",
+      q2: [],
       q3: [],
       q4: "",
       q5: "",
     };
   }
   try {
-    localStorage.removeItem(LEGACY_DRAFT_KEY);
+    for (const key of LEGACY_DRAFT_KEYS) localStorage.removeItem(key);
     const storedTabId = sessionStorage.getItem(TAB_ID_KEY);
     const windowTabId = window.name.startsWith(TAB_NAME_PREFIX)
       ? window.name.slice(TAB_NAME_PREFIX.length)
@@ -215,26 +222,25 @@ export function CustomerEnquiryForm({
   const set = <K extends keyof Draft>(key: K, value: Draft[K]) =>
     setDraft((current) => ({ ...current, [key]: value }));
 
-  function toggleQuestion(value: string) {
-    const current = draft.q3;
+  function toggleQuestion(key: "q2" | "q3", value: string) {
+    const current = draft[key];
     setError("");
-    set("q3", current.includes(value) ? current.filter((item) => item !== value) : [...current, value]);
+    set(key, current.includes(value) ? current.filter((item) => item !== value) : [...current, value]);
   }
 
-  function selectQuestion(key: "q1" | "q2" | "q4", value: string) {
+  function selectQuestion(key: "q1" | "q4", value: string) {
     setError("");
     set(key, value);
   }
 
   function validateCurrent() {
-    if (step === "q1" && !draft.q1) return "Choose what brings you to The Solas Guide today.";
-    if (step === "q2" && !draft.q2) return "Choose who you are looking for.";
-    if (step === "q3" && draft.q3.length < 1) return "Choose at least one area.";
-    if (step === "q4" && !draft.q4) return "Choose when you hope to connect.";
+    if (step === "q1" && !draft.q1) return "Choose who you are looking for support for.";
+    if (step === "q2" && draft.q2.length < 1) return "Choose at least one area.";
+    if (step === "q4" && !draft.q4) return "Choose when you would ideally like to connect.";
     if (step === "contact") {
       if (!name.trim()) return "Enter your name.";
       if (!/^\S+@\S+\.\S+$/.test(email.trim())) return "Enter a valid email address.";
-      if (!isValidWhatsappNumber(whatsapp.trim())) return "Add a valid WhatsApp number.";
+      if (whatsapp.trim() && !isValidWhatsappNumber(whatsapp.trim())) return "Add a valid WhatsApp number.";
     }
     return "";
   }
@@ -342,13 +348,13 @@ export function CustomerEnquiryForm({
       <main className="flex min-h-screen items-center overflow-x-hidden bg-muted/40 px-5 py-16">
         <section className="mx-auto w-full max-w-2xl rounded-md border border-border bg-card p-8 md:p-12" role="status">
           <Check className="size-8 text-accent" aria-hidden="true" />
-          <p className="mt-8 text-xs uppercase tracking-[0.18em] text-muted-foreground">Enquiry received</p>
-          <h1 ref={headingRef} tabIndex={-1} className="mt-4 font-display text-4xl leading-tight outline-none md:text-5xl">Thank you. We will take it from here.</h1>
-          <p className="mt-6 max-w-xl leading-7 text-muted-foreground">
-            We will review what you shared personally and respond within two business days. If there is a relevant direction, we will explain it and help facilitate the right introductions.
+          <h1 ref={headingRef} tabIndex={-1} className="mt-8 font-display text-4xl leading-tight outline-none md:text-5xl">Thank you.</h1>
+          <p className="mt-6 max-w-xl leading-7 text-muted-foreground">We’ve received your enquiry.</p>
+          <p className="mt-4 max-w-xl leading-7 text-muted-foreground">
+            Someone from Solas will review what you’ve shared and come back to you personally with the practitioners we think may be worth considering.
           </p>
           <Button asChild className="mt-8 w-full sm:w-auto">
-            <Link href="/">Return to The Solas Guide</Link>
+            <Link href="/">Back to the guide</Link>
           </Button>
         </section>
       </main>
@@ -356,12 +362,12 @@ export function CustomerEnquiryForm({
   }
 
   const reviewRows = [
-    { label: "What brings you here", value: labelFor(draft.q1, customerQuestionnaireOptions.q1), edit: "q1" as JourneyStep },
-    { label: "Who you are looking for", value: labelFor(draft.q2, customerQuestionnaireOptions.q2), edit: "q2" as JourneyStep },
-    { label: "What you hope this helps with", value: labels(draft.q3, customerQuestionnaireOptions.q3), edit: "q3" as JourneyStep },
-    { label: "When you hope to connect", value: labelFor(draft.q4, customerQuestionnaireOptions.q4), edit: "q4" as JourneyStep },
+    { label: "Who you’re looking for", value: labelFor(draft.q1, customerQuestionnaireOptions.q1), edit: "q1" as JourneyStep },
+    { label: "What you’d like support with", value: labels(draft.q2, customerQuestionnaireOptions.q2), edit: "q2" as JourneyStep },
+    { label: "What matters to you", value: labels(draft.q3, customerQuestionnaireOptions.q3), edit: "q3" as JourneyStep },
+    { label: "When you’d like to connect", value: labelFor(draft.q4, customerQuestionnaireOptions.q4), edit: "q4" as JourneyStep },
     { label: "Anything else", value: applyEnquiryContext(draft.q5, contextNote) || "Nothing added", edit: "q5" as JourneyStep },
-    { label: "Contact details", value: `${name} — ${email} — WhatsApp: ${whatsapp}`, edit: "contact" as JourneyStep },
+    { label: "Your details", value: [name, email, whatsapp.trim() ? `WhatsApp: ${whatsapp}` : null].filter(Boolean).join(" — "), edit: "contact" as JourneyStep },
   ];
 
   return (
@@ -418,9 +424,14 @@ export function CustomerEnquiryForm({
               />
               <div className="absolute inset-0 bg-foreground/45" />
               <div className="relative flex min-h-56 flex-col justify-end p-5 sm:min-h-64 sm:p-6 md:min-h-full md:justify-start md:p-8">
-                <p className="text-[10px] uppercase tracking-[0.2em] text-background/65">Your next step</p>
-                <p className="mt-4 max-w-xs font-display text-2xl leading-tight text-balance sm:mt-5 sm:text-3xl md:text-4xl">
-                  Start with what matters to you.
+                <p className="font-display text-2xl leading-tight text-balance sm:text-3xl md:text-4xl">
+                  Need help choosing?
+                </p>
+                <p className="mt-4 max-w-xs text-sm leading-6 text-background/85 sm:mt-5 sm:text-base">
+                  Tell us a little about what you’re looking for.
+                </p>
+                <p className="mt-3 max-w-xs text-sm leading-6 text-background/75 sm:text-base">
+                  We’ll review your enquiry personally and suggest the practitioners we think may be worth considering.
                 </p>
               </div>
             </aside>
@@ -433,6 +444,9 @@ export function CustomerEnquiryForm({
               >
                 {copy.title}
               </h1>
+              {copy.description && (
+                <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground">{copy.description}</p>
+              )}
               {error && (
                 <div ref={errorRef} tabIndex={-1} className="outline-none">
                   <FormFeedback
@@ -463,25 +477,22 @@ export function CustomerEnquiryForm({
                 {step === "q2" && (
                   <ChoiceGrid
                     choices={customerQuestionnaireOptions.q2}
-                    selected={draft.q2 ? [draft.q2] : []}
-                    onToggle={(value) => selectQuestion("q2", value)}
-                    selectionType="radio"
+                    selected={draft.q2}
+                    onToggle={(value) => toggleQuestion("q2", value)}
+                    selectionType="checkbox"
                     name="q2"
                     label={customerQuestionnaireQuestions[1].title}
                   />
                 )}
                 {step === "q3" && (
-                  <>
-                    <p className="mb-4 text-sm text-muted-foreground">Select all that apply.</p>
-                    <ChoiceGrid
-                      choices={customerQuestionnaireOptions.q3}
-                      selected={draft.q3}
-                      onToggle={toggleQuestion}
-                      selectionType="checkbox"
-                      name="q3"
-                      label={customerQuestionnaireQuestions[2].title}
-                    />
-                  </>
+                  <ChoiceGrid
+                    choices={customerQuestionnaireOptions.q3}
+                    selected={draft.q3}
+                    onToggle={(value) => toggleQuestion("q3", value)}
+                    selectionType="checkbox"
+                    name="q3"
+                    label={customerQuestionnaireQuestions[2].title}
+                  />
                 )}
                 {step === "q4" && (
                   <ChoiceGrid
@@ -496,14 +507,15 @@ export function CustomerEnquiryForm({
                 {step === "q5" && (
                   <div>
                     <Label htmlFor="q5">
-                      Anything else <span className="font-normal text-muted-foreground">(optional)</span>
+                      Anything else you’d like us to know?{" "}
+                      <span className="font-normal text-muted-foreground">(optional)</span>
                     </Label>
                     <Textarea
                       id="q5"
                       maxLength={3_000}
                       value={applyEnquiryContext(draft.q5, contextNote)}
                       onChange={(event) => set("q5", event.target.value)}
-                      placeholder="Share anything else that would help us understand your enquiry."
+                      placeholder="For example, what is happening, what you have tried before, or anything that would help us make a thoughtful recommendation."
                       className="mt-3 min-h-40 bg-card"
                     />
                   </div>
@@ -511,7 +523,7 @@ export function CustomerEnquiryForm({
                 {step === "contact" && (
                   <div className="space-y-5">
                     <div>
-                      <Label htmlFor="name">Name</Label>
+                      <Label htmlFor="name">Name *</Label>
                       <Input
                         id="name"
                         autoComplete="name"
@@ -523,7 +535,7 @@ export function CustomerEnquiryForm({
                       />
                     </div>
                     <div>
-                      <Label htmlFor="email">Email</Label>
+                      <Label htmlFor="email">Email *</Label>
                       <Input
                         id="email"
                         type="email"
@@ -536,17 +548,18 @@ export function CustomerEnquiryForm({
                       />
                     </div>
                     <div>
-                      <Label htmlFor="whatsapp">WhatsApp</Label>
+                      <Label htmlFor="whatsapp">
+                        WhatsApp <span className="font-normal text-muted-foreground">(optional)</span>
+                      </Label>
                       <Input
                         id="whatsapp"
                         type="tel"
                         autoComplete="tel"
-                        required
-                        aria-required="true"
                         value={whatsapp}
                         onChange={(event) => setWhatsapp(event.target.value)}
                         className="mt-2 bg-card"
                       />
+                      <p className="mt-2 text-sm text-muted-foreground">Please include your country code.</p>
                     </div>
                   </div>
                 )}
@@ -611,7 +624,7 @@ export function CustomerEnquiryForm({
                 )}
                 {step === "review" ? (
                   <Button type="button" onClick={submit} disabled={submitting} className="w-full sm:w-auto">
-                    {submitting ? "Sending…" : "Send enquiry"}
+                    {submitting ? "Sending…" : "Send to Solas"}
                     <ArrowRight />
                   </Button>
                 ) : (

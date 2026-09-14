@@ -73,11 +73,11 @@ const customerSubmission = {
   contactPreference: "whatsapp",
   consentConfirmed: true,
   answers: {
-    formVersion: 3,
-    q1: "personal-wellbeing",
-    q2: "just-for-me",
-    q3: ["stress"],
-    q4: "planning-ahead",
+    formVersion: 4,
+    q1: "just-me",
+    q2: ["sleep"],
+    q3: ["online"],
+    q4: "im-planning-ahead",
     q5: "",
   },
 };
@@ -120,11 +120,11 @@ describe("form submission workflow startup", () => {
       contactPreference: "whatsapp",
       consentConfirmed: true,
       answers: {
-        formVersion: 3,
-        q1: "personal-wellbeing",
-        q2: "just-for-me",
-        q3: ["stress"],
-        q4: "planning-ahead",
+        formVersion: 4,
+        q1: "just-me",
+        q2: ["sleep"],
+        q3: ["online"],
+        q4: "im-planning-ahead",
         q5: "",
       },
     }));
@@ -179,7 +179,7 @@ describe("form submission workflow startup", () => {
     ["name", { fullName: "Edited Maya" }],
     ["phone", { phone: "+1 416 555 0199" }],
     ["email", { email: "edited@example.test" }],
-    ["answers", { answers: { ...customerSubmission.answers, q1: "relationships" } }],
+    ["answers", { answers: { ...customerSubmission.answers, q1: "my-partner" } }],
   ])("rejects a retry with edited %s content", async (_field, editedContent) => {
     mocks.createClient.mockReturnValue(duplicateThenExisting(savedCustomerSubmission));
     const response = await submitCustomerEnquiry(request("/api/enquiries/customer", {

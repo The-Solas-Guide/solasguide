@@ -38,11 +38,11 @@ describe("private operational editor", () => {
   });
 
   it("shows readable questionnaire labels without changing stored answers", () => {
-    render(<OperationalEditor kind="customer-enquiries" record={{ ...record, questionnaire_answers: { formVersion: 3, q1: "personal-wellbeing", q3: ["stress", "sleep"] } }} />);
-    expect(screen.getByText("What brings you to The Solas Guide today?")).toBeTruthy();
-    expect(screen.getByText("Personal wellbeing")).toBeTruthy();
-    expect(screen.getByText("Stress")).toBeTruthy();
+    render(<OperationalEditor kind="customer-enquiries" record={{ ...record, questionnaire_answers: { formVersion: 4, q1: "just-me", q2: ["sleep"], q3: ["online"] } }} />);
+    expect(screen.getByText("Who are you looking for support for?")).toBeTruthy();
+    expect(screen.getByText("Just me")).toBeTruthy();
     expect(screen.getByText("Sleep")).toBeTruthy();
+    expect(screen.getByText("Online")).toBeTruthy();
   });
 
   it("retains notes and reports failure when a save fails", async () => {

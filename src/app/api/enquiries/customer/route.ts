@@ -54,7 +54,8 @@ function validate(body: unknown): { data?: Submission; error?: string } {
   }
   if (!fullName || fullName.length > 200) return { error: "Enter your name." };
   if (!/^\S+@\S+\.\S+$/.test(email) || email.length > 320) return { error: "Enter a valid email address." };
-  if (data.contactPreference !== "whatsapp" || !isValidWhatsappNumber(phone)) return { error: "Add a valid WhatsApp number." };
+  if (data.contactPreference !== "whatsapp") return { error: "Add a valid WhatsApp number." };
+  if (phone && !isValidWhatsappNumber(phone)) return { error: "Add a valid WhatsApp number." };
   if (data.consentConfirmed !== true) return { error: "Confirm that we may respond to your enquiry." };
 
   const questionnaire = validateCustomerQuestionnaire(data.answers);
@@ -87,13 +88,14 @@ function matchesQuestionnaire(existing: unknown, expected: CustomerQuestionnaire
   if (!isRecord(existing)) return false;
   const expectedKeys = ["formVersion", "q1", "q2", "q3", "q4", "q5"];
   if (Object.keys(existing).length !== expectedKeys.length || expectedKeys.some((key) => !(key in existing))) return false;
-  const existingQ3 = existing.q3;
+  const sameAnswers = (left: unknown, right: readonly string[]) =>
+    Array.isArray(left) &&
+    left.length === right.length &&
+    left.every((value, index) => value === right[index]);
   return existing.formVersion === expected.formVersion &&
     existing.q1 === expected.q1 &&
-    existing.q2 === expected.q2 &&
-    Array.isArray(existingQ3) &&
-    existingQ3.length === expected.q3.length &&
-    existingQ3.every((value, index) => value === expected.q3[index]) &&
+    sameAnswers(existing.q2, expected.q2) &&
+    sameAnswers(existing.q3, expected.q3) &&
     existing.q4 === expected.q4 &&
     existing.q5 === expected.q5;
 }

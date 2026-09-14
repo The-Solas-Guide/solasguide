@@ -51,6 +51,23 @@ describe("customer enquiry delivery summaries", () => {
       "Is there anything else you'd like us to know?: Current context.",
     ].join("\n"));
   });
+
+  it("labels v4 answers for operations", () => {
+    expect(customerAnswerSummary({
+      formVersion: 4,
+      q1: "just-me",
+      q2: ["relationships", "sleep"],
+      q3: ["online"],
+      q4: "im-planning-ahead",
+      q5: "Current context.",
+    })).toBe([
+      "Who are you looking for support for?: Just me",
+      "What would you most like support with?: Relationships, Sleep",
+      "Is there anything important about the kind of person or approach you’re looking for?: Online",
+      "When would you ideally like to connect?: I’m planning ahead",
+      "Anything else you’d like us to know?: Current context.",
+    ].join("\n"));
+  });
 });
 
 

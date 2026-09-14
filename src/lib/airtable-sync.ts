@@ -3,7 +3,6 @@ import { FatalError, RetryableError, getStepMetadata } from "workflow";
 import {
   CUSTOMER_QUESTIONNAIRE_FORM_VERSION,
   customerQuestionnaireLabel,
-  customerQuestionnaireOptions,
 } from "@/lib/enquiries/customer-questionnaire";
 import type { Database, Json } from "@/types/database";
 
@@ -116,7 +115,16 @@ function contactPreference(value: string) {
 
 function customerFields(row: Database["public"]["Tables"]["customer_enquiries"]["Row"], isTestRecord: boolean) {
   const answers = row.questionnaire_answers;
-  const isV3 = answerNumber(answers, "formVersion") === CUSTOMER_QUESTIONNAIRE_FORM_VERSION;
+  const formVersion = answerNumber(answers, "formVersion");
+  const isStructuredQuestionnaire = formVersion === 3 || formVersion === CUSTOMER_QUESTIONNAIRE_FORM_VERSION;
+
+  function questionnaireValue(question: "q1" | "q2" | "q3" | "q4") {
+    const values = answerStrings(answers, question)
+      ?? (answerString(answers, question) ? [answerString(answers, question)!] : undefined);
+    if (!values) return undefined;
+    const labelled = values.map((item) => customerQuestionnaireLabel(question, item));
+    return question === "q1" || question === "q4" ? labelled[0] : labelled.join("\n");
+  }
   const groupSize = answerString(answers, "groupSize");
   const groupSizeNumber = groupSize && /^\d+$/.test(groupSize) ? Number(groupSize) : undefined;
   const fields = AIRTABLE.customer_enquiry.fields;
@@ -193,19 +201,11 @@ function customerFields(row: Database["public"]["Tables"]["customer_enquiries"][
       unsure: "Unsure",
       discuss: "Discuss",
     }),
-    [fields.reasonForEnquiry]: isV3
-      ? label(answerString(answers, "q1"), Object.fromEntries(customerQuestionnaireOptions.q1.map((option) => [option.value, option.label])))
-      : undefined,
-    [fields.lookingFor]: isV3
-      ? label(answerString(answers, "q2"), Object.fromEntries(customerQuestionnaireOptions.q2.map((option) => [option.value, option.label])))
-      : undefined,
-    [fields.supportAreas]: isV3
-      ? answerStrings(answers, "q3")?.map((item) => customerQuestionnaireLabel("q3", item)).join("\n")
-      : undefined,
-    [fields.connectionTiming]: isV3
-      ? label(answerString(answers, "q4"), Object.fromEntries(customerQuestionnaireOptions.q4.map((option) => [option.value, option.label])))
-      : undefined,
-    [fields.additionalContext]: isV3 ? answerString(answers, "q5") : answerString(answers, "notes"),
+    [fields.reasonForEnquiry]: isStructuredQuestionnaire ? questionnaireValue("q1") : undefined,
+    [fields.lookingFor]: isStructuredQuestionnaire ? questionnaireValue("q2") : undefined,
+    [fields.supportAreas]: isStructuredQuestionnaire ? questionnaireValue("q3") : undefined,
+    [fields.connectionTiming]: isStructuredQuestionnaire ? questionnaireValue("q4") : undefined,
+    [fields.additionalContext]: isStructuredQuestionnaire ? answerString(answers, "q5") : answerString(answers, "notes"),
     [fields.testRecord]: isTestRecord,
   });
 }
