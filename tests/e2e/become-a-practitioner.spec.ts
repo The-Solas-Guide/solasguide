@@ -26,6 +26,13 @@ test("submits and reviews a practitioner expression of interest", async ({ page 
   });
 
   await page.goto("/become-a-practitioner");
+  await expect(page.getByText("For practitioners across Southeast Asia")).toBeVisible();
+  await expect(
+    page.getByText(
+      "The Solas Guide is building a considered network of practitioners and experiences across Southeast Asia. Share a short introduction so we can understand your work and how to reach you.",
+      { exact: true },
+    ),
+  ).toBeVisible();
   await page.getByRole("link", { name: "Express your interest" }).first().click();
   await expect(page).toHaveURL(/\/become-a-practitioner\/express-interest$/);
 
@@ -153,7 +160,7 @@ test("recovers from a submission token conflict", async ({ page }) => {
   await page.getByRole("button", { name: "Send expression of interest" }).click();
   await page.getByRole("button", { name: "Start a new expression" }).click();
 
-  await expect(page.getByRole("heading", { name: "Tell us about your work in Bali." })).toBeFocused();
+  await expect(page.getByRole("heading", { name: "Tell us about your work." })).toBeFocused();
   await expect(page.getByLabel("Professional role or practice")).toHaveValue("");
   const replacementToken = await page.evaluate(() =>
     JSON.parse(localStorage.getItem("solas-practitioner-interest-draft-v1") || "null").draft.submissionToken,
