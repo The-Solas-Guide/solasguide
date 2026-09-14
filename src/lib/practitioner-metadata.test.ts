@@ -20,6 +20,8 @@ const basePractitioner: Practitioner = {
   instagramUrl: "https://www.instagram.com/kartikaalexandra/",
   offersInPerson: true,
   offersOnline: true,
+  searchableLocationNames: ["Bali"],
+  searchableLocationSlugs: ["bali"],
   terms: [
     {
       id: "area-1",
@@ -32,8 +34,8 @@ const basePractitioner: Practitioner = {
     {
       id: "location-1",
       type: "location",
-      name: "Bali",
-      slug: "bali",
+      name: "Southeast Asia",
+      slug: "southeast-asia",
       sortOrder: 10,
       displayOrder: 1,
     },
@@ -148,12 +150,12 @@ describe("public practitioner metadata", () => {
       alternates: { canonical: "https://guide.example.test/practitioners/areas/bali" },
       robots: { index: true, follow: true },
     });
-    expect(getDiscoveryMetadata("location", { name: "Bali", slug: "bali" })).toMatchObject({
-      title: "Bali",
+    expect(getDiscoveryMetadata("location", { name: "Southeast Asia", slug: "southeast-asia" })).toMatchObject({
+      title: "Southeast Asia",
       description:
-        "Explore practitioners whose published profiles include this location.",
+        "Explore practitioners whose published profiles include this continent.",
       alternates: {
-        canonical: "https://guide.example.test/practitioners/locations/bali",
+        canonical: "https://guide.example.test/practitioners/locations/southeast-asia",
       },
     });
   });

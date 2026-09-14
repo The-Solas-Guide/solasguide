@@ -27,6 +27,10 @@ import {
   validatePortraitFile,
   type TaxonomyRow,
 } from "@/lib/admin/practitioner-cms";
+import {
+  derivePublicContinents,
+  formatPublicContinents,
+} from "@/lib/location-continents";
 import { portraitObjectPosition } from "@/lib/practitioners";
 import {
   archivePractitioner,
@@ -344,6 +348,11 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
         !term.archived_at,
     ),
   );
+  const selectedLocationSlugs = terms
+    .filter((term) => term.type === "location" && selectedTerms.has(term.id))
+    .map((term) => term.slug)
+    .filter((slug): slug is string => typeof slug === "string" && slug.length > 0);
+  const publicContinentPreview = derivePublicContinents(selectedLocationSlugs);
   const publicationRequirements: PractitionerPublicationRequirement[] = [
     { id: "summary", label: "Add a summary", complete: Boolean(summaryValue.trim()) },
     { id: "about", label: "Add about text", complete: Boolean(aboutValue.trim()) },
@@ -672,6 +681,17 @@ export function PractitionerEditor({ record, terms, isNew = false }: Props) {
                     No practice areas match your search.
                   </p>
                 )}
+                <p className="text-sm leading-6 text-muted-foreground">
+                  Public continents:{" "}
+                  {formatPublicContinents(publicContinentPreview.continents) ??
+                    "None yet. Visitors will not see the specific location tags."}
+                </p>
+                {publicContinentPreview.unmapped.length > 0 ? (
+                  <p className="text-sm text-destructive" role="status">
+                    Unmapped location tags stay hidden on the public site:{" "}
+                    {publicContinentPreview.unmapped.join(", ")}.
+                  </p>
+                ) : null}
                 {fieldErrors.location && (
                   <p id="location-error" className="text-sm text-destructive" role="alert">
                     {fieldErrors.location}

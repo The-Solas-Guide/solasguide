@@ -24,6 +24,8 @@ test.describe("published practitioner directory", () => {
     await expect(cards(page).getByRole("heading", { level: 2, name: "Kartika Alexandra" })).toBeVisible();
     await expect(cards(page).getByRole("heading", { level: 2, name: "Sandra Echemendia" })).toBeVisible();
     await expect(cards(page).getByRole("heading", { level: 2, name: "Indri Hapsari" })).toBeVisible();
+    await expect(page.locator("main ul li article").getByText("Southeast Asia").first()).toBeVisible();
+    await expect(page.locator("main ul li article").getByText("Bali", { exact: true })).toHaveCount(0);
 
     for (const image of await cards(page).locator("img").all()) {
       await expect(image).toBeVisible();
@@ -48,6 +50,10 @@ test.describe("published practitioner directory", () => {
     await search.fill("strategy");
     await expect(cards(page)).toHaveCount(1);
     await expect(cards(page).getByRole("heading", { name: "Sandra Echemendia" })).toBeVisible();
+
+    await search.fill("Bali");
+    await expect(cards(page)).toHaveCount(3);
+    await expect(page.locator("main ul li article").getByText("Bali", { exact: true })).toHaveCount(0);
   });
 
   test("synchronises search in the URL and restores it after refresh", async ({ page }) => {
@@ -70,7 +76,7 @@ test.describe("published practitioner directory", () => {
       ["Areas of support", "Trauma & nervous system", "Kartika Alexandra"],
       ["Approach", "Coaching", "Sandra Echemendia"],
       ["Works with", "Groups", "Indri Hapsari"],
-      ["Location", "International", "Sandra Echemendia"],
+      ["Continent", "International", "Sandra Echemendia"],
       ["In-person or online", "Online", ""],
       ["Languages", "English", ""],
     ] as const;
@@ -92,6 +98,16 @@ test.describe("published practitioner directory", () => {
     }
   });
 
+  test("keeps a hidden Bali country filter working without labelling cards", async ({
+    page,
+  }) => {
+    await page.goto("/practitioners?locations=bali");
+
+    await expect(cards(page)).toHaveCount(3);
+    await expect(page.locator("main ul li article").getByText("Bali", { exact: true })).toHaveCount(0);
+    await expect(page.getByRole("heading", { name: "Kartika Alexandra" })).toBeVisible();
+  });
+
   test("writes stable repeated slug parameters for combined filters", async ({ page }) => {
     await page.goto("/practitioners");
     await page.getByRole("button", { name: /Filters/ }).click();
@@ -100,7 +116,7 @@ test.describe("published practitioner directory", () => {
     await dialog.getByLabel("Areas of support", { exact: true }).selectOption({
       label: "Leadership & work",
     });
-    await dialog.getByLabel("Location", { exact: true }).selectOption({
+    await dialog.getByLabel("Continent", { exact: true }).selectOption({
       label: "International",
     });
     await dialog.getByRole("button", { name: /Show .* results/ }).click();
@@ -306,7 +322,7 @@ test.describe("practitioner taxonomy discovery pages", () => {
     ).toBeVisible();
     await expect(
       page.getByText(
-        "Explore practitioners whose published profiles include this location.",
+        "Explore practitioners whose published profiles include this continent.",
         { exact: true },
       ),
     ).toBeVisible();
@@ -325,15 +341,16 @@ test.describe("practitioner taxonomy discovery pages", () => {
       "href",
       "/practitioners/areas/trauma-and-nervous-system",
     );
-    await expect(page.getByRole("link", { name: "Bali" })).toHaveAttribute(
+    await expect(page.getByRole("link", { name: "Southeast Asia" })).toHaveAttribute(
       "href",
-      "/practitioners/locations/bali",
+      "/practitioners/locations/southeast-asia",
     );
+    await expect(page.getByRole("link", { name: "Bali" })).toHaveCount(0);
   });
 
   test("links active directory taxonomy summaries to discovery pages", async ({ page }) => {
     await page.goto(
-      "/practitioners?areas=trauma-and-nervous-system&locations=bali",
+      "/practitioners?areas=trauma-and-nervous-system&locations=southeast-asia",
     );
 
     await expect(
@@ -343,8 +360,8 @@ test.describe("practitioner taxonomy discovery pages", () => {
       "/practitioners/areas/trauma-and-nervous-system",
     );
     await expect(
-      page.getByRole("link", { name: "Explore Bali" }),
-    ).toHaveAttribute("href", "/practitioners/locations/bali");
+      page.getByRole("link", { name: "Explore Southeast Asia" }),
+    ).toHaveAttribute("href", "/practitioners/locations/southeast-asia");
   });
 
   test("returns not found for missing and inactive taxonomy slugs", async ({ page }) => {
@@ -357,6 +374,8 @@ test.describe("practitioner taxonomy discovery pages", () => {
       "/practitioners/locations/inactive-location",
     );
     expect(inactiveLocation?.status()).toBe(404);
+    const specificLocation = await page.goto("/practitioners/locations/bali");
+    expect(specificLocation?.status()).toBe(404);
   });
 
   test("renders an empty state for an active area without published practitioners", async ({ page }) => {
@@ -467,6 +486,9 @@ test.describe("practitioner taxonomy discovery pages", () => {
       "http://localhost:3000/practitioners/areas/trauma-and-nervous-system",
     );
     expect(sitemap).toContain(
+      "http://localhost:3000/practitioners/locations/southeast-asia",
+    );
+    expect(sitemap).not.toContain(
       "http://localhost:3000/practitioners/locations/bali",
     );
     expect(sitemap).toContain(
@@ -474,10 +496,10 @@ test.describe("practitioner taxonomy discovery pages", () => {
     );
     expect(sitemap).not.toContain("inactive-location");
 
-    await page.goto("/practitioners/locations/bali");
+    await page.goto("/practitioners/locations/southeast-asia");
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
       "href",
-      "http://localhost:3000/practitioners/locations/bali",
+      "http://localhost:3000/practitioners/locations/southeast-asia",
     );
     await expect(page.locator('meta[property="og:type"]')).toHaveAttribute(
       "content",
@@ -485,7 +507,7 @@ test.describe("practitioner taxonomy discovery pages", () => {
     );
     await expect(page.locator('meta[property="og:url"]')).toHaveAttribute(
       "content",
-      "http://localhost:3000/practitioners/locations/bali",
+      "http://localhost:3000/practitioners/locations/southeast-asia",
     );
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
       "content",

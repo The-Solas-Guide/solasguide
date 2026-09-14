@@ -34,7 +34,7 @@ export default async function PractitionerLocationPage({ params }: LocationPageP
     return (
       <PractitionerDiscoveryPage
         kind="location"
-        term={{ name: "Location", slug }}
+        term={{ name: "Continent", slug }}
         practitioners={[]}
         error
       />

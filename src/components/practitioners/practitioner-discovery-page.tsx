@@ -24,18 +24,18 @@ const navLinks = [
 
 const introductionByKind: Record<PractitionerDiscoveryKind, string> = {
   area: "Explore practitioners whose published profiles include this area of support.",
-  location: "Explore practitioners whose published profiles include this location.",
+  location: "Explore practitioners whose published profiles include this continent.",
 };
 
 const eyebrowByKind: Record<PractitionerDiscoveryKind, string> = {
   area: "Area of support",
-  location: "Location",
+  location: "Continent",
 };
 
 function emptyMessage(kind: PractitionerDiscoveryKind) {
   return kind === "area"
     ? "No practitioners are listed under this area yet."
-    : "No practitioners are listed under this location yet.";
+    : "No practitioners are listed under this continent yet.";
 }
 
 export function PractitionerDiscoveryPage({

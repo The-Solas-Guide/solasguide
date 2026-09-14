@@ -207,7 +207,7 @@ describe("public practitioner directory data", () => {
     expect(result.error).toBe(false);
     expect(practitioner).toMatchObject({
       slug: "published-profile",
-      location: "Bali",
+      location: "Southeast Asia",
       modalities: ["Primary modality", "Second modality"],
       primaryModality: "Primary modality",
       image: "https://cdn.example.test/published-profile.webp",
@@ -219,13 +219,16 @@ describe("public practitioner directory data", () => {
       expect.stringContaining("featured_position"),
     );
     expect(practitioner.terms.map((term) => term.slug)).toEqual([
-      "bali",
+      "southeast-asia",
       "primary-modality",
       "a-later-area",
       "second-modality",
       "z-early-area",
       "a-early-area",
     ]);
+    expect(practitioner.searchableLocationNames).toEqual(["Bali"]);
+    expect(practitioner.searchableLocationSlugs).toEqual(["bali"]);
+    expect(practitioner.terms.some((term) => term.slug === "bali")).toBe(false);
     expect(
       practitioner.terms
         .filter((term) => term.type === "modality")
@@ -262,7 +265,17 @@ describe("public practitioner directory data", () => {
     const { mapPractitionerRow, mapPractitionerRows } = await import("@/lib/practitioners");
     const published = mapPractitionerRows([profileRow], termRows, linkRows, client as never)[0];
     const draft = { ...profileRow, status: "draft" as const };
-    const preview = mapPractitionerRow(draft, [...published.terms].reverse(), published.image);
+    const rawTerms = published.terms.map((term) =>
+      term.slug === "southeast-asia"
+        ? {
+            ...term,
+            id: "term-location",
+            name: "Bali",
+            slug: "bali",
+          }
+        : term,
+    );
+    const preview = mapPractitionerRow(draft, [...rawTerms].reverse(), published.image);
 
     expect(preview).toEqual(published);
     expect(preview.credentials).toEqual(["Credential"]);
@@ -363,6 +376,37 @@ describe("public practitioner directory data", () => {
       p_works_with_slugs: [],
       p_location_slugs: [],
       p_format_values: ["online"],
+      p_language_slugs: [],
+    });
+    expect(profileQuery.in).toHaveBeenCalledWith("id", ["profile-1"]);
+  });
+
+  it("expands public continent filters to internal country slugs for search", async () => {
+    const { client, profileQuery } = mockedClient();
+    const rpc = vi.fn().mockResolvedValue({
+      data: [{ practitioner_id: "profile-1" }],
+      error: null,
+    });
+    Object.assign(client, { rpc });
+    const { getPublishedPractitioners } = await import("@/lib/practitioners");
+
+    const result = await getPublishedPractitioners(
+      {
+        ...emptyFilters,
+        locations: ["southeast-asia"],
+      },
+      client as never,
+    );
+
+    expect(result.error).toBe(false);
+    expect(result.data[0]?.location).toBe("Southeast Asia");
+    expect(rpc).toHaveBeenCalledWith("search_published_practitioner_ids", {
+      p_query: undefined,
+      p_area_slugs: [],
+      p_approach_slugs: [],
+      p_works_with_slugs: [],
+      p_location_slugs: ["bali", "indonesia", "singapore"],
+      p_format_values: [],
       p_language_slugs: [],
     });
     expect(profileQuery.in).toHaveBeenCalledWith("id", ["profile-1"]);

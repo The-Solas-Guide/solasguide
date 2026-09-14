@@ -1,4 +1,14 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import {
+  derivePublicContinents,
+  formatPublicContinents,
+  getPublicContinent,
+  isValidLocationFilterSlug,
+  matchesLocationFilterSlugs,
+  prepareLocationSearch,
+  publicContinentSortOrder,
+  publicContinentTermId,
+} from "@/lib/location-continents";
 import { getPractitionerE2EFixtures } from "@/lib/practitioner-e2e-fixtures";
 import type { Database } from "@/types/database";
 
@@ -197,6 +207,10 @@ export type Practitioner = {
   featuredPosition?: number;
   offersInPerson: boolean;
   offersOnline: boolean;
+  /** Internal location names kept for search; never render these publicly. */
+  searchableLocationNames: readonly string[];
+  /** Internal location slugs kept for hidden country filters such as `bali`. */
+  searchableLocationSlugs: readonly string[];
   terms: readonly PractitionerTerm[];
   /** Published profiles are the only profiles returned by this module. */
   hasPublishedProfile: true;
@@ -349,14 +363,36 @@ export function mapPractitionerRow(
   );
   const namesForType = (type: PractitionerTermType) =>
     terms.filter((term) => term.type === type).map((term) => term.name);
-  const locations = namesForType("location");
+  const internalLocationTerms = terms.filter((term) => term.type === "location");
+  const { continents } = derivePublicContinents(
+    internalLocationTerms.map((term) => term.slug),
+  );
+  const publicLocationTerms: PractitionerTerm[] = continents.map(
+    (continent, index) => ({
+      id: publicContinentTermId(continent.slug),
+      type: "location",
+      name: continent.name,
+      slug: continent.slug,
+      sortOrder: publicContinentSortOrder(continent.slug),
+      displayOrder: index,
+    }),
+  );
+  const publicTerms = [
+    ...terms.filter((term) => term.type !== "location"),
+    ...publicLocationTerms,
+  ].sort(
+    (left, right) =>
+      left.displayOrder - right.displayOrder ||
+      left.type.localeCompare(right.type) ||
+      left.name.localeCompare(right.name),
+  );
   const approaches = namesForType("approach");
   const modalities = namesForType("modality");
   return {
     id: row.id,
     slug: row.slug,
     name: row.name,
-    location: locations.length ? locations.join(", ") : undefined,
+    location: formatPublicContinents(continents),
     descriptor: cleanOptionalString(row.descriptor),
     modalities,
     primaryModality: modalities[0],
@@ -383,7 +419,9 @@ export function mapPractitionerRow(
     featuredPosition: row.featured_position ?? undefined,
     offersInPerson: row.offers_in_person,
     offersOnline: row.offers_online,
-    terms,
+    searchableLocationNames: internalLocationTerms.map((term) => term.name),
+    searchableLocationSlugs: internalLocationTerms.map((term) => term.slug),
+    terms: publicTerms,
     hasPublishedProfile: true as const,
   };
 }
@@ -470,6 +508,7 @@ function matchesDirectoryFilters(
     practitioner.about,
     ...(practitioner.credentials ?? []),
     ...(practitioner.significantTraining ?? []),
+    ...practitioner.searchableLocationNames,
     ...practitioner.terms.map((term) => term.name),
   ]
     .filter(Boolean)
@@ -490,7 +529,13 @@ function matchesDirectoryFilters(
     matchesTerms(filters.areas, "support_area") &&
     matchesTerms(filters.approach, "approach") &&
     matchesTerms(filters["works-with"], "works_with") &&
-    matchesTerms(filters.locations, "location") &&
+    matchesLocationFilterSlugs(
+      practitioner.terms
+        .filter((term) => term.type === "location")
+        .map((term) => term.slug),
+      practitioner.searchableLocationSlugs,
+      filters.locations,
+    ) &&
     (filters.format.length === 0 ||
       (filters.format.includes("in-person") && practitioner.offersInPerson) ||
       (filters.format.includes("online") && practitioner.offersOnline)) &&
@@ -530,12 +575,13 @@ async function queryPublishedPractitioners(
   if (slug !== undefined || !directoryFiltersAreActive(requestedFilters)) {
     profiles = await loadProfiles(client, slug);
   } else {
+    const locationSearch = prepareLocationSearch(requestedFilters.locations);
     const searchResult = await client.rpc("search_published_practitioner_ids", {
       p_query: requestedFilters.query || undefined,
       p_area_slugs: [...requestedFilters.areas],
       p_approach_slugs: [...requestedFilters.approach],
       p_works_with_slugs: [...requestedFilters["works-with"]],
-      p_location_slugs: [...requestedFilters.locations],
+      p_location_slugs: locationSearch.rpcSlugs,
       p_format_values: [...requestedFilters.format],
       p_language_slugs: [...requestedFilters.languages],
     });
@@ -556,13 +602,20 @@ async function queryPublishedPractitioners(
   const linkedTerms = await loadLinkedTerms(client, profiles.data);
   if (linkedTerms.error) return { data: [], error: true };
 
+  const mapped = mapPractitionerRows(
+    profiles.data,
+    linkedTerms.data.terms,
+    linkedTerms.data.links,
+    client,
+  );
+  const locationSearch = prepareLocationSearch(requestedFilters.locations);
+
   return {
-    data: mapPractitionerRows(
-      profiles.data,
-      linkedTerms.data.terms,
-      linkedTerms.data.links,
-      client,
-    ),
+    data: locationSearch.postFilter
+      ? mapped.filter((practitioner) =>
+          matchesDirectoryFilters(practitioner, requestedFilters),
+        )
+      : mapped,
     error: false,
   };
 }
@@ -602,11 +655,41 @@ export async function getPublishedPractitionerBySlug(
  * to link it. Discovery pages can then render an explicit empty state while
  * keeping the practitioner query limited to published profiles.
  */
+function publicContinentDiscoveryTerm(
+  slug: string,
+): PractitionerTerm | null {
+  const continent = getPublicContinent(slug);
+  if (!continent) return null;
+  return {
+    id: publicContinentTermId(continent.slug),
+    type: "location",
+    name: continent.name,
+    slug: continent.slug,
+    sortOrder: publicContinentSortOrder(continent.slug),
+    displayOrder: 0,
+  };
+}
+
+function publicContinentsFromLocationTerms(
+  terms: readonly { type: string; slug: string; is_active?: boolean }[],
+) {
+  const internalSlugs = terms
+    .filter((term) => term.type === "location" && term.is_active !== false)
+    .map((term) => term.slug);
+  return derivePublicContinents(internalSlugs).continents.map((continent) =>
+    publicContinentDiscoveryTerm(continent.slug),
+  ).filter((term): term is PractitionerTerm => term !== null);
+}
+
 export async function getActivePublicDiscoveryTerm(
   type: PublicDiscoveryTermType,
   slug: string,
   client = createPublicSupabaseClient(),
 ): Promise<DirectoryQueryResult<PractitionerTerm | null>> {
+  if (type === "location") {
+    return { data: publicContinentDiscoveryTerm(slug), error: false };
+  }
+
   if (
     process.env.SOLAS_PRACTITIONER_E2E === "1" &&
     process.env.NODE_ENV !== "production"
@@ -661,21 +744,23 @@ export async function getActivePublicDiscoveryTerms(
     process.env.SOLAS_PRACTITIONER_E2E === "1" &&
     process.env.NODE_ENV !== "production"
   ) {
+    const fixtures = getPractitionerE2EFixtures().terms.filter(
+      (term) => term.is_active,
+    );
     return {
-      data: getPractitionerE2EFixtures().terms
-        .filter(
-          (term) =>
-            term.is_active &&
-            (term.type === "support_area" || term.type === "location"),
-        )
-        .map((term) => ({
-          id: term.id,
-          type: term.type as PublicDiscoveryTermType,
-          name: term.name,
-          slug: term.slug,
-          sortOrder: term.sort_order,
-          displayOrder: 0,
-        })),
+      data: [
+        ...fixtures
+          .filter((term) => term.type === "support_area")
+          .map((term) => ({
+            id: term.id,
+            type: "support_area" as const,
+            name: term.name,
+            slug: term.slug,
+            sortOrder: term.sort_order,
+            displayOrder: 0,
+          })),
+        ...publicContinentsFromLocationTerms(fixtures),
+      ],
       error: false,
     };
   }
@@ -685,25 +770,33 @@ export async function getActivePublicDiscoveryTerms(
   const result = await client.rpc("list_active_practitioner_taxonomy_terms");
   if (result.error) return { data: [], error: true };
 
+  const listed = result.data ?? [];
   return {
-    data: (result.data ?? []).map((term) => ({
-      id: term.id,
-      type: term.type as PublicDiscoveryTermType,
-      name: term.name,
-      slug: term.slug,
-      sortOrder: 0,
-      displayOrder: 0,
-    })),
+    data: [
+      ...listed
+        .filter((term) => term.type === "support_area")
+        .map((term) => ({
+          id: term.id,
+          type: "support_area" as const,
+          name: term.name,
+          slug: term.slug,
+          sortOrder: 0,
+          displayOrder: 0,
+        })),
+      ...publicContinentsFromLocationTerms(listed),
+    ],
     error: false,
   };
 }
 
-/** A practitioner's ordered location terms, used by the directory filter. */
+/** A practitioner's public continent labels, used by the directory filter. */
 export function getLocations(practitioner: Practitioner) {
   return practitioner.terms
     .filter((term) => term.type === "location")
     .map((term) => term.name);
 }
+
+export { isValidLocationFilterSlug };
 
 export function getTermsByType(practitioner: Practitioner, type: PractitionerTermType) {
   return practitioner.terms.filter((term) => term.type === type);
