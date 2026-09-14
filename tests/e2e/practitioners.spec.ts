@@ -225,7 +225,7 @@ test.describe("published practitioner directory", () => {
     await page.goto("/practitioners/indri-hapsari");
 
     await expect(page.getByRole("heading", { level: 1, name: "Indri Hapsari" })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Credentials and significant training" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Background & training" })).toBeVisible();
     await expect(page.getByText("Significant training", { exact: true })).toBeVisible();
     await expect(page.getByText("Credentials", { exact: true })).toHaveCount(0);
     const profile = page.locator("main article");
@@ -241,7 +241,15 @@ test.describe("published practitioner directory", () => {
 
     await expect(page).toHaveTitle(/Kartika Alexandra \| The Solas Guide/);
     await expect(page.getByRole("heading", { level: 1, name: "Kartika Alexandra" })).toBeVisible();
+    await expect(page.getByText("Practice or descriptor")).toHaveCount(0);
     await expect(page.getByRole("heading", { name: "About" })).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Interested in speaking with Kartika Alexandra?" }),
+    ).toBeVisible();
+    await expect(page.getByRole("link", { name: "Ask Solas" }).first()).toHaveAttribute(
+      "href",
+      "/find-a-match?practitioner=Kartika%20Alexandra",
+    );
     await expect(page.getByText("Credentials", { exact: true })).toBeVisible();
     const profile = page.locator("main article");
     await expect(profile.getByRole("link", { name: "Website" })).toHaveAttribute(

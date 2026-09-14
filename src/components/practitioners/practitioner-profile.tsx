@@ -14,6 +14,11 @@ import {
   getPractitionerJsonLd,
   safeExternalUrl as safeMetadataExternalUrl,
 } from "@/lib/practitioner-metadata";
+import {
+  askSolas,
+  askSolasHref,
+  formatAvailability,
+} from "@/lib/public-journeys";
 
 const navLinks = [
   { label: "Why Solas", href: "/#why-solas" },
@@ -81,10 +86,6 @@ export function PractitionerProfile({
   }));
   const approachTags = approaches.map((label) => ({ label }));
   const modalityTags = modalities.map((label) => ({ label }));
-  const locationTags = locationTerms.map((term) => ({
-    label: term.name,
-    href: `/practitioners/locations/${term.slug}`,
-  }));
   const hasCredentials = Boolean(
     practitioner.credentials?.length ||
     practitioner.significantTraining?.length,
@@ -99,10 +100,10 @@ export function PractitionerProfile({
     practitioner.worksWith?.length ||
     practitioner.languages?.length ||
     practitioner.delivery?.length ||
-    locations ||
     safeExternalUrl(practitioner.websiteUrl) ||
     safeExternalUrl(practitioner.instagramUrl),
   );
+  const askSolasUrl = askSolasHref(practitioner.name);
 
   return (
     <>
@@ -174,16 +175,9 @@ export function PractitionerProfile({
                   {practitioner.name}
                 </h1>
                 {practitioner.descriptor ? (
-                  <dl className="mt-5">
-                    <div>
-                      <dt className="review-label text-muted-foreground">
-                        Practice or descriptor
-                      </dt>
-                      <dd className={dataValueClassName}>
-                        {practitioner.descriptor}
-                      </dd>
-                    </div>
-                  </dl>
+                  <p className={cn(dataValueClassName, "mt-5")}>
+                    {practitioner.descriptor}
+                  </p>
                 ) : null}
 
                 {practitioner.yearsActive ||
@@ -229,10 +223,10 @@ export function PractitionerProfile({
 
                 <div className="mt-6 flex flex-wrap items-center gap-4">
                   <Link
-                    href="/find-a-match"
+                    href={askSolasUrl}
                     className={buttonVariants({ size: "lg" })}
                   >
-                    Begin your enquiry
+                    {askSolas.label}
                     <ArrowRight aria-hidden="true" />
                   </Link>
                 </div>
@@ -241,14 +235,14 @@ export function PractitionerProfile({
 
             {hasCredentials ? (
               <section
-                aria-labelledby="credentials-and-training-heading"
+                aria-labelledby="background-and-training-heading"
                 className="border-t border-border px-5 py-12 sm:px-8 md:px-12 md:py-16 lg:px-12"
               >
                 <h2
-                  id="credentials-and-training-heading"
+                  id="background-and-training-heading"
                   className="review-label text-muted-foreground"
                 >
-                  Credentials and significant training
+                  Background &amp; training
                 </h2>
                 <dl className="mt-6 border-t border-border/80">
                   {practitioner.credentials?.length ? (
@@ -383,20 +377,10 @@ export function PractitionerProfile({
                       {practitioner.delivery?.length ? (
                         <div className={dataRowClassName}>
                           <dt className="review-label text-muted-foreground">
-                            In-person or online
+                            Availability
                           </dt>
                           <dd className={dataValueClassName}>
-                            {practitioner.delivery.join(" · ")}
-                          </dd>
-                        </div>
-                      ) : null}
-                      {locations ? (
-                        <div className={dataRowClassName}>
-                          <dt className="review-label text-muted-foreground">
-                            Locations
-                          </dt>
-                          <dd>
-                            <ProfileTagList items={locationTags} />
+                            {formatAvailability(practitioner.delivery)}
                           </dd>
                         </div>
                       ) : null}
@@ -460,18 +444,18 @@ export function PractitionerProfile({
               id="find-a-match-heading"
               className="max-w-2xl font-display text-3xl leading-[1.08] text-balance md:text-4xl"
             >
-              Would you like to explore an introduction?
+              Interested in speaking with {practitioner.name}?
             </h2>
             <p className="mt-5 max-w-xl text-sm leading-7 text-muted-foreground">
-              Tell The Solas Guide what you are planning. We will review your
-              enquiry and help you consider the most appropriate next step.
+              Tell us what you are hoping for. We will review your enquiry
+              personally and help you consider the most appropriate next step.
             </p>
             <div className="mt-8">
               <Link
-                href="/find-a-match"
+                href={askSolasUrl}
                 className={buttonVariants({ size: "lg" })}
               >
-                Begin your enquiry
+                {askSolas.label}
                 <ArrowRight />
               </Link>
             </div>

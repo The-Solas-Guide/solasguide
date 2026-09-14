@@ -17,6 +17,7 @@ import {
   customerQuestionnaireQuestions,
   isValidWhatsappNumber,
 } from "@/lib/enquiries/customer-questionnaire";
+import { applyEnquiryContext, enquiryContextNote } from "@/lib/public-journeys";
 import { cn } from "@/lib/utils";
 
 type JourneyStep = "q1" | "q2" | "q3" | "q4" | "q5" | "contact" | "review";
@@ -112,6 +113,11 @@ function initialDraft(): Draft {
   return emptyDraft();
 }
 
+function draftWithContext(draft: Draft, note: string): Draft {
+  const q5 = applyEnquiryContext(draft.q5, note);
+  return q5 === draft.q5 ? draft : { ...draft, q5 };
+}
+
 function ChoiceGrid({
   choices,
   selected,
@@ -156,14 +162,21 @@ function labels(values: string[], choices: readonly Choice[]) {
   return values.map((value) => labelFor(value, choices)).join(", ") || "Nothing selected";
 }
 
-export function CustomerEnquiryForm() {
+export function CustomerEnquiryForm({
+  practitionerName,
+  intent,
+}: {
+  practitionerName?: string;
+  intent?: string;
+} = {}) {
+  const contextNote = enquiryContextNote({ practitionerName, intent });
   const hydrated = useSyncExternalStore(
     () => () => undefined,
     () => true,
     () => false,
   );
   const [step, setStep] = useState<JourneyStep>("q1");
-  const [draft, setDraft] = useState<Draft>(initialDraft);
+  const [draft, setDraft] = useState<Draft>(() => draftWithContext(initialDraft(), contextNote));
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
@@ -188,6 +201,10 @@ export function CustomerEnquiryForm() {
       /* The form remains usable when browser storage is unavailable. */
     }
   }, [draft]);
+  useEffect(() => {
+    if (!contextNote) return;
+    setDraft((current) => draftWithContext(current, contextNote));
+  }, [contextNote]);
   useEffect(() => {
     if (hydrated) headingRef.current?.focus({ preventScroll: true });
   }, [hydrated, step, submitted]);
@@ -255,7 +272,7 @@ export function CustomerEnquiryForm() {
     } catch {
       /* Storage may be unavailable. */
     }
-    setDraft(emptyDraft());
+    setDraft(draftWithContext(emptyDraft(), contextNote));
     setStep("q1");
     setName("");
     setEmail("");

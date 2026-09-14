@@ -7,6 +7,29 @@ export const metadata: Metadata = {
     "Tell us about your Bali plans and what you want from the trip. We will review the context and follow up with considered recommendations.",
 };
 
-export default function FindAPractitionerPage() {
-  return <CustomerEnquiryForm />;
+type FindAMatchSearchParams = Promise<
+  Readonly<Record<string, string | string[] | undefined>>
+>;
+
+function firstSearchParam(
+  searchParams: Readonly<Record<string, string | string[] | undefined>>,
+  key: string,
+) {
+  const value = searchParams[key];
+  const first = Array.isArray(value) ? value[0] : value;
+  return first?.trim() || undefined;
+}
+
+export default async function FindAPractitionerPage({
+  searchParams,
+}: {
+  searchParams: FindAMatchSearchParams;
+}) {
+  const params = await searchParams;
+  return (
+    <CustomerEnquiryForm
+      practitionerName={firstSearchParam(params, "practitioner")}
+      intent={firstSearchParam(params, "intent")}
+    />
+  );
 }

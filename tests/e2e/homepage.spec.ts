@@ -43,10 +43,22 @@ test.describe("homepage", () => {
     }
 
     await expect(page.getByText("Recognised venues", { exact: false })).toHaveCount(0);
-    await expect(page.getByRole("link", { name: "Start Questionnaire" }).first()).toHaveAttribute(
+    await expect(page.getByRole("link", { name: "Need Help Choosing?" }).first()).toHaveAttribute(
       "href",
       "/find-a-match",
     );
+    await expect(page.getByRole("link", { name: "Make an Enquiry" }).first()).toHaveAttribute(
+      "href",
+      "/find-a-match?intent=professional",
+    );
+    await expect(
+      page.getByText(
+        "The Solas Guide is an independent editorial guide. We verify the claims we can, then introduce trusted practitioners.",
+        { exact: true },
+      ),
+    ).toBeVisible();
+    await expect(page.getByText("Organisations", { exact: true })).toBeVisible();
+    await expect(page.getByText("Corporate Teams")).toHaveCount(0);
     await expect(page.getByRole("link", { name: "Apply for Recognition" }).first()).toHaveAttribute(
       "href",
       "/become-a-practitioner",
@@ -60,13 +72,13 @@ test.describe("homepage", () => {
     await expect(registry).toBeVisible();
     await expect(
       registry.getByText(
-        "The inaugural edition of The Solas Guide brings together practitioners recognised for the quality of their work, depth of practice and professional standing.",
+        "Volume One brings together practitioners recognised for the quality of their work and professional standing.",
         { exact: true },
       ),
     ).toBeVisible();
     await expect(
       registry.getByText(
-        "Browse the Guide or explore individual editorial profiles to understand who may be the right fit.",
+        "Browse the Guide to explore their editorial profiles and decide who may be the right fit.",
         { exact: true },
       ),
     ).toBeVisible();

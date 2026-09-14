@@ -9,6 +9,7 @@ import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { RevealObserver } from "@/components/motion/reveal-observer";
 import { buttonVariants } from "@/components/ui/button";
+import { makeAnEnquiry, needHelpChoosing } from "@/lib/public-journeys";
 import { homepageMetadata } from "@/lib/site-config";
 import { cn } from "@/lib/utils";
 
@@ -21,13 +22,13 @@ const navLinks = [
 ];
 
 const audiences = [
-  ["Individuals", "Looking for trusted personal support."],
-  ["Couples & Families", "Finding the right person matters."],
-  ["Retreat Organisers", "Building programmes with confidence."],
-  ["Hotels & Travel Advisors", "Making thoughtful introductions for guests and clients."],
+  ["Individuals", "Personal support from a practitioner you can trust."],
+  ["Couples & Families", "Thoughtful help when the right person matters."],
+  ["Retreat Organisers", "Practitioners and programmes you can stand behind."],
+  ["Hotels & Travel Advisors", "Considered introductions for guests and clients."],
   [
-    "Corporate Teams",
-    "Identifying practitioners for leadership, wellbeing and organisational programmes.",
+    "Organisations",
+    "Practitioners for leadership, wellbeing, and organisational programmes.",
   ],
 ] as const;
 
@@ -84,8 +85,8 @@ export default function HomePageV2() {
                   <a href="#registry" className={cn(buttonVariants(), "w-full border-background bg-background text-foreground hover:bg-background/85 sm:w-auto")}>
                     Browse the Guide <ArrowDown />
                   </a>
-                  <Link href="/find-a-match" className="inline-flex min-h-11 items-center justify-center px-4 text-xs font-semibold uppercase tracking-[0.13em] text-white hover:text-white/75">
-                    Need help choosing? <ArrowRight />
+                  <Link href={needHelpChoosing.href} className="inline-flex min-h-11 items-center justify-center px-4 text-xs font-semibold uppercase tracking-[0.13em] text-white hover:text-white/75">
+                    {needHelpChoosing.label} <ArrowRight />
                   </Link>
                 </div>
               </div>
@@ -109,16 +110,13 @@ export default function HomePageV2() {
                   Wellness has grown rapidly. Trust hasn&apos;t always kept pace.
                 </h2>
                 <p className="mt-7 max-w-xl text-sm leading-7 text-muted-foreground">
-                  The Solas Guide exists to recognise practitioners through a transparent review process that combines independent due diligence with editorial judgement.
+                  The Solas Guide is an independent editorial guide. We verify the claims we can, then introduce trusted practitioners.
                 </p>
                 <div className="mt-7 space-y-2 border-l border-accent pl-5 text-sm leading-6">
                   <p>We don&apos;t rank practitioners.</p>
                   <p>We don&apos;t sell placements.</p>
                   <p>We don&apos;t accept paid endorsements.</p>
                 </div>
-                <p className="mt-7 max-w-xl text-sm leading-7 text-muted-foreground">
-                  We recognise practitioners whose professional standing, experience and contribution to practice we believe deserve to be known.
-                </p>
               </div>
             </div>
             <div className="grid gap-px bg-border sm:grid-cols-3">
@@ -156,10 +154,10 @@ export default function HomePageV2() {
               <p className="review-label text-muted-foreground">Need help choosing?</p>
               <h2 className="mt-5 font-display text-4xl leading-tight text-balance sm:text-5xl">Not sure who&apos;s the right fit?</h2>
               <p className="mx-auto mt-6 max-w-2xl text-sm leading-7 text-muted-foreground">
-                Answer a few short questions and we&apos;ll recommend the practitioners we&apos;d consider if we were making the introduction ourselves.
+                Tell us a little about what you need. We will review your enquiry personally and suggest who to consider.
               </p>
-              <Link href="/find-a-match" className={cn(buttonVariants(), "mt-8 w-full sm:w-auto")}>
-                Start Questionnaire <ArrowRight />
+              <Link href={needHelpChoosing.href} className={cn(buttonVariants(), "mt-8 w-full sm:w-auto")}>
+                {needHelpChoosing.label} <ArrowRight />
               </Link>
             </div>
           </section>
@@ -170,14 +168,14 @@ export default function HomePageV2() {
                 <p className="review-label text-background/55">Professional enquiries</p>
                 <h2 className="mt-5 max-w-3xl font-display text-4xl leading-tight sm:text-5xl">Looking for something more tailored?</h2>
                 <p className="mt-6 max-w-3xl text-sm leading-7 text-background/70">
-                  Planning a retreat, leadership programme, private client experience or sourcing practitioners for an organisation?
+                  Planning a retreat, leadership programme, private client experience, or sourcing practitioners for an organisation?
                 </p>
                 <p className="mt-4 max-w-3xl text-sm leading-7 text-background/70">
-                  We work directly with retreat organisers, hotels, luxury travel advisors and organisations to identify practitioners, shape programmes and make thoughtful introductions.
+                  We work with retreat organisers, hotels, travel advisors, and organisations to identify practitioners, shape programmes, and make thoughtful introductions.
                 </p>
               </div>
-              <Link href="/find-a-match" className={cn(buttonVariants(), "w-full border-background bg-background text-foreground hover:bg-background/85 sm:w-auto")}>
-                Start a Conversation <ArrowRight />
+              <Link href={makeAnEnquiry.href} className={cn(buttonVariants(), "w-full border-background bg-background text-foreground hover:bg-background/85 sm:w-auto")}>
+                {makeAnEnquiry.label} <ArrowRight />
               </Link>
             </div>
           </section>
@@ -191,7 +189,7 @@ export default function HomePageV2() {
                   Recognition in The Solas Guide is earned through an independent review process.
                 </p>
                 <p className="mt-4 max-w-3xl text-sm leading-7 text-muted-foreground">
-                  Successful applicants become part of an editorial guide committed to professional standards, thoughtful practice and long-term credibility.
+                  Successful applicants become part of an editorial guide committed to professional standards and long-term credibility.
                 </p>
                 <p className="mt-4 text-sm font-semibold">Applications are currently open for the next recognition round.</p>
               </div>

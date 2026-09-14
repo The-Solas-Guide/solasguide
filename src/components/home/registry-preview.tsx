@@ -37,10 +37,10 @@ export async function RegistryPreview() {
         </div>
         <div className="max-w-xl space-y-4 text-sm leading-7 text-muted-foreground lg:max-w-sm">
           <p>
-            The inaugural edition of The Solas Guide brings together practitioners recognised for the quality of their work, depth of practice and professional standing.
+            Volume One brings together practitioners recognised for the quality of their work and professional standing.
           </p>
           <p>
-            Browse the Guide or explore individual editorial profiles to understand who may be the right fit.
+            Browse the Guide to explore their editorial profiles and decide who may be the right fit.
           </p>
         </div>
       </div>

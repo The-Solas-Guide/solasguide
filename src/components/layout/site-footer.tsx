@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { BrandWordmark } from "@/components/brand/brand-wordmark";
 import { TrackedPractitionerLink } from "@/components/analytics/tracked-practitioner-link";
+import { browseTheGuide, makeAnEnquiry, needHelpChoosing } from "@/lib/public-journeys";
 
 const linkClassName =
   "inline-flex min-h-10 items-center text-sm transition-colors hover:text-background focus-visible:text-background";
@@ -25,14 +26,14 @@ export function SiteFooter() {
         <div>
           <p className="review-label text-background/50">Explore</p>
           <div className="mt-4 grid gap-1 text-background/85">
-            <Link href="/practitioners" className={linkClassName}>
-              Browse the Guide
+            <Link href={browseTheGuide.href} className={linkClassName}>
+              {browseTheGuide.label}
             </Link>
             <Link href="/#recognition" className={linkClassName}>
               How Recognition Works
             </Link>
-            <Link href="/find-a-match" className={linkClassName}>
-              Start Questionnaire
+            <Link href={needHelpChoosing.href} className={linkClassName}>
+              {needHelpChoosing.label}
             </Link>
             <TrackedPractitionerLink
               source="footer"
@@ -46,8 +47,8 @@ export function SiteFooter() {
         <div>
           <p className="review-label text-background/50">Contact</p>
           <div className="mt-4 grid gap-1 text-background/85">
-            <Link href="/#questionnaire" className={linkClassName}>
-              Begin your enquiry
+            <Link href={makeAnEnquiry.href} className={linkClassName}>
+              {makeAnEnquiry.label}
             </Link>
           </div>
           <div className="mt-6 border-t border-background/20 pt-4">

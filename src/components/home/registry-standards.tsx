@@ -1,15 +1,15 @@
 const standards = [
   {
     title: "Independent Review",
-    copy: "We independently review the information that can be verified and assess each application against our published recognition framework.",
+    copy: "We independently review the information that can be verified, then assess each application against our recognition framework.",
   },
   {
     title: "Editorial Profile",
-    copy: "Every profile is written and maintained by Solas to ensure consistency, independence and clarity for buyers.",
+    copy: "Every profile is written and maintained by Solas so the portrait stays independent, consistent, and clear.",
   },
   {
     title: "Thoughtful Introductions",
-    copy: "When you're ready, we'll introduce you to the practitioner we believe is the strongest fit for your needs.",
+    copy: "When you ask, we review your context and introduce the practitioner we believe is the strongest fit.",
   },
 ] as const;
 
@@ -38,9 +38,8 @@ export function RegistryStandards() {
           <p className="text-base leading-7 text-foreground">
             Every practitioner is independently reviewed before being recognised by The Solas Guide.
           </p>
-          <p>Our review combines objective checks with editorial judgement.</p>
           <p>
-            Where appropriate we confirm credentials, review professional history, speak with references and assess contribution to practice before deciding whether someone should be recognised.
+            We verify the claims we can: credentials, professional history, and contribution to practice. Editorial judgement decides whether someone should be recognised.
           </p>
           <p className="border-l border-accent pl-5 text-foreground">
             Recognition is not purchased.

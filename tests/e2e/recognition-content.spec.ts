@@ -19,13 +19,8 @@ test.describe("homepage recognition content", () => {
       ),
     ).toBeVisible();
     await expect(
-      recognition.getByText("Our review combines objective checks with editorial judgement.", {
-        exact: true,
-      }),
-    ).toBeVisible();
-    await expect(
       recognition.getByText(
-        "Where appropriate we confirm credentials, review professional history, speak with references and assess contribution to practice before deciding whether someone should be recognised.",
+        "We verify the claims we can: credentials, professional history, and contribution to practice. Editorial judgement decides whether someone should be recognised.",
         { exact: true },
       ),
     ).toBeVisible();
@@ -38,15 +33,15 @@ test.describe("homepage recognition content", () => {
     const standards = [
       [
         "Independent Review",
-        "We independently review the information that can be verified and assess each application against our published recognition framework.",
+        "We independently review the information that can be verified, then assess each application against our recognition framework.",
       ],
       [
         "Editorial Profile",
-        "Every profile is written and maintained by Solas to ensure consistency, independence and clarity for buyers.",
+        "Every profile is written and maintained by Solas so the portrait stays independent, consistent, and clear.",
       ],
       [
         "Thoughtful Introductions",
-        "When you're ready, we'll introduce you to the practitioner we believe is the strongest fit for your needs.",
+        "When you ask, we review your context and introduce the practitioner we believe is the strongest fit.",
       ],
     ] as const;
 

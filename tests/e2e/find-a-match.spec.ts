@@ -88,6 +88,23 @@ test("submits a complete buyer questionnaire", async ({ page }) => {
   expect(JSON.stringify(analyticsEvents)).not.toContain("Synthetic test enquiry.");
 });
 
+test("includes the practitioner name when opened from a profile", async ({ page }) => {
+  await page.goto("/find-a-match?practitioner=Kartika%20Alexandra");
+
+  await page.getByRole("radio", { name: "Personal wellbeing" }).check();
+  await page.getByRole("button", { name: /^Continue/ }).click();
+  await page.getByRole("radio", { name: "Just for me" }).check();
+  await page.getByRole("button", { name: /^Continue/ }).click();
+  await page.getByRole("checkbox", { name: "Stress" }).check();
+  await page.getByRole("button", { name: /^Continue/ }).click();
+  await page.getByRole("radio", { name: "Planning ahead" }).check();
+  await page.getByRole("button", { name: /^Continue/ }).click();
+
+  await expect(page.getByLabel("Anything else")).toHaveValue(
+    "Interested in speaking with Kartika Alexandra.",
+  );
+});
+
 test("blocks an invalid WhatsApp number before review", async ({ page }) => {
   await page.goto("/find-a-match");
 

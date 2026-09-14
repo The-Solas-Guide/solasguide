@@ -6,6 +6,7 @@ import { Menu, X } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { TrackedPractitionerLink } from "@/components/analytics/tracked-practitioner-link";
+import { needHelpChoosing } from "@/lib/public-journeys";
 import { cn } from "@/lib/utils";
 
 const defaultLinks = [
@@ -64,7 +65,7 @@ export function SiteHeader({
         </nav>
         <div className="hidden lg:block">
           <Button asChild>
-            <Link href="/find-a-match">Start Questionnaire</Link>
+            <Link href={needHelpChoosing.href}>{needHelpChoosing.label}</Link>
           </Button>
         </div>
         <button
@@ -103,8 +104,8 @@ export function SiteHeader({
             For practitioners
           </TrackedPractitionerLink>
           <Button asChild className="mt-3 w-full">
-            <Link href="/find-a-match" onClick={() => setOpen(false)}>
-              Start Questionnaire
+            <Link href={needHelpChoosing.href} onClick={() => setOpen(false)}>
+              {needHelpChoosing.label}
             </Link>
           </Button>
         </nav>
