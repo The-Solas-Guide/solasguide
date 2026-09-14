@@ -29,3 +29,4 @@ This file records pull requests merged into `main`. Entries are added automatica
 - 2026-09-06 — style: brand the admin sign-in email ([#58](https://github.com/The-Solas-Guide/solasguide/pull/58)) — `3284aac4d0a4d8d3e9aaae0218840b0db7f49019`
 - 2026-09-06 — fix: align public content with saved admin changes ([#59](https://github.com/The-Solas-Guide/solasguide/pull/59)) — `85d626a5195a5f2772730549e6985c65c012ae2b`
 - 2026-09-10 — Improve admin drafts, content editing, and inbox workflows ([#60](https://github.com/The-Solas-Guide/solasguide/pull/60)) — `3236a46f408278bdac9d38b43e286ab990c67b1b`
+- 2026-09-14 — feat: client CTA labels and homepage/profile copy (#61–#64) ([#67](https://github.com/The-Solas-Guide/solasguide/pull/67)) — `d7672f16e4a3cb515a71acb7fe835788583c0789`
