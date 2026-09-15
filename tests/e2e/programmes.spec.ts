@@ -42,7 +42,7 @@ for (const width of [1440, 390]) {
     await expect(page.getByLabel("Your name", { exact: true })).toHaveValue("Programme Test");
     await expect(page.getByLabel("What would you like your group to take away?", { exact: true })).toHaveValue("A shared experience for twelve people.");
     await page.getByRole("button", { name: "Start a conversation", exact: true }).click();
-    await expect(page.getByRole("status")).toContainText("Thank you. Your enquiry is with us.");
+    await expect(page.locator("#contact").getByRole("status")).toContainText("Thank you. Your enquiry is with us.");
     expect(submissions).toHaveLength(2);
     expect(submissions[1]).toEqual(submissions[0]);
     expect(submissions[1]).toMatchObject({
@@ -69,7 +69,7 @@ test("a changed saved submission requires an explicit new enquiry", async ({ pag
   await page.getByRole("button", { name: "Start a new enquiry with these details" }).click();
   await expect(page.getByLabel("Your name", { exact: true })).toHaveValue("Programme Test");
   await page.getByRole("button", { name: "Start a conversation", exact: true }).click();
-  await expect(page.getByRole("status")).toContainText("Your enquiry is with us");
+  await expect(page.locator("#contact").getByRole("status")).toContainText("Your enquiry is with us");
   expect(tokens[1]).not.toBe(tokens[0]);
 });
 
