@@ -5,6 +5,7 @@ import {
   customerQuestionnaireLabel,
   type CustomerQuestionKey,
 } from "@/lib/enquiries/customer-questionnaire";
+import { PROGRAMME_FORM_VERSION, programmeExperienceLabel } from "@/lib/enquiries/programme-enquiry";
 import type { Database } from "@/types/database";
 import { sendTransactionalEmail } from "@/lib/enquiries/delivery-email";
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -43,6 +44,14 @@ function structuredAnswerSummary(
 }
 
 export function customerAnswerSummary(answers: Record<string, unknown>) {
+  if (answers.formVersion === PROGRAMME_FORM_VERSION) {
+    return [
+      `Programme experience: ${typeof answers.experience === "string" ? programmeExperienceLabel(answers.experience) : "Not provided"}`,
+      `Organisation: ${typeof answers.organisation === "string" && answers.organisation ? answers.organisation : "Not provided"}`,
+      `Dates: ${typeof answers.dates === "string" && answers.dates ? answers.dates : "Not provided"}`,
+      `What they have in mind: ${typeof answers.intention === "string" && answers.intention ? answers.intention : "Not provided"}`,
+    ].join("\n");
+  }
   if (answers.formVersion === CUSTOMER_QUESTIONNAIRE_FORM_VERSION) {
     return structuredAnswerSummary(answers, {
       q1: "Who are you looking for support for?",
@@ -79,14 +88,17 @@ export async function processCustomerEnquiryDelivery(supabase: SupabaseClient<Da
   const persisted = stored.data;
   const answers = isRecord(persisted.questionnaire_answers) ? persisted.questionnaire_answers : {};
   const summary = customerAnswerSummary(answers);
-  const customerText = `Hello ${persisted.full_name},\n\nThank you. We’ve received your enquiry.\n\nSomeone from Solas will review what you’ve shared and come back to you personally with the practitioners we think may be worth considering.\n\nThe Solas Guide`;
+  const isProgrammeEnquiry = answers.formVersion === PROGRAMME_FORM_VERSION;
+  const customerText = isProgrammeEnquiry
+    ? `Hello ${persisted.full_name},\n\nThank you for your programme enquiry. We have received it and will review it personally. We will be in touch soon.\n\nThe Solas Guide`
+    : `Hello ${persisted.full_name},\n\nThank you. We’ve received your enquiry.\n\nSomeone from Solas will review what you’ve shared and come back to you personally with the practitioners we think may be worth considering.\n\nThe Solas Guide`;
   const operationsEmail = process.env.SOLAS_OPERATIONS_EMAIL;
   const customerResult = deliveryClaim.data.send_customer
     ? await sendTransactionalEmail([new Recipient(persisted.email, persisted.full_name)], "We have received your Solas Guide enquiry", customerText, operationsEmail ? new Recipient(operationsEmail, "Solas operations") : undefined).then(() => "sent" as const).catch((error) => { console.error("Customer confirmation failed", error instanceof Error ? error.name : "UnknownError"); return "failed" as const; })
     : persisted.customer_confirmation_status;
   const internalResult = deliveryClaim.data.send_internal
     ? operationsEmail
-      ? await sendTransactionalEmail([new Recipient(operationsEmail, "Solas operations")], `New Solas enquiry from ${persisted.full_name}`, `Contact preference: ${persisted.contact_preference}\nEmail: ${persisted.email}\nWhatsApp: ${persisted.phone || "Not provided"}\n\n${summary}`, new Recipient(persisted.email, persisted.full_name)).then(() => "sent" as const).catch((error) => { console.error("Internal notification failed", error instanceof Error ? error.name : "UnknownError"); return "failed" as const; })
+      ? await sendTransactionalEmail([new Recipient(operationsEmail, "Solas operations")], `${isProgrammeEnquiry ? "New Solas programme enquiry" : "New Solas enquiry"} from ${persisted.full_name}`, `Contact preference: ${persisted.contact_preference === "email" ? "Email" : persisted.contact_preference === "whatsapp" ? "WhatsApp" : "Phone"}\nEmail: ${persisted.email}${persisted.phone ? `\n${persisted.contact_preference === "whatsapp" ? "WhatsApp" : "Phone"}: ${persisted.phone}` : ""}\n\n${summary}`, new Recipient(persisted.email, persisted.full_name)).then(() => "sent" as const).catch((error) => { console.error("Internal notification failed", error instanceof Error ? error.name : "UnknownError"); return "failed" as const; })
       : "failed" as const
     : persisted.internal_notification_status;
 

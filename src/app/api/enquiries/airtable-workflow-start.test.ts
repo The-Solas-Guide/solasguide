@@ -16,6 +16,7 @@ vi.mock("@/lib/enquiries/customer-delivery", () => ({
 
 import { POST as submitCustomerEnquiry } from "@/app/api/enquiries/customer/route";
 import { POST as submitPractitionerExpression } from "@/app/api/enquiries/practitioner/route";
+import { POST as submitProgrammeEnquiry } from "@/app/api/enquiries/programme/route";
 
 function insertSucceeds(id: string) {
   return {
@@ -99,6 +100,28 @@ const savedCustomerSubmission = {
   },
 };
 
+const programmeSubmission = {
+  submissionToken: "55555555-5555-4555-8555-555555555555",
+  startedAt: Date.now() - 3_000,
+  fullName: "Maya Test",
+  email: "maya@example.test",
+  organisation: "Solas Retreats",
+  experience: "retreat",
+  dates: "June 2027",
+  intention: "A restorative group retreat.",
+  consentConfirmed: true,
+};
+
+const savedProgrammeSubmission = {
+  id: "66666666-6666-4666-8666-666666666666",
+  full_name: programmeSubmission.fullName,
+  email: programmeSubmission.email,
+  phone: null,
+  contact_preference: "email",
+  consent_confirmed: true,
+  questionnaire_answers: { formVersion: "programme-v1", organisation: programmeSubmission.organisation, experience: programmeSubmission.experience, dates: programmeSubmission.dates, intention: programmeSubmission.intention },
+};
+
 describe("form submission workflow startup", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -173,6 +196,40 @@ describe("form submission workflow startup", () => {
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toMatchObject({ ok: true, duplicate: true });
     expect(mocks.start).toHaveBeenCalledOnce();
+  });
+
+  it("saves a standalone programme enquiry with email-only delivery", async () => {
+    mocks.start.mockResolvedValue({ runId: "wfr_test" });
+    mocks.createClient.mockReturnValue(insertSucceeds("66666666-6666-4666-8666-666666666666"));
+    const response = await submitProgrammeEnquiry(request("/api/enquiries/programme", programmeSubmission));
+
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toMatchObject({ ok: true, duplicate: false });
+    expect(mocks.start).toHaveBeenCalledOnce();
+    expect(mocks.processCustomerEnquiryDelivery).toHaveBeenCalledWith(expect.anything(), "66666666-6666-4666-8666-666666666666");
+  });
+
+  it("rejects a programme retry with altered details", async () => {
+    mocks.createClient.mockReturnValue(duplicateThenExisting(savedProgrammeSubmission));
+    const response = await submitProgrammeEnquiry(request("/api/enquiries/programme", { ...programmeSubmission, intention: "Different plan." }));
+
+    expect(response.status).toBe(409);
+    expect(mocks.start).not.toHaveBeenCalled();
+  });
+
+  it("rejects programme posts without an origin or with generic answers", async () => {
+    const noOrigin = await submitProgrammeEnquiry(request("/api/enquiries/programme", programmeSubmission, { origin: null }));
+    expect(noOrigin.status).toBe(403);
+    const generic = await submitProgrammeEnquiry(request("/api/enquiries/programme", { ...programmeSubmission, q1: "personal-wellbeing" }));
+    expect(generic.status).toBe(400);
+    expect(mocks.createClient).not.toHaveBeenCalled();
+  });
+
+  it("accepts the programme honeypot without saving a record", async () => {
+    const response = await submitProgrammeEnquiry(request("/api/enquiries/programme", { ...programmeSubmission, website: "https://spam.example" }));
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toEqual({ ok: true });
+    expect(mocks.createClient).not.toHaveBeenCalled();
   });
 
   it.each([

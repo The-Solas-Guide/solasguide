@@ -19,6 +19,7 @@ const navLinks = [
   { label: "Why Solas", href: "#why-solas" },
   { label: "Recognition", href: "#recognition" },
   { label: "The Guide", href: "/practitioners" },
+  { label: "Programmes", href: "/programmes" },
 ];
 
 const audiences = [

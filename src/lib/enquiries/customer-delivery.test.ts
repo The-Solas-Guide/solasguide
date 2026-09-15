@@ -68,8 +68,22 @@ describe("customer enquiry delivery summaries", () => {
       "Anything else you’d like us to know?: Current context.",
     ].join("\n"));
   });
-});
 
+  it("summarizes programme answers without generic questionnaire labels", () => {
+    expect(customerAnswerSummary({
+      formVersion: "programme-v1",
+      organisation: "Solas Retreats",
+      experience: "leadership-team",
+      dates: "June 2027",
+      intention: "A small leadership retreat.",
+    })).toBe([
+      "Programme experience: Leadership or team experience",
+      "Organisation: Solas Retreats",
+      "Dates: June 2027",
+      "What they have in mind: A small leadership retreat.",
+    ].join("\n"));
+  });
+});
 
 describe("manual enquiry delivery protection", () => {
   it("never claims delivery or changes pending state for an admin-created record", async () => {
