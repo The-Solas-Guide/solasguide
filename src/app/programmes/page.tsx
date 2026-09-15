@@ -250,34 +250,118 @@ export default function ProgrammesPage() {
                 Every programme begins with your group and your plans. This is one illustrative starting point.
               </p>
             </div>
-            <div className={styles.examplePlan}>
-              <div className={styles.exampleTitle}>
-                <p className={styles.eyebrow}>Illustrative only</p>
-                <p>A three-day programme for a leadership team.</p>
+            <article className={styles.examplePlan} aria-label="Illustrative three-day programme document">
+              <header className={styles.exampleDocumentHeader}>
+                <div>
+                  <p className={styles.exampleBrand}>The Solas Guide</p>
+                  <p className={styles.exampleDocumentType}>Programme outline</p>
+                </div>
+                <p className={styles.exampleSampleLabel}>Illustrative sample</p>
+              </header>
+
+              <div className={styles.exampleDocumentLead}>
+                <div className={styles.exampleTitle}>
+                  <p className={styles.eyebrow}>Three days in Bali</p>
+                  <h3>Leadership retreat programme</h3>
+                  <p>This sample shows how shared sessions and personal time could sit together. Every programme is shaped around your group.</p>
+                </div>
+                <div className={styles.exampleMedia}>
+                  <Image
+                    src="/images/programmes/place.webp"
+                    alt="A pavilion overlooking the green landscape of Bali"
+                    fill
+                    loading="lazy"
+                    className={styles.coverImage}
+                    sizes="(max-width: 800px) 100vw, 32vw"
+                  />
+                </div>
               </div>
+
               <dl className={styles.exampleDetails}>
                 <div>
                   <dt>Group</dt>
-                  <dd>A 12-person leadership team.</dd>
+                  <dd>12-person leadership team</dd>
                 </div>
                 <div>
-                  <dt>Goal</dt>
-                  <dd>Time away from work, with shared activities.</dd>
+                  <dt>Location</dt>
+                  <dd>Bali</dd>
                 </div>
-                <div className={styles.exampleSessions}>
-                  <dt>Suggested sessions and timing</dt>
-                  <dd>
-                    <span>Day 1 · 16:00 · Gentle yoga · 45 minutes</span>
-                    <span>Day 2 · 08:00 · Guided meditation · 30 minutes</span>
-                    <span>Day 3 · 09:00 · Group reflection · 45 minutes</span>
-                  </dd>
-                </div>
-                <div className={styles.exampleSolasRole}>
-                  <dt>The Solas role</dt>
-                  <dd>Shape the sessions, select practitioners and discuss coordination if it is useful.</dd>
+                <div>
+                  <dt>Duration</dt>
+                  <dd>3 days</dd>
                 </div>
               </dl>
-            </div>
+
+              <div className={styles.exampleSchedule}>
+                <div className={styles.exampleScheduleHeader}>
+                  <div>
+                    <p className={styles.eyebrow}>Sample timetable</p>
+                    <h4>Your three-day schedule</h4>
+                  </div>
+                  <p>Times and session types are examples only.</p>
+                </div>
+                <table>
+                  <caption className="sr-only">Illustrative three-day wellness programme timetable</caption>
+                  <thead>
+                    <tr>
+                      <th scope="col">Day</th>
+                      <th scope="col">Time</th>
+                      <th scope="col">Session</th>
+                      <th scope="col">Duration</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th scope="row" data-label="Day">Day 01</th>
+                      <td data-label="Time">15:30</td>
+                      <td data-label="Session"><strong>Arrival and settle-in</strong><span>Organiser&apos;s own time</span></td>
+                      <td data-label="Duration">Flexible</td>
+                    </tr>
+                    <tr>
+                      <th scope="row" data-label="Day">Day 01</th>
+                      <td data-label="Time">17:00</td>
+                      <td data-label="Session"><strong>Gentle movement session</strong><span>An easy shared start to the programme.</span></td>
+                      <td data-label="Duration">45 mins</td>
+                    </tr>
+                    <tr>
+                      <th scope="row" data-label="Day">Day 02</th>
+                      <td data-label="Time">07:30</td>
+                      <td data-label="Session"><strong>Guided meditation</strong><span>A quiet morning practice for the group.</span></td>
+                      <td data-label="Duration">30 mins</td>
+                    </tr>
+                    <tr>
+                      <th scope="row" data-label="Day">Day 02</th>
+                      <td data-label="Time">09:00</td>
+                      <td data-label="Session"><strong>Breakfast and free time</strong><span>Organiser&apos;s own time</span></td>
+                      <td data-label="Duration">Flexible</td>
+                    </tr>
+                    <tr>
+                      <th scope="row" data-label="Day">Day 02</th>
+                      <td data-label="Time">16:30</td>
+                      <td data-label="Session"><strong>Group reflection</strong><span>Time to pause and reflect together.</span></td>
+                      <td data-label="Duration">60 mins</td>
+                    </tr>
+                    <tr>
+                      <th scope="row" data-label="Day">Day 03</th>
+                      <td data-label="Time">08:00</td>
+                      <td data-label="Session"><strong>Breathing practice</strong><span>A calm start before the final day.</span></td>
+                      <td data-label="Duration">30 mins</td>
+                    </tr>
+                    <tr>
+                      <th scope="row" data-label="Day">Day 03</th>
+                      <td data-label="Time">10:00</td>
+                      <td data-label="Session"><strong>Closing conversation</strong><span>An example group session to bring the programme together.</span></td>
+                      <td data-label="Duration">45 mins</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <footer className={styles.exampleDocumentFooter}>
+                <p>Sessions, timing and practitioners are discussed after we understand your group.</p>
+                <p>Sample programme · 01 / 01</p>
+              </footer>
+            </article>
           </section>
 
           <Suspense fallback={<PractitionerPreviewFallback />}>
