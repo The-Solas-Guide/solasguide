@@ -3,10 +3,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { Fraunces } from "next/font/google";
 import { ArrowUpRight } from "lucide-react";
+import { Suspense, type ReactNode } from "react";
 import { BrandWordmark } from "@/components/brand/brand-wordmark";
 import { ProgrammeEnquiryForm } from "@/components/enquiry/programme-enquiry-form";
 import { SiteHeader } from "@/components/layout/site-header";
+import { PractitionerCard } from "@/components/practitioners/practitioner-card";
 import { Button } from "@/components/ui/button";
+import { emptyDirectoryFilters, getPublishedPractitioners } from "@/lib/practitioners";
 import { cn } from "@/lib/utils";
 import styles from "./page.module.css";
 
@@ -22,6 +25,8 @@ export const metadata: Metadata = {
     "We design wellness programmes for retreats and groups in Bali, select practitioners, and offer coordination and on-site support.",
 };
 
+export const dynamic = "force-dynamic";
+
 const navLinks = [
   { label: "Why Solas", href: "#approach" },
   { label: "What we do", href: "#offer" },
@@ -35,6 +40,67 @@ function ArrowLink({ href, children }: { href: string; children: React.ReactNode
       {children}
       <ArrowUpRight aria-hidden="true" />
     </Link>
+  );
+}
+
+function PractitionerSectionFrame({ children }: { children: ReactNode }) {
+  return (
+    <section className={cn(styles.section, styles.practitionerSection)} aria-labelledby="practitioner-heading">
+      <div className={styles.practitionerIntro}>
+        <div>
+          <p className={styles.eyebrow}>The Solas Guide</p>
+          <h2 id="practitioner-heading" className={styles.displayHeading}>
+            Who could lead your sessions.
+          </h2>
+        </div>
+        <p>
+          Explore practitioners who offer in-person work in Bali. We discuss suitability and availability for your programme.
+        </p>
+      </div>
+      {children}
+      <ArrowLink href="/practitioners">Explore the Guide</ArrowLink>
+    </section>
+  );
+}
+
+function PractitionerPreviewFallback() {
+  return (
+    <PractitionerSectionFrame>
+      <div className={styles.practitionerStatus} role="status" aria-busy="true">
+        <p>Loading practitioner profiles.</p>
+      </div>
+    </PractitionerSectionFrame>
+  );
+}
+
+async function PractitionerPreview() {
+  const practitionerResult = await getPublishedPractitioners({
+    ...emptyDirectoryFilters,
+    locations: ["bali"],
+    format: ["in-person"],
+  });
+  const practitioners = practitionerResult.data.slice(0, 3);
+
+  return (
+    <PractitionerSectionFrame>
+      {practitionerResult.error ? (
+        <div className={styles.practitionerStatus} role="status">
+          <p>Practitioner profiles are unavailable at the moment.</p>
+          <ArrowLink href="#contact">Start a conversation about your programme</ArrowLink>
+        </div>
+      ) : practitioners.length === 0 ? (
+        <div className={styles.practitionerStatus}>
+          <p>Talk to us about practitioners for your group.</p>
+          <ArrowLink href="#contact">Start a conversation about your programme</ArrowLink>
+        </div>
+      ) : (
+        <div className={styles.practitionerGrid}>
+          {practitioners.map((practitioner) => (
+            <PractitionerCard key={practitioner.id} practitioner={practitioner} variant="registry" />
+          ))}
+        </div>
+      )}
+    </PractitionerSectionFrame>
   );
 }
 
@@ -174,6 +240,50 @@ export default function ProgrammesPage() {
             </div>
           </section>
 
+          <section className={cn(styles.section, styles.programmeExample)} aria-labelledby="programme-example-heading">
+            <div className={styles.exampleIntro}>
+              <p className={styles.eyebrow}>An illustrative example</p>
+              <h2 id="programme-example-heading" className={styles.displayHeading}>
+                What your programme could look like.
+              </h2>
+              <p>
+                Every programme begins with your group and your plans. This is one illustrative starting point.
+              </p>
+            </div>
+            <div className={styles.examplePlan}>
+              <div className={styles.exampleTitle}>
+                <p className={styles.eyebrow}>Illustrative only</p>
+                <p>A three-day programme for a leadership team.</p>
+              </div>
+              <dl className={styles.exampleDetails}>
+                <div>
+                  <dt>Group</dt>
+                  <dd>A 12-person leadership team.</dd>
+                </div>
+                <div>
+                  <dt>Goal</dt>
+                  <dd>Time away from work, with shared activities.</dd>
+                </div>
+                <div className={styles.exampleSessions}>
+                  <dt>Suggested sessions and timing</dt>
+                  <dd>
+                    <span>Day 1 · 16:00 · Gentle yoga · 45 minutes</span>
+                    <span>Day 2 · 08:00 · Guided meditation · 30 minutes</span>
+                    <span>Day 3 · 09:00 · Group reflection · 45 minutes</span>
+                  </dd>
+                </div>
+                <div className={styles.exampleSolasRole}>
+                  <dt>The Solas role</dt>
+                  <dd>Shape the sessions, select practitioners and discuss coordination if it is useful.</dd>
+                </div>
+              </dl>
+            </div>
+          </section>
+
+          <Suspense fallback={<PractitionerPreviewFallback />}>
+            <PractitionerPreview />
+          </Suspense>
+
           <section id="process" className={cn(styles.section, styles.process)} aria-labelledby="process-heading">
             <div className={styles.processHeading}>
               <p className={styles.eyebrow}>How to get started</p>
@@ -205,6 +315,34 @@ export default function ProgrammesPage() {
                 </div>
               </li>
             </ol>
+          </section>
+
+          <section className={cn(styles.section, styles.faq)} aria-labelledby="faq-heading">
+            <div className={styles.faqIntro}>
+              <p className={styles.eyebrow}>Before you enquire</p>
+              <h2 id="faq-heading" className={styles.displayHeading}>
+                A few useful details.
+              </h2>
+              <p>Bring the outline you have. We will help you work through the rest.</p>
+            </div>
+            <div className={styles.faqList}>
+              <details>
+                <summary>Do I need a finished programme?</summary>
+                <p>Not at all. Share what you know about your group, possible dates and plans. We can discuss the rest in the first conversation.</p>
+              </details>
+              <details>
+                <summary>Can Solas coordinate the programme?</summary>
+                <p>Yes. Coordination is optional. We can discuss practitioner briefs, schedule coordination and on-site direction as part of the work.</p>
+              </details>
+              <details>
+                <summary>What happens in the first conversation?</summary>
+                <p>We discuss your group, your plans and the support you need. Then we can agree the programme scope, practitioner selection and any coordination.</p>
+              </details>
+              <details>
+                <summary>What should I do next?</summary>
+                <p>Send your group size, possible dates and what you want participants to get from the experience.</p>
+              </details>
+            </div>
           </section>
 
           <section id="contact" className={cn(styles.section, styles.contact)} aria-labelledby="contact-heading">

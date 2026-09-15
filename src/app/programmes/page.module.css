@@ -336,6 +336,211 @@
   font-size: 2.1rem;
 }
 
+.programmeExample {
+  display: grid;
+  grid-template-columns: 0.78fr 1.22fr;
+  gap: 4.4rem;
+  padding: 5.7rem 0;
+  border-top: 1px solid var(--border);
+}
+
+.exampleIntro {
+  padding: 1.1rem 0 0 0.5rem;
+}
+
+.exampleIntro > p:last-child,
+.practitionerIntro > p,
+.faqIntro > p:last-child {
+  max-width: 22rem;
+  margin-top: 1.35rem;
+  color: var(--muted-foreground);
+  font-size: 0.9375rem;
+  line-height: 1.75;
+}
+
+.examplePlan {
+  overflow: hidden;
+  background: var(--accent);
+  color: var(--accent-foreground);
+}
+
+.exampleTitle {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem;
+  min-height: 9.5rem;
+  padding: 1.65rem 2rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--accent-foreground) 30%, transparent);
+}
+
+.exampleTitle > p:last-child {
+  max-width: 15rem;
+  font-family: var(--font-programmes-display), var(--font-display), Georgia, serif;
+  font-size: 1.45rem;
+  line-height: 1.15;
+}
+
+.exampleDetails {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin: 0;
+}
+
+.exampleDetails > div {
+  min-height: 9.5rem;
+  padding: 1.6rem 2rem;
+  border-right: 1px solid color-mix(in srgb, var(--accent-foreground) 30%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--accent-foreground) 30%, transparent);
+}
+
+.exampleDetails > div:nth-child(even) {
+  border-right: 0;
+}
+
+.exampleDetails > .exampleSolasRole {
+  grid-column: 1 / -1;
+  min-height: auto;
+  border-bottom: 0;
+}
+
+.exampleDetails > .exampleSessions {
+  grid-column: 1 / -1;
+  min-height: auto;
+  border-right: 0;
+}
+
+.exampleDetails dt {
+  color: color-mix(in srgb, var(--accent-foreground) 72%, transparent);
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.exampleDetails dd {
+  max-width: 15rem;
+  margin: 0.75rem 0 0;
+  font-family: var(--font-programmes-display), var(--font-display), Georgia, serif;
+  font-size: 1.3rem;
+  line-height: 1.2;
+}
+
+.exampleSolasRole dd {
+  max-width: 31rem;
+}
+
+.exampleSessions dd {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  max-width: none;
+  font-size: 1.05rem;
+}
+
+.exampleSessions dd span {
+  display: block;
+}
+
+.practitionerSection {
+  padding: 5.2rem 0 5.8rem;
+  border-top: 1px solid var(--border);
+}
+
+.practitionerIntro {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2.5rem;
+}
+
+.practitionerIntro > p {
+  margin: 0 0 0.25rem;
+}
+
+.practitionerGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-top: 2.75rem;
+}
+
+.practitionerStatus {
+  max-width: 37rem;
+  margin-top: 2.5rem;
+  padding: 2rem;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--muted) 46%, transparent);
+}
+
+.practitionerStatus > p {
+  color: var(--muted-foreground);
+  font-size: 0.9375rem;
+  line-height: 1.65;
+}
+
+.practitionerStatus .textLink {
+  margin-top: 1rem;
+}
+
+.faq {
+  display: grid;
+  grid-template-columns: 0.76fr 1.24fr;
+  gap: 5.5rem;
+  padding: 5.2rem 0 5.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.faqIntro {
+  padding-left: 0.5rem;
+}
+
+.faqList {
+  border-top: 1px solid var(--border);
+}
+
+.faqList details {
+  border-bottom: 1px solid var(--border);
+  padding: 1.4rem 0;
+}
+
+.faqList summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  cursor: pointer;
+  font-family: var(--font-programmes-display), var(--font-display), Georgia, serif;
+  font-size: 1.4rem;
+  line-height: 1.2;
+  list-style: none;
+}
+
+.faqList summary::-webkit-details-marker {
+  display: none;
+}
+
+.faqList summary::after {
+  flex: 0 0 auto;
+  content: "+";
+  color: var(--accent);
+  font-family: Inter, sans-serif;
+  font-size: 1.5rem;
+  font-weight: 400;
+}
+
+.faqList details[open] summary::after {
+  content: "−";
+}
+
+.faqList details p {
+  max-width: 36rem;
+  margin: 1rem 2.5rem 0 0;
+  color: var(--muted-foreground);
+  font-size: 0.875rem;
+  line-height: 1.75;
+}
+
 .process {
   display: grid;
   grid-template-columns: 0.9fr 1.1fr;
@@ -475,6 +680,11 @@
     gap: 2.5rem;
   }
 
+  .programmeExample,
+  .faq {
+    gap: 2.5rem;
+  }
+
   .contact {
     gap: 2.5rem;
   }
@@ -504,6 +714,8 @@
   .intro,
   .serviceGrid,
   .process,
+  .programmeExample,
+  .faq,
   .contact {
     grid-template-columns: 1fr;
   }
@@ -577,6 +789,39 @@
     padding: 3rem 0 4rem;
   }
 
+  .programmeExample {
+    gap: 2rem;
+    padding: 4rem 0;
+  }
+
+  .exampleIntro,
+  .faqIntro {
+    padding-left: 0.5rem;
+  }
+
+  .practitionerSection {
+    padding: 4rem 0;
+  }
+
+  .practitionerIntro {
+    display: block;
+  }
+
+  .practitionerIntro > p {
+    margin-top: 1.25rem;
+  }
+
+  .practitionerGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+    margin-top: 2rem;
+  }
+
+  .faq {
+    gap: 2.25rem;
+    padding: 4rem 0;
+  }
+
   .contact {
     gap: 2.5rem;
     padding: 4rem 0;
@@ -640,6 +885,56 @@
   .servicePeople h3,
   .serviceDelivery h3 {
     font-size: 2rem;
+  }
+
+  .exampleTitle {
+    display: block;
+    min-height: 0;
+    padding: 1.4rem;
+  }
+
+  .exampleTitle > p:last-child {
+    margin-top: 0.75rem;
+    font-size: 1.25rem;
+  }
+
+  .exampleDetails {
+    grid-template-columns: 1fr;
+  }
+
+  .exampleDetails > div,
+  .exampleDetails > div:nth-child(even) {
+    min-height: 0;
+    padding: 1.3rem 1.4rem;
+    border-right: 0;
+  }
+
+  .exampleDetails > .exampleSolasRole {
+    grid-column: auto;
+  }
+
+  .exampleDetails > .exampleSessions {
+    grid-column: auto;
+  }
+
+  .exampleDetails dd {
+    max-width: 17rem;
+    font-size: 1.2rem;
+  }
+
+  .exampleSessions dd {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+    max-width: 20rem;
+    font-size: 1rem;
+  }
+
+  .practitionerGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .faqList summary {
+    font-size: 1.25rem;
   }
 
   .processSteps li {
