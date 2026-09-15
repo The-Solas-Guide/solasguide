@@ -1,6 +1,6 @@
 import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
-import { Barlow_Condensed, Inter, Manrope } from "next/font/google";
+import { Fraunces, Inter, Manrope } from "next/font/google";
 import { Suspense } from "react";
 import { DesignReviewGate } from "@/components/design-system/design-review-gate";
 import { Toaster } from "@/components/ui/sonner";
@@ -11,10 +11,9 @@ import {
 } from "@/lib/site-config";
 import "./globals.css";
 
-const barlowCondensed = Barlow_Condensed({
-  variable: "--font-barlow-condensed",
+const fraunces = Fraunces({
+  variable: "--font-fraunces",
   subsets: ["latin"],
-  weight: "100",
   style: ["normal", "italic"],
 });
 
@@ -81,10 +80,10 @@ export default function RootLayout({
       lang="en"
       data-theme="aman"
       data-scroll-behavior="smooth"
-      className={`${barlowCondensed.variable} ${inter.variable} ${manrope.variable}`}
+      className={`${fraunces.variable} ${inter.variable} ${manrope.variable}`}
       style={
         {
-          "--font-display": "var(--font-barlow-condensed), Arial Narrow, sans-serif",
+          "--font-display": "var(--font-fraunces), Georgia, serif",
           "--font-body": "var(--font-inter), system-ui, sans-serif",
         } as React.CSSProperties
       }
