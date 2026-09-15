@@ -104,4 +104,46 @@ describe("Airtable CRM field mapping", () => {
     expect(fields).not.toHaveProperty("Owner");
     expect(fields).not.toHaveProperty("Internal notes");
   });
+
+  it("keeps programme details in existing text fields", () => {
+    const fields = mapCustomerEnquiryToAirtableFields({
+      archived_at: null,
+      consent_confirmed: true,
+      consent_given_at: "2026-09-15T00:00:00.000Z",
+      contact_preference: "email",
+      created_at: "2026-09-15T00:00:00.000Z",
+      customer_confirmation_sent_at: null,
+      customer_confirmation_status: "pending",
+      email: "maya@example.test",
+      full_name: "Maya Test",
+      id: "11111111-1111-4111-8111-111111111111",
+      internal_notes: null,
+      internal_notification_sent_at: null,
+      internal_notification_status: "pending",
+      phone: null,
+      questionnaire_answers: {
+        formVersion: "programme-v1",
+        organisation: "Solas Retreats",
+        experience: "retreat",
+        dates: "June 2027",
+        intention: "A restorative group retreat.",
+      },
+      source: "website",
+      status: "new",
+      submission_token: "22222222-2222-4222-8222-222222222222",
+      updated_at: "2026-09-15T00:00:00.000Z",
+    } satisfies Database["public"]["Tables"]["customer_enquiries"]["Row"], false);
+
+    expect(fields).toMatchObject({
+      fldsKjxRIb5qd14D9: "Email",
+      fldMO6cEh8zwmkAFy: "Solas Retreats",
+      fld7eU2fiIYsbgFKn: [
+        "Programme experience: Retreat",
+        "Dates: June 2027",
+        "What they have in mind: A restorative group retreat.",
+      ].join("\n"),
+    });
+    expect(fields).not.toHaveProperty("fld1SkYYFHVWVS5vm");
+    expect(fields).not.toHaveProperty("fld4VREmRcgNxjjqV");
+  });
 });

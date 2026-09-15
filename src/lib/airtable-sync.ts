@@ -4,6 +4,7 @@ import {
   CUSTOMER_QUESTIONNAIRE_FORM_VERSION,
   customerQuestionnaireLabel,
 } from "@/lib/enquiries/customer-questionnaire";
+import { PROGRAMME_FORM_VERSION, programmeExperienceLabel } from "@/lib/enquiries/programme-enquiry";
 import type { Database, Json } from "@/types/database";
 
 const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID;
@@ -117,6 +118,7 @@ function customerFields(row: Database["public"]["Tables"]["customer_enquiries"][
   const answers = row.questionnaire_answers;
   const formVersion = answerNumber(answers, "formVersion");
   const isStructuredQuestionnaire = formVersion === 3 || formVersion === CUSTOMER_QUESTIONNAIRE_FORM_VERSION;
+  const isProgramme = answerString(answers, "formVersion") === PROGRAMME_FORM_VERSION;
 
   function questionnaireValue(question: "q1" | "q2" | "q3" | "q4") {
     const values = answerStrings(answers, question)
@@ -183,7 +185,7 @@ function customerFields(row: Database["public"]["Tables"]["customer_enquiries"][
       unsure: "Unsure",
     }),
     [fields.groupSize]: groupSizeNumber,
-    [fields.organisation]: answerString(answers, "organizationName"),
+    [fields.organisation]: isProgramme ? answerString(answers, "organisation") : answerString(answers, "organizationName"),
     [fields.practices]: answerStrings(answers, "modalities")?.map((item) => label(item, {
       yoga: "Yoga",
       breathwork: "Breathwork",
@@ -205,7 +207,13 @@ function customerFields(row: Database["public"]["Tables"]["customer_enquiries"][
     [fields.lookingFor]: isStructuredQuestionnaire ? questionnaireValue("q2") : undefined,
     [fields.supportAreas]: isStructuredQuestionnaire ? questionnaireValue("q3") : undefined,
     [fields.connectionTiming]: isStructuredQuestionnaire ? questionnaireValue("q4") : undefined,
-    [fields.additionalContext]: isStructuredQuestionnaire ? answerString(answers, "q5") : answerString(answers, "notes"),
+    [fields.additionalContext]: isProgramme
+      ? [
+        `Programme experience: ${programmeExperienceLabel(answerString(answers, "experience") || "Not provided")}`,
+        `Dates: ${answerString(answers, "dates") || "Not provided"}`,
+        `What they have in mind: ${answerString(answers, "intention") || "Not provided"}`,
+      ].join("\n")
+      : isStructuredQuestionnaire ? answerString(answers, "q5") : answerString(answers, "notes"),
     [fields.testRecord]: isTestRecord,
   });
 }
