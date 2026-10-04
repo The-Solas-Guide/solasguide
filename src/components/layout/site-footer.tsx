@@ -29,6 +29,9 @@ export function SiteFooter() {
             <Link href={browseTheGuide.href} className={linkClassName}>
               {browseTheGuide.label}
             </Link>
+            <Link href="/programmes" className={linkClassName}>
+              Wellness programmes
+            </Link>
             <Link href="/#recognition" className={linkClassName}>
               How Recognition Works
             </Link>

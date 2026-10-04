@@ -13,6 +13,7 @@ const defaultLinks = [
   { label: "Explore", href: "/#explore" },
   { label: "How it works", href: "/#how-it-works" },
   { label: "The Guide", href: "/practitioners" },
+  { label: "Programmes", href: "/programmes" },
 ];
 
 type NavLink = {
@@ -23,9 +24,11 @@ type NavLink = {
 export function SiteHeader({
   className,
   links = defaultLinks,
+  cta = needHelpChoosing,
 }: {
   className?: string;
   links?: readonly NavLink[];
+  cta?: NavLink;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -65,7 +68,7 @@ export function SiteHeader({
         </nav>
         <div className="hidden lg:block">
           <Button asChild>
-            <Link href={needHelpChoosing.href}>{needHelpChoosing.label}</Link>
+            <Link href={cta.href}>{cta.label}</Link>
           </Button>
         </div>
         <button
@@ -104,8 +107,8 @@ export function SiteHeader({
             For practitioners
           </TrackedPractitionerLink>
           <Button asChild className="mt-3 w-full">
-            <Link href={needHelpChoosing.href} onClick={() => setOpen(false)}>
-              {needHelpChoosing.label}
+            <Link href={cta.href} onClick={() => setOpen(false)}>
+              {cta.label}
             </Link>
           </Button>
         </nav>
