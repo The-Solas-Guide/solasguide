@@ -57,3 +57,10 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - Use `gpt-5.6-luna` with max reasoning and the fast service tier for routine implementation and coding tasks.
 - Escalate complex, unfamiliar, regression-prone, or security-sensitive coding tasks to `gpt-5.6-terra` with xhigh reasoning.
 - Use `gpt-5.6-sol` with medium reasoning for pull request and final implementation review.
+
+## Cursor Cloud specific instructions
+
+- The Cloud Agent environment is defined in `.cursor/` (`environment.json`, `install.sh`, `start.sh`, `start-docker.sh`). `install.sh` pins Node from `.nvmrc`, runs `npm ci`, and installs the Docker engine and Supabase CLI; `start.sh` boots Docker, runs `supabase start`, and generates `.env.local`. A fresh agent needs no manual setup.
+- Local Supabase runs as Docker-in-Docker and needs container-to-container networking, which requires two fixes handled by `start-docker.sh`: pin Docker to the `iptables` firewall backend (via `/etc/docker/daemon.json`), and relax the stale legacy `iptables-legacy` `FORWARD` policy from `DROP` to `ACCEPT`. Without both, `supabase start` fails during Realtime migration with a DB connection timeout. Do not remove these fixes.
+- Server-side privileged paths (e.g. enquiry submission) require `SUPABASE_SERVICE_ROLE_KEY`. `start.sh` writes the local instance's service-role key into the git-ignored `.env.local` on every start, so it is always present in Cloud. Never commit a real key value; the local dev keys are non-secret and are read from `supabase status` at boot.
+- Local URLs: app on `http://localhost:3000`, Supabase API on `http://127.0.0.1:55321`, Studio on `http://127.0.0.1:55323`, Mailpit on `http://127.0.0.1:55324`.
