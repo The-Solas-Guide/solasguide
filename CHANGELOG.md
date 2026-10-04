@@ -34,3 +34,4 @@ This file records pull requests merged into `main`. Entries are added automatica
 - 2026-09-14 — Show public continents, keep country locations searchable ([#71](https://github.com/The-Solas-Guide/solasguide/pull/71)) — `6cfbbe653ecee76ad757e20a38dbc435ea499c7e`
 - 2026-09-14 — Soften public Bali framing in chrome and bios ([#72](https://github.com/The-Solas-Guide/solasguide/pull/72)) — `8d680afc796610edc475f1b8ef4aed9a3ecd80a5`
 - 2026-09-15 — Restore Fraunces headings across the public site ([#74](https://github.com/The-Solas-Guide/solasguide/pull/74)) — `cd059be538f0037c3011be4b99f7f4520616a3bd`
+- 2026-10-04 — Add wellness programme page and standalone enquiry form ([#73](https://github.com/The-Solas-Guide/solasguide/pull/73)) — `cf23b49adb3827b5bc00484e0a4409ab219cb4de`
