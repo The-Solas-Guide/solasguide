@@ -39,7 +39,7 @@ Supabase is the application runtime data store and source of truth. Airtable rec
 
 Prerequisites:
 
-- Node.js 22.22.1 and npm 10.9.4 (see `.nvmrc` and `package.json`)
+- Node.js 22.23.4 and npm 10.9.4 (see `.nvmrc` and `package.json`)
 - Docker Desktop when running Supabase locally
 - Supabase CLI or `npx supabase`
 
