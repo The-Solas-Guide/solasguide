@@ -37,3 +37,4 @@ This file records pull requests merged into `main`. Entries are added automatica
 - 2026-10-04 — Add wellness programme page and standalone enquiry form ([#73](https://github.com/The-Solas-Guide/solasguide/pull/73)) — `cf23b49adb3827b5bc00484e0a4409ab219cb4de`
 - 2026-10-24 — fix: pin Node runtime for CVE-2026-111497 ([#75](https://github.com/The-Solas-Guide/solasguide/pull/75)) — `6f279d8c6edc448d3e9e5f4d8d66977afae5b4b6`
 - 2026-11-15 — Colour the become-a-practitioner title forest green ([#76](https://github.com/The-Solas-Guide/solasguide/pull/76)) — `49edabfd06e22f74b620bf1f80d39fd0796f3dec`
+- 2026-11-15 — Revert the become-a-practitioner title colour ([#77](https://github.com/The-Solas-Guide/solasguide/pull/77)) — `a0fd6a819db149e509ee5e577295411a2cec162a`
