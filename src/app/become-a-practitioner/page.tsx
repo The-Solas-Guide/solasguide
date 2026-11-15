@@ -27,7 +27,7 @@ export default function BecomeAPractitionerPage() {
           <section className="mt-3 grid overflow-hidden border border-border bg-card lg:grid-cols-[1.05fr_0.95fr]">
             <div className="flex min-h-[36rem] flex-col justify-end p-7 sm:p-10 md:p-14 lg:min-h-[44rem] lg:p-16">
               <p className="review-label text-accent">For practitioners across Southeast Asia</p>
-              <h1 className="mt-6 max-w-2xl font-display text-5xl leading-[0.98] tracking-tight text-accent md:text-7xl">
+              <h1 className="mt-6 max-w-2xl font-display text-5xl leading-[0.98] tracking-tight md:text-7xl">
                 Let us know about your practice.
               </h1>
               <p className="mt-7 max-w-xl text-base leading-8 text-muted-foreground">
