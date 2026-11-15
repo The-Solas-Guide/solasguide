@@ -119,7 +119,7 @@ export const membershipFaqs = [
   {
     question: "Can you help me practise in Bali?",
     answer:
-      "If you're working out how to practise in Bali, book a call with Jitesh and we'll help you find the right way forward. The briefing on this page is general information, not personal advice.",
+      "The Working in Bali briefing is general information for practitioners, not personal advice. Solas does not provide immigration, legal or permit services. A call with Jitesh is about membership and your practice.",
   },
   {
     question: "Are events only for members?",
@@ -129,103 +129,7 @@ export const membershipFaqs = [
   {
     question: "Is the Bali briefing legal advice?",
     answer:
-      "No. It is general information only, not personal immigration, legal, tax or professional advice. For your own situation, speak with a qualified immigration adviser.",
-  },
-] as const;
-
-export const briefingRules = [
-  {
-    label: "Rule 01",
-    title: "Where you do the work matters. Not simply where you get paid.",
-    copy: "A London client paying your UK account for a session you give in Bali is still professional activity in Indonesia.",
-  },
-  {
-    label: "Rule 02",
-    title: "Having a KITAS does not automatically mean you can do every type of work.",
-    copy: "Don't only ask whether you have a KITAS. Ask whether your permission covers the work you want to do.",
-  },
-] as const;
-
-export const briefingQuestions = [
-  "What will I do?",
-  "Where will I do it?",
-  "Who is hiring or engaging me?",
-  "How will I be paid or benefit?",
-  "What permission do I have?",
-  "Does it cover this activity?",
-] as const;
-
-export const briefingSituations = [
-  {
-    title: "I want to see my own clients",
-    paragraphs: [
-      "You live in Bali and people book you directly for private sessions, treatments, coaching or other professional services.",
-      "Start with what you are doing, where you are doing it, who is paying or engaging you, what permission you have, and whether it covers this activity and location.",
-      "One option may be to work through an Indonesian business that can legally employ you and sponsor the appropriate E23 work permission. Another may be to set up your own PT PMA, a foreign-owned Indonesian company, with the appropriate permissions for both the business and the work you personally do.",
-      "Owning or managing the company is not the same as personally delivering the service. The company must be registered for the type of business it is doing, and you also need permission for the work you personally perform.",
-    ],
-  },
-  {
-    title: "I have been invited to facilitate",
-    paragraphs: [
-      "A retreat, hotel, studio, venue or organiser asks you to deliver a workshop, treatment, talk, class or retreat session. An invitation does not automatically mean you are covered.",
-      "Ask what exactly you are being asked to do, who is engaging you, whether they can legally engage you for this activity, what permission you need, and whether it covers this location.",
-      "For example, an E23 sponsored by one wellness centre should not be assumed to cover a workshop at a different hotel. “They invited me” does not automatically mean “I am permitted to do it.”",
-    ],
-  },
-  {
-    title: "I organise retreats",
-    paragraphs: [
-      "If you organise retreats in Bali, there are two sides to consider: whether your business can legally organise the retreat and engage the people delivering it, and whether each practitioner has permission for the work you are asking them to do.",
-      "This matters whether the practitioner already lives in Bali or is flying in for the retreat.",
-      "Before booking a practitioner, ask whether you can legally engage them, what permission they need, whether it covers what you are asking them to do, whether the venue or location changes anything, and what documents you should check. The practitioner has responsibilities. So does the organiser.",
-    ],
-  },
-  {
-    title: "I organise and facilitate my own retreat",
-    paragraphs: [
-      "You may be wearing two different hats: organiser, when you create, sell and manage the retreat, and practitioner, when you personally teach, coach, treat or facilitate guests.",
-      "These are not necessarily the same activity. Permission to organise a retreat does not automatically give you permission to personally deliver every session within it. Check both.",
-    ],
-  },
-  {
-    title: "I live in Bali but work online",
-    paragraphs: [
-      "Your clients or employer are overseas and your work is carried out online. The E33G remote worker route is designed for qualifying foreign remote work, subject to its requirements.",
-      "The important boundary is when the work becomes local: a private client in Bali, a workshop at a Bali studio, or facilitating a Bali retreat. Remote work permission should not be assumed to cover local professional work.",
-      "If you want to do both, seek advice about the structure you need.",
-    ],
-  },
-  {
-    title: "I am visiting Bali to facilitate",
-    paragraphs: [
-      "You live overseas and have been invited to Bali to teach, speak, demonstrate, facilitate, perform or join a retreat programme.",
-      "The route depends on what you will actually do, who is inviting you, whether and how you are compensated, and the nature of the engagement.",
-      "Don't begin with which visa to get. Begin with exactly what you have been invited to do, and which permission covers it. Short-term categories and their conditions can change. Check the current requirements before accepting the engagement or travelling.",
-    ],
-  },
-] as const;
-
-export const briefingRoutes = [
-  {
-    aim: "Work for an Indonesian wellness business or venue",
-    route: "E23 work route, where applicable.",
-  },
-  {
-    aim: "Run your own Indonesian business",
-    route: "PT PMA / E28A structure, plus the appropriate permission for work you personally deliver.",
-  },
-  {
-    aim: "Live in Bali and work remotely for overseas clients or employers",
-    route: "E33G remote worker route, subject to its conditions.",
-  },
-  {
-    aim: "Visit Bali for a specific short-term activity",
-    route: "An activity-specific short-term route.",
-  },
-  {
-    aim: "Work independently across different clients, venues and activities",
-    route: "Individual advice on the appropriate structure. There is no simple freelancer visa.",
+      "No. The Working in Bali briefing is general information only, not personal immigration, legal, tax or professional advice. Solas does not provide those services. For your own situation, speak with a qualified immigration adviser.",
   },
 ] as const;
 
@@ -352,7 +256,7 @@ export const letters: readonly {
           "Bali already has something that's very difficult to recreate elsewhere: nature, culture, traditions of care, hospitality, community and some brilliant practitioners. What people want from wellness is changing.",
           "Which changes make sense here? What new skills will they require? Can regulation keep up? And how do we move forward without losing the things that make Bali, Bali?",
           "Kathryn put it another way: “How does Bali grow without becoming a wellness theme park?” And she finished with: “The opportunity isn't to create more wellness. It's to create better wellness businesses.” I agree. So what does better look like here?",
-          "Since this edition went out, the briefing it described has been written up on this page, as a practical reference to return to when you are considering work here.",
+          "Since this edition went out, those notes have been published separately as general information. They are not legal advice, and Solas does not provide immigration or permit services.",
         ],
       },
     ],

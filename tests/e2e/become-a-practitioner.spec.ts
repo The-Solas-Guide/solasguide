@@ -44,7 +44,11 @@ test("explains practitioner membership", async ({ page }) => {
   await expect(page.getByText("Dirk Hamelijnck, Founding Practitioner")).toBeVisible();
   await expect(page.getByRole("navigation", { name: "Primary navigation" }).getByRole("link", { name: "Why Solas" })).toHaveAttribute("href", "/#why-solas");
   await expect(page.getByRole("navigation", { name: "Primary navigation" }).getByRole("link", { name: "How it works" })).toHaveCount(0);
-  await expect(page.locator("footer").getByRole("link", { name: "Working in Bali briefing" })).toHaveAttribute("href", "/membership#working-in-bali");
+  await expect(page.getByRole("contentinfo").getByRole("link", { name: "Working in Bali briefing", exact: true })).toHaveAttribute("href", "/working-in-bali");
+  await expect(page.getByRole("link", { name: "Read the Working in Bali briefing" }).first()).toHaveAttribute("href", "/working-in-bali");
+  await expect(page.getByRole("img", { name: "Nikki Heyder" })).toBeVisible();
+  await expect(page.getByText("Open briefing · The Solas Guide × Trident Treehouse")).toHaveCount(0);
+  await expect(page.getByText("Trident Treehouse")).toHaveCount(0);
 
   const call = page.getByRole("link", { name: "Book a call with Jitesh" });
   const apply = page.getByRole("link", { name: "Apply now · USD 350 a year" });
@@ -60,10 +64,21 @@ test("explains practitioner membership", async ({ page }) => {
   await page.getByRole("button", { name: /Past edition · Edition 02/ }).click();
   await expect(page.getByText("Sent to members and non-members.").first()).toBeVisible();
   await expect(page.getByText("You can't be everything to everyone")).toBeVisible();
-  await page.getByRole("button", { name: "Find your situation" }).click();
-  await expect(page.getByRole("heading", { name: "01 I want to see my own clients" })).toBeVisible();
-  await page.getByRole("button", { name: "Route map" }).click();
+
+  await page.goto("/working-in-bali");
+  await expect(page).toHaveTitle("Working in Bali · The Solas Guide");
+  await expect(page.locator('meta[name="description"]')).toHaveAttribute(
+    "content",
+    "General information for practitioners considering clients, workshops, retreats or other work in Bali. Not immigration, legal or permit advice.",
+  );
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "http://localhost:3000/working-in-bali");
+  await expect(page.getByRole("navigation", { name: "On this page" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "I want to see my own clients" })).toBeVisible();
   await expect(page.getByText("There is no simple freelancer visa.")).toBeVisible();
+  await expect(page.getByText("The Solas Guide does not provide immigration, legal, tax or permit advice").first()).toBeVisible();
+  await page.setViewportSize({ width: 390, height: 844 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  await expect(page.getByText("Trident Treehouse")).toHaveCount(0);
 
   const html = await page.content();
   const text = await page.locator("body").innerText();

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import type { ReactNode } from "react";
 import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 import { TrackedPractitionerLink } from "@/components/analytics/tracked-practitioner-link";
 import { MembershipDisclosure } from "@/components/membership/disclosure";
 import { SiteFooter } from "@/components/layout/site-footer";
@@ -10,10 +11,6 @@ import { buttonVariants } from "@/components/ui/button";
 import {
   applyHref,
   bookCallHref,
-  briefingQuestions,
-  briefingRoutes,
-  briefingRules,
-  briefingSituations,
   isBusinessWorkshopUpcoming,
   isPlaceholderFormUrl,
   letters,
@@ -215,7 +212,7 @@ export default function MembershipPage() {
                   We can help you practise in Bali.
                 </h2>
                 <p className="mt-6 max-w-2xl text-base leading-8 text-accent-foreground/85">
-                  Running sessions, events or retreats here raises real questions. If you&apos;re working out how to practise in Bali, talk to us and we&apos;ll help you find the right way forward.
+                  Running sessions, events or retreats here raises real questions. The briefing sets out general information only. Solas does not provide immigration, legal or permit services.
                 </p>
                 <div className="mt-8 flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:flex-wrap">
                   <TrackedPractitionerLink
@@ -245,7 +242,11 @@ export default function MembershipPage() {
                 <p className="mt-4 font-display text-2xl leading-snug text-balance">
                   &ldquo;Don&apos;t only ask: &lsquo;Do I have a KITAS?&rsquo; Ask: &lsquo;Does my permission cover the work I want to do?&rsquo;&rdquo;
                 </p>
-                <footer className="mt-4 text-sm leading-6 text-accent-foreground/75">From our Working in Bali briefing.</footer>
+                <footer className="mt-4 text-sm leading-6 text-accent-foreground/75">
+                  <Link href="/working-in-bali" className="underline-offset-4 hover:underline">
+                    Read the Working in Bali briefing
+                  </Link>
+                </footer>
               </blockquote>
             </div>
           </section>
@@ -329,98 +330,19 @@ export default function MembershipPage() {
           </section>
 
           <section id="working-in-bali" className={cn(sectionPad, "scroll-mt-6 border-x border-b border-border bg-card")}>
-            <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
-              <div className="max-w-3xl">
-                <p className="review-label text-accent">Open briefing · The Solas Guide × Trident Treehouse</p>
-                <h2 className="mt-5 text-balance font-display text-4xl leading-tight md:text-5xl">Practising wellness in Bali.</h2>
-                <p className="mt-6 text-base leading-8 text-muted-foreground">
-                  A practical reference following our practitioner briefing with Trident Treehouse, so you have something simple to return to when you are considering clients, workshops, retreats or other work in Bali.
-                </p>
-              </div>
-              <Image
-                src="/images/membership/trident-treehouse.png"
-                alt="Trident Treehouse"
-                width={931}
-                height={303}
-                className="h-auto w-44 shrink-0 bg-black px-3 py-2 sm:w-52"
-              />
+            <div className="max-w-3xl">
+              <p className="review-label text-muted-foreground">Working in Bali</p>
+              <h2 className="mt-5 font-display text-4xl leading-tight md:text-5xl">Practising wellness in Bali.</h2>
+              <p className="mt-6 text-base leading-8 text-muted-foreground">
+                General information for practitioners considering clients, workshops or retreats in Bali. It is not legal advice, and Solas does not provide immigration or permit services.
+              </p>
+              <Link
+                href="/working-in-bali"
+                className="mt-6 inline-flex min-h-11 items-center text-sm text-foreground underline-offset-4 hover:underline"
+              >
+                Read the Working in Bali briefing
+              </Link>
             </div>
-            <div className="mt-10 grid gap-px overflow-hidden border border-border bg-border md:grid-cols-2">
-              {briefingRules.map((rule) => (
-                <article key={rule.label} className="bg-card p-6 md:p-8">
-                  <p className="review-label text-accent">{rule.label}</p>
-                  <h3 className="mt-4 font-display text-2xl leading-snug">{rule.title}</h3>
-                  <p className="mt-4 text-sm leading-7 text-muted-foreground">{rule.copy}</p>
-                </article>
-              ))}
-            </div>
-            <div className="mt-8 border-b border-border">
-              <MembershipDisclosure title="Six questions, every booking">
-                <ol className="grid gap-3 sm:grid-cols-2">
-                  {briefingQuestions.map((question, index) => (
-                    <li key={question} className="border border-border bg-muted/30 px-4 py-3 text-foreground">
-                      <span className="review-label text-accent">{String(index + 1).padStart(2, "0")}</span>
-                      <span className="mt-2 block">{question}</span>
-                    </li>
-                  ))}
-                </ol>
-                <p>If you&apos;re unsure about the last question, check before accepting or promoting the work.</p>
-              </MembershipDisclosure>
-              <MembershipDisclosure title="Find your situation">
-                <div className="grid gap-6">
-                  {briefingSituations.map((situation, index) => (
-                    <article key={situation.title}>
-                      <h3 className="text-base text-foreground">
-                        {String(index + 1).padStart(2, "0")} {situation.title}
-                      </h3>
-                      <div className="mt-2 space-y-3">
-                        {situation.paragraphs.map((paragraph) => (
-                          <p key={paragraph}>{paragraph}</p>
-                        ))}
-                      </div>
-                    </article>
-                  ))}
-                </div>
-              </MembershipDisclosure>
-              <MembershipDisclosure title="Route map">
-                <ul className="grid gap-4">
-                  {briefingRoutes.map((item) => (
-                    <li key={item.aim} className="border-l border-accent pl-4">
-                      <p className="text-foreground">{item.aim}</p>
-                      <p className="mt-1">{item.route}</p>
-                    </li>
-                  ))}
-                </ul>
-                <p>There is not a simple freelancer visa that gives a foreign practitioner unrestricted permission to work anywhere in Bali.</p>
-              </MembershipDisclosure>
-              <MembershipDisclosure title="When something changes, check again">
-                <p>
-                  Immigration and work rules can change. Your situation can change too. Something that was correct for one situation should not automatically be assumed to apply to another: a new venue, a different type of session, a different employer, your first local client, or your own retreat.
-                </p>
-                <p>
-                  If you publicly advertise private sessions, workshops, retreats or other professional activity in Bali, make sure the activity you are promoting is covered by your permission. Don&apos;t ask how anyone would know. Ask whether you are permitted to do what you are advertising.
-                </p>
-              </MembershipDisclosure>
-              <MembershipDisclosure title="Need advice for your own situation?">
-                <p>Speak with a qualified immigration adviser. This briefing is general information only.</p>
-                <p>
-                  Working out how to practise in Bali? We can help.{" "}
-                  <TrackedPractitionerLink
-                    source="landing"
-                    href={bookCallHref}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-foreground underline-offset-4 hover:underline"
-                  >
-                    Book a call with Jitesh
-                  </TrackedPractitionerLink>
-                  .
-                </p>
-              </MembershipDisclosure>
-            </div>
-            <p className="mt-6 max-w-3xl text-xs leading-5 text-muted-foreground">
-              General information only, not personal immigration, legal, tax or professional advice. Information updated 28 September 2026.
-            </p>
           </section>
 
           <section id="learning" className={cn(sectionPad, "scroll-mt-6 border-x border-b border-border bg-muted/35")}>
@@ -445,7 +367,17 @@ export default function MembershipPage() {
                     Reserve your place <ArrowRight />
                   </a>
                 </div>
-                <div className="border border-border bg-card p-6 md:p-8">
+                <div className="border border-border bg-card">
+                  <div className="relative aspect-square max-h-80 overflow-hidden border-b border-border">
+                    <Image
+                      src="/images/membership/nikki-heyder.webp"
+                      alt="Nikki Heyder"
+                      fill
+                      className="object-cover object-[center_20%]"
+                      sizes="(max-width: 1024px) 100vw, 360px"
+                    />
+                  </div>
+                  <div className="p-6 md:p-8">
                   <h3 className="font-display text-2xl">Nikki Heyder</h3>
                   <p className="mt-2 text-sm text-foreground">Psychotherapist and wellness business strategist</p>
                   <p className="mt-4 text-sm leading-7 text-muted-foreground">
@@ -454,6 +386,7 @@ export default function MembershipPage() {
                   <p className="mt-4 text-sm leading-7 text-muted-foreground">
                     In this session she introduces a four-part diagnostic for assessing business sustainability. You apply it to your own practice, see where your time could make the greatest difference, and decide what to focus on next. It starts with your definition of success.
                   </p>
+                  </div>
                 </div>
               </div>
             ) : (
@@ -463,10 +396,10 @@ export default function MembershipPage() {
               <ul className="mt-6 max-w-3xl space-y-3 text-sm leading-7 text-muted-foreground">
                 <li>The Business Sustainability Blueprint, with Nikki Heyder. {workshopSchedule}</li>
                 <li>
-                  Practising Wellness in Bali, with Trident Treehouse.{" "}
-                  <a href="#working-in-bali" className="text-foreground underline-offset-4 hover:underline">
-                    Read the open briefing
-                  </a>
+                  Practising Wellness in Bali.{" "}
+                  <Link href="/working-in-bali" className="text-foreground underline-offset-4 hover:underline">
+                    Read the Working in Bali briefing
+                  </Link>
                   .
                 </li>
               </ul>
@@ -486,10 +419,10 @@ export default function MembershipPage() {
                 <h3 className="font-display text-2xl">Past sessions</h3>
                 <ul className="mt-4 space-y-3 text-sm leading-7 text-muted-foreground">
                   <li>
-                  Practising Wellness in Bali, with Trident Treehouse.{" "}
-                  <a href="#working-in-bali" className="text-foreground underline-offset-4 hover:underline">
-                    Read the open briefing
-                  </a>
+                  Practising Wellness in Bali.{" "}
+                  <Link href="/working-in-bali" className="text-foreground underline-offset-4 hover:underline">
+                    Read the Working in Bali briefing
+                  </Link>
                   .
                 </li>
                 </ul>

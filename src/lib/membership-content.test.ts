@@ -47,6 +47,8 @@ describe("membership public copy", () => {
       ...sourceFiles(join(process.cwd(), "src/app/membership")),
       ...sourceFiles(join(process.cwd(), "src/components/membership")),
       join(process.cwd(), "src/lib/membership-content.ts"),
+      join(process.cwd(), "src/lib/working-in-bali.ts"),
+      join(process.cwd(), "src/app/working-in-bali/page.tsx"),
       join(process.cwd(), "src/components/layout/site-footer.tsx"),
     ];
     const source = files.map((file) => readFileSync(file, "utf8")).join("\n");
