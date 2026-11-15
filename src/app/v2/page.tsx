@@ -118,8 +118,8 @@ export default function HomePageV2() {
                 </p>
                 <div className="mt-7 space-y-2 border-l border-accent pl-5 text-sm leading-6">
                   <p>We don&apos;t rank practitioners.</p>
-                  <p>We don&apos;t sell placements.</p>
-                  <p>We don&apos;t accept paid endorsements.</p>
+                  <p>We don&apos;t sell rankings or endorsements.</p>
+                  <p>We keep full editorial independence.</p>
                 </div>
               </div>
             </div>
@@ -190,18 +190,18 @@ export default function HomePageV2() {
           <section id="practitioner-applications" className="border-x border-b border-border bg-card px-5 py-16 sm:px-8 md:px-12 md:py-24 lg:px-16">
             <div className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end" data-reveal>
               <div>
-                <p className="review-label text-muted-foreground">Practitioner applications</p>
-                <h2 className="mt-5 max-w-2xl font-display text-4xl leading-tight sm:text-5xl">Recognition is by application.</h2>
+                <p className="review-label text-muted-foreground">For practitioners</p>
+                <h2 className="mt-5 max-w-2xl font-display text-4xl leading-tight sm:text-5xl">Practitioner membership is by application.</h2>
                 <p className="mt-6 max-w-3xl text-sm leading-7 text-muted-foreground">
-                  Recognition in The Solas Guide is earned through an independent review and editorial process.
+                  An independently written profile with verified claims, introductions where there&apos;s a fit, and a community of practitioners who take their work seriously.
                 </p>
-                <p className="mt-4 max-w-3xl text-sm leading-7 text-muted-foreground">
-                  We look for practitioners with depth of practice, professional standing and work that deserves to be better known.
-                </p>
-                <p className="mt-4 text-sm font-semibold">Applications are currently open for the next recognition round.</p>
               </div>
-              <TrackedPractitionerLink source="homepage" href="/become-a-practitioner" className={cn(buttonVariants(), "w-full sm:w-auto")}>
-                Apply for Recognition <ArrowRight />
+              <TrackedPractitionerLink
+                source="homepage"
+                href="/membership"
+                className="inline-flex min-h-11 items-center text-sm text-foreground underline-offset-4 hover:underline"
+              >
+                About practitioner membership →
               </TrackedPractitionerLink>
             </div>
           </section>

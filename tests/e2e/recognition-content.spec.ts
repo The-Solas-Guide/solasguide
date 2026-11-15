@@ -9,7 +9,7 @@ test.describe("homepage recognition content", () => {
     await expect(
       recognition.getByRole("heading", {
         level: 2,
-        name: "Recognition is earned. Not purchased.",
+        name: "Recognition is earned through verification.",
       }),
     ).toBeVisible();
     await expect(
@@ -25,10 +25,11 @@ test.describe("homepage recognition content", () => {
       ),
     ).toBeVisible();
     const processStatement = recognition.locator("p").filter({
-      hasText: "Recognition cannot be purchased.",
+      hasText: "What we publish cannot be purchased.",
     });
-    await expect(processStatement).toContainText("Recognition cannot be purchased.");
-    await expect(processStatement).toContainText("It is the result of our review and editorial judgement.");
+    await expect(processStatement).toContainText(
+      "What we publish cannot be purchased. Every claim is verified, and our editorial judgement is independent.",
+    );
 
     const standards = [
       [

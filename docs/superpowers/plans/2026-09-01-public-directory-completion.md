@@ -237,7 +237,7 @@ Directory, profile, and valid discovery pages use `index: true, follow: true`. M
 
 - [ ] **Step 5: Build the dynamic sitemap**
 
-Include `/`, `/find-a-match`, `/become-a-practitioner`, `/practitioners`, every published profile, and every active support-area and location linked to a published profile.
+Include `/`, `/find-a-match`, `/membership`, `/practitioners`, every published profile, and every active support-area and location linked to a published profile.
 
 - [ ] **Step 6: Add browser assertions**
 

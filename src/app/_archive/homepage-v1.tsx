@@ -271,8 +271,8 @@ export default function ArchivedHomePageV1() {
                   If you are based in Bali or work here regularly, share a short professional introduction for The Solas Guide to consider for relevant future conversations.
                 </p>
               </div>
-              <TrackedPractitionerLink source="homepage" href="/become-a-practitioner" className={buttonVariants()}>
-                Become a practitioner <ArrowRight />
+              <TrackedPractitionerLink source="homepage" href="/membership" className={buttonVariants()}>
+                About practitioner membership <ArrowRight />
               </TrackedPractitionerLink>
             </div>
           </section>

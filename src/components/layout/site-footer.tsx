@@ -40,10 +40,10 @@ export function SiteFooter() {
             </Link>
             <TrackedPractitionerLink
               source="footer"
-              href="/become-a-practitioner"
+              href="/membership"
               className={linkClassName}
             >
-              Apply for Recognition
+              Practitioner membership
             </TrackedPractitionerLink>
           </div>
         </div>

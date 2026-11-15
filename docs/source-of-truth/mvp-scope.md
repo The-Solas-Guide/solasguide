@@ -12,7 +12,7 @@ The service uses human judgement and the trusted Solas network to review buyer c
 
 - Public website introduction and editorial positioning.
 - Find a Match page and guided buyer enquiry form.
-- Become a Practitioner page and expression-of-interest form.
+- Practitioner membership page and application form.
 - Privacy and website terms pages using client-approved content.
 - Supabase storage for buyer and practitioner submissions.
 - Supabase practitioner directory schema with controlled taxonomy and a draft, published, and archived lifecycle.

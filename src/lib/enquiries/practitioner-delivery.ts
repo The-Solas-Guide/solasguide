@@ -30,7 +30,7 @@ export async function processPractitionerExpressionDelivery(
   if (deliveryClaim.error) return { error: "claim_failed", deliveryPending: true } as const;
 
   const persisted = stored.data;
-  const customerText = `Hello ${persisted.full_name},\n\nThank you for sharing your expression of interest in joining The Solas Guide. We have received your information and will review it carefully.\n\nThe Solas Guide`;
+  const customerText = `Hello ${persisted.full_name},\n\nThank you for your practitioner membership application. We have received your information and will review it carefully.\n\nThe Solas Guide`;
   const operationsEmail = process.env.SOLAS_OPERATIONS_EMAIL;
   const internalText = [
     `Name: ${persisted.full_name}`,
@@ -44,13 +44,13 @@ export async function processPractitionerExpressionDelivery(
     answerSummary(persisted.questionnaire_answers),
   ].join("\n");
   const customerResult = deliveryClaim.data.send_customer
-    ? await sendTransactionalEmail([new Recipient(persisted.email, persisted.full_name)], "We have received your Solas Guide expression of interest", customerText, operationsEmail ? new Recipient(operationsEmail, "Solas operations") : undefined)
+    ? await sendTransactionalEmail([new Recipient(persisted.email, persisted.full_name)], "We have received your Solas Guide membership application", customerText, operationsEmail ? new Recipient(operationsEmail, "Solas operations") : undefined)
       .then(() => "sent" as const)
       .catch((error) => { console.error("Practitioner confirmation failed", error instanceof Error ? error.name : "UnknownError"); return "failed" as const; })
     : persisted.customer_confirmation_status;
   const internalResult = deliveryClaim.data.send_internal
     ? operationsEmail
-      ? await sendTransactionalEmail([new Recipient(operationsEmail, "Solas operations")], `New practitioner expression of interest from ${persisted.full_name}`, internalText, new Recipient(persisted.email, persisted.full_name))
+      ? await sendTransactionalEmail([new Recipient(operationsEmail, "Solas operations")], `New practitioner membership application from ${persisted.full_name}`, internalText, new Recipient(persisted.email, persisted.full_name))
         .then(() => "sent" as const)
         .catch((error) => { console.error("Practitioner internal notification failed", error instanceof Error ? error.name : "UnknownError"); return "failed" as const; })
       : "failed" as const

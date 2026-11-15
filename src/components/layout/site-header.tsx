@@ -60,7 +60,7 @@ export function SiteHeader({
           ))}
           <TrackedPractitionerLink
             source="header"
-            href="/become-a-practitioner"
+            href="/membership"
             className="inline-flex min-h-11 items-center text-xs font-semibold uppercase tracking-[0.13em] text-muted-foreground transition-colors hover:text-foreground"
           >
             For practitioners
@@ -100,7 +100,7 @@ export function SiteHeader({
           ))}
           <TrackedPractitionerLink
             source="mobile-header"
-            href="/become-a-practitioner"
+            href="/membership"
             onClickCapture={() => setOpen(false)}
             className="flex min-h-12 items-center border-b border-border px-3 text-sm"
           >

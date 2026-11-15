@@ -1,6 +1,41 @@
 import { expect, test } from "@playwright/test";
 
-test("submits and reviews a practitioner expression of interest", async ({ page }) => {
+test("explains practitioner membership", async ({ page }) => {
+  await page.goto("/become-a-practitioner");
+  await expect(page).toHaveURL(/\/membership$/);
+  await expect(page).toHaveTitle("Practitioner membership · The Solas Guide, Bali");
+  await expect(page.locator('meta[name="description"]')).toHaveAttribute(
+    "content",
+    "A membership for experienced wellness practitioners in Bali, expanding across Southeast Asia, with verified profiles, introductions and community.",
+  );
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "http://localhost:3000/membership");
+  await expect(page.getByText("Practitioner membership · Volume One, Bali")).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "For practitioners serious about their work." })).toBeVisible();
+  await expect(page.getByText("Volume One: Bali, expanding across Southeast Asia")).toBeVisible();
+  await expect(page.getByText("I've had the same offers for international communities online, but it's never felt right. This one does.", { exact: true })).toBeVisible();
+  await expect(page.getByText("Opportunities to run Face Reading Soirées in Bali legally, plus connecting with incredible specialist therapists.", { exact: true })).toBeVisible();
+  await expect(page.getByText("After being in Bali for so many years, I’m very discerning about where I give my time and energy. I wanted to be part of a quality community and surround myself with people who work with integrity.", { exact: true })).toBeVisible();
+  await expect(page.getByText("Melanie Midegs, Founding Practitioner")).toHaveCount(2);
+  await expect(page.getByText("Made warm connections. I enjoy my talks with Jit.", { exact: true })).toBeVisible();
+  await expect(page.getByText("Rajiv Arapurakal, Founding Practitioner")).toBeVisible();
+  await expect(page.getByText("Beautiful connection with great people.", { exact: true })).toBeVisible();
+  await expect(page.getByText("Dirk Hamelijnck, Founding Practitioner")).toBeVisible();
+
+  const call = page.getByRole("link", { name: "Book a call with Jitesh" });
+  const apply = page.getByRole("link", { name: "Apply now · USD 350 a year" });
+  await expect(call).toHaveCount(2);
+  await expect(apply).toHaveCount(2);
+  await expect(call.first()).toHaveAttribute("href", "https://cal.com/solassolas/30min-private-conversation");
+  await expect(call.first()).toHaveAttribute("target", "_blank");
+  await expect(apply.first()).toHaveAttribute("href", "https://tally.so/r/XxQvJz");
+  await expect(apply.first()).toHaveAttribute("target", "_blank");
+
+  await page.goto("/become-a-practitioner/express-interest");
+  await expect(page).toHaveURL(/\/membership\/apply$/);
+  await expect(page.getByText("Volume One: Bali, expanding across Southeast Asia")).toBeVisible();
+});
+
+test("submits and reviews a practitioner membership application", async ({ page }) => {
   let submittedBody: Record<string, unknown> | undefined;
   const analyticsEvents: unknown[][] = [];
 
@@ -25,16 +60,7 @@ test("submits and reviews a practitioner expression of interest", async ({ page 
     });
   });
 
-  await page.goto("/become-a-practitioner");
-  await expect(page.getByText("For practitioners across Southeast Asia")).toBeVisible();
-  await expect(
-    page.getByText(
-      "The Solas Guide is building a considered network of practitioners and experiences across Southeast Asia. Share a short introduction so we can understand your work and how to reach you.",
-      { exact: true },
-    ),
-  ).toBeVisible();
-  await page.getByRole("link", { name: "Express your interest" }).first().click();
-  await expect(page).toHaveURL(/\/become-a-practitioner\/express-interest$/);
+  await page.goto("/membership/apply");
 
   await page.getByLabel("Professional role or practice").fill("Yoga teacher and facilitator");
   await page.getByLabel("Practice or business name (optional)").fill("Ubud Practice Studio");
@@ -58,7 +84,7 @@ test("submits and reviews a practitioner expression of interest", async ({ page 
   await page.getByLabel("Full name").fill("Alex Morgan");
   await page.getByLabel("Email address").fill("alex@example.com");
   await page.getByRole("button", { name: "WhatsApp" }).click();
-  await page.getByRole("button", { name: /Review your expression of interest/ }).click();
+  await page.getByRole("button", { name: /Review your application/ }).click();
   await expect(page.getByText("Add a phone number for phone or WhatsApp follow-up.")).toBeVisible();
   await page.getByLabel("Phone or WhatsApp number").fill("+62 812 555 0100");
 
@@ -74,7 +100,7 @@ test("submits and reviews a practitioner expression of interest", async ({ page 
   expect(JSON.stringify(persistedDraft)).not.toContain("alex@example.com");
   expect(JSON.stringify(persistedDraft)).not.toContain("eight years");
 
-  await page.getByRole("button", { name: /Review your expression of interest/ }).click();
+  await page.getByRole("button", { name: /Review your application/ }).click();
 
   await expect(page.getByText("Ubud Practice Studio")).toBeVisible();
   await page.getByRole("button", { name: "Edit your practice" }).click();
@@ -82,12 +108,12 @@ test("submits and reviews a practitioner expression of interest", async ({ page 
   await page.getByRole("button", { name: /^Return to review/ }).click();
   await expect(page.getByText("Yoga teacher and somatic facilitator")).toBeVisible();
 
-  await page.getByRole("button", { name: "Send expression of interest" }).click();
-  await expect(page.getByText("Confirm that we may use these details to respond to your expression of interest.")).toBeVisible();
+  await page.getByRole("button", { name: "Send application" }).click();
+  await expect(page.getByText("Confirm that we may use these details to review your membership application.")).toBeVisible();
   await page.getByRole("checkbox", { name: /may use these details/ }).check();
-  await page.getByRole("button", { name: "Send expression of interest" }).click();
+  await page.getByRole("button", { name: "Send application" }).click();
 
-  await expect(page.getByRole("heading", { name: "Thank you. Your expression of interest has been received." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Thank you. Your membership application has been received." })).toBeVisible();
   expect(submittedBody).toMatchObject({
     fullName: "Alex Morgan",
     email: "alex@example.com",
@@ -114,7 +140,6 @@ test("submits and reviews a practitioner expression of interest", async ({ page 
     .filter(([eventType]) => eventType === "event")
     .map(([, event]) => (event as { name?: unknown }).name);
   expect(eventNames).toEqual(expect.arrayContaining([
-    "practitioner_interest_cta_clicked",
     "practitioner_interest_started",
     "practitioner_interest_step_completed",
     "practitioner_interest_reviewed",
@@ -129,16 +154,16 @@ test("rejects an unreadable practitioner submission", async ({ request }) => {
   });
 
   expect(response.status()).toBe(400);
-  await expect(response.json()).resolves.toEqual({ error: "The expression of interest could not be read." });
+  await expect(response.json()).resolves.toEqual({ error: "The membership application could not be read." });
 });
 
 test("recovers from a submission token conflict", async ({ page }) => {
   await page.route("**/api/enquiries/practitioner", (route) => route.fulfill({
     status: 409,
     contentType: "application/json",
-    body: JSON.stringify({ error: "This expression of interest could not be retried." }),
+    body: JSON.stringify({ error: "This membership application could not be retried." }),
   }));
-  await page.goto("/become-a-practitioner/express-interest");
+  await page.goto("/membership/apply");
 
   await page.getByLabel("Professional role or practice").fill("Yoga teacher");
   await page.getByRole("button", { name: "Based in Bali" }).click();
@@ -152,13 +177,13 @@ test("recovers from a submission token conflict", async ({ page }) => {
   await page.getByRole("button", { name: /^Continue/ }).click();
   await page.getByLabel("Full name").fill("Alex Morgan");
   await page.getByLabel("Email address").fill("alex@example.com");
-  await page.getByRole("button", { name: /Review your expression of interest/ }).click();
+  await page.getByRole("button", { name: /Review your application/ }).click();
   await page.getByRole("checkbox", { name: /may use these details/ }).check();
   const originalToken = await page.evaluate(() =>
     JSON.parse(localStorage.getItem("solas-practitioner-interest-draft-v1") || "null").draft.submissionToken,
   );
-  await page.getByRole("button", { name: "Send expression of interest" }).click();
-  await page.getByRole("button", { name: "Start a new expression" }).click();
+  await page.getByRole("button", { name: "Send application" }).click();
+  await page.getByRole("button", { name: "Start a new application" }).click();
 
   await expect(page.getByRole("heading", { name: "Tell us about your work." })).toBeFocused();
   await expect(page.getByLabel("Professional role or practice")).toHaveValue("");
@@ -170,12 +195,12 @@ test("recovers from a submission token conflict", async ({ page }) => {
 
 test("keeps the practitioner journey usable at 390px", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/become-a-practitioner");
+  await page.goto("/membership");
 
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
-  const cta = page.getByRole("link", { name: "Express your interest" }).first();
+  const cta = page.getByRole("link", { name: "Book a call with Jitesh" }).first();
   expect((await cta.boundingBox())?.height).toBeGreaterThanOrEqual(44);
-  await cta.click();
+  await page.goto("/membership/apply");
 
   await expect.poll(() => page.evaluate(() => localStorage.getItem("solas-practitioner-interest-draft-v1"))).not.toBeNull();
   const initialExpiry = await page.evaluate(() => JSON.parse(
