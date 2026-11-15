@@ -14,7 +14,7 @@ export const workshopReserveHref = "https://tally.so/r/bZqJ5o";
 
 export const membershipTitle = "Practitioner membership · The Solas Guide, Bali";
 export const membershipDescription =
-  "A membership for experienced wellness practitioners in Bali. A verified editorial profile, introductions where there's a fit, help practising in Bali, and a place at The Solas Table. USD 350 a year.";
+  "A membership for experienced wellness practitioners in Bali. A verified editorial profile, consideration for introductions where there's a fit, help practising in Bali, and access to Solas Tables. Introductions aren't guaranteed. USD 350 a year.";
 
 export const membershipNavLinks = [
   { label: "Why Solas", href: "/#why-solas" },
@@ -37,8 +37,8 @@ export const proofStats = [
     detail: "seats at the next Solas Table, 3 December",
   },
   {
-    figure: "Free",
-    detail: "Solas Tables for members (IDR 350k for non-members)",
+    figure: "For now",
+    detail: "members join Solas Tables free, and non-members can attend for IDR 350k",
   },
 ] as const;
 
@@ -49,11 +49,11 @@ export const membershipBenefits = [
   },
   {
     title: "Be put forward for work",
-    copy: "Travel advisors, retreat organisers and organisations are already coming to Solas looking for practitioners, speakers and panellists. Where the fit makes sense, we make the introduction.",
+    copy: "Travel advisors, retreat organisers and organisations already come to Solas looking for practitioners, speakers and panellists. Members are considered for these introductions where the fit makes sense. Introductions aren't guaranteed.",
   },
   {
-    title: "A seat at every Solas Table",
-    copy: "Members join Solas Tables free. Non-members pay IDR 350k.",
+    title: "Access to Solas Tables",
+    copy: "Members get access to Solas Tables. For now, members join free and non-members can attend for IDR 350k. Tables will become members-only, and members may pay to attend.",
   },
   {
     title: "Build the business behind it",
@@ -62,7 +62,7 @@ export const membershipBenefits = [
 ] as const;
 
 export const membershipFeeLine =
-  "Your membership pays for your profile to be researched, written and kept up to date, for gatherings and workshops, and for the time it takes to make good introductions. It never buys a ranking, an endorsement or what we write. We keep full editorial independence and only publish what we can verify.";
+  "Your membership pays for your profile to be researched, written and kept up to date, for gatherings and workshops, and for the time it takes to consider introductions. It never buys a ranking, an endorsement, an introduction or what we write. We keep full editorial independence and only publish what we can verify.";
 
 export const nextTable = {
   when: "Thursday 3 December",
@@ -100,12 +100,12 @@ export const membershipFaqs = [
   {
     question: "What's included for USD 350 a year?",
     answer:
-      "A verified editorial profile, introductions where there's a fit, free seats at Solas Tables, workshops, the Letter, and help working out how to practise in Bali. About USD 29 a month.",
+      "A verified editorial profile, consideration for introductions where the fit makes sense, access to Solas Tables, workshops, the Letter, and help working out how to practise in Bali. Introductions aren't guaranteed. For now, members join Solas Tables free and non-members can attend for IDR 350k. Tables will become members-only, and members may pay to attend. About USD 29 a month.",
   },
   {
     question: "Is the fee refundable?",
     answer:
-      "No. The application and verification fee is non-refundable. It pays for your profile to be researched, written and kept up to date, for gatherings and workshops, and for the time it takes to make good introductions. It never buys a ranking, an endorsement or what we write.",
+      "No. The application and verification fee is non-refundable. It pays for your profile to be researched, written and kept up to date, for gatherings and workshops, and for the time it takes to consider introductions. It never buys a ranking, an endorsement, an introduction or what we write.",
   },
   {
     question: "Does paying guarantee a profile?",
@@ -124,7 +124,7 @@ export const membershipFaqs = [
   {
     question: "Are events only for members?",
     answer:
-      "No. Solas Tables are free for members and IDR 350k for non-members. The Business Sustainability Blueprint is free for members and non-members. The Working in Bali briefing is open to read.",
+      "No. For now, members join Solas Tables free and non-members can attend for IDR 350k. Tables will become members-only, and members may pay to attend. The 3 December table is free for members, and non-members pay IDR 350k. We send a payment link once a non-member's seat is confirmed. The Business Sustainability Blueprint is free for members and non-members. The Working in Bali briefing is open to read.",
   },
   {
     question: "Is the Bali briefing legal advice?",

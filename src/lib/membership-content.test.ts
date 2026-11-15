@@ -7,7 +7,9 @@ import {
   isBusinessWorkshopUpcoming,
   isPlaceholderFormUrl,
   letters,
+  membershipBenefits,
   membershipDescription,
+  membershipFaqs,
   practiseWhatsAppHref,
   testimonials,
 } from "@/lib/membership-content";
@@ -66,6 +68,14 @@ describe("membership public copy", () => {
     expect(practiseWhatsAppHref).toBe(
       "https://wa.me/447793050098?text=Hi%20Jitesh%2C%20I%27d%20like%20to%20talk%20about%20practising%20in%20Bali.",
     );
+    expect(membershipDescription).toContain("Introductions aren't guaranteed");
+    expect(membershipBenefits[1]).toEqual({
+      title: "Be put forward for work",
+      copy: "Travel advisors, retreat organisers and organisations already come to Solas looking for practitioners, speakers and panellists. Members are considered for these introductions where the fit makes sense. Introductions aren't guaranteed.",
+    });
+    expect(membershipBenefits[2].title).toBe("Access to Solas Tables");
+    expect(membershipBenefits[2].copy).not.toMatch(/every/i);
+    expect(JSON.stringify(membershipFaqs)).not.toContain("every Solas Table");
     expect(membershipDescription).toContain("USD 350 a year");
     expect(testimonials.map((item) => item.attribution)).toEqual([
       "Melanie Midegs, Founding Practitioner",

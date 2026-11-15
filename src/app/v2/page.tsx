@@ -193,7 +193,7 @@ export default function HomePageV2() {
                 <p className="review-label text-muted-foreground">For practitioners</p>
                 <h2 className="mt-5 max-w-2xl font-display text-4xl leading-tight sm:text-5xl">Practitioner membership is by application.</h2>
                 <p className="mt-6 max-w-3xl text-sm leading-7 text-muted-foreground">
-                  An independently written profile with verified claims, introductions where there&apos;s a fit, and a community of practitioners who take their work seriously.
+                  An independently written profile with verified claims, consideration for introductions where there&apos;s a fit, and a community of practitioners who take their work seriously. Introductions aren&apos;t guaranteed.
                 </p>
               </div>
               <TrackedPractitionerLink

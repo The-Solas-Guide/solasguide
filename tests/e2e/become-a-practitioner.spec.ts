@@ -11,7 +11,7 @@ test("explains practitioner membership", async ({ page }) => {
   await expect(page).toHaveTitle("Practitioner membership · The Solas Guide, Bali");
   await expect(page.locator('meta[name="description"]')).toHaveAttribute(
     "content",
-    "A membership for experienced wellness practitioners in Bali. A verified editorial profile, introductions where there's a fit, help practising in Bali, and a place at The Solas Table. USD 350 a year.",
+    "A membership for experienced wellness practitioners in Bali. A verified editorial profile, consideration for introductions where there's a fit, help practising in Bali, and access to Solas Tables. Introductions aren't guaranteed. USD 350 a year.",
   );
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "http://localhost:3000/membership");
   await expect(page.locator('meta[property="og:title"]')).toHaveAttribute(
@@ -23,6 +23,11 @@ test("explains practitioner membership", async ({ page }) => {
   await expect(page.getByText("59", { exact: true })).toBeVisible();
   await expect(page.getByText("practitioners have joined a Solas Table or signed up for our Bali briefing call")).toBeVisible();
   await expect(page.getByRole("heading", { name: "We can help you practise in Bali." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Be put forward for work" })).toBeVisible();
+  await expect(page.getByText("Introductions aren't guaranteed.").first()).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Access to Solas Tables" })).toBeVisible();
+  await expect(page.getByText("A seat at every Solas Table")).toHaveCount(0);
+  await expect(page.getByText("Members join every Solas Table free.")).toHaveCount(0);
   await expect(page.getByText("Venue to be confirmed")).toBeVisible();
   await expect(page.getByText("Not a member? We'll send a payment link once your seat is confirmed.")).toBeVisible();
   await expect(page.getByText("Edition 01, September 2026, and Edition 02, October 2026, have already gone out to members and non-members.")).toBeVisible();

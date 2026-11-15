@@ -169,7 +169,7 @@ export default function MembershipPage() {
                 Your practice, properly recognised in Bali.
               </h1>
               <p className="mt-7 max-w-2xl text-base leading-8 text-muted-foreground">
-                A selective guide and private community for experienced wellness practitioners. A verified editorial profile, introductions where there&apos;s a fit, help practising in Bali, and a place at The Solas Table.
+                A selective guide and private community for experienced wellness practitioners. A verified editorial profile, consideration for introductions where there&apos;s a fit, help practising in Bali, and access to Solas Tables. Introductions aren&apos;t guaranteed.
               </p>
               <div className="mt-9">
                 <MembershipCalls appearance="default" />
@@ -312,7 +312,7 @@ export default function MembershipPage() {
                   </FormPlaceholderLink>
                 </div>
                 <p className="mt-5 text-sm leading-7 text-muted-foreground">
-                  Members join every Solas Table free.{" "}
+                  For now, members join free and non-members can attend for IDR 350k. Tables will become members-only, and members may pay to attend.{" "}
                   <TrackedPractitionerLink
                     source="landing"
                     href={bookCallHref}
