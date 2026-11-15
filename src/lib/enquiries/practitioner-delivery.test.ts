@@ -82,9 +82,9 @@ describe("practitioner expression delivery protection", () => {
     await expect(processPractitionerExpressionDelivery(client as never, "website-id")).resolves.toEqual({ deliveryPending: false });
 
     expect(mocks.sendTransactionalEmail).toHaveBeenCalledTimes(3);
-    expect(mocks.sendTransactionalEmail.mock.calls[0][1]).toBe("We have received your Solas Guide expression of interest");
-    expect(mocks.sendTransactionalEmail.mock.calls[1][1]).toContain("New practitioner expression");
-    expect(mocks.sendTransactionalEmail.mock.calls[2][1]).toContain("New practitioner expression");
+    expect(mocks.sendTransactionalEmail.mock.calls[0][1]).toBe("We have received your Solas Guide membership application");
+    expect(mocks.sendTransactionalEmail.mock.calls[1][1]).toContain("New practitioner membership application");
+    expect(mocks.sendTransactionalEmail.mock.calls[2][1]).toContain("New practitioner membership application");
     expect(update.mock.calls[0][0]).toMatchObject({ customer_confirmation_status: "sent", internal_notification_status: "failed" });
     expect(update.mock.calls[1][0]).toMatchObject({ internal_notification_status: "sent" });
   });

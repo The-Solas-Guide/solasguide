@@ -28,7 +28,7 @@ const steps: { key: JourneyStep; eyebrow: string; title: string }[] = [
   { key: "areas", eyebrow: "Practice areas", title: "Which practices best describe your work?" },
   { key: "experience", eyebrow: "Experience and links", title: "What would help us understand your work?" },
   { key: "contact", eyebrow: "Contact", title: "How should we contact you?" },
-  { key: "review", eyebrow: "Review", title: "Check your expression of interest before sending it." },
+  { key: "review", eyebrow: "Review", title: "Check your membership application before sending it." },
 ];
 const relationshipChoices: Choice[] = [
   { value: "based-in-bali", label: "Based in Bali", description: "My practice is currently based in Bali." },
@@ -259,7 +259,7 @@ export function PractitionerInterestForm() {
 
   async function submit() {
     if (!consent) {
-      setError("Confirm that we may use these details to respond to your expression of interest.");
+      setError("Confirm that we may use these details to review your membership application.");
       return;
     }
     setSubmitting(true);
@@ -296,14 +296,14 @@ export function PractitionerInterestForm() {
       const result = await response.json() as { ok?: boolean; duplicate?: boolean; error?: string };
       if (!response.ok || !result.ok) {
         if (response.status === 409) setTokenConflict(true);
-        throw new Error(result.error || "We could not save your expression of interest.");
+        throw new Error(result.error || "We could not save your membership application.");
       }
       draftStorageActive.current = false;
       try { localStorage.removeItem(DRAFT_KEY); } catch { /* Storage may be unavailable. */ }
       track("practitioner_interest_submitted", { is_retry: Boolean(result.duplicate) });
       setSubmitted(true);
     } catch (submissionError) {
-      setError(submissionError instanceof Error ? submissionError.message : "We could not save your expression of interest. Please try again.");
+      setError(submissionError instanceof Error ? submissionError.message : "We could not save your membership application. Please try again.");
     } finally {
       setSubmitting(false);
     }
@@ -314,10 +314,10 @@ export function PractitionerInterestForm() {
       <main className="flex min-h-screen items-center overflow-x-hidden bg-muted/40 px-5 py-16">
         <section className="mx-auto w-full max-w-2xl rounded-md border border-border bg-card p-8 md:p-12" role="status">
           <Check className="size-8 text-accent" />
-          <p className="mt-8 text-xs uppercase tracking-[0.18em] text-muted-foreground">Expression of interest received</p>
-          <h1 className="mt-4 font-display text-4xl leading-tight md:text-5xl">Thank you. Your expression of interest has been received.</h1>
+          <p className="mt-8 text-xs uppercase tracking-[0.18em] text-muted-foreground">Application received</p>
+          <h1 className="mt-4 font-display text-4xl leading-tight md:text-5xl">Thank you. Your membership application has been received.</h1>
           <p className="mt-6 max-w-xl leading-7 text-muted-foreground">
-            We have saved the details you shared. If The Solas Guide would like to continue the conversation, we will use your chosen contact details.
+            We have saved your membership application. We verify the claims we publish, and we will use your chosen contact details if we need anything further.
           </p>
           <Button asChild className="mt-8"><Link href="/">Return to The Solas Guide</Link></Button>
         </section>
@@ -353,14 +353,15 @@ export function PractitionerInterestForm() {
       <div className="mx-auto w-full max-w-[1240px]">
         <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 border-b border-border px-1 pb-5 md:px-0">
           <Link href="/" className="font-display text-xl tracking-tight sm:text-2xl">The Solas Guide</Link>
-          <Link href="/become-a-practitioner" className="inline-flex min-h-11 items-center gap-2 text-xs uppercase tracking-[0.14em] text-muted-foreground transition-colors hover:text-foreground">
-            <ArrowLeft className="size-4 shrink-0" /> About practitioner interest
+          <Link href="/membership" className="inline-flex min-h-11 items-center gap-2 text-xs uppercase tracking-[0.14em] text-muted-foreground transition-colors hover:text-foreground">
+            <ArrowLeft className="size-4 shrink-0" /> About practitioner membership
           </Link>
         </div>
         <section className="mt-3 flex min-h-[700px] flex-col border border-border bg-background md:mt-0 md:h-[min(920px,calc(100vh-128px))] md:border-0 md:border-b">
           <div className="px-5 py-5 sm:px-6 md:px-8 md:py-6">
             <h1 className="font-display text-2xl leading-tight tracking-tight sm:text-3xl">Introduce your practice</h1>
-            <div className="mt-3" role="progressbar" aria-label="Expression of interest progress" aria-valuemin={1} aria-valuemax={steps.length} aria-valuenow={index + 1}>
+            <p className="mt-2 text-sm text-muted-foreground">Volume One: Bali, expanding across Southeast Asia</p>
+            <div className="mt-3" role="progressbar" aria-label="Membership application progress" aria-valuemin={1} aria-valuemax={steps.length} aria-valuenow={index + 1}>
               <div className="h-1 overflow-hidden rounded-full bg-muted"><div className="h-full bg-accent transition-[width] duration-500 motion-reduce:transition-none" style={{ width: `${((index + 1) / steps.length) * 100}%` }} /></div>
               <div className="mt-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-[10px] uppercase tracking-[0.16em] text-muted-foreground"><span>Step {index + 1} of {steps.length}</span><span className="text-right">{copy.eyebrow}</span></div>
             </div>
@@ -377,7 +378,7 @@ export function PractitionerInterestForm() {
               <div className="max-w-2xl">
                 <h2 ref={headingRef} tabIndex={-1} className="max-w-xl font-display text-xl leading-[1.15] text-balance outline-none md:text-2xl md:leading-[1.1]">{copy.title}</h2>
               </div>
-              {error && <div ref={errorRef} tabIndex={-1} className="outline-none"><FormFeedback tone="error" title="A little more detail is needed" description={error} className="mt-6" />{tokenConflict && <Button type="button" variant="outline" onClick={startNewExpression} className="mt-3 w-full sm:w-auto">Start a new expression</Button>}</div>}
+              {error && <div ref={errorRef} tabIndex={-1} className="outline-none"><FormFeedback tone="error" title="A little more detail is needed" description={error} className="mt-6" />{tokenConflict && <Button type="button" variant="outline" onClick={startNewExpression} className="mt-3 w-full sm:w-auto">Start a new application</Button>}</div>}
               <div className="mt-7">
                 {step === "practice" && (
                   <div className="space-y-7">
@@ -405,13 +406,13 @@ export function PractitionerInterestForm() {
                   <div className="divide-y divide-border rounded-md border border-border bg-card">
                     {reviewRows.map((row) => <div key={row.label} className="flex items-start justify-between gap-5 p-4 md:p-5"><div className="min-w-0"><p className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground">{row.label}</p><p className="mt-2 break-words text-sm leading-6">{row.value}</p></div><button type="button" aria-label={`Edit ${row.label.toLowerCase()}`} onClick={() => { setError(""); setReturnToReview(true); setStep(row.edit); }} className="inline-flex min-h-11 shrink-0 items-center gap-1 text-xs uppercase tracking-[0.12em] text-muted-foreground hover:text-foreground"><Pencil className="size-3" /> Edit</button></div>)}
                     <div className="absolute -left-[9999px]" aria-hidden="true"><Label htmlFor="website">Website</Label><Input id="website" name="website" tabIndex={-1} autoComplete="off" value={website} onChange={(event) => setWebsite(event.target.value)} /></div>
-                    <label className="flex min-h-11 items-start gap-3 p-5 text-xs leading-relaxed text-muted-foreground"><input type="checkbox" checked={consent} onChange={(event) => setConsent(event.target.checked)} className="mt-0.5 size-5 shrink-0 accent-[var(--accent)]" /><span>I agree that The Solas Guide may use these details to respond to my expression of interest.</span></label>
+                    <label className="flex min-h-11 items-start gap-3 p-5 text-xs leading-relaxed text-muted-foreground"><input type="checkbox" checked={consent} onChange={(event) => setConsent(event.target.checked)} className="mt-0.5 size-5 shrink-0 accent-[var(--accent)]" /><span>I agree that The Solas Guide may use these details to review my membership application.</span></label>
                   </div>
                 )}
               </div>
               <div className="mt-auto flex flex-col-reverse items-stretch justify-between gap-4 border-t border-border pt-6 sm:flex-row sm:items-center sm:gap-5 sm:pt-7">
                 {index > 0 ? <button type="button" onClick={goBack} className="inline-flex min-h-11 items-center gap-2 px-0 text-xs uppercase tracking-[0.14em] text-muted-foreground transition-colors hover:text-foreground"><ArrowLeft className="size-4" /> Back</button> : <span className="inline-flex min-h-11 items-center text-xs text-muted-foreground">Takes a few minutes</span>}
-                {step === "review" ? <Button type="button" onClick={submit} disabled={submitting} className="w-full sm:w-auto">{submitting ? "Sending…" : "Send expression of interest"}<ArrowRight /></Button> : <Button type="button" onClick={continueJourney} className="w-full sm:w-auto">{returnToReview ? "Return to review" : step === "contact" ? "Review your expression of interest" : "Continue"}<ArrowRight /></Button>}
+                {step === "review" ? <Button type="button" onClick={submit} disabled={submitting} className="w-full sm:w-auto">{submitting ? "Sending…" : "Send application"}<ArrowRight /></Button> : <Button type="button" onClick={continueJourney} className="w-full sm:w-auto">{returnToReview ? "Return to review" : step === "contact" ? "Review your application" : "Continue"}<ArrowRight /></Button>}
               </div>
             </div>
           </div>

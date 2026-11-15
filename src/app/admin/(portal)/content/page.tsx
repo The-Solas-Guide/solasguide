@@ -13,9 +13,9 @@ const publicPages = [
     note: "Buyer enquiry journey.",
   },
   {
-    href: "/become-a-practitioner",
-    title: "Become a Practitioner",
-    note: "Practitioner interest journey.",
+    href: "/membership",
+    title: "Practitioner membership",
+    note: "Practitioner membership.",
   },
   { href: "/privacy", title: "Privacy", note: "Approved privacy copy." },
   { href: "/terms", title: "Website terms", note: "Approved terms copy." },

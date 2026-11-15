@@ -184,7 +184,7 @@ describe("form submission workflow startup", () => {
 
     expect(response.status).toBe(503);
     await expect(response.json()).resolves.toEqual({
-      error: "Your expression of interest was saved, but processing could not start. Please try again.",
+      error: "Your membership application was saved, but processing could not start. Please try again.",
     });
   });
 

@@ -56,12 +56,12 @@ function isHttpsUrl(value: string) {
 }
 
 function validate(body: unknown): { data?: Submission; error?: string } {
-  if (!isRecord(body) || !isRecord(body.answers)) return { error: "The expression of interest could not be read." };
-  if (Object.keys(body).some((key) => !allowedTopLevelKeys.has(key))) return { error: "The expression of interest contains an unexpected field." };
+  if (!isRecord(body) || !isRecord(body.answers)) return { error: "The membership application could not be read." };
+  if (Object.keys(body).some((key) => !allowedTopLevelKeys.has(key))) return { error: "The membership application contains an unexpected field." };
 
   const data = body as Submission;
   const answers = data.answers;
-  if (Object.keys(answers).some((key) => !allowedAnswerKeys.has(key))) return { error: "The expression of interest contains an unexpected field." };
+  if (Object.keys(answers).some((key) => !allowedAnswerKeys.has(key))) return { error: "The membership application contains an unexpected field." };
 
   const tokenPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
   if (!tokenPattern.test(data.submissionToken ?? "")) return { error: "Refresh the page and try again." };
@@ -79,7 +79,7 @@ function validate(body: unknown): { data?: Submission; error?: string } {
   if (phone.length > 50 || (data.contactPreference === "email" && phone)) return { error: "Check your contact details." };
   if (practiceName && (practiceName.length < 2 || practiceName.length > 200)) return { error: "Check your practice or business name." };
   if (websiteUrl.length > 2048 || !isHttpsUrl(websiteUrl)) return { error: "Enter a valid HTTPS website or profile link." };
-  if (data.consentConfirmed !== true) return { error: "Confirm that we may use these details to respond to your expression of interest." };
+  if (data.consentConfirmed !== true) return { error: "Confirm that we may use these details to review your membership application." };
 
   const professionalRole = typeof answers.professionalRole === "string" ? answers.professionalRole.trim() : "";
   const relationship = answers.baliRelationship;
@@ -130,10 +130,10 @@ export async function POST(request: Request) {
 
   let body: unknown;
   try {
-    if (Number(request.headers.get("content-length") || 0) > 32_768) return Response.json({ error: "The expression of interest is too large." }, { status: 413 });
+    if (Number(request.headers.get("content-length") || 0) > 32_768) return Response.json({ error: "The membership application is too large." }, { status: 413 });
     body = await request.json();
   } catch {
-    return Response.json({ error: "The expression of interest could not be read." }, { status: 400 });
+    return Response.json({ error: "The membership application could not be read." }, { status: 400 });
   }
 
   const result = validate(body);
@@ -142,7 +142,7 @@ export async function POST(request: Request) {
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !serviceKey) return Response.json({ error: "Expressions of interest are temporarily unavailable." }, { status: 503 });
+  if (!url || !serviceKey) return Response.json({ error: "Membership applications are temporarily unavailable." }, { status: 503 });
 
   const supabase = createClient<Database>(url, serviceKey, { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } });
   const submission = result.data;
@@ -169,7 +169,7 @@ export async function POST(request: Request) {
         .select("id, email")
         .eq("submission_token", submission.submissionToken)
         .single();
-      if (existing.error || existing.data.email !== submission.email) return Response.json({ error: "This expression of interest could not be retried." }, { status: 409 });
+      if (existing.error || existing.data.email !== submission.email) return Response.json({ error: "This membership application could not be retried." }, { status: 409 });
       try {
         await start(airtableSubmissionWorkflow, [{
           source: "practitioner_expression",
@@ -179,13 +179,13 @@ export async function POST(request: Request) {
         }]);
       } catch (error) {
         console.error("Practitioner Airtable workflow failed to start", error instanceof Error ? error.message : "unknown");
-        return Response.json({ error: "Your expression of interest was saved, but processing could not start. Please try again." }, { status: 503 });
+        return Response.json({ error: "Your membership application was saved, but processing could not start. Please try again." }, { status: 503 });
       }
       const delivery = await processPractitionerExpressionDelivery(supabase, existing.data.id);
       return Response.json({ ok: true, duplicate: true, deliveryPending: delivery.deliveryPending });
     }
-    console.error("Practitioner expression of interest insert failed", insert.error.code);
-    return Response.json({ error: "We could not save your expression of interest. Please try again." }, { status: 500 });
+    console.error("Practitioner membership application insert failed", insert.error.code);
+    return Response.json({ error: "We could not save your membership application. Please try again." }, { status: 500 });
   }
 
   try {
@@ -197,7 +197,7 @@ export async function POST(request: Request) {
     }]);
   } catch (error) {
     console.error("Practitioner Airtable workflow failed to start", error instanceof Error ? error.message : "unknown");
-    return Response.json({ error: "Your expression of interest was saved, but processing could not start. Please try again." }, { status: 503 });
+    return Response.json({ error: "Your membership application was saved, but processing could not start. Please try again." }, { status: 503 });
   }
   const delivery = await processPractitionerExpressionDelivery(supabase, insert.data.id);
   return Response.json({ ok: true, duplicate: false, deliveryPending: delivery.deliveryPending });

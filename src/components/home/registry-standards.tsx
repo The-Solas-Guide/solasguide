@@ -27,7 +27,7 @@ export function RegistryStandards() {
             id="recognition-heading"
             className="mt-4 max-w-xl font-display text-3xl leading-[1.08] text-balance sm:text-4xl md:text-5xl md:leading-[1.05]"
           >
-            Recognition is earned. Not purchased.
+            Recognition is earned through verification.
           </h2>
         </div>
         <div
@@ -42,9 +42,7 @@ export function RegistryStandards() {
             We look at professional standing, experience, training and contribution to practice, and verify the claims we publish where they can be independently corroborated.
           </p>
           <p className="border-l border-accent pl-5 text-foreground">
-            Recognition cannot be purchased.
-            <br />
-            It is the result of our review and editorial judgement.
+            What we publish cannot be purchased. Every claim is verified, and our editorial judgement is independent.
           </p>
         </div>
       </div>

@@ -30,12 +30,12 @@ test.describe("homepage", () => {
 
     const sections = [
       "Why The Solas Guide Exists",
-      "Recognition is earned. Not purchased.",
+      "Recognition is earned through verification.",
       "Meet the Founding Practitioners",
       "Who the Guide is for",
       "Need help choosing?",
       "Professional enquiries",
-      "Practitioner applications",
+      "Practitioner membership is by application.",
     ];
 
     for (const section of sections) {
@@ -74,9 +74,17 @@ test.describe("homepage", () => {
     await expect(page.getByRole("heading", { name: "Not sure who to speak to?" })).toBeVisible();
     await expect(page.getByText("Organisations", { exact: true })).toBeVisible();
     await expect(page.getByText("Corporate Teams")).toHaveCount(0);
-    await expect(page.getByRole("link", { name: "Apply for Recognition" }).first()).toHaveAttribute(
+    await expect(page.locator("footer").getByRole("link", { name: "Practitioner membership", exact: true })).toHaveAttribute(
       "href",
-      "/become-a-practitioner",
+      "/membership",
+    );
+    await expect(page.getByRole("link", { name: "About practitioner membership" })).toHaveAttribute(
+      "href",
+      "/membership",
+    );
+    await expect(page.getByRole("navigation", { name: "Primary navigation" }).getByRole("link", { name: "For practitioners" })).toHaveAttribute(
+      "href",
+      "/membership",
     );
   });
 
@@ -122,6 +130,18 @@ test.describe("homepage", () => {
       "/practitioners",
     );
     await expect(registry.getByText("Build Your Retreat", { exact: true })).toHaveCount(0);
+  });
+
+  test("shows practitioner membership in the mobile menu", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+    await page.getByRole("button", { name: "Toggle navigation" }).click();
+    await expect(
+      page.getByRole("navigation", { name: "Mobile navigation" }).getByRole("link", { name: "For practitioners" }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("navigation", { name: "Mobile navigation" }).getByRole("link", { name: "For practitioners" }),
+    ).toHaveAttribute("href", "/membership");
   });
 
   test("keeps the published practitioner preview usable at 390px", async ({ page }) => {

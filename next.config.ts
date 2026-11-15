@@ -23,6 +23,20 @@ const profileImageRemotePatterns = (() => {
 })();
 
 const nextConfig: NextConfig = {
+  async redirects() {
+    return [
+      {
+        source: "/become-a-practitioner",
+        destination: "/membership",
+        permanent: true,
+      },
+      {
+        source: "/become-a-practitioner/express-interest",
+        destination: "/membership/apply",
+        permanent: true,
+      },
+    ];
+  },
   allowedDevOrigins: ["127.0.0.1"],
   experimental: {
     serverActions: {

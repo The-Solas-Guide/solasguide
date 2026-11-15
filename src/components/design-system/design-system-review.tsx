@@ -270,7 +270,7 @@ export function DesignSystemReview() {
                 "Representative homepage",
                 "About and editorial positioning",
                 "Find a Match enquiry",
-                "Become a Practitioner enquiry",
+                "Practitioner membership application",
                 "Privacy and website terms",
                 "Confirmation and error states",
               ].map((item, index) => (
