@@ -1,24 +1,43 @@
 import { expect, test } from "@playwright/test";
 
 const legalPages = [
-  { path: "/privacy", heading: "Privacy" },
-  { path: "/terms", heading: "Website terms" },
+  {
+    path: "/privacy",
+    heading: "Privacy policy",
+    title: "Privacy policy · The Solas Guide",
+    description:
+      "How The Solas Guide collects, uses, and shares personal information from this website, enquiries, and membership applications.",
+  },
+  {
+    path: "/terms",
+    heading: "Website terms of use",
+    title: "Website terms of use · The Solas Guide",
+    description:
+      "The terms for using The Solas Guide website, sending an enquiry, and applying for practitioner membership.",
+  },
 ] as const;
 
 for (const legalPage of legalPages) {
-  test(`${legalPage.heading} page is clearly marked as a draft`, async ({ page }) => {
+  test(`${legalPage.heading} explains the live site and marks unknown details`, async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto(legalPage.path);
 
+    await expect(page).toHaveTitle(legalPage.title);
+    await expect(page.locator('meta[name="description"]')).toHaveAttribute("content", legalPage.description);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", `http://localhost:3000${legalPage.path}`);
     await expect(page.getByRole("heading", { name: legalPage.heading, exact: true })).toBeVisible();
-    await expect(page.getByText("Draft placeholder", { exact: true })).toBeVisible();
-    await expect(page.getByText("Client-approved content pending.", { exact: true })).toBeVisible();
-    await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
+    await expect(page.getByText("Last updated 15 November 2026")).toBeVisible();
+    await expect(page.getByRole("link", { name: "+44 7793 050098" })).toHaveAttribute("href", "https://wa.me/447793050098");
+    await expect(page.getByText("To be confirmed: legal entity name.").first()).toBeVisible();
+    await expect(page.getByText("To be confirmed: registered address.").first()).toBeVisible();
+    await expect(page.getByText("To be confirmed: privacy contact email.").first()).toBeVisible();
+    await expect(page.getByText("Draft placeholder")).toHaveCount(0);
+    await expect(page.locator('meta[name="robots"]')).not.toHaveAttribute("content", /noindex/);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   });
 }
 
-test("footer links connect the two legal placeholders", async ({ page }) => {
+test("footer links connect privacy and website terms", async ({ page }) => {
   await page.goto("/privacy");
 
   const footer = page.getByRole("contentinfo");
@@ -27,5 +46,6 @@ test("footer links connect the two legal placeholders", async ({ page }) => {
 
   await footer.getByRole("link", { name: "Website terms", exact: true }).click();
   await expect(page).toHaveURL(/\/terms$/);
-  await expect(page.getByRole("heading", { name: "Website terms", exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Website terms of use", exact: true })).toBeVisible();
+  await expect(page.getByText("non-refundable", { exact: false }).first()).toBeVisible();
 });
