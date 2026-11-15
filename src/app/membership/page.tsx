@@ -17,16 +17,9 @@ const membershipBenefits = [
   "Help with the business side: masterclasses and briefings on pricing, positioning, partnerships and working legally in Indonesia.",
 ] as const;
 
-const testimonials: { quote: string; attribution: string; detail?: string }[] = [
+const testimonials = [
   {
     quote: "I've had the same offers for international communities online, but it's never felt right. This one does.",
-    detail:
-      "Opportunities to run Face Reading Soirées in Bali legally, plus connecting with incredible specialist therapists.",
-    attribution: "Melanie Midegs, Founding Practitioner",
-  },
-  {
-    quote:
-      "After being in Bali for so many years, I’m very discerning about where I give my time and energy. I wanted to be part of a quality community and surround myself with people who work with integrity.",
     attribution: "Melanie Midegs, Founding Practitioner",
   },
   {
@@ -37,7 +30,7 @@ const testimonials: { quote: string; attribution: string; detail?: string }[] = 
     quote: "Beautiful connection with great people.",
     attribution: "Dirk Hamelijnck, Founding Practitioner",
   },
-];
+] as const;
 
 const membershipSteps = [
   ["01", "Call with Jitesh", "Start with a conversation about your work."],
@@ -169,9 +162,6 @@ export default function MembershipPage() {
                   <figure key={testimonial.quote} className="border-l border-accent pl-5">
                     <blockquote className="text-base leading-7 text-foreground">
                       <p>{testimonial.quote}</p>
-                      {testimonial.detail ? (
-                        <p className="mt-3 text-sm leading-6 text-muted-foreground">{testimonial.detail}</p>
-                      ) : null}
                     </blockquote>
                     <figcaption className="mt-3 text-sm leading-6 text-foreground">{testimonial.attribution}</figcaption>
                   </figure>

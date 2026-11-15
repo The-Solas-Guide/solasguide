@@ -13,9 +13,9 @@ test("explains practitioner membership", async ({ page }) => {
   await expect(page.getByRole("heading", { level: 1, name: "For practitioners serious about their work." })).toBeVisible();
   await expect(page.getByText("Volume One: Bali, expanding across Southeast Asia")).toBeVisible();
   await expect(page.getByText("I've had the same offers for international communities online, but it's never felt right. This one does.", { exact: true })).toBeVisible();
-  await expect(page.getByText("Opportunities to run Face Reading Soirées in Bali legally, plus connecting with incredible specialist therapists.", { exact: true })).toBeVisible();
-  await expect(page.getByText("After being in Bali for so many years, I’m very discerning about where I give my time and energy. I wanted to be part of a quality community and surround myself with people who work with integrity.", { exact: true })).toBeVisible();
-  await expect(page.getByText("Melanie Midegs, Founding Practitioner")).toHaveCount(2);
+  await expect(page.getByText("Melanie Midegs, Founding Practitioner")).toHaveCount(1);
+  await expect(page.getByText("After being in Bali for so many years")).toHaveCount(0);
+  await expect(page.getByText("Face Reading Soirées")).toHaveCount(0);
   await expect(page.getByText("Made warm connections. I enjoy my talks with Jit.", { exact: true })).toBeVisible();
   await expect(page.getByText("Rajiv Arapurakal, Founding Practitioner")).toBeVisible();
   await expect(page.getByText("Beautiful connection with great people.", { exact: true })).toBeVisible();
