@@ -45,6 +45,9 @@ export function SiteFooter() {
             >
               Practitioner membership
             </TrackedPractitionerLink>
+            <Link href="/membership#working-in-bali" className={linkClassName}>
+              Working in Bali briefing
+            </Link>
           </div>
         </div>
         <div>

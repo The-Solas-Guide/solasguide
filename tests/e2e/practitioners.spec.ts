@@ -345,7 +345,7 @@ test.describe("practitioner taxonomy discovery pages", () => {
       "href",
       "/practitioners/locations/southeast-asia",
     );
-    await expect(page.getByRole("link", { name: "Bali" })).toHaveCount(0);
+    await expect(page.getByRole("link", { name: "Bali", exact: true })).toHaveCount(0);
   });
 
   test("links active directory taxonomy summaries to discovery pages", async ({ page }) => {
