@@ -38,3 +38,4 @@ This file records pull requests merged into `main`. Entries are added automatica
 - 2026-10-24 — fix: pin Node runtime for CVE-2026-111497 ([#75](https://github.com/The-Solas-Guide/solasguide/pull/75)) — `6f279d8c6edc448d3e9e5f4d8d66977afae5b4b6`
 - 2026-11-15 — Colour the become-a-practitioner title forest green ([#76](https://github.com/The-Solas-Guide/solasguide/pull/76)) — `49edabfd06e22f74b620bf1f80d39fd0796f3dec`
 - 2026-11-15 — Revert the become-a-practitioner title colour ([#77](https://github.com/The-Solas-Guide/solasguide/pull/77)) — `a0fd6a819db149e509ee5e577295411a2cec162a`
+- 2026-11-15 — Move practitioner membership to /membership and update the copy ([#78](https://github.com/The-Solas-Guide/solasguide/pull/78)) — `6068b5deabd126d77f9cae6b37fcc3e05173acbd`
