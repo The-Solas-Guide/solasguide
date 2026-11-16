@@ -32,14 +32,6 @@ export const proofStats = [
     figure: "3",
     detail: "practitioner events since June",
   },
-  {
-    figure: "22",
-    detail: "seats at the next Solas Table, 3 December",
-  },
-  {
-    figure: "For now",
-    detail: "members join Solas Tables free, and non-members can attend for IDR 350k",
-  },
 ] as const;
 
 export const membershipBenefits = [
@@ -53,7 +45,7 @@ export const membershipBenefits = [
   },
   {
     title: "Access to Solas Tables",
-    copy: "Members get access to Solas Tables. For now, members join free and non-members can attend for IDR 350k. Tables will become members-only, and members may pay to attend.",
+    copy: "Members get access to Solas Tables, an intimate gathering every 6–8 weeks. Sometimes non-members are invited; at other times members contribute towards the cost too.",
   },
   {
     title: "Build the business behind it",
@@ -69,23 +61,32 @@ export const nextTable = {
   time: "From 6pm",
   venue: "Venue to be confirmed",
   seats: "22 seats",
-  members: "Members free",
-  nonMembers: "Non-members IDR 350k",
-  paymentNote: "Not a member? We'll send a payment link once your seat is confirmed.",
+  confirmationNote: "Details shared when your seat is confirmed.",
 } as const;
+
+export const nikkiFacts = ["Mon 23 Nov", "7–8pm WITA", "Online", "Free"] as const;
+
+export const nikkiShortBio =
+  "Nikki Heyder is a psychotherapist and wellness business strategist. She has spent more than 14 years building, running, and advising wellness businesses.";
+
+export const nikkiMore =
+  "She has worked in clinical rehabilitation and outpatient care, built a private practice, owned health food restaurants, run retreats internationally, sold products, and published a book. Today she advises founders, from newly qualified practitioners to health food cafés, wellness hotels, and established supplement brands. This session starts with your definition of success, then a four-part look at what needs attention next.";
 
 export const testimonials = [
   {
     quote: "I've had the same offers for international communities online, but it's never felt right. This one does.",
     attribution: "Melanie Midegs, Founding Practitioner",
+    initials: "MM",
   },
   {
     quote: "Made warm connections. I enjoy my talks with Jit.",
     attribution: "Rajiv Arapurakal, Founding Practitioner",
+    initials: "RA",
   },
   {
     quote: "Beautiful connection with great people.",
     attribution: "Dirk Hamelijnck, Founding Practitioner",
+    initials: "DH",
   },
 ] as const;
 
@@ -100,7 +101,7 @@ export const membershipFaqs = [
   {
     question: "What's included for USD 350 a year?",
     answer:
-      "A verified editorial profile, consideration for introductions where the fit makes sense, access to Solas Tables, workshops, the Letter, and help working out how to practise in Bali. Introductions aren't guaranteed. For now, members join Solas Tables free and non-members can attend for IDR 350k. Tables will become members-only, and members may pay to attend. About USD 29 a month.",
+      "A verified editorial profile, consideration for introductions where the fit makes sense, access to Solas Tables, workshops, the Letter, and help working out how to practise in Bali. Introductions aren't guaranteed. Solas Tables are an intimate gathering every 6–8 weeks. About USD 29 a month.",
   },
   {
     question: "Is the fee refundable?",
@@ -124,7 +125,7 @@ export const membershipFaqs = [
   {
     question: "Are events only for members?",
     answer:
-      "No. For now, members join Solas Tables free and non-members can attend for IDR 350k. Tables will become members-only, and members may pay to attend. The 3 December table is free for members, and non-members pay IDR 350k. We send a payment link once a non-member's seat is confirmed. The Business Sustainability Blueprint is free for members and non-members. The Working in Bali briefing is open to read.",
+      "No. Solas Tables are an intimate gathering every 6–8 weeks. Sometimes non-members are invited; at other times members contribute towards the cost too. The 3 December table is from 6pm, with 22 seats. The venue is still to be confirmed. Details are shared when your seat is confirmed. The Business Sustainability Blueprint is free for members and non-members. The Working in Bali briefing is open to read.",
   },
   {
     question: "Is the Bali briefing legal advice?",

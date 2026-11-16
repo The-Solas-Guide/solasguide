@@ -2,7 +2,7 @@ import Link from "next/link";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { membershipNavLinks } from "@/lib/membership-content";
-import { legalUpdated, whatsAppDisplay, whatsAppHref, type LegalSection } from "@/lib/legal-content";
+import { legalEmail, legalUpdated, type LegalSection } from "@/lib/legal-content";
 
 function Paragraph({ text }: { text: string }) {
   const parts = text.split(/(\[?To be confirmed:[^.\]]+\.?\]?)/g);
@@ -50,9 +50,9 @@ export function LegalPage({
               <p className="mt-6 max-w-2xl text-base leading-8 text-muted-foreground">{description}</p>
               <p className="mt-4 text-sm text-foreground">Last updated {legalUpdated}</p>
               <p className="mt-4 max-w-2xl text-sm leading-7 text-muted-foreground">
-                WhatsApp{" "}
-                <a href={whatsAppHref} className="text-foreground underline-offset-4 hover:underline">
-                  {whatsAppDisplay}
+                Email{" "}
+                <a href={`mailto:${legalEmail}`} className="text-foreground underline-offset-4 hover:underline">
+                  {legalEmail}
                 </a>
                 . Sentences marked “To be confirmed” are not yet decided. Please do not treat them as final.
               </p>

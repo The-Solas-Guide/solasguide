@@ -1,7 +1,6 @@
 export const legalUpdated = "15 November 2026";
 
-export const whatsAppHref = "https://wa.me/447793050098";
-export const whatsAppDisplay = "+44 7793 050098";
+export const legalEmail = "info@solassolas.com";
 
 export const privacyTitle = "Privacy policy · The Solas Guide";
 export const privacyDescription =
@@ -12,9 +11,7 @@ export const termsDescription =
   "The terms for using The Solas Guide website, sending an enquiry, and applying for practitioner membership.";
 
 export const legalPlaceholders = [
-  "To be confirmed: legal entity name.",
   "To be confirmed: registered address.",
-  "To be confirmed: privacy contact email.",
   "To be confirmed: governing law and the courts that hear disputes.",
   "To be confirmed: fixed retention periods.",
   "To be confirmed: the contractual safeguards for international transfers.",
@@ -32,9 +29,9 @@ export const privacySections: readonly LegalSection[] = [
     id: "who",
     title: "Who we are",
     paragraphs: [
-      "This website is operated by The Solas Guide, in Bali, Indonesia. For personal information collected through this website, The Solas Guide is the organisation responsible for deciding why and how that information is used.",
-      "To be confirmed: legal entity name. To be confirmed: registered address.",
-      "You can reach us on WhatsApp. To be confirmed: privacy contact email. Until an email address is published, WhatsApp is the contact for privacy requests.",
+      "This website is operated by PT PMA Lejit Connections Bali, in Indonesia, under the name The Solas Guide. A separate US incorporation in Wyoming is pending. Its name is not yet confirmed.",
+      "For personal information collected through this website, PT PMA Lejit Connections Bali decides why and how that information is used.",
+      "To be confirmed: registered address. Privacy requests go to info@solassolas.com.",
     ],
   },
   {
@@ -80,7 +77,7 @@ export const privacySections: readonly LegalSection[] = [
     title: "The Letter",
     paragraphs: [
       "The Solas Letter is an occasional note for practitioners. Edition 01 (September 2026) and Edition 02 (October 2026) have already been sent to members and non-members. The sign-up for future editions is not open on this website yet, so this website is not collecting email addresses for the Letter.",
-      "When that sign-up opens, we will use the address only to send future editions and we will say how to stop them. To be confirmed: the exact unsubscribe method, once the sign-up exists.",
+      "When that sign-up opens, we will use the address only to send future editions, and each Letter will say how to stop them.",
     ],
   },
   {
@@ -136,7 +133,7 @@ export const privacySections: readonly LegalSection[] = [
       "You can ask us what personal information we hold about you, ask for a correction, or ask us to delete it. You can withdraw consent, and you can object to uses that are not necessary for a contract or a legal duty. Where UK or EU law applies, you can also ask us to restrict processing and, in some cases, to provide information in a portable form.",
       "Indonesia's Personal Data Protection Law gives you comparable rights: to know how your personal data is used, to access it, to correct it, to delete it, and to withdraw consent.",
       "We will not charge you for a reasonable request. We may ask you to confirm that you are the person the information is about. You can also complain to the authority responsible where you live, including the authority responsible under Indonesia's Personal Data Protection Law, or the UK Information Commissioner's Office if UK GDPR applies to you.",
-      "Send a privacy request on WhatsApp. To be confirmed: privacy contact email.",
+      "Send a privacy request to info@solassolas.com.",
     ],
   },
   {
@@ -160,8 +157,8 @@ export const termsSections: readonly LegalSection[] = [
     id: "use",
     title: "Using this website",
     paragraphs: [
-      "These terms apply to your use of The Solas Guide website, operated from Bali, Indonesia. By using the site, sending an enquiry, or applying for membership, you agree to these terms.",
-      "To be confirmed: legal entity name. To be confirmed: registered address.",
+      "These terms apply to your use of The Solas Guide website, operated by PT PMA Lejit Connections Bali in Indonesia. A separate US incorporation in Wyoming is pending. Its name is not yet confirmed. By using the site, sending an enquiry, or applying for membership, you agree to these terms.",
+      "To be confirmed: registered address.",
       "The site introduces wellness practitioners and collects enquiries. It does not book a practitioner for you, take payment for a session, or guarantee that a particular person is suitable.",
     ],
   },
@@ -187,8 +184,8 @@ export const termsSections: readonly LegalSection[] = [
     id: "events",
     title: "The Solas Table and other events",
     paragraphs: [
-      "For the Solas Table on Thursday 3 December, members attend free and non-members pay IDR 350k. The venue is still to be confirmed. A seat is not confirmed by joining the waitlist. For a non-member, we send a payment link only after a seat is confirmed. The waitlist form is not open on this website yet.",
-      "That price is the current arrangement. Solas Tables will become members-only, and members may pay to attend. Membership does not promise free attendance at every future table.",
+      "The next Solas Table is Thursday 3 December, from 6pm, with 22 seats. The venue is still to be confirmed. Joining the waitlist does not confirm a seat. Details are shared when your seat is confirmed. The waitlist form is not open on this website yet.",
+      "Solas Tables are an intimate gathering every 6–8 weeks. Sometimes non-members are invited. At other times members contribute towards the cost too. Membership does not promise free attendance at every table.",
       "The Business Sustainability Blueprint workshop listed on the membership page is free for members and non-members. Reserving a place happens on Tally.",
     ],
   },
@@ -196,7 +193,7 @@ export const termsSections: readonly LegalSection[] = [
     id: "letter",
     title: "The Letter",
     paragraphs: [
-      "The Solas Letter is an occasional note. It is not a weekly newsletter. Two editions have already gone out. The sign-up for future editions is not open on this website yet. To be confirmed: the exact unsubscribe method, once the sign-up exists.",
+      "The Solas Letter is an occasional note. It is not a weekly newsletter. Two editions have already gone out. The sign-up for future editions is not open on this website yet. Each future Letter will say how to stop receiving them.",
     ],
   },
   {
@@ -248,7 +245,7 @@ export const termsSections: readonly LegalSection[] = [
     title: "Changes",
     paragraphs: [
       "We may update these terms. The date at the top of the page is the date of the latest version. If you keep using the site after an update, the new terms apply to that later use.",
-      "Questions about these terms can be sent on WhatsApp. To be confirmed: privacy contact email.",
+      "Questions about these terms can be sent to info@solassolas.com.",
     ],
   },
 ];

@@ -27,10 +27,10 @@ for (const legalPage of legalPages) {
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", `http://localhost:3000${legalPage.path}`);
     await expect(page.getByRole("heading", { name: legalPage.heading, exact: true })).toBeVisible();
     await expect(page.getByText("Last updated 15 November 2026")).toBeVisible();
-    await expect(page.getByRole("link", { name: "+44 7793 050098" })).toHaveAttribute("href", "https://wa.me/447793050098");
-    await expect(page.getByText("To be confirmed: legal entity name.").first()).toBeVisible();
+    await expect(page.getByRole("link", { name: "info@solassolas.com" }).first()).toHaveAttribute("href", "mailto:info@solassolas.com");
+    await expect(page.getByText("PT PMA Lejit Connections Bali").first()).toBeVisible();
+    await expect(page.getByText("To be confirmed: legal entity name.")).toHaveCount(0);
     await expect(page.getByText("To be confirmed: registered address.").first()).toBeVisible();
-    await expect(page.getByText("To be confirmed: privacy contact email.").first()).toBeVisible();
     await expect(page.getByText("Draft placeholder")).toHaveCount(0);
     await expect(page.locator('meta[name="robots"]')).not.toHaveAttribute("content", /noindex/);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);

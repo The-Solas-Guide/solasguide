@@ -76,8 +76,9 @@ describe("membership public copy", () => {
       copy: "Travel advisors, retreat organisers and organisations already come to Solas looking for practitioners, speakers and panellists. Members are considered for these introductions where the fit makes sense. Introductions aren't guaranteed.",
     });
     expect(membershipBenefits[2].title).toBe("Access to Solas Tables");
-    expect(membershipBenefits[2].copy).not.toMatch(/every/i);
-    expect(JSON.stringify(membershipFaqs)).not.toContain("every Solas Table");
+    expect(membershipBenefits[2].copy).toContain("every 6–8 weeks");
+    expect(membershipBenefits[2].copy).not.toMatch(/IDR|USD|free/i);
+    expect(JSON.stringify(membershipFaqs)).not.toContain("IDR");
     expect(membershipDescription).toContain("USD 350 a year");
     expect(testimonials.map((item) => item.attribution)).toEqual([
       "Melanie Midegs, Founding Practitioner",

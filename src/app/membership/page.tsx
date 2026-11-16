@@ -22,6 +22,9 @@ import {
   membershipSteps,
   membershipTitle,
   nextTable,
+  nikkiFacts,
+  nikkiMore,
+  nikkiShortBio,
   practiseWhatsAppHref,
   proofStats,
   SOLAS_LETTER_SIGNUP_FORM_URL,
@@ -190,65 +193,18 @@ export default function MembershipPage() {
             </div>
           </section>
 
-          <section aria-labelledby="proof-heading" className="border-x border-b border-border bg-muted/40">
+          <section aria-labelledby="proof-heading" className="border-x border-b border-foreground bg-foreground text-background">
             <h2 id="proof-heading" className="sr-only">
               Membership in practice
             </h2>
-            <ul className="grid gap-px bg-border sm:grid-cols-2 lg:grid-cols-4">
-              {proofStats.map((stat) => (
-                <li key={stat.detail} className="bg-muted/40 px-6 py-7 sm:px-8">
-                  <p className="font-display text-4xl leading-none text-foreground">{stat.figure}</p>
-                  <p className="mt-3 text-sm leading-6 text-muted-foreground">{stat.detail}</p>
+            <ul className="grid sm:grid-cols-2">
+              {proofStats.map((stat, index) => (
+                <li key={stat.figure} className={cn("px-6 py-12 sm:px-10 md:px-14 md:py-16", index === 1 && "border-t border-background/15 sm:border-t-0 sm:border-l")}>
+                  <p className="font-display text-7xl leading-none tracking-tight sm:text-8xl">{stat.figure}</p>
+                  <p className="mt-5 max-w-sm text-base leading-7 text-background/80">{stat.detail}</p>
                 </li>
               ))}
             </ul>
-          </section>
-
-          <section id="practise" className={cn(sectionPad, "scroll-mt-6 border-x border-b border-border bg-accent text-accent-foreground")}>
-            <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-end lg:gap-16">
-              <div>
-                <p className="review-label text-accent-foreground/70">Practising in Bali</p>
-                <h2 className="mt-5 max-w-xl text-balance font-display text-4xl leading-tight md:text-5xl">
-                  We can help you practise in Bali.
-                </h2>
-                <p className="mt-6 max-w-2xl text-base leading-8 text-accent-foreground/85">
-                  Running sessions, events or retreats here raises real questions. The briefing sets out general information only. Solas does not provide immigration, legal or permit services.
-                </p>
-                <div className="mt-8 flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:flex-wrap">
-                  <TrackedPractitionerLink
-                    source="landing"
-                    href={bookCallHref}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={cn(buttonVariants({ size: "lg" }), "w-full border-background bg-background text-foreground hover:bg-background/85 sm:w-auto")}
-                  >
-                    Book a call with Jitesh <ArrowRight />
-                  </TrackedPractitionerLink>
-                  <a
-                    href={practiseWhatsAppHref}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={cn(
-                      buttonVariants({ size: "lg", variant: "outline" }),
-                      "w-full border-background/40 bg-transparent text-background hover:bg-background/10 sm:w-auto",
-                    )}
-                  >
-                    Get in touch on WhatsApp <ArrowRight />
-                  </a>
-                </div>
-              </div>
-              <blockquote className="border-t border-accent-foreground/25 pt-6 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-8">
-                <p className="review-label text-accent-foreground/70">Why it matters</p>
-                <p className="mt-4 font-display text-2xl leading-snug text-balance">
-                  &ldquo;Don&apos;t only ask: &lsquo;Do I have a KITAS?&rsquo; Ask: &lsquo;Does my permission cover the work I want to do?&rsquo;&rdquo;
-                </p>
-                <footer className="mt-4 text-sm leading-6 text-accent-foreground/75">
-                  <Link href="/working-in-bali" className="underline-offset-4 hover:underline">
-                    Read the Working in Bali briefing
-                  </Link>
-                </footer>
-              </blockquote>
-            </div>
           </section>
 
           <section id="benefits" className={cn(sectionPad, "scroll-mt-6 border-x border-b border-border bg-card")}>
@@ -291,7 +247,7 @@ export default function MembershipPage() {
               <p className="review-label text-background/55">Next table</p>
               <p className="mt-4 font-display text-3xl leading-tight">{nextTable.when}</p>
               <p className="mt-3 flex flex-wrap gap-x-2 gap-y-1 text-sm leading-6 text-background/75">
-                {[nextTable.seats, nextTable.time, nextTable.venue, nextTable.members, nextTable.nonMembers].map((item, index) => (
+                {[nextTable.seats, nextTable.time, nextTable.venue].map((item, index) => (
                   <span key={item} className="whitespace-nowrap">
                     {index > 0 ? <span aria-hidden="true">· </span> : null}
                     {item}
@@ -301,7 +257,7 @@ export default function MembershipPage() {
               <div className="mt-8 bg-background p-6 text-foreground md:p-8">
                 <h3 className="font-display text-2xl leading-tight">Join the waitlist for the next Solas Table</h3>
                 <p className="mt-3 text-sm leading-7 text-muted-foreground">
-                  Seats are limited. We&apos;ll be in touch to confirm yours. {nextTable.paymentNote}
+                  Seats are limited. We&apos;ll be in touch to confirm yours. {nextTable.confirmationNote}
                 </p>
                 <div className="mt-6">
                   <FormPlaceholderLink
@@ -313,7 +269,7 @@ export default function MembershipPage() {
                   </FormPlaceholderLink>
                 </div>
                 <p className="mt-5 text-sm leading-7 text-muted-foreground">
-                  For now, members join free and non-members can attend for IDR 350k. Tables will become members-only, and members may pay to attend.{" "}
+                  An intimate gathering every 6–8 weeks.{" "}
                   <TrackedPractitionerLink
                     source="landing"
                     href={bookCallHref}
@@ -329,68 +285,48 @@ export default function MembershipPage() {
             </div>
           </section>
 
-          <section id="working-in-bali" className={cn(sectionPad, "scroll-mt-6 border-x border-b border-border bg-card")}>
-            <div className="max-w-3xl">
-              <p className="review-label text-muted-foreground">Working in Bali</p>
-              <h2 className="mt-5 font-display text-4xl leading-tight md:text-5xl">Practising wellness in Bali.</h2>
-              <p className="mt-6 text-base leading-8 text-muted-foreground">
-                General information for practitioners considering clients, workshops or retreats in Bali. It is not legal advice, and Solas does not provide immigration or permit services.
-              </p>
-              <Link
-                href="/working-in-bali"
-                className="mt-6 inline-flex min-h-11 items-center text-sm text-foreground underline-offset-4 hover:underline"
-              >
-                Read the Working in Bali briefing
-              </Link>
-            </div>
-          </section>
-
-          <section id="learning" className={cn(sectionPad, "scroll-mt-6 border-x border-b border-border bg-muted/35")}>
-            <p className="review-label text-muted-foreground">Practitioner learning</p>
+          <section id="learning" className="scroll-mt-6 border-x border-b border-border bg-card">
+            <p className="review-label px-6 pt-10 text-muted-foreground sm:px-10 md:px-14 lg:px-16">Practitioner learning</p>
             {workshopUpcoming ? (
-              <div className="mt-5 grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16">
-                <div>
-                  <p className="text-sm text-foreground">Live workshop</p>
-                  <h2 className="mt-3 max-w-2xl text-balance font-display text-4xl leading-tight md:text-5xl">
-                    The Business Sustainability Blueprint
-                  </h2>
-                  <p className="mt-6 max-w-2xl text-base leading-8 text-muted-foreground">
-                    A practical, live workshop with Nikki Heyder to help you understand what needs attention in your wellness business, and decide what to do next. Leave with clarity, perspective, direction and one practical next step.
-                  </p>
-                  <p className="mt-4 text-sm leading-7 text-foreground">{workshopSchedule}</p>
+              <div className="mt-5 lg:grid lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-stretch">
+                <div className="relative min-h-[26rem] sm:min-h-[34rem]">
+                  <Image
+                    src="/images/membership/nikki-heyder.webp"
+                    alt="Nikki Heyder"
+                    fill
+                    className="object-cover object-[center_15%]"
+                    sizes="(max-width: 1024px) 100vw, 45vw"
+                  />
+                </div>
+                <div className="flex flex-col justify-center px-6 py-8 sm:px-10 md:px-12 lg:py-14">
+                  <p className="text-sm text-foreground">Live workshop with Nikki Heyder</p>
+                  <h2 className="mt-3 text-balance font-display text-4xl leading-tight md:text-5xl">The Business Sustainability Blueprint</h2>
+                  <p className="mt-5 font-display text-2xl leading-snug text-balance">See what needs attention in your practice, and leave with one next step.</p>
+                  <p className="mt-4 max-w-xl text-sm leading-7 text-muted-foreground">{nikkiShortBio}</p>
+                  <div className="mt-4 border-b border-border">
+                    <MembershipDisclosure title="More about Nikki">
+                      <p>{nikkiMore}</p>
+                    </MembershipDisclosure>
+                  </div>
+                  <ul className="mt-6 flex flex-wrap gap-2">
+                    {nikkiFacts.map((fact) => (
+                      <li key={fact} className="rounded-full border border-foreground/20 px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em]">
+                        {fact}
+                      </li>
+                    ))}
+                  </ul>
                   <a
                     href={workshopReserveHref}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={cn(buttonVariants({ size: "lg", variant: "outline" }), "mt-8 w-full sm:w-auto")}
+                    className={cn(buttonVariants({ size: "lg" }), "mt-8 w-full sm:w-auto")}
                   >
                     Reserve your place <ArrowRight />
                   </a>
                 </div>
-                <div className="border border-border bg-card">
-                  <div className="relative aspect-square max-h-80 overflow-hidden border-b border-border">
-                    <Image
-                      src="/images/membership/nikki-heyder.webp"
-                      alt="Nikki Heyder"
-                      fill
-                      className="object-cover object-[center_20%]"
-                      sizes="(max-width: 1024px) 100vw, 360px"
-                    />
-                  </div>
-                  <div className="p-6 md:p-8">
-                  <h3 className="font-display text-2xl">Nikki Heyder</h3>
-                  <p className="mt-2 text-sm text-foreground">Psychotherapist and wellness business strategist</p>
-                  <p className="mt-4 text-sm leading-7 text-muted-foreground">
-                    Nikki has spent more than 14 years building, running and advising wellness businesses. She has worked in clinical rehabilitation and outpatient care, built a private practice, owned health food restaurants, run retreats internationally, sold products and published a book. Today she advises founders, from newly qualified practitioners to health food cafés, wellness hotels and established supplement brands.
-                  </p>
-                  <p className="mt-4 text-sm leading-7 text-muted-foreground">
-                    In this session she introduces a four-part diagnostic for assessing business sustainability. You apply it to your own practice, see where your time could make the greatest difference, and decide what to focus on next. It starts with your definition of success.
-                  </p>
-                  </div>
-                </div>
               </div>
             ) : (
-              <h2 className="mt-5 max-w-2xl font-display text-4xl leading-tight md:text-5xl">Past sessions</h2>
+              <h2 className="mt-5 max-w-2xl px-6 font-display text-4xl leading-tight sm:px-10 md:px-14 md:text-5xl lg:px-16">Past sessions</h2>
             )}
             {workshopUpcoming ? null : (
               <ul className="mt-6 max-w-3xl space-y-3 text-sm leading-7 text-muted-foreground">
@@ -414,20 +350,38 @@ export default function MembershipPage() {
                 ))}
               </div>
             ) : null}
-            {workshopUpcoming ? (
-              <div className="mt-10 max-w-3xl">
-                <h3 className="font-display text-2xl">Past sessions</h3>
-                <ul className="mt-4 space-y-3 text-sm leading-7 text-muted-foreground">
-                  <li>
-                  Practising Wellness in Bali.{" "}
-                  <Link href="/working-in-bali" className="text-foreground underline-offset-4 hover:underline">
-                    Read the Working in Bali briefing
-                  </Link>
-                  .
-                </li>
-                </ul>
+          </section>
+
+          <section id="practise" className={cn(sectionPad, "scroll-mt-6 border-x border-b border-border bg-card")}>
+            <div className="max-w-3xl">
+              <p className="review-label text-muted-foreground">Practising in Bali</p>
+              <h2 className="mt-4 max-w-xl font-display text-3xl leading-tight md:text-4xl">Questions about working here?</h2>
+              <p className="mt-4 max-w-2xl text-sm leading-7 text-muted-foreground">
+                A short briefing sets out general information. It is not legal advice, and Solas does not provide immigration, legal or permit services.
+              </p>
+              <Link href="/working-in-bali" className="mt-4 inline-flex min-h-11 items-center text-sm text-foreground underline-offset-4 hover:underline">
+                Read the Working in Bali briefing
+              </Link>
+              <div className="mt-6 flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:flex-wrap">
+                <TrackedPractitionerLink
+                  source="landing"
+                  href={bookCallHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={cn(buttonVariants({ size: "lg" }), "w-full sm:w-auto")}
+                >
+                  Book a call with Jitesh <ArrowRight />
+                </TrackedPractitionerLink>
+                <a
+                  href={practiseWhatsAppHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={cn(buttonVariants({ size: "lg", variant: "outline" }), "w-full sm:w-auto")}
+                >
+                  Get in touch on WhatsApp <ArrowRight />
+                </a>
               </div>
-            ) : null}
+            </div>
           </section>
 
           <section id="letter" className="scroll-mt-6 grid border-x border-b border-border bg-card lg:grid-cols-[1.15fr_0.85fr]">
@@ -476,21 +430,31 @@ export default function MembershipPage() {
             </div>
           </section>
 
-          <section id="voices" aria-labelledby="membership-voices" className={cn(sectionPad, "scroll-mt-6 border-x border-b border-border bg-muted/35")}>
-            <div className="max-w-3xl">
-              <h2 id="membership-voices" className="review-label text-muted-foreground">
-                From founding practitioners
-              </h2>
-              <div className="mt-8 grid gap-8">
-                {testimonials.map((testimonial) => (
-                  <figure key={testimonial.quote} className="border-l border-accent pl-5">
-                    <blockquote className="text-base leading-7 text-foreground">
-                      <p>{testimonial.quote}</p>
-                    </blockquote>
-                    <figcaption className="mt-3 text-sm leading-6 text-foreground">{testimonial.attribution}</figcaption>
-                  </figure>
-                ))}
-              </div>
+          <section id="voices" aria-labelledby="membership-voices" className="scroll-mt-6 border-x border-b border-border bg-foreground px-6 py-16 text-background sm:px-10 md:px-14 md:py-24 lg:px-16">
+            <h2 id="membership-voices" className="review-label text-background/55">
+              From founding practitioners
+            </h2>
+            <figure className="mt-8 max-w-4xl">
+              <blockquote>
+                <p className="font-display text-4xl leading-[1.15] text-balance sm:text-5xl md:text-6xl">{testimonials[0].quote}</p>
+              </blockquote>
+              <figcaption className="mt-8 flex items-center gap-4">
+                <span aria-hidden="true" className="grid size-14 place-items-center rounded-full border border-background/30 font-display text-lg">{testimonials[0].initials}</span>
+                <span className="text-sm">{testimonials[0].attribution}</span>
+              </figcaption>
+            </figure>
+            <div className="mt-14 grid gap-12 border-t border-background/15 pt-12 md:grid-cols-2">
+              {testimonials.slice(1).map((testimonial) => (
+                <figure key={testimonial.quote}>
+                  <blockquote>
+                    <p className="font-display text-2xl leading-snug sm:text-3xl">{testimonial.quote}</p>
+                  </blockquote>
+                  <figcaption className="mt-6 flex items-center gap-4">
+                    <span aria-hidden="true" className="grid size-12 place-items-center rounded-full border border-background/30 font-display">{testimonial.initials}</span>
+                    <span className="text-sm">{testimonial.attribution}</span>
+                  </figcaption>
+                </figure>
+              ))}
             </div>
           </section>
 

@@ -22,14 +22,15 @@ test("explains practitioner membership", async ({ page }) => {
   await expect(page.getByRole("heading", { level: 1, name: "Your practice, properly recognised in Bali." })).toBeVisible();
   await expect(page.getByText("59", { exact: true })).toBeVisible();
   await expect(page.getByText("practitioners have joined a Solas Table or signed up for our Bali briefing call")).toBeVisible();
-  await expect(page.getByRole("heading", { name: "We can help you practise in Bali." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Questions about working here?" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Be put forward for work" })).toBeVisible();
   await expect(page.getByText("Introductions aren't guaranteed.").first()).toBeVisible();
   await expect(page.getByRole("heading", { name: "Access to Solas Tables" })).toBeVisible();
   await expect(page.getByText("A seat at every Solas Table")).toHaveCount(0);
   await expect(page.getByText("Members join every Solas Table free.")).toHaveCount(0);
   await expect(page.getByText("Venue to be confirmed")).toBeVisible();
-  await expect(page.getByText("Not a member? We'll send a payment link once your seat is confirmed.")).toBeVisible();
+  await expect(page.getByText("Details shared when your seat is confirmed.")).toBeVisible();
+  await expect(page.getByText("IDR 350k")).toHaveCount(0);
   await expect(page.getByText("Edition 01, September 2026, and Edition 02, October 2026, have already gone out to members and non-members.")).toBeVisible();
   await expect(page.getByRole("heading", { name: "Future editions." })).toBeVisible();
   await expect(page.getByText("Sign up to receive the next Letter.")).toBeVisible();
