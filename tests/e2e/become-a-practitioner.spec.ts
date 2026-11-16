@@ -1,4 +1,9 @@
 import { expect, test } from "@playwright/test";
+import {
+  SOLAS_LETTER_SIGNUP_FORM_URL,
+  SOLAS_TABLE_WAITLIST_FORM_URL,
+  practiseWhatsAppHref,
+} from "../../src/lib/membership-content";
 
 test("explains practitioner membership", async ({ page }) => {
   await page.goto("/become-a-practitioner");
@@ -6,12 +11,30 @@ test("explains practitioner membership", async ({ page }) => {
   await expect(page).toHaveTitle("Practitioner membership · The Solas Guide, Bali");
   await expect(page.locator('meta[name="description"]')).toHaveAttribute(
     "content",
-    "A membership for experienced wellness practitioners in Bali, expanding across Southeast Asia, with verified profiles, introductions and community.",
+    "A membership for experienced wellness practitioners in Bali. A verified editorial profile, consideration for introductions where there's a fit, help practising in Bali, and access to Solas Tables. Introductions aren't guaranteed. USD 350 a year.",
   );
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "http://localhost:3000/membership");
+  await expect(page.locator('meta[property="og:title"]')).toHaveAttribute(
+    "content",
+    "Practitioner membership · The Solas Guide, Bali",
+  );
   await expect(page.getByText("Practitioner membership · Volume One, Bali")).toBeVisible();
-  await expect(page.getByRole("heading", { level: 1, name: "For practitioners serious about their work." })).toBeVisible();
-  await expect(page.getByText("Volume One: Bali, expanding across Southeast Asia")).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Your practice, properly recognised in Bali." })).toBeVisible();
+  await expect(page.getByText("59", { exact: true })).toBeVisible();
+  await expect(page.getByText("practitioners have joined a Solas Table or signed up for our Bali briefing call")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Questions about working here?" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Be put forward for work" })).toBeVisible();
+  await expect(page.getByText("Introductions aren't guaranteed.").first()).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Access to Solas Tables" })).toBeVisible();
+  await expect(page.getByText("A seat at every Solas Table")).toHaveCount(0);
+  await expect(page.getByText("Members join every Solas Table free.")).toHaveCount(0);
+  await expect(page.getByText("Venue to be confirmed")).toBeVisible();
+  await expect(page.getByText("Details shared when your seat is confirmed.")).toBeVisible();
+  await expect(page.getByText("IDR 350k")).toHaveCount(0);
+  await expect(page.getByText("Edition 01, September 2026, and Edition 02, October 2026, have already gone out to members and non-members.")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Future editions." })).toBeVisible();
+  await expect(page.getByText("Sign up to receive the next Letter.")).toBeVisible();
+  await expect(page.getByText("no newsletter has been sent")).toHaveCount(0);
   await expect(page.getByText("I've had the same offers for international communities online, but it's never felt right. This one does.", { exact: true })).toBeVisible();
   await expect(page.getByText("Melanie Midegs, Founding Practitioner")).toHaveCount(1);
   await expect(page.getByText("After being in Bali for so many years")).toHaveCount(0);
@@ -20,15 +43,56 @@ test("explains practitioner membership", async ({ page }) => {
   await expect(page.getByText("Rajiv Arapurakal, Founding Practitioner")).toBeVisible();
   await expect(page.getByText("Beautiful connection with great people.", { exact: true })).toBeVisible();
   await expect(page.getByText("Dirk Hamelijnck, Founding Practitioner")).toBeVisible();
+  await expect(page.getByRole("navigation", { name: "Primary navigation" }).getByRole("link", { name: "Why Solas" })).toHaveAttribute("href", "/#why-solas");
+  await expect(page.getByRole("navigation", { name: "Primary navigation" }).getByRole("link", { name: "How it works" })).toHaveCount(0);
+  await expect(page.getByRole("contentinfo").getByRole("link", { name: "Working in Bali briefing", exact: true })).toHaveAttribute("href", "/working-in-bali");
+  await expect(page.getByRole("link", { name: "Read the Working in Bali briefing" }).first()).toHaveAttribute("href", "/working-in-bali");
+  await expect(page.getByRole("img", { name: "Nikki Heyder" })).toBeVisible();
+  await expect(page.getByText("Open briefing · The Solas Guide × Trident Treehouse")).toHaveCount(0);
+  await expect(page.getByText("Trident Treehouse")).toHaveCount(0);
 
   const call = page.getByRole("link", { name: "Book a call with Jitesh" });
   const apply = page.getByRole("link", { name: "Apply now · USD 350 a year" });
-  await expect(call).toHaveCount(2);
   await expect(apply).toHaveCount(2);
   await expect(call.first()).toHaveAttribute("href", "https://cal.com/solassolas/30min-private-conversation");
   await expect(call.first()).toHaveAttribute("target", "_blank");
   await expect(apply.first()).toHaveAttribute("href", "https://tally.so/r/XxQvJz");
   await expect(apply.first()).toHaveAttribute("target", "_blank");
+  await expect(page.getByRole("link", { name: "Get in touch on WhatsApp" })).toHaveAttribute("href", practiseWhatsAppHref);
+  await expect(page.getByRole("link", { name: "Join the waitlist" }).first()).toHaveAttribute("href", SOLAS_TABLE_WAITLIST_FORM_URL);
+  await expect(page.getByRole("link", { name: "Get the Letter" })).toHaveAttribute("href", SOLAS_LETTER_SIGNUP_FORM_URL);
+
+  await page.getByRole("button", { name: /Past edition · Edition 02/ }).click();
+  await expect(page.getByText("Sent to members and non-members.").first()).toBeVisible();
+  await expect(page.getByText("You can't be everything to everyone")).toBeVisible();
+
+  await page.goto("/working-in-bali");
+  await expect(page).toHaveTitle("Working in Bali · The Solas Guide");
+  await expect(page.locator('meta[name="description"]')).toHaveAttribute(
+    "content",
+    "General information for practitioners considering clients, workshops, retreats or other work in Bali. Not immigration, legal or permit advice.",
+  );
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "http://localhost:3000/working-in-bali");
+  await expect(page.getByRole("navigation", { name: "On this page" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "I want to see my own clients" })).toBeVisible();
+  await expect(page.getByText("There is no simple freelancer visa.")).toBeVisible();
+  await expect(page.getByText("The Solas Guide does not provide immigration, legal, tax or permit advice").first()).toBeVisible();
+  await page.setViewportSize({ width: 390, height: 844 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  await expect(page.getByText("Trident Treehouse")).toHaveCount(0);
+
+  const html = await page.content();
+  const text = await page.locator("body").innerText();
+  expect(html.toLowerCase()).not.toContain("solas-table-guest-contacts");
+  expect(html).not.toContain("Human Library");
+  expect(html).not.toContain("27 Sep");
+  expect(html).not.toContain("27 September");
+  expect(html).not.toContain("wa.me/6285939817503");
+  expect(html).not.toContain("Manu Ashwalayan");
+  expect(text).not.toContain("USD 200");
+  expect(text).not.toContain("$200");
+  expect(text).not.toContain("Human Library");
+  expect(text).not.toContain("no newsletter has been sent");
 
   await page.goto("/become-a-practitioner/express-interest");
   await expect(page).toHaveURL(/\/membership\/apply$/);

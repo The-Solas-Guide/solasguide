@@ -9,6 +9,9 @@ const staticPaths = [
   "/",
   "/find-a-match",
   "/membership",
+  "/working-in-bali",
+  "/privacy",
+  "/terms",
   "/practitioners",
 ] as const;
 
