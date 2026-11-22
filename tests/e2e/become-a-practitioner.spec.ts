@@ -22,7 +22,13 @@ test("explains practitioner membership", async ({ page }) => {
   await expect(page.getByRole("heading", { level: 1, name: "Your practice, properly recognised in Bali." })).toBeVisible();
   await expect(page.getByText("59", { exact: true })).toBeVisible();
   await expect(page.getByText("practitioners have joined a Solas Table or signed up for our Bali briefing call")).toBeVisible();
-  await expect(page.getByRole("heading", { name: "We can help you practise in Bali." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Solas Learning" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "We can help you practise in Bali." })).toHaveCount(0);
+  await expect(page.getByText("This week")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Business Sustainability Blueprint" })).toBeVisible();
+  await expect(page.getByText("Monday 23 November 2026")).toBeVisible();
+  await expect(page.getByText("A short note will follow the session.")).toBeVisible();
+  await expect(page.getByText("We'll add a short write-up after the event.")).toHaveCount(0);
   await expect(page.getByRole("link", { name: "Reserve your place" })).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "Be put forward for work" })).toBeVisible();
   await expect(page.getByText("Introductions aren't guaranteed.").first()).toBeVisible();
@@ -49,7 +55,9 @@ test("explains practitioner membership", async ({ page }) => {
   await expect(page.getByRole("navigation", { name: "Primary navigation" }).getByRole("link", { name: "Why Solas" })).toHaveAttribute("href", "/#why-solas");
   await expect(page.getByRole("navigation", { name: "Primary navigation" }).getByRole("link", { name: "How it works" })).toHaveCount(0);
   await expect(page.getByRole("contentinfo").getByRole("link", { name: "Working in Bali briefing", exact: true })).toHaveAttribute("href", "/working-in-bali");
-  await expect(page.getByRole("link", { name: "Read the Working in Bali briefing" }).first()).toHaveAttribute("href", "/working-in-bali");
+  await expect(page.getByRole("link", { name: "Practising in Bali: visas, permits and what practitioners need to know about working in Bali" })).toHaveAttribute("href", "/working-in-bali");
+  await expect(page.getByText("General information, not legal advice. Solas does not provide immigration, legal or permit services.")).toBeVisible();
+  await expect(page.getByText("Want to practise or host in Bali? Talk to us.")).toBeVisible();
   await expect(page.getByRole("img", { name: "Nikki Heyder" })).toBeVisible();
   await expect(page.getByText("Open briefing · The Solas Guide × Trident Treehouse")).toHaveCount(0);
   await expect(page.getByText("Trident Treehouse")).toHaveCount(0);
@@ -61,7 +69,9 @@ test("explains practitioner membership", async ({ page }) => {
   await expect(call.first()).toHaveAttribute("target", "_blank");
   await expect(apply.first()).toHaveAttribute("href", "https://tally.so/r/XxQvJz");
   await expect(apply.first()).toHaveAttribute("target", "_blank");
-  await expect(page.getByRole("link", { name: "Get in touch on WhatsApp" })).toHaveAttribute("href", practiseWhatsAppHref);
+  await expect(page.getByRole("link", { name: "Get in touch on WhatsApp" })).toHaveCount(0);
+  await expect(page.getByRole("link", { name: "WhatsApp" })).toHaveAttribute("href", practiseWhatsAppHref);
+  await expect(page.locator('a[href="https://tally.so/r/bZqJ5o"]')).toHaveCount(0);
   const book = page.getByRole("link", { name: "Book your place" });
   await expect(book).toHaveCount(1);
   await expect(book).toHaveAttribute("href", SOLAS_TABLE_BOOKING_FORM_URL);

@@ -20,6 +20,8 @@ import {
   membershipNavLinks,
   membershipSteps,
   membershipTitle,
+  learningOffer,
+  learningSessions,
   nextTable,
   practiseWhatsAppHref,
   proofStats,
@@ -283,50 +285,70 @@ export default function MembershipPage() {
             </div>
           </section>
 
-          <section id="practise" className="scroll-mt-6 border-x border-b border-border bg-card">
-            <div className="lg:grid lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:items-stretch">
-              <div className="relative min-h-[22rem] sm:min-h-[28rem]">
-                <Image
-                  src="/images/membership/nikki-heyder.webp"
-                  alt="Nikki Heyder"
-                  fill
-                  className="object-cover object-[center_15%]"
-                  sizes="(max-width: 1024px) 100vw, 42vw"
-                />
-              </div>
-              <div className="flex flex-col justify-center px-6 py-8 sm:px-10 md:px-12 lg:py-14">
-                <p className="review-label text-muted-foreground">Practising in Bali</p>
-                <h2 className="mt-4 max-w-xl text-balance font-display text-4xl leading-tight md:text-5xl">We can help you practise in Bali.</h2>
-                <p className="mt-5 max-w-xl text-base leading-8 text-muted-foreground">
-                  Members host sessions and events here, with our support. Nikki Heyder&apos;s Business Sustainability Blueprint, on Monday 23 November, is one example. We&apos;ll add a short write-up after the event.
-                </p>
-                <p className="mt-4 max-w-xl text-sm leading-7 text-muted-foreground">
-                  The Working in Bali briefing is general information. It is not legal advice, and Solas does not provide immigration, legal or permit services.
-                </p>
-                <Link href="/working-in-bali" className="mt-4 inline-flex min-h-11 items-center text-sm text-foreground underline-offset-4 hover:underline">
-                  Read the Working in Bali briefing
-                </Link>
-                <div className="mt-6 flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:flex-wrap">
-                  <TrackedPractitionerLink
-                    source="landing"
-                    href={bookCallHref}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={cn(buttonVariants({ size: "lg" }), "w-full sm:w-auto")}
-                  >
-                    Book a call with Jitesh <ArrowRight />
-                  </TrackedPractitionerLink>
-                  <a
-                    href={practiseWhatsAppHref}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={cn(buttonVariants({ size: "lg", variant: "outline" }), "w-full sm:w-auto")}
-                  >
-                    Get in touch on WhatsApp <ArrowRight />
-                  </a>
-                </div>
-              </div>
+          <section id="learning" aria-labelledby="solas-learning" className={cn(sectionPad, "scroll-mt-6 border-x border-b border-border bg-card")}>
+            <h2 id="solas-learning" className="max-w-xl text-balance font-display text-4xl leading-tight md:text-5xl">
+              Solas Learning
+            </h2>
+            <div className="mt-8 border-t border-border">
+              {learningSessions.map((session, index) => {
+                const showLabel = index === 0 || learningSessions[index - 1]?.label !== session.label;
+                return (
+                  <article key={session.id} className="border-b border-border py-8 md:py-10">
+                    {showLabel ? <p className="review-label text-muted-foreground">{session.label}</p> : null}
+                    {session.date ? <p className={cn("text-sm text-muted-foreground", showLabel && "mt-3")}>{session.date}</p> : null}
+                    <div className={cn((showLabel || session.date) && "mt-4", session.image && "grid grid-cols-[6.75rem_minmax(0,1fr)] items-start gap-4 sm:grid-cols-[11rem_minmax(0,1fr)] sm:gap-8")}>
+                      {session.image ? (
+                        <div className="relative aspect-[4/5] overflow-hidden bg-muted">
+                          <Image
+                            src={session.image.src}
+                            alt={session.image.alt}
+                            fill
+                            className="object-cover object-[center_15%]"
+                            sizes="176px"
+                          />
+                        </div>
+                      ) : null}
+                      <div className="min-w-0">
+                        <h3 className={cn("font-display leading-tight", session.image ? "text-2xl sm:text-3xl" : "text-xl sm:text-2xl")}>
+                          {session.href ? (
+                            <Link href={session.href} className="underline-offset-4 hover:underline">
+                              {session.title}
+                            </Link>
+                          ) : (
+                            session.title
+                          )}
+                        </h3>
+                        {session.host ? <p className="mt-2 text-sm">with {session.host}</p> : null}
+                        {session.summary ? <p className="mt-3 max-w-xl text-sm leading-7 text-muted-foreground">{session.summary}</p> : null}
+                        {session.followUp ? <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground">{session.followUp}</p> : null}
+                        {session.disclaimer ? <p className="mt-3 max-w-xl text-xs leading-5 text-muted-foreground">{session.disclaimer}</p> : null}
+                      </div>
+                    </div>
+                  </article>
+                );
+              })}
             </div>
+            <p className="mt-6 max-w-2xl text-sm leading-7 text-muted-foreground">
+              {learningOffer}{" "}
+              <TrackedPractitionerLink
+                source="landing"
+                href={bookCallHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex min-h-11 items-center text-foreground underline-offset-4 hover:underline"
+              >
+                Book a call with Jitesh
+              </TrackedPractitionerLink>
+              <span aria-hidden="true"> · </span>
+              <a
+                href={practiseWhatsAppHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex min-h-11 items-center text-foreground underline-offset-4 hover:underline"
+              >
+                WhatsApp
+              </a>
+            </p>
           </section>
 
           <section id="letter" className="scroll-mt-6 grid border-x border-b border-border bg-card lg:grid-cols-[1.15fr_0.85fr]">

@@ -6,6 +6,7 @@ import {
   SOLAS_TABLE_BOOKING_FORM_URL,
   isBusinessWorkshopUpcoming,
   isPlaceholderFormUrl,
+  learningSessions,
   letters,
   membershipBenefits,
   membershipDescription,
@@ -86,6 +87,25 @@ describe("membership public copy", () => {
       "Rajiv Arapurakal, Founding Practitioner",
       "Dirk Hamelijnck, Founding Practitioner",
     ]);
+  });
+
+  it("lists Solas Learning as an upcoming session and a previous briefing", () => {
+    expect(learningSessions.map((session) => session.title)).toEqual([
+      "Business Sustainability Blueprint",
+      "Practising in Bali: visas, permits and what practitioners need to know about working in Bali",
+    ]);
+    expect(learningSessions[0]).toMatchObject({
+      label: "This week",
+      date: "Monday 23 November 2026",
+      host: "Nikki Heyder",
+      image: { alt: "Nikki Heyder" },
+    });
+    expect(learningSessions[0]).not.toHaveProperty("href");
+    expect(learningSessions[1]).toMatchObject({
+      label: "Previous",
+      href: "/working-in-bali",
+    });
+    expect(learningSessions[1]?.disclaimer).toContain("does not provide immigration, legal or permit services");
   });
 
   it("keeps the 23 November workshop upcoming until it ends in Bali", () => {

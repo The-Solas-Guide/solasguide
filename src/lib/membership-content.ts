@@ -63,6 +63,46 @@ export const nextTable = {
   proceeds: "All proceeds go to the school.",
 } as const;
 
+export type LearningSession = {
+  id: string;
+  label: "This week" | "Previous";
+  date?: string;
+  title: string;
+  host?: string;
+  summary?: string;
+  followUp?: string;
+  image?: { src: string; alt: string };
+  href?: string;
+  disclaimer?: string;
+};
+
+/** Member learning sessions, newest or upcoming first. Add the next session to this list. */
+export const learningSessions: readonly LearningSession[] = [
+  {
+    id: "business-sustainability-blueprint",
+    label: "This week",
+    date: "Monday 23 November 2026",
+    title: "Business Sustainability Blueprint",
+    host: "Nikki Heyder",
+    summary:
+      "For practitioners building a practice that can last. Nikki Heyder on what a sustainable wellness business actually needs.",
+    followUp: "A short note will follow the session.",
+    image: {
+      src: "/images/membership/nikki-heyder.webp",
+      alt: "Nikki Heyder",
+    },
+  },
+  {
+    id: "practising-in-bali",
+    label: "Previous",
+    title: "Practising in Bali: visas, permits and what practitioners need to know about working in Bali",
+    href: "/working-in-bali",
+    disclaimer: "General information, not legal advice. Solas does not provide immigration, legal or permit services.",
+  },
+];
+
+export const learningOffer = "Want to practise or host in Bali? Talk to us.";
+
 export const nikkiFacts = ["Mon 23 Nov", "7–8pm WITA", "Online", "Free"] as const;
 
 export const nikkiShortBio =
@@ -219,7 +259,7 @@ export const letters: readonly {
         heading: "Around the Solas Table",
         paragraphs: [
           "We recently brought together 13 wellness practitioners for another Solas Table lunch. It was good to spend time together away from our individual practices, get to know each other's work and talk honestly about what we're all building in Bali.",
-          "Nikki Heyder is hosting The Business Sustainability Blueprint on Monday 23 November, an example of a practitioner session in Bali. We’ll add a short write-up after it.",
+          "Nikki Heyder is hosting The Business Sustainability Blueprint on Monday 23 November, a session for practitioners on building a sustainable practice.",
         ],
       },
     ],
