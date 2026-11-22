@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { RegistryPreview } from "@/components/home/registry-preview";
 import { RegistryStandards } from "@/components/home/registry-standards";
 import { SiteFooter } from "@/components/layout/site-footer";
@@ -95,7 +95,7 @@ export default function HomePageV2() {
                     rel="noopener noreferrer"
                     className={cn(buttonVariants(), "w-full border-background bg-background text-foreground hover:bg-background/85 sm:w-auto")}
                   >
-                    Book a discovery call <ArrowRight />
+                    Book a discovery call <ArrowUpRight />
                   </a>
                   <Link href="/practitioners" className={cn(buttonVariants({ variant: "outline" }), "w-full border-background/80 bg-transparent text-background hover:bg-background/10 sm:w-auto")}>
                     Explore the Guide
@@ -154,7 +154,7 @@ export default function HomePageV2() {
                 rel="noopener noreferrer"
                 className={cn(buttonVariants({ size: "lg" }), "w-full sm:w-auto")}
               >
-                Book a discovery call <ArrowRight />
+                Book a discovery call <ArrowUpRight />
               </a>
               <Link href="/programmes#contact" className="inline-flex min-h-11 w-full items-center justify-center gap-1.5 text-sm text-foreground underline decoration-foreground/40 underline-offset-4 hover:text-accent hover:decoration-accent sm:w-auto sm:justify-start">
                 Tell us about your plans

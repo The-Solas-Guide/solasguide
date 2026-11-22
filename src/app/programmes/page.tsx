@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { Fraunces } from "next/font/google";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { Suspense, type ReactNode } from "react";
 import { BrandWordmark } from "@/components/brand/brand-wordmark";
 import { WhatsAppMessage } from "@/components/contact/whatsapp-message";
@@ -58,7 +58,7 @@ function ArrowLink({ href, children }: { href: string; children: React.ReactNode
   return (
     <Link href={href} className={styles.textLink}>
       {children}
-      <ArrowUpRight aria-hidden="true" />
+      <ArrowRight aria-hidden="true" />
     </Link>
   );
 }
@@ -74,7 +74,7 @@ function PractitionerSectionFrame({ children }: { children: ReactNode }) {
           </h2>
         </div>
         <p>
-          Explore practitioners who offer in-person work in Bali. We discuss suitability and availability for your programme.
+          Explore practitioners who offer in-person work. We discuss suitability and availability for your programme.
         </p>
       </div>
       {children}
@@ -278,8 +278,14 @@ export default function ProgrammesPage() {
                 <p className={styles.eyebrow}>What happens next</p>
                 <p>We’ll contact you to arrange a conversation about your programme and how we can help.</p>
               </div>
-              <DiscoveryCallButton />
-              <WhatsAppMessage className={styles.whatsappButton}>Message us on WhatsApp</WhatsAppMessage>
+              <div className={styles.quietActions}>
+                <a href={discoveryCall.href} target="_blank" rel="noopener noreferrer" className={styles.textLink}>
+                  Book a discovery call <ArrowUpRight aria-hidden="true" />
+                </a>
+                <WhatsAppMessage className={styles.textLink}>
+                  Message us on WhatsApp <ArrowUpRight aria-hidden="true" />
+                </WhatsAppMessage>
+              </div>
             </div>
             <div className={styles.contactForm} id="programme-enquiry">
               <ProgrammeEnquiryForm />

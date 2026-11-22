@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import type { ReactNode } from "react";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import { TrackedPractitionerLink } from "@/components/analytics/tracked-practitioner-link";
 import { WhatsAppMessage } from "@/components/contact/whatsapp-message";
@@ -80,7 +80,7 @@ function MembershipCalls({ appearance }: { appearance: "default" | "inverse" }) 
         rel="noopener noreferrer"
         className={primaryClass}
       >
-        Book a call with Jitesh <ArrowRight />
+        Book a call with Jitesh <ArrowUpRight />
       </TrackedPractitionerLink>
       <TrackedPractitionerLink
         source="landing"
@@ -89,7 +89,7 @@ function MembershipCalls({ appearance }: { appearance: "default" | "inverse" }) 
         rel="noopener noreferrer"
         className={secondaryClass}
       >
-        Apply now · USD $350 a year <ArrowRight />
+        Apply now · USD $350 a year <ArrowUpRight />
       </TrackedPractitionerLink>
     </div>
   );
@@ -114,7 +114,7 @@ function FormPlaceholderLink({
         className={className}
         {...(pending ? {} : { target: "_blank", rel: "noopener noreferrer" })}
       >
-        {children} <ArrowRight />
+        {children} {pending ? <ArrowRight /> : <ArrowUpRight />}
       </a>
       {pending && pendingNote ? <p className="mt-3 max-w-sm text-xs leading-5 text-muted-foreground">{pendingNote}</p> : null}
     </div>

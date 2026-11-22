@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Menu, X } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Menu, X } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { discoveryCall } from "@/lib/public-journeys";
@@ -27,15 +27,16 @@ function HeaderCta({
   onClick,
 }: NavLink & { className?: string; onClick?: () => void }) {
   const external = href.startsWith("http");
+  const arrow = external ? <ArrowUpRight aria-hidden="true" /> : <ArrowRight aria-hidden="true" />;
   return (
     <Button asChild className={className}>
       {external ? (
         <a href={href} target="_blank" rel="noopener noreferrer" onClick={onClick}>
-          {label}
+          {label} {arrow}
         </a>
       ) : (
         <Link href={href} onClick={onClick}>
-          {label}
+          {label} {arrow}
         </Link>
       )}
     </Button>
