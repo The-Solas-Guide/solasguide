@@ -25,5 +25,5 @@ export const programmeProof = [
 export const programmeOffers = [
   ["Group programmes", "Retreats, leadership groups and professional communities, designed, staffed and run on site."],
   ["Private work", "Individuals, couples and families, discreetly arranged."],
-  ["Workshops and talks", "For schools, venues and organisations."],
+  ["Workshops and talks", "For organisations, festivals and conferences."],
 ] as const;

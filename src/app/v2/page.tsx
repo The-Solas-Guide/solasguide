@@ -72,7 +72,7 @@ export default function HomePageV2() {
             <div className="relative flex min-h-[min(780px,calc(100svh-2rem))] items-end px-5 pt-24 pb-14 text-background sm:px-8 sm:pb-20 md:p-14 lg:p-20">
               <div className="max-w-4xl">
                 <p className="review-label text-background" data-reveal>
-                  Volume One <span aria-hidden="true">•</span> Southeast Asia
+                  Volume One <span aria-hidden="true">•</span> Bali
                 </p>
                 <p className="mt-5 font-display text-2xl tracking-tight text-background sm:text-3xl" data-reveal>
                   The Solas Guide
