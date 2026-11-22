@@ -11,7 +11,6 @@ import { buttonVariants } from "@/components/ui/button";
 import {
   applyHref,
   bookCallHref,
-  isBusinessWorkshopUpcoming,
   isPlaceholderFormUrl,
   letters,
   membershipBenefits,
@@ -22,17 +21,11 @@ import {
   membershipSteps,
   membershipTitle,
   nextTable,
-  nikkiFacts,
-  nikkiMore,
-  nikkiShortBio,
   practiseWhatsAppHref,
   proofStats,
   SOLAS_LETTER_SIGNUP_FORM_URL,
   SOLAS_TABLE_WAITLIST_FORM_URL,
   testimonials,
-  workshopReserveHref,
-  workshopSchedule,
-  workshopTakeaways,
 } from "@/lib/membership-content";
 import { cn } from "@/lib/utils";
 
@@ -94,7 +87,7 @@ function MembershipCalls({ appearance }: { appearance: "default" | "inverse" }) 
         rel="noopener noreferrer"
         className={secondaryClass}
       >
-        Apply now · USD 350 a year <ArrowRight />
+        Apply now · USD $350 a year <ArrowRight />
       </TrackedPractitionerLink>
     </div>
   );
@@ -149,7 +142,6 @@ function LetterClose() {
 }
 
 export default function MembershipPage() {
-  const workshopUpcoming = isBusinessWorkshopUpcoming();
 
   return (
     <>
@@ -285,101 +277,48 @@ export default function MembershipPage() {
             </div>
           </section>
 
-          <section id="learning" className="scroll-mt-6 border-x border-b border-border bg-card">
-            <p className="review-label px-6 pt-10 text-muted-foreground sm:px-10 md:px-14 lg:px-16">Practitioner learning</p>
-            {workshopUpcoming ? (
-              <div className="mt-5 lg:grid lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-stretch">
-                <div className="relative min-h-[26rem] sm:min-h-[34rem]">
-                  <Image
-                    src="/images/membership/nikki-heyder.webp"
-                    alt="Nikki Heyder"
-                    fill
-                    className="object-cover object-[center_15%]"
-                    sizes="(max-width: 1024px) 100vw, 45vw"
-                  />
-                </div>
-                <div className="flex flex-col justify-center px-6 py-8 sm:px-10 md:px-12 lg:py-14">
-                  <p className="text-sm text-foreground">Live workshop with Nikki Heyder</p>
-                  <h2 className="mt-3 text-balance font-display text-4xl leading-tight md:text-5xl">The Business Sustainability Blueprint</h2>
-                  <p className="mt-5 font-display text-2xl leading-snug text-balance">See what needs attention in your practice, and leave with one next step.</p>
-                  <p className="mt-4 max-w-xl text-sm leading-7 text-muted-foreground">{nikkiShortBio}</p>
-                  <div className="mt-4 border-b border-border">
-                    <MembershipDisclosure title="More about Nikki">
-                      <p>{nikkiMore}</p>
-                    </MembershipDisclosure>
-                  </div>
-                  <ul className="mt-6 flex flex-wrap gap-2">
-                    {nikkiFacts.map((fact) => (
-                      <li key={fact} className="rounded-full border border-foreground/20 px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em]">
-                        {fact}
-                      </li>
-                    ))}
-                  </ul>
-                  <a
-                    href={workshopReserveHref}
+          <section id="practise" className="scroll-mt-6 border-x border-b border-border bg-card">
+            <div className="lg:grid lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:items-stretch">
+              <div className="relative min-h-[22rem] sm:min-h-[28rem]">
+                <Image
+                  src="/images/membership/nikki-heyder.webp"
+                  alt="Nikki Heyder"
+                  fill
+                  className="object-cover object-[center_15%]"
+                  sizes="(max-width: 1024px) 100vw, 42vw"
+                />
+              </div>
+              <div className="flex flex-col justify-center px-6 py-8 sm:px-10 md:px-12 lg:py-14">
+                <p className="review-label text-muted-foreground">Practising in Bali</p>
+                <h2 className="mt-4 max-w-xl text-balance font-display text-4xl leading-tight md:text-5xl">We can help you practise in Bali.</h2>
+                <p className="mt-5 max-w-xl text-base leading-8 text-muted-foreground">
+                  Members host sessions and events here, with our support. Nikki Heyder&apos;s Business Sustainability Blueprint, on Monday 23 November, is one example. We&apos;ll add a short write-up after the event.
+                </p>
+                <p className="mt-4 max-w-xl text-sm leading-7 text-muted-foreground">
+                  The Working in Bali briefing is general information. It is not legal advice, and Solas does not provide immigration, legal or permit services.
+                </p>
+                <Link href="/working-in-bali" className="mt-4 inline-flex min-h-11 items-center text-sm text-foreground underline-offset-4 hover:underline">
+                  Read the Working in Bali briefing
+                </Link>
+                <div className="mt-6 flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:flex-wrap">
+                  <TrackedPractitionerLink
+                    source="landing"
+                    href={bookCallHref}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={cn(buttonVariants({ size: "lg" }), "mt-8 w-full sm:w-auto")}
+                    className={cn(buttonVariants({ size: "lg" }), "w-full sm:w-auto")}
                   >
-                    Reserve your place <ArrowRight />
+                    Book a call with Jitesh <ArrowRight />
+                  </TrackedPractitionerLink>
+                  <a
+                    href={practiseWhatsAppHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={cn(buttonVariants({ size: "lg", variant: "outline" }), "w-full sm:w-auto")}
+                  >
+                    Get in touch on WhatsApp <ArrowRight />
                   </a>
                 </div>
-              </div>
-            ) : (
-              <h2 className="mt-5 max-w-2xl px-6 font-display text-4xl leading-tight sm:px-10 md:px-14 md:text-5xl lg:px-16">Past sessions</h2>
-            )}
-            {workshopUpcoming ? null : (
-              <ul className="mt-6 max-w-3xl space-y-3 text-sm leading-7 text-muted-foreground">
-                <li>The Business Sustainability Blueprint, with Nikki Heyder. {workshopSchedule}</li>
-                <li>
-                  Practising Wellness in Bali.{" "}
-                  <Link href="/working-in-bali" className="text-foreground underline-offset-4 hover:underline">
-                    Read the Working in Bali briefing
-                  </Link>
-                  .
-                </li>
-              </ul>
-            )}
-            {workshopUpcoming ? (
-              <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                {workshopTakeaways.map(([title, copy]) => (
-                  <article key={title} className="border border-border bg-card p-5">
-                    <h3 className="font-display text-xl">{title}</h3>
-                    <p className="mt-3 text-sm leading-6 text-muted-foreground">{copy}</p>
-                  </article>
-                ))}
-              </div>
-            ) : null}
-          </section>
-
-          <section id="practise" className={cn(sectionPad, "scroll-mt-6 border-x border-b border-border bg-card")}>
-            <div className="max-w-3xl">
-              <p className="review-label text-muted-foreground">Practising in Bali</p>
-              <h2 className="mt-4 max-w-xl font-display text-3xl leading-tight md:text-4xl">Questions about working here?</h2>
-              <p className="mt-4 max-w-2xl text-sm leading-7 text-muted-foreground">
-                A short briefing sets out general information. It is not legal advice, and Solas does not provide immigration, legal or permit services.
-              </p>
-              <Link href="/working-in-bali" className="mt-4 inline-flex min-h-11 items-center text-sm text-foreground underline-offset-4 hover:underline">
-                Read the Working in Bali briefing
-              </Link>
-              <div className="mt-6 flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:flex-wrap">
-                <TrackedPractitionerLink
-                  source="landing"
-                  href={bookCallHref}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={cn(buttonVariants({ size: "lg" }), "w-full sm:w-auto")}
-                >
-                  Book a call with Jitesh <ArrowRight />
-                </TrackedPractitionerLink>
-                <a
-                  href={practiseWhatsAppHref}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={cn(buttonVariants({ size: "lg", variant: "outline" }), "w-full sm:w-auto")}
-                >
-                  Get in touch on WhatsApp <ArrowRight />
-                </a>
               </div>
             </div>
           </section>
@@ -500,7 +439,7 @@ export default function MembershipPage() {
             <div className="mx-auto max-w-3xl text-center">
               <h2 className="font-display text-4xl leading-tight md:text-6xl">Start with a conversation.</h2>
               <p className="mx-auto mt-6 max-w-xl text-sm leading-7 text-background/70">
-                USD 350 a year, about USD 29 a month. Every claim we publish is verified. The application and verification fee is non-refundable.
+                USD $350 a year, about USD 29 a month. Every claim we publish is verified. The application and verification fee is non-refundable.
               </p>
               <div className="mt-8">
                 <MembershipCalls appearance="inverse" />

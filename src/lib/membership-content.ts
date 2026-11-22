@@ -14,7 +14,7 @@ export const workshopReserveHref = "https://tally.so/r/bZqJ5o";
 
 export const membershipTitle = "Practitioner membership · The Solas Guide, Bali";
 export const membershipDescription =
-  "A membership for experienced wellness practitioners in Bali. A verified editorial profile, consideration for introductions where there's a fit, help practising in Bali, and access to Solas Tables. Introductions aren't guaranteed. USD 350 a year.";
+  "A membership for experienced wellness practitioners in Bali. A verified editorial profile, consideration for introductions where there's a fit, help practising in Bali, and access to Solas Tables. Introductions aren't guaranteed. USD $350 a year.";
 
 export const membershipNavLinks = [
   { label: "Why Solas", href: "/#why-solas" },
@@ -74,7 +74,7 @@ export const nikkiMore =
 
 export const testimonials = [
   {
-    quote: "I've had the same offers for international communities online, but it's never felt right. This one does.",
+    quote: "I've had the same offers for international communities, but it's never felt right. This one does.",
     attribution: "Melanie Midegs, Founding Practitioner",
     initials: "MM",
   },
@@ -92,14 +92,14 @@ export const testimonials = [
 
 export const membershipSteps = [
   ["01", "Call with Jitesh", "Start with a conversation about your work."],
-  ["02", "Application and payment", "Apply and pay USD 350 a year. The application and verification fee is non-refundable."],
+  ["02", "Application and payment", "Apply and pay USD $350 a year. The application and verification fee is non-refundable."],
   ["03", "Verify claims", "We check the training, credentials and evidence you share."],
   ["04", "Publish verified claims only", "We publish your profile with the claims we can verify."],
 ] as const;
 
 export const membershipFaqs = [
   {
-    question: "What's included for USD 350 a year?",
+    question: "What's included for USD $350 a year?",
     answer:
       "A verified editorial profile, consideration for introductions where the fit makes sense, access to Solas Tables, workshops, the Letter, and help working out how to practise in Bali. Introductions aren't guaranteed. Solas Tables are an intimate gathering every 6–8 weeks. About USD 29 a month.",
   },
@@ -125,7 +125,7 @@ export const membershipFaqs = [
   {
     question: "Are events only for members?",
     answer:
-      "No. Solas Tables are an intimate gathering every 6–8 weeks. Sometimes non-members are invited; at other times members contribute towards the cost too. The 3 December table is from 6pm, with 22 seats. The venue is still to be confirmed. Details are shared when your seat is confirmed. The Business Sustainability Blueprint is free for members and non-members. The Working in Bali briefing is open to read.",
+      "No. Solas Tables are an intimate gathering every 6–8 weeks. Sometimes non-members are invited; at other times members contribute towards the cost too. The 3 December table is from 6pm, with 22 seats. The venue is still to be confirmed. Details are shared when your seat is confirmed. The Working in Bali briefing is open to read.",
   },
   {
     question: "Is the Bali briefing legal advice?",
@@ -220,7 +220,7 @@ export const letters: readonly {
         heading: "Around the Solas Table",
         paragraphs: [
           "We recently brought together 13 wellness practitioners for another Solas Table lunch. It was good to spend time together away from our individual practices, get to know each other's work and talk honestly about what we're all building in Bali.",
-          "Since this edition went out, the November workshop has been set. The Business Sustainability Blueprint, with Nikki Heyder, is in the learning section on this page.",
+          "Nikki Heyder is hosting The Business Sustainability Blueprint on Monday 23 November, an example of a practitioner session in Bali. We’ll add a short write-up after it.",
         ],
       },
     ],

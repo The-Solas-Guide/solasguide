@@ -79,7 +79,7 @@ describe("membership public copy", () => {
     expect(membershipBenefits[2].copy).toContain("every 6–8 weeks");
     expect(membershipBenefits[2].copy).not.toMatch(/IDR|USD|free/i);
     expect(JSON.stringify(membershipFaqs)).not.toContain("IDR");
-    expect(membershipDescription).toContain("USD 350 a year");
+    expect(membershipDescription).toContain("USD $350 a year");
     expect(testimonials.map((item) => item.attribution)).toEqual([
       "Melanie Midegs, Founding Practitioner",
       "Rajiv Arapurakal, Founding Practitioner",

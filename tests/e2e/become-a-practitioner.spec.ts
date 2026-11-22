@@ -11,7 +11,7 @@ test("explains practitioner membership", async ({ page }) => {
   await expect(page).toHaveTitle("Practitioner membership · The Solas Guide, Bali");
   await expect(page.locator('meta[name="description"]')).toHaveAttribute(
     "content",
-    "A membership for experienced wellness practitioners in Bali. A verified editorial profile, consideration for introductions where there's a fit, help practising in Bali, and access to Solas Tables. Introductions aren't guaranteed. USD 350 a year.",
+    "A membership for experienced wellness practitioners in Bali. A verified editorial profile, consideration for introductions where there's a fit, help practising in Bali, and access to Solas Tables. Introductions aren't guaranteed. USD $350 a year.",
   );
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "http://localhost:3000/membership");
   await expect(page.locator('meta[property="og:title"]')).toHaveAttribute(
@@ -22,7 +22,8 @@ test("explains practitioner membership", async ({ page }) => {
   await expect(page.getByRole("heading", { level: 1, name: "Your practice, properly recognised in Bali." })).toBeVisible();
   await expect(page.getByText("59", { exact: true })).toBeVisible();
   await expect(page.getByText("practitioners have joined a Solas Table or signed up for our Bali briefing call")).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Questions about working here?" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "We can help you practise in Bali." })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Reserve your place" })).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "Be put forward for work" })).toBeVisible();
   await expect(page.getByText("Introductions aren't guaranteed.").first()).toBeVisible();
   await expect(page.getByRole("heading", { name: "Access to Solas Tables" })).toBeVisible();
@@ -35,7 +36,7 @@ test("explains practitioner membership", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Future editions." })).toBeVisible();
   await expect(page.getByText("Sign up to receive the next Letter.")).toBeVisible();
   await expect(page.getByText("no newsletter has been sent")).toHaveCount(0);
-  await expect(page.getByText("I've had the same offers for international communities online, but it's never felt right. This one does.", { exact: true })).toBeVisible();
+  await expect(page.getByText("I've had the same offers for international communities, but it's never felt right. This one does.", { exact: true })).toBeVisible();
   await expect(page.getByText("Melanie Midegs, Founding Practitioner")).toHaveCount(1);
   await expect(page.getByText("After being in Bali for so many years")).toHaveCount(0);
   await expect(page.getByText("Face Reading Soirées")).toHaveCount(0);
@@ -52,7 +53,7 @@ test("explains practitioner membership", async ({ page }) => {
   await expect(page.getByText("Trident Treehouse")).toHaveCount(0);
 
   const call = page.getByRole("link", { name: "Book a call with Jitesh" });
-  const apply = page.getByRole("link", { name: "Apply now · USD 350 a year" });
+  const apply = page.getByRole("link", { name: "Apply now · USD $350 a year" });
   await expect(apply).toHaveCount(2);
   await expect(call.first()).toHaveAttribute("href", "https://cal.com/solassolas/30min-private-conversation");
   await expect(call.first()).toHaveAttribute("target", "_blank");

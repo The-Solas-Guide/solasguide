@@ -50,7 +50,7 @@ export const privacySections: readonly LegalSection[] = [
       "If you ask for help choosing a practitioner, the enquiry form asks who the support is for, what you would like support with, any preferences about the person or approach, when you would like to connect, anything else you choose to tell us, your name, your email address, and an optional WhatsApp number. You can also say whether you prefer email, phone, or WhatsApp. The form asks you to confirm that we may use these details to respond.",
       "A programme enquiry asks for your name, email address, an optional organisation, what you are planning, when you are thinking of, and what you would like a group to take away. You confirm that we may contact you about that enquiry.",
       "The membership application on this website asks about your practice, where you work, your experience and training, optional website links, your name, your email address, and a phone or WhatsApp number if you ask us to use one. You confirm that we may use these details to review the application. The form asks you not to include medical records or other sensitive personal information.",
-      "The public “Apply now” button, and the button to reserve a place at The Business Sustainability Blueprint, open forms on Tally (tally.so). Those forms are not stored by this website. The Letter sign-up and the Solas Table waitlist are not collecting details on this website yet.",
+      "The public “Apply now” button opens a form on Tally (tally.so). That form is not stored by this website. The Letter sign-up and the Solas Table waitlist are not collecting details on this website yet.",
       "If you book a call, you leave this website for Cal.com. If you message us on WhatsApp, that conversation is handled by WhatsApp.",
     ],
   },
@@ -68,7 +68,7 @@ export const privacySections: readonly LegalSection[] = [
     id: "membership",
     title: "Membership and editorial independence",
     paragraphs: [
-      "Practitioner membership is USD 350 a year. The application and verification fee is non-refundable. It pays for a profile to be researched, written, and kept up to date, for gatherings and workshops, and for the time it takes to consider introductions.",
+      "Practitioner membership is USD $350 a year. The application and verification fee is non-refundable. It pays for a profile to be researched, written, and kept up to date, for gatherings and workshops, and for the time it takes to consider introductions.",
       "The fee never buys a ranking, an endorsement, an introduction, or what we write. We publish only claims we can verify or corroborate. Paying does not guarantee that a profile will be published.",
     ],
   },
@@ -174,7 +174,7 @@ export const termsSections: readonly LegalSection[] = [
     id: "membership",
     title: "Practitioner membership",
     paragraphs: [
-      "Practitioner membership is USD 350 a year. The application and verification fee is non-refundable. The public application and the fee are taken on Tally, not by a card form on this website. We do not store card numbers here.",
+      "Practitioner membership is USD $350 a year. The application and verification fee is non-refundable. The public application and the fee are taken on Tally, not by a card form on this website. We do not store card numbers here.",
       "Paying does not guarantee that a profile will be published. We publish only claims we can verify or corroborate. The fee never buys a ranking, an endorsement, an introduction, or the words we write. We keep editorial independence.",
       "Travel advisors, retreat organisers, and organisations sometimes ask us for practitioners, speakers, and panellists. Members are considered for those introductions where the fit makes sense. Introductions are not guaranteed.",
       "The website also has a membership application form that stores what you submit so we can review it. That form does not take the fee.",
@@ -186,7 +186,7 @@ export const termsSections: readonly LegalSection[] = [
     paragraphs: [
       "The next Solas Table is Thursday 3 December, from 6pm, with 22 seats. The venue is still to be confirmed. Joining the waitlist does not confirm a seat. Details are shared when your seat is confirmed. The waitlist form is not open on this website yet.",
       "Solas Tables are an intimate gathering every 6–8 weeks. Sometimes non-members are invited. At other times members contribute towards the cost too. Membership does not promise free attendance at every table.",
-      "The Business Sustainability Blueprint workshop listed on the membership page is free for members and non-members. Reserving a place happens on Tally.",
+      "Nikki Heyder’s Business Sustainability Blueprint on Monday 23 November is an example of a practitioner session in Bali. A short write-up will be added after the event. This website is not taking bookings for it.",
     ],
   },
   {
