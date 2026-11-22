@@ -47,8 +47,10 @@ test.describe("homepage", () => {
       "Featured practitioners",
       "Who the Guide is for",
       "Need help choosing?",
-      "We design, staff and can run the wellness programme for your group.",
-      "Arranged and facilitated a YPO retreat, December 2024",
+      "Wellness programmes, designed and delivered.",
+      "YPO leadership retreat, December 2024: couples facilitation and practitioner sourcing",
+      "Couples facilitation for Green School parents and staff",
+      "Ubud Writers & Readers Festival, with Solas Guide members",
     ];
 
     for (const section of sections) {
@@ -68,8 +70,19 @@ test.describe("homepage", () => {
     await expect(page.getByRole("link", { name: "Retreat Organisers" })).toHaveAttribute("href", "/programmes");
     await expect(page.getByRole("link", { name: "Hotels & Travel Advisors" })).toHaveAttribute("href", "/programmes");
     await expect(page.getByRole("link", { name: "Organisations Finding" })).toHaveAttribute("href", "/programmes");
-    await expect(page.getByText("wa.me")).toHaveCount(0);
-    await expect(page.getByText("WhatsApp")).toHaveCount(0);
+    await expect(page.getByRole("link", { name: "How a programme comes together" })).toHaveAttribute("href", "/programmes");
+    await expect(page.getByRole("link", { name: "Group programmes" })).toHaveAttribute("href", "https://cal.com/solasguide/solas-discovery-call");
+    await expect(page.getByRole("link", { name: "Are you a practitioner? Membership is by application." })).toHaveAttribute("href", "/membership");
+    const html = await page.content();
+    expect(html).not.toContain("447793050098");
+    expect(html).not.toContain("wa.me");
+    const whatsApp = page.getByRole("button", { name: "Message us on WhatsApp" }).first();
+    await expect(whatsApp).toBeVisible();
+    const popupPromise = page.waitForEvent("popup");
+    await whatsApp.click();
+    const popup = await popupPromise;
+    await expect(popup).toHaveURL(/phone=447793050098/);
+    await popup.close();
     await expect(page.getByText("Volume One").first()).toBeVisible();
     await expect(page.getByText("Southeast Asia").first()).toBeVisible();
     await expect(

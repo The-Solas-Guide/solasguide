@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { WhatsAppMessage } from "@/components/contact/whatsapp-message";
 import { RegistryPreview } from "@/components/home/registry-preview";
 import { RegistryStandards } from "@/components/home/registry-standards";
 import { SiteFooter } from "@/components/layout/site-footer";
@@ -115,41 +116,69 @@ export default function HomePageV2() {
             </div>
           </section>
 
-          <section id="programmes" className="border-x border-b border-border bg-foreground px-5 py-14 text-background sm:px-8 md:px-12 md:py-20 lg:px-16">
-            <div className="grid gap-8 lg:grid-cols-[1.2fr_auto] lg:items-end">
-              <div>
-                <p className="review-label text-background/55">For travel advisors, retreat organisers, venues and professional communities</p>
-                <h2 className="mt-5 max-w-3xl font-display text-4xl leading-tight text-balance sm:text-5xl">
-                  We design, staff and can run the wellness programme for your group.
-                </h2>
-                <p className="mt-6 max-w-2xl text-sm leading-7 text-background/75">
-                  Tell us about the group, the dates and what you want people to take away. We shape the sessions, select practitioners from the Guide, and can coordinate and direct the programme on site.
-                </p>
-              </div>
-              <div className="flex flex-col gap-3 sm:flex-row lg:flex-col lg:items-stretch">
+          <section id="programmes" className="border-x border-b border-border bg-foreground px-5 py-12 text-background sm:px-8 md:px-12 md:py-16 lg:px-16">
+            <p className="review-label text-background/55">For travel advisors, retreat organisers, venues and professional communities</p>
+            <h2 className="mt-5 max-w-3xl font-display text-4xl leading-tight text-balance sm:text-5xl">
+              Wellness programmes, designed and delivered.
+            </h2>
+            <div className="mt-8 grid gap-3 md:grid-cols-3">
+              {[
+                ["Group programmes", "Retreats, leadership groups and professional communities, designed, staffed and run on site."],
+                ["Private work", "Individuals, couples and families, discreetly arranged."],
+                ["Workshops and talks", "For schools, venues and organisations."],
+              ].map(([title, line]) => (
                 <a
+                  key={title}
                   href={discoveryCall.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={cn(buttonVariants(), "w-full border-background bg-background text-foreground hover:bg-background/85 sm:w-auto lg:w-full")}
+                  className="flex min-h-11 flex-col justify-center border border-background/20 bg-background/5 px-5 py-5 transition-colors hover:bg-background/10"
                 >
-                  Book a 30-minute discovery call <ArrowRight />
+                  <span className="font-display text-2xl leading-tight">{title}</span>
+                  <span className="mt-3 text-sm leading-6 text-background/75">{line}</span>
                 </a>
-                <Link
-                  href="/programmes"
-                  className={cn(buttonVariants({ variant: "outline" }), "w-full border-background/40 bg-transparent text-background hover:bg-background/10 sm:w-auto lg:w-full")}
-                >
-                  See how a programme comes together
-                </Link>
-              </div>
+              ))}
+            </div>
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+              <a
+                href={discoveryCall.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={cn(buttonVariants({ size: "lg" }), "w-full border-background bg-background text-foreground hover:bg-background/85 sm:w-auto")}
+              >
+                Book a discovery call <ArrowRight />
+              </a>
+              <Link
+                href="/programmes"
+                className={cn(buttonVariants({ size: "lg", variant: "outline" }), "w-full border-background/40 bg-transparent text-background hover:bg-background/10 sm:w-auto")}
+              >
+                How a programme comes together
+              </Link>
+              <WhatsAppMessage className={cn(buttonVariants({ size: "lg", variant: "outline" }), "w-full border-background/40 bg-transparent text-background hover:bg-background/10 sm:w-auto")}>
+                Message us on WhatsApp
+              </WhatsAppMessage>
             </div>
           </section>
 
-          <section aria-label="Recent work" className="border-x border-b border-border bg-card px-5 py-10 sm:px-8 md:px-12 lg:px-16">
-            <p className="review-label text-muted-foreground">Recently</p>
-            <ul className="mt-4 max-w-2xl space-y-2 text-sm leading-7 text-muted-foreground">
-              <li>Arranged and facilitated a YPO retreat, December 2024</li>
-              <li>At the Ubud Writers &amp; Readers Festival with Solas Guide members</li>
+          <section aria-label="Recent work" className="border-x border-b border-border bg-card px-5 py-8 sm:px-8 md:px-12 lg:px-16">
+            <p className="review-label text-muted-foreground">Recent work</p>
+            <ul className="mt-5 grid gap-6 lg:grid-cols-3 lg:gap-8">
+              {([
+                { src: "/brand/proof/ypo.png", alt: "YPO", line: "YPO leadership retreat, December 2024: couples facilitation and practitioner sourcing", width: 253, height: 96 },
+                { src: "/brand/proof/green-school.png", alt: "Green School", line: "Couples facilitation for Green School parents and staff", width: 196, height: 96 },
+                { src: "/brand/proof/ubud-writers-festival.png", alt: "Ubud Writers & Readers Festival", line: "Ubud Writers & Readers Festival, with Solas Guide members", width: 246, height: 128 },
+              ] as const).map(({ src, alt, line, width, height }) => (
+                <li key={alt} className="flex items-start gap-4">
+                  <Image
+                    src={src}
+                    alt={alt}
+                    width={width}
+                    height={height}
+                    className="h-10 w-auto max-w-32 shrink-0 object-contain opacity-70"
+                  />
+                  <p className="text-sm leading-6 text-muted-foreground">{line}</p>
+                </li>
+              ))}
             </ul>
           </section>
 

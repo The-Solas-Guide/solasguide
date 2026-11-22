@@ -73,6 +73,11 @@ export async function RegistryPreview() {
           </div>
         </>
       )}
+      <p className="mt-6 text-center">
+        <Link href="/membership" className="inline-flex min-h-11 items-center text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline">
+          Are you a practitioner? Membership is by application.
+        </Link>
+      </p>
     </section>
   );
 }

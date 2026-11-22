@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { BrandWordmark } from "@/components/brand/brand-wordmark";
 import { TrackedPractitionerLink } from "@/components/analytics/tracked-practitioner-link";
+import { WhatsAppMessage } from "@/components/contact/whatsapp-message";
 import { browseTheGuide, discoveryCall, guideEmail, needHelpChoosing } from "@/lib/public-journeys";
 
 const linkClassName =
-  "inline-flex min-h-10 items-center text-sm transition-colors hover:text-background focus-visible:text-background";
+  "inline-flex min-h-11 items-center text-sm transition-colors hover:text-background focus-visible:text-background";
 
 export function SiteFooter() {
   return (
@@ -59,12 +60,15 @@ export function SiteFooter() {
             <a href={`mailto:${guideEmail}`} className={linkClassName}>
               {guideEmail}
             </a>
+            <WhatsAppMessage className={linkClassName}>
+              Message us on WhatsApp
+            </WhatsAppMessage>
           </div>
           <div className="mt-6 border-t border-background/20 pt-4">
             <p className="review-label opacity-50">Legal</p>
-            <div className="mt-3 grid gap-3 text-sm">
-              <Link href="/privacy">Privacy</Link>
-              <Link href="/terms">Website terms</Link>
+            <div className="mt-3 grid text-sm">
+              <Link href="/privacy" className={linkClassName}>Privacy</Link>
+              <Link href="/terms" className={linkClassName}>Website terms</Link>
             </div>
           </div>
         </div>
