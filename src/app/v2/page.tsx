@@ -23,12 +23,12 @@ const navLinks = [
   { label: "Programmes", href: "/programmes" },
 ];
 
-const audiences: readonly { title: string; copy: string; href?: string }[] = [
-  { title: "Individuals", copy: "Support for your own wellbeing." },
-  { title: "Couples & Families", copy: "A considered choice for the people closest to you." },
-  { title: "Retreat Organisers", copy: "Programmes with trusted practitioners.", href: "/programmes" },
-  { title: "Hotels & Travel Advisors", copy: "Introductions for guests and clients.", href: "/programmes" },
-  { title: "Organisations", copy: "Practitioners for leadership and team programmes.", href: "/programmes" },
+const audiences: readonly { title: string; href?: string }[] = [
+  { title: "Individuals" },
+  { title: "Couples & Families" },
+  { title: "Retreat Organisers", href: "/programmes" },
+  { title: "Hotels & Travel Advisors", href: "/programmes" },
+  { title: "Organisations", href: "/programmes" },
 ];
 
 const homeJsonLd = {
@@ -95,7 +95,7 @@ export default function HomePageV2() {
                   Finding someone isn&apos;t difficult. Knowing who to trust is.
                 </h1>
                 <p className="mt-6 max-w-2xl text-base leading-7 text-background sm:text-lg" data-reveal data-reveal-delay="2">
-                  An independent guide to exceptional wellness practitioners. We design, staff and deliver programmes for retreats, venues and professional groups.
+                  An independent guide to exceptional wellness practitioners.
                 </p>
                 <div className="mt-8 flex flex-col gap-3 sm:flex-row" data-reveal data-reveal-delay="3">
                   <a
@@ -110,62 +110,43 @@ export default function HomePageV2() {
                     Explore the Guide
                   </Link>
                 </div>
-                <Link href={needHelpChoosing.href} className="mt-4 inline-flex min-h-11 items-center text-sm text-background underline-offset-4 hover:underline">
-                  {needHelpChoosing.label}
-                </Link>
               </div>
             </div>
           </section>
 
-          <section id="programmes" className="border-x border-b border-border bg-accent px-5 py-12 text-accent-foreground sm:px-8 md:px-12 md:py-16 lg:px-16">
-            <p className="review-label text-accent-foreground">For retreats, venues and professional groups</p>
+          <section id="programmes" className="border-x border-b border-border bg-muted px-5 py-12 text-foreground sm:px-8 md:px-12 md:py-16 lg:px-16">
+            <p className="review-label text-accent">Who the Guide is for</p>
             <h2 className="mt-4 max-w-3xl font-display text-3xl leading-tight text-balance sm:text-4xl md:text-5xl">
               Wellness programmes, designed and delivered.
             </h2>
-            <div className="mt-8 grid gap-3 md:grid-cols-3">
+            <p className="mt-5 flex flex-col sm:flex-row sm:flex-wrap sm:gap-x-4">
+              {audiences.map((audience) =>
+                audience.href ? (
+                  <Link key={audience.title} href={audience.href} className="inline-flex min-h-11 items-center text-sm text-foreground underline-offset-4 hover:underline">
+                    {audience.title}
+                  </Link>
+                ) : (
+                  <span key={audience.title} className="inline-flex min-h-11 items-center text-sm text-foreground">
+                    {audience.title}
+                  </span>
+                ),
+              )}
+            </p>
+            <div className="mt-6 grid gap-3 md:grid-cols-3">
               {programmeOffers.map(([title, line]) => (
                 <a
                   key={title}
                   href={discoveryCall.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex min-h-11 flex-col justify-center border border-accent-foreground/35 bg-accent-foreground/8 px-5 py-5 transition-colors hover:bg-accent-foreground/14"
+                  className="flex min-h-11 flex-col justify-center border border-border bg-card px-5 py-5 text-foreground transition-colors hover:bg-background"
                 >
                   <span className="font-display text-2xl leading-tight">{title}</span>
-                  <span className="mt-3 text-sm leading-6 text-accent-foreground">{line}</span>
+                  <span className="mt-3 text-sm leading-6">{line}</span>
                 </a>
               ))}
             </div>
-            <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-              <a
-                href={discoveryCall.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={cn(buttonVariants({ size: "lg" }), "w-full border-background bg-background text-foreground hover:bg-background/85 sm:w-auto")}
-              >
-                Book a discovery call <ArrowRight />
-              </a>
-              <Link
-                href="/programmes#contact"
-                className={cn(buttonVariants({ size: "lg", variant: "outline" }), "w-full border-accent-foreground/55 bg-transparent text-accent-foreground hover:bg-accent-foreground/10 sm:w-auto")}
-              >
-                Tell us about your plans
-              </Link>
-              <Link
-                href="/programmes#method"
-                className={cn(buttonVariants({ size: "lg", variant: "outline" }), "w-full border-accent-foreground/55 bg-transparent text-accent-foreground hover:bg-accent-foreground/10 sm:w-auto")}
-              >
-                How a programme comes together
-              </Link>
-              <WhatsAppMessage className={cn(buttonVariants({ size: "lg", variant: "outline" }), "w-full border-accent-foreground/55 bg-transparent text-accent-foreground hover:bg-accent-foreground/10 sm:w-auto")}>
-                Message us on WhatsApp
-              </WhatsAppMessage>
-            </div>
-          </section>
-
-          <section aria-label="Recent work" className="border-x border-b border-border bg-card px-5 py-8 sm:px-8 md:px-12 lg:px-16">
-            <p className="review-label text-accent">Recent work</p>
-            <ul className="mt-5 grid gap-6 lg:grid-cols-3 lg:gap-8">
+            <ul className="mt-8 grid gap-6 lg:grid-cols-3 lg:gap-8">
               {programmeProof.map(({ src, alt, line, width, height }) => (
                 <li key={alt} className="flex items-start gap-4">
                   <Image
@@ -179,31 +160,30 @@ export default function HomePageV2() {
                 </li>
               ))}
             </ul>
-          </section>
-
-          <section id="who-its-for" className="border-x border-b border-border bg-background px-5 py-12 sm:px-8 md:px-12 md:py-16 lg:px-16">
-            <p className="review-label text-accent" data-reveal>Who the Guide is for</p>
-            <h2 className="mt-4 max-w-3xl font-display text-3xl leading-tight text-balance sm:text-4xl md:text-5xl" data-reveal>
-              Who we work with.
-            </h2>
-            <div className="mt-8 grid gap-px border border-border bg-border md:grid-cols-2 lg:grid-cols-5" data-reveal data-reveal-delay="1">
-              {audiences.map((audience) => {
-                const card = (
-                  <>
-                    <p className="font-display text-2xl leading-tight">{audience.title}</p>
-                    <p className="mt-4 text-sm leading-6 text-foreground">{audience.copy}</p>
-                  </>
-                );
-                return audience.href ? (
-                  <Link key={audience.title} href={audience.href} className="min-h-11 bg-card p-6 transition-colors hover:bg-muted/40 lg:min-h-48">
-                    {card}
-                  </Link>
-                ) : (
-                  <article key={audience.title} className="min-h-11 bg-card p-6 lg:min-h-48">
-                    {card}
-                  </article>
-                );
-              })}
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+              <a
+                href={discoveryCall.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={cn(buttonVariants({ size: "lg" }), "w-full sm:w-auto")}
+              >
+                Book a discovery call <ArrowRight />
+              </a>
+              <Link
+                href="/programmes#contact"
+                className={cn(buttonVariants({ size: "lg", variant: "outline" }), "w-full sm:w-auto")}
+              >
+                Tell us about your plans
+              </Link>
+              <Link
+                href="/programmes#method"
+                className={cn(buttonVariants({ size: "lg", variant: "outline" }), "w-full sm:w-auto")}
+              >
+                How a programme comes together
+              </Link>
+              <WhatsAppMessage className={cn(buttonVariants({ size: "lg", variant: "outline" }), "w-full sm:w-auto")}>
+                Message us on WhatsApp
+              </WhatsAppMessage>
             </div>
           </section>
 

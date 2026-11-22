@@ -69,7 +69,7 @@ test.describe("homepage", () => {
     await expect(page.getByRole("link", { name: "Explore the Guide" })).toHaveAttribute("href", "/practitioners");
     await expect(page.getByRole("link", { name: "Retreat Organisers" })).toHaveAttribute("href", "/programmes");
     await expect(page.getByRole("link", { name: "Hotels & Travel Advisors" })).toHaveAttribute("href", "/programmes");
-    await expect(page.getByRole("link", { name: "Organisations Practitioners" })).toHaveAttribute("href", "/programmes");
+    await expect(page.getByRole("link", { name: "Organisations", exact: true })).toHaveAttribute("href", "/programmes");
     await expect(page.getByRole("link", { name: "Tell us about your plans" })).toHaveAttribute("href", "/programmes#contact");
     await expect(page.getByRole("link", { name: "How a programme comes together" })).toHaveAttribute("href", "/programmes#method");
     await expect(page.getByRole("link", { name: "Group programmes" })).toHaveAttribute("href", "https://cal.com/solasguide/solas-discovery-call");

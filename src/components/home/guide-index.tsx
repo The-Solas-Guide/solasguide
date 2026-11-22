@@ -296,15 +296,15 @@ export function GuideIndex() {
                   )}
                   sizes="(max-width: 1023px) 50vw, 25vw"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-black/5" />
-                <div className="absolute inset-x-0 bottom-0 p-2.5 text-white sm:p-4">
-                  <p className="text-[0.58rem] font-semibold uppercase tracking-[0.16em] text-white/80 sm:text-[0.62rem]">
+                <div className="absolute inset-0 bg-gradient-to-t from-foreground/90 via-foreground/30 to-foreground/5" />
+                <div className="absolute inset-x-0 bottom-0 p-2.5 text-background sm:p-4">
+                  <p className="text-[0.58rem] font-semibold uppercase tracking-[0.16em] text-background sm:text-[0.62rem]">
                     {item.location}
                   </p>
                   <h3 className="mt-1.5 font-display text-[0.95rem] leading-[1.1] text-balance sm:text-xl sm:leading-[1.05]">
                     {item.title}
                   </h3>
-                  <p className="mt-1.5 line-clamp-3 text-[0.66rem] leading-[1.45] text-white/80 sm:mt-2 sm:line-clamp-none sm:text-xs sm:leading-5">
+                  <p className="mt-1.5 line-clamp-3 text-[0.66rem] leading-[1.45] text-background sm:mt-2 sm:line-clamp-none sm:text-xs sm:leading-5">
                     {item.description}
                   </p>
                 </div>
