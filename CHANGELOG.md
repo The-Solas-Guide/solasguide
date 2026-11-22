@@ -39,3 +39,4 @@ This file records pull requests merged into `main`. Entries are added automatica
 - 2026-11-15 — Colour the become-a-practitioner title forest green ([#76](https://github.com/The-Solas-Guide/solasguide/pull/76)) — `49edabfd06e22f74b620bf1f80d39fd0796f3dec`
 - 2026-11-15 — Revert the become-a-practitioner title colour ([#77](https://github.com/The-Solas-Guide/solasguide/pull/77)) — `a0fd6a819db149e509ee5e577295411a2cec162a`
 - 2026-11-15 — Move practitioner membership to /membership and update the copy ([#78](https://github.com/The-Solas-Guide/solasguide/pull/78)) — `6068b5deabd126d77f9cae6b37fcc3e05173acbd`
+- 2026-11-22 — Rebuild the practitioner membership page ([#79](https://github.com/The-Solas-Guide/solasguide/pull/79)) — `b30b5580138c87fdd18a66e9ea1984ec6e425d48`
