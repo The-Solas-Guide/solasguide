@@ -42,9 +42,9 @@ export const metadata: Metadata = {
     images: [
       {
         url: "/images/membership/solas-table-lunch.webp",
-        width: 777,
-        height: 1036,
-        alt: "Practitioners in conversation around a lunch table at a Solas Table in Bali",
+        width: 1600,
+        height: 1200,
+        alt: "Guests in conversation at a Solas Table dinner in Bali",
       },
     ],
   },
@@ -183,10 +183,10 @@ export default function MembershipPage() {
             <div className="relative min-h-[24rem] border-t border-border lg:min-h-0 lg:border-t-0 lg:border-l">
               <Image
                 src="/images/membership/solas-table-lunch.webp"
-                alt="Practitioners in conversation around a lunch table at a Solas Table in Bali"
+                alt="Guests in conversation at a Solas Table dinner in Bali"
                 fill
                 priority
-                className="object-cover object-[center_30%]"
+                className="object-cover object-[74%_30%]"
                 sizes="(max-width: 1024px) 100vw, 48vw"
               />
             </div>
