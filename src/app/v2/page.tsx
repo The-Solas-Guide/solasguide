@@ -1,16 +1,15 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowDown, ArrowRight } from "lucide-react";
-import { TrackedPractitionerLink } from "@/components/analytics/tracked-practitioner-link";
+import { ArrowRight } from "lucide-react";
 import { RegistryPreview } from "@/components/home/registry-preview";
 import { RegistryStandards } from "@/components/home/registry-standards";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { RevealObserver } from "@/components/motion/reveal-observer";
 import { buttonVariants } from "@/components/ui/button";
-import { makeAnEnquiry, needHelpChoosing } from "@/lib/public-journeys";
-import { homepageMetadata } from "@/lib/site-config";
+import { discoveryCall, needHelpChoosing } from "@/lib/public-journeys";
+import { getAbsoluteUrl, homepageDescription, homepageMetadata } from "@/lib/site-config";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = homepageMetadata;
@@ -22,16 +21,32 @@ const navLinks = [
   { label: "Programmes", href: "/programmes" },
 ];
 
-const audiences = [
-  ["Individuals", "Trusted support for your wellbeing, health and personal development."],
-  ["Couples & Families", "Finding the right person for the people who matter most."],
-  ["Retreat Organisers", "Building thoughtful programmes with trusted practitioners."],
-  ["Hotels & Travel Advisors", "Making considered introductions for guests and clients."],
-  [
-    "Organisations",
-    "Finding practitioners for leadership, wellbeing and team programmes.",
+const audiences: readonly { title: string; copy: string; href?: string }[] = [
+  { title: "Individuals", copy: "Trusted support for your wellbeing, health and personal development." },
+  { title: "Couples & Families", copy: "Finding the right person for the people who matter most." },
+  { title: "Retreat Organisers", copy: "Building thoughtful programmes with trusted practitioners.", href: "/programmes" },
+  { title: "Hotels & Travel Advisors", copy: "Making considered introductions for guests and clients.", href: "/programmes" },
+  { title: "Organisations", copy: "Finding practitioners for leadership, wellbeing and team programmes.", href: "/programmes" },
+];
+
+const homeJsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      name: "The Solas Guide",
+      url: getAbsoluteUrl("/"),
+      email: "info@solassolas.com",
+      description: homepageDescription,
+    },
+    {
+      "@type": "WebSite",
+      name: "The Solas Guide",
+      url: getAbsoluteUrl("/"),
+      description: homepageDescription,
+    },
   ],
-] as const;
+};
 
 export default function HomePageV2() {
   return (
@@ -45,6 +60,7 @@ export default function HomePageV2() {
       <div className="mx-auto w-full max-w-[1440px] overflow-x-hidden px-3 py-3 md:px-5 md:py-5">
         <SiteHeader links={navLinks} />
         <RevealObserver />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(homeJsonLd) }} />
 
         <main id="main-content">
           <section
@@ -53,7 +69,7 @@ export default function HomePageV2() {
           >
             <Image
               src="/images/editorial/solas-hero-pavilion.webp"
-              alt=""
+              alt="A person preparing a mat in an open wooden pavilion above a green valley"
               fill
               preload
               className="object-cover object-[68%_center] md:object-center"
@@ -76,22 +92,65 @@ export default function HomePageV2() {
                 >
                   Finding someone isn&apos;t difficult. Knowing who to trust is.
                 </h1>
-                <p className="mt-7 max-w-2xl text-lg leading-8 text-white sm:text-xl" data-reveal data-reveal-delay="2">
-                  A trusted guide to exceptional wellness practitioners.
-                </p>
-                <p className="mt-2 max-w-2xl text-sm leading-7 text-white/80 sm:text-base" data-reveal data-reveal-delay="2">
-                  Independently recognised. Editorially profiled. Carefully selected.
+                <p className="mt-7 max-w-2xl text-base leading-8 text-white sm:text-lg" data-reveal data-reveal-delay="2">
+                  An independent guide to exceptional wellness practitioners, and the team that designs, staffs and delivers wellness programmes for travel advisors, retreat organisers, venues and professional communities.
                 </p>
                 <div className="mt-8 flex flex-col gap-3 sm:flex-row" data-reveal data-reveal-delay="3">
-                  <a href="#registry" className={cn(buttonVariants(), "w-full border-background bg-background text-foreground hover:bg-background/85 sm:w-auto")}>
-                    Browse the Guide <ArrowDown />
+                  <a
+                    href={discoveryCall.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={cn(buttonVariants(), "w-full border-background bg-background text-foreground hover:bg-background/85 sm:w-auto")}
+                  >
+                    Book a discovery call <ArrowRight />
                   </a>
-                  <Link href={needHelpChoosing.href} className="inline-flex min-h-11 items-center justify-center px-4 text-xs font-semibold uppercase tracking-[0.13em] text-white hover:text-white/75">
-                    {needHelpChoosing.label} <ArrowRight />
+                  <Link href="/practitioners" className={cn(buttonVariants({ variant: "outline" }), "w-full border-white/50 bg-transparent text-white hover:bg-white/10 sm:w-auto")}>
+                    Explore the Guide
                   </Link>
                 </div>
+                <Link href={needHelpChoosing.href} className="mt-4 inline-flex min-h-11 items-center text-sm text-white/80 underline-offset-4 hover:text-white hover:underline">
+                  {needHelpChoosing.label}
+                </Link>
               </div>
             </div>
+          </section>
+
+          <section id="programmes" className="border-x border-b border-border bg-foreground px-5 py-14 text-background sm:px-8 md:px-12 md:py-20 lg:px-16">
+            <div className="grid gap-8 lg:grid-cols-[1.2fr_auto] lg:items-end">
+              <div>
+                <p className="review-label text-background/55">For travel advisors, retreat organisers, venues and professional communities</p>
+                <h2 className="mt-5 max-w-3xl font-display text-4xl leading-tight text-balance sm:text-5xl">
+                  We design, staff and can run the wellness programme for your group.
+                </h2>
+                <p className="mt-6 max-w-2xl text-sm leading-7 text-background/75">
+                  Tell us about the group, the dates and what you want people to take away. We shape the sessions, select practitioners from the Guide, and can coordinate and direct the programme on site.
+                </p>
+              </div>
+              <div className="flex flex-col gap-3 sm:flex-row lg:flex-col lg:items-stretch">
+                <a
+                  href={discoveryCall.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={cn(buttonVariants(), "w-full border-background bg-background text-foreground hover:bg-background/85 sm:w-auto lg:w-full")}
+                >
+                  Book a 30-minute discovery call <ArrowRight />
+                </a>
+                <Link
+                  href="/programmes"
+                  className={cn(buttonVariants({ variant: "outline" }), "w-full border-background/40 bg-transparent text-background hover:bg-background/10 sm:w-auto lg:w-full")}
+                >
+                  See how a programme comes together
+                </Link>
+              </div>
+            </div>
+          </section>
+
+          <section aria-label="Recent work" className="border-x border-b border-border bg-card px-5 py-10 sm:px-8 md:px-12 lg:px-16">
+            <p className="review-label text-muted-foreground">Recently</p>
+            <ul className="mt-4 max-w-2xl space-y-2 text-sm leading-7 text-muted-foreground">
+              <li>Arranged and facilitated a YPO retreat, December 2024</li>
+              <li>At the Ubud Writers &amp; Readers Festival with Solas Guide members</li>
+            </ul>
           </section>
 
           <section id="why-solas" className="border-x border-b border-border">
@@ -142,12 +201,23 @@ export default function HomePageV2() {
               Built for people looking beyond reviews and recommendations.
             </h2>
             <div className="mt-10 grid gap-px border border-border bg-border md:grid-cols-2 lg:grid-cols-5" data-reveal data-reveal-delay="1">
-              {audiences.map(([title, copy]) => (
-                <article key={title} className="min-h-48 bg-background p-6 lg:min-h-64">
-                  <p className="font-display text-2xl leading-tight">{title}</p>
-                  <p className="mt-5 text-sm leading-7 text-muted-foreground">{copy}</p>
-                </article>
-              ))}
+              {audiences.map((audience) => {
+                const card = (
+                  <>
+                    <p className="font-display text-2xl leading-tight">{audience.title}</p>
+                    <p className="mt-5 text-sm leading-7 text-muted-foreground">{audience.copy}</p>
+                  </>
+                );
+                return audience.href ? (
+                  <Link key={audience.title} href={audience.href} className="min-h-48 bg-background p-6 transition-colors hover:bg-muted/40 lg:min-h-64">
+                    {card}
+                  </Link>
+                ) : (
+                  <article key={audience.title} className="min-h-48 bg-background p-6 lg:min-h-64">
+                    {card}
+                  </article>
+                );
+              })}
             </div>
           </section>
 
@@ -169,42 +239,6 @@ export default function HomePageV2() {
             </div>
           </section>
 
-          <section id="professional-enquiries" className="border-x border-b border-border bg-foreground px-5 py-16 text-background sm:px-8 md:px-12 md:py-24 lg:px-16">
-            <div className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end" data-reveal>
-              <div>
-                <p className="review-label text-background/55">Professional enquiries</p>
-                <h2 className="mt-5 max-w-3xl font-display text-4xl leading-tight sm:text-5xl">Looking for something more tailored?</h2>
-                <p className="mt-6 max-w-3xl text-sm leading-7 text-background/70">
-                  Planning a retreat, leadership programme, private client experience or looking for practitioners for your organisation?
-                </p>
-                <p className="mt-4 max-w-3xl text-sm leading-7 text-background/70">
-                  Solas works with retreat organisers, hotels, travel advisors and organisations to identify practitioners, shape programmes and make thoughtful introductions.
-                </p>
-              </div>
-              <Link href={makeAnEnquiry.href} className={cn(buttonVariants(), "w-full border-background bg-background text-foreground hover:bg-background/85 sm:w-auto")}>
-                {makeAnEnquiry.label} <ArrowRight />
-              </Link>
-            </div>
-          </section>
-
-          <section id="practitioner-applications" className="border-x border-b border-border bg-card px-5 py-16 sm:px-8 md:px-12 md:py-24 lg:px-16">
-            <div className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end" data-reveal>
-              <div>
-                <p className="review-label text-muted-foreground">For practitioners</p>
-                <h2 className="mt-5 max-w-2xl font-display text-4xl leading-tight sm:text-5xl">Practitioner membership is by application.</h2>
-                <p className="mt-6 max-w-3xl text-sm leading-7 text-muted-foreground">
-                  An independently written profile with verified claims, consideration for introductions where there&apos;s a fit, and a community of practitioners who take their work seriously. Introductions aren&apos;t guaranteed.
-                </p>
-              </div>
-              <TrackedPractitionerLink
-                source="homepage"
-                href="/membership"
-                className="inline-flex min-h-11 items-center text-sm text-foreground underline-offset-4 hover:underline"
-              >
-                About practitioner membership →
-              </TrackedPractitionerLink>
-            </div>
-          </section>
         </main>
 
         <SiteFooter />

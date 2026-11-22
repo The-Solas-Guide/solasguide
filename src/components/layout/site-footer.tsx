@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { BrandWordmark } from "@/components/brand/brand-wordmark";
 import { TrackedPractitionerLink } from "@/components/analytics/tracked-practitioner-link";
-import { browseTheGuide, makeAnEnquiry, needHelpChoosing } from "@/lib/public-journeys";
+import { browseTheGuide, discoveryCall, guideEmail, needHelpChoosing } from "@/lib/public-journeys";
 
 const linkClassName =
   "inline-flex min-h-10 items-center text-sm transition-colors hover:text-background focus-visible:text-background";
@@ -43,7 +43,7 @@ export function SiteFooter() {
               href="/membership"
               className={linkClassName}
             >
-              Practitioner membership
+              Practitioners can apply for membership
             </TrackedPractitionerLink>
             <Link href="/working-in-bali" className={linkClassName}>
               Working in Bali briefing
@@ -53,9 +53,12 @@ export function SiteFooter() {
         <div>
           <p className="review-label text-background/50">Contact</p>
           <div className="mt-4 grid gap-1 text-background/85">
-            <Link href={makeAnEnquiry.href} className={linkClassName}>
-              {makeAnEnquiry.label}
-            </Link>
+            <a href={discoveryCall.href} target="_blank" rel="noopener noreferrer" className={linkClassName}>
+              {discoveryCall.label}
+            </a>
+            <a href={`mailto:${guideEmail}`} className={linkClassName}>
+              {guideEmail}
+            </a>
           </div>
           <div className="mt-6 border-t border-background/20 pt-4">
             <p className="review-label opacity-50">Legal</p>

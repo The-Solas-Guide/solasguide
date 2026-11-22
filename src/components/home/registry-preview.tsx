@@ -27,12 +27,12 @@ export async function RegistryPreview() {
     >
       <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
         <div>
-          <p className="review-label text-accent">Volume One</p>
+          <p className="review-label text-accent">Featured practitioners</p>
           <h2
             id="registry-heading"
             className="mt-4 max-w-3xl font-display text-3xl leading-[1.08] text-balance sm:text-4xl md:text-5xl md:leading-[1.05]"
           >
-            Meet the Founding Practitioners
+            Featured practitioners
           </h2>
         </div>
         <div className="max-w-xl space-y-4 text-sm leading-7 text-muted-foreground lg:max-w-sm">
@@ -68,7 +68,7 @@ export async function RegistryPreview() {
           </div>
           <div className="mt-8 flex justify-center">
             <Button asChild>
-              <Link href="/practitioners">View All Practitioners</Link>
+              <Link href="/practitioners">Browse the full Guide</Link>
             </Button>
           </div>
         </>

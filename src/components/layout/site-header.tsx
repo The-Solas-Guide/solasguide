@@ -5,8 +5,7 @@ import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { TrackedPractitionerLink } from "@/components/analytics/tracked-practitioner-link";
-import { needHelpChoosing } from "@/lib/public-journeys";
+import { discoveryCall } from "@/lib/public-journeys";
 import { cn } from "@/lib/utils";
 
 const defaultLinks = [
@@ -21,10 +20,32 @@ type NavLink = {
   href: string;
 };
 
+function HeaderCta({
+  href,
+  label,
+  className,
+  onClick,
+}: NavLink & { className?: string; onClick?: () => void }) {
+  const external = href.startsWith("http");
+  return (
+    <Button asChild className={className}>
+      {external ? (
+        <a href={href} target="_blank" rel="noopener noreferrer" onClick={onClick}>
+          {label}
+        </a>
+      ) : (
+        <Link href={href} onClick={onClick}>
+          {label}
+        </Link>
+      )}
+    </Button>
+  );
+}
+
 export function SiteHeader({
   className,
   links = defaultLinks,
-  cta = needHelpChoosing,
+  cta = discoveryCall,
 }: {
   className?: string;
   links?: readonly NavLink[];
@@ -58,18 +79,9 @@ export function SiteHeader({
               {link.label}
             </a>
           ))}
-          <TrackedPractitionerLink
-            source="header"
-            href="/membership"
-            className="inline-flex min-h-11 items-center text-xs font-semibold uppercase tracking-[0.13em] text-muted-foreground transition-colors hover:text-foreground"
-          >
-            For practitioners
-          </TrackedPractitionerLink>
         </nav>
         <div className="hidden lg:block">
-          <Button asChild>
-            <Link href={cta.href}>{cta.label}</Link>
-          </Button>
+          <HeaderCta href={cta.href} label={cta.label} />
         </div>
         <button
           type="button"
@@ -98,19 +110,7 @@ export function SiteHeader({
               {link.label}
             </a>
           ))}
-          <TrackedPractitionerLink
-            source="mobile-header"
-            href="/membership"
-            onClickCapture={() => setOpen(false)}
-            className="flex min-h-12 items-center border-b border-border px-3 text-sm"
-          >
-            For practitioners
-          </TrackedPractitionerLink>
-          <Button asChild className="mt-3 w-full">
-            <Link href={cta.href} onClick={() => setOpen(false)}>
-              {cta.label}
-            </Link>
-          </Button>
+          <HeaderCta href={cta.href} label={cta.label} className="mt-3 w-full" onClick={() => setOpen(false)} />
         </nav>
       )}
     </header>

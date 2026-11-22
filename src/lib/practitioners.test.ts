@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Database } from "@/types/database";
 import {
+  portraitAlt,
   portraitObjectPosition,
   type DirectoryFilters,
 } from "@/lib/practitioners";
@@ -450,5 +451,14 @@ describe("portraitObjectPosition", () => {
 
   it("keeps an explicit custom focal point", () => {
     expect(portraitObjectPosition(35, 65)).toBe("35% 65%");
+  });
+});
+
+describe("portraitAlt", () => {
+  it("names the portraits that were missing alt text", () => {
+    expect(portraitAlt("Adam Guzman-Poole", null)).toBe("Portrait of Adam Guzman-Poole");
+    expect(portraitAlt("Nicky Kassapian", " ")).toBe("Portrait of Nicky Kassapian");
+    expect(portraitAlt("Cherlene Wilson", undefined)).toBe("Portrait of Cherlene Wilson");
+    expect(portraitAlt("Adam Guzman-Poole", "A supplied description")).toBe("A supplied description");
   });
 });

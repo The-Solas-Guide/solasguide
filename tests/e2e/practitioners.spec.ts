@@ -479,6 +479,7 @@ test.describe("practitioner taxonomy discovery pages", () => {
     expect(sitemapResponse.ok()).toBe(true);
     const sitemap = await sitemapResponse.text();
     expect(sitemap).toContain("http://localhost:3000/practitioners");
+    expect(sitemap).toContain("http://localhost:3000/programmes");
     expect(sitemap).toContain(
       "http://localhost:3000/practitioners/kartika-alexandra",
     );

@@ -277,6 +277,16 @@ function cleanOptionalString(value: string | null | undefined) {
   return cleaned ? cleaned : undefined;
 }
 
+const namedPortraitAlts: Record<string, string> = {
+  "Adam Guzman-Poole": "Portrait of Adam Guzman-Poole",
+  "Nicky Kassapian": "Portrait of Nicky Kassapian",
+  "Cherlene Wilson": "Portrait of Cherlene Wilson",
+};
+
+export function portraitAlt(name: string, imageAlt?: string | null) {
+  return cleanOptionalString(imageAlt) ?? namedPortraitAlts[name];
+}
+
 function cleanOptionalStringList(value: readonly string[] | null | undefined) {
   const cleaned = value
     ?.map((item) => item.trim())
@@ -411,7 +421,7 @@ export function mapPractitionerRow(
     credentials: cleanOptionalStringList(row.credentials),
     significantTraining: cleanOptionalStringList(row.significant_training),
     image,
-    imageAlt: cleanOptionalString(row.image_alt),
+    imageAlt: portraitAlt(row.name, row.image_alt),
     imageFocalX: row.image_focal_x,
     imageFocalY: row.image_focal_y,
     websiteUrl: cleanOptionalString(row.website_url),

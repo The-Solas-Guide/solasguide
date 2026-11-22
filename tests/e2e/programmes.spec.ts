@@ -27,6 +27,7 @@ for (const width of [1440, 390]) {
     await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
     await expect(page.getByRole("main")).toHaveCount(1);
     await expect(page.getByRole("link", { name: "Begin your enquiry" })).toHaveCount(0);
+    await expect(page.locator("#contact").getByRole("link", { name: "Book a discovery call" })).toHaveAttribute("href", "https://cal.com/solasguide/solas-discovery-call");
     expect(await page.evaluate(() => window.scrollY)).toBe(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
     await page.getByRole("link", { name: "Tell us about your plans", exact: true }).first().click();

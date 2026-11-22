@@ -9,6 +9,7 @@ import { ProgrammeEnquiryForm } from "@/components/enquiry/programme-enquiry-for
 import { SiteHeader } from "@/components/layout/site-header";
 import { PractitionerCard } from "@/components/practitioners/practitioner-card";
 import { Button } from "@/components/ui/button";
+import { discoveryCall } from "@/lib/public-journeys";
 import { emptyDirectoryFilters, getPublishedPractitioners } from "@/lib/practitioners";
 import { cn } from "@/lib/utils";
 import styles from "./page.module.css";
@@ -438,6 +439,9 @@ export default function ProgrammesPage() {
                 <p className={styles.eyebrow}>What happens next</p>
                 <p>We’ll contact you to arrange a conversation about your programme and how we can help.</p>
               </div>
+              <a href={discoveryCall.href} target="_blank" rel="noopener noreferrer" className={styles.textLink}>
+                Book a discovery call <ArrowUpRight aria-hidden="true" />
+              </a>
             </div>
             <div className={styles.contactForm}>
               <ProgrammeEnquiryForm />

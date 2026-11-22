@@ -3,6 +3,13 @@ export const browseTheGuide = {
   href: "/practitioners",
 } as const;
 
+export const discoveryCall = {
+  label: "Book a discovery call",
+  href: "https://cal.com/solasguide/solas-discovery-call",
+} as const;
+
+export const guideEmail = "info@solassolas.com";
+
 export const needHelpChoosing = {
   label: "Need Help Choosing?",
   href: "/find-a-match",
