@@ -67,7 +67,9 @@ test("explains practitioner membership", async ({ page }) => {
   const call = page.getByRole("link", { name: "Book a call with Jitesh" });
   const apply = page.getByRole("link", { name: "Apply now · USD $350 a year" });
   await expect(apply).toHaveCount(2);
-  await expect(page.locator('a[href="https://cal.com/solasguide/solas-discovery-call"]')).toHaveCount(6);
+  await expect(page.locator('a[href="https://cal.com/solasguide/solas-discovery-call"]')).toHaveCount(8);
+  await expect(page.locator("header").getByRole("link", { name: "Book a discovery call" })).toHaveAttribute("href", "https://cal.com/solasguide/solas-discovery-call");
+  await expect(page.getByRole("contentinfo").getByRole("link", { name: "Book a discovery call" })).toHaveAttribute("href", "https://cal.com/solasguide/solas-discovery-call");
   await expect(page.locator('a[href="https://cal.com/solassolas/30min-private-conversation"]')).toHaveCount(0);
   await expect(call).toHaveCount(4);
   for (const link of await call.all()) {
