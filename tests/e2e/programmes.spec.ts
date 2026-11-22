@@ -30,7 +30,11 @@ for (const width of [1440, 390]) {
     expect(await page.locator('meta[name="description"]').getAttribute("content")).not.toMatch(/Bali/i);
     await expect(page.getByText("YPO leadership retreat: couples facilitation and practitioner sourcing")).toBeVisible();
     await expect(page.getByText("December 2024")).toHaveCount(0);
-    await expect(page.getByRole("heading", { name: "A three-day group programme" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Start with the guest, not the activity." })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "How a three-day programme unfolds" })).toHaveCount(0);
+    await expect(page.getByText("Sample timetable")).toHaveCount(0);
+    await expect(page.getByText("Organiser's own time")).toHaveCount(0);
+    await expect(page.locator("#method")).toBeVisible();
     await expect(page.getByText("Finding practitioners is only part of the job")).toHaveCount(0);
     await expect(page.getByRole("link", { name: "Group programmes" })).toHaveAttribute("href", "https://cal.com/solasguide/solas-discovery-call");
     await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);

@@ -152,7 +152,7 @@ export default function HomePageV2() {
                 Tell us about your plans
               </Link>
               <Link
-                href="/programmes"
+                href="/programmes#method"
                 className={cn(buttonVariants({ size: "lg", variant: "outline" }), "w-full border-accent-foreground/55 bg-transparent text-accent-foreground hover:bg-accent-foreground/10 sm:w-auto")}
               >
                 How a programme comes together

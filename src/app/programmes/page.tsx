@@ -30,6 +30,33 @@ export const metadata: Metadata = {
 
 export const dynamic = "force-dynamic";
 
+const guestQuestions = [
+  "Who is this for?",
+  "What are they looking for?",
+  "Why would they choose this programme?",
+  "What should feel different by the time they leave?",
+] as const;
+
+const methodSteps = ["Audience", "Concept", "Programme", "People", "Delivery"] as const;
+
+const programmeDirections = [
+  {
+    title: "Rest and recovery",
+    for: "Founders, executives and people with demanding lives.",
+    why: "Dedicated time to recover and return with greater clarity.",
+  },
+  {
+    title: "Relationships and connection",
+    for: "Couples who want to strengthen a good relationship.",
+    why: "Practical relationship skills and time built around the relationship, not the holiday.",
+  },
+  {
+    title: "Life and direction",
+    for: "People facing a meaningful personal or professional transition.",
+    why: "Space and professional support to explore priorities and next steps.",
+  },
+] as const;
+
 const navLinks = [
   { label: "Why Solas", href: "#approach" },
   { label: "What we do", href: "#offer" },
@@ -197,128 +224,41 @@ export default function ProgrammesPage() {
             </ul>
           </section>
 
-          <section className={cn(styles.section, styles.programmeExample)} aria-labelledby="programme-example-heading">
-            <div className={styles.exampleIntro}>
-              <p className={styles.eyebrow}>An illustrative example</p>
-              <h2 id="programme-example-heading" className={styles.displayHeading}>
-                What your programme could look like.
-              </h2>
-              <p>
-                One example of how shared sessions and free time can sit together.
-              </p>
-            </div>
-            <article className={styles.examplePlan} aria-label="Illustrative three-day programme document">
-              <header className={styles.exampleDocumentHeader}>
-                <div>
-                  <p className={styles.exampleBrand}>The Solas Guide</p>
-                  <p className={styles.exampleDocumentType}>Programme outline</p>
-                </div>
-                <p className={styles.exampleSampleLabel}>Illustrative sample</p>
-              </header>
-
-              <div className={styles.exampleDocumentLead}>
-                <div className={styles.exampleTitle}>
-                  <p className={styles.eyebrow}>Three days in Bali</p>
-                  <h3>A three-day group programme</h3>
-                  <p>This sample shows how shared sessions and personal time could sit together. Every programme is shaped around your group.</p>
-                </div>
-                <div className={styles.exampleMedia}>
-                  <Image
-                    src="/images/programmes/place.webp"
-                    alt="A pavilion overlooking the green landscape of Bali"
-                    fill
-                    loading="lazy"
-                    className={styles.coverImage}
-                    sizes="(max-width: 800px) 100vw, 32vw"
-                  />
-                </div>
-              </div>
-
-              <dl className={styles.exampleDetails}>
-                <div>
-                  <dt>Group</dt>
-                  <dd>12-person leadership team</dd>
-                </div>
-                <div>
-                  <dt>Location</dt>
-                  <dd>Bali</dd>
-                </div>
-                <div>
-                  <dt>Duration</dt>
-                  <dd>3 days</dd>
-                </div>
-              </dl>
-
-              <div className={styles.exampleSchedule}>
-                <div className={styles.exampleScheduleHeader}>
-                  <div>
-                    <p className={styles.eyebrow}>Sample timetable</p>
-                    <h4>Your three-day schedule</h4>
-                  </div>
-                  <p>Times and session types are examples only.</p>
-                </div>
-                <table>
-                  <caption className="sr-only">Illustrative three-day wellness programme timetable</caption>
-                  <thead>
-                    <tr>
-                      <th scope="col">Day</th>
-                      <th scope="col">Time</th>
-                      <th scope="col">Session</th>
-                      <th scope="col">Duration</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <th scope="row" data-label="Day">Day 01</th>
-                      <td data-label="Time">15:30</td>
-                      <td data-label="Session"><strong>Arrival and settle-in</strong><span>Organiser&apos;s own time</span></td>
-                      <td data-label="Duration">Flexible</td>
-                    </tr>
-                    <tr>
-                      <th scope="row" data-label="Day">Day 01</th>
-                      <td data-label="Time">17:00</td>
-                      <td data-label="Session"><strong>Gentle movement session</strong><span>An easy shared start to the programme.</span></td>
-                      <td data-label="Duration">45 mins</td>
-                    </tr>
-                    <tr>
-                      <th scope="row" data-label="Day">Day 02</th>
-                      <td data-label="Time">07:30</td>
-                      <td data-label="Session"><strong>Guided meditation</strong><span>A quiet morning practice for the group.</span></td>
-                      <td data-label="Duration">30 mins</td>
-                    </tr>
-                    <tr>
-                      <th scope="row" data-label="Day">Day 02</th>
-                      <td data-label="Time">09:00</td>
-                      <td data-label="Session"><strong>Breakfast and free time</strong><span>Organiser&apos;s own time</span></td>
-                      <td data-label="Duration">Flexible</td>
-                    </tr>
-                    <tr>
-                      <th scope="row" data-label="Day">Day 02</th>
-                      <td data-label="Time">16:30</td>
-                      <td data-label="Session"><strong>Group reflection</strong><span>Time to pause and reflect together.</span></td>
-                      <td data-label="Duration">60 mins</td>
-                    </tr>
-                    <tr>
-                      <th scope="row" data-label="Day">Day 03</th>
-                      <td data-label="Time">08:00</td>
-                      <td data-label="Session"><strong>Breathing practice</strong><span>A calm start before the final day.</span></td>
-                      <td data-label="Duration">30 mins</td>
-                    </tr>
-                    <tr>
-                      <th scope="row" data-label="Day">Day 03</th>
-                      <td data-label="Time">10:00</td>
-                      <td data-label="Session"><strong>Closing conversation</strong><span>An example group session to bring the programme together.</span></td>
-                      <td data-label="Duration">45 mins</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-
-              <footer className={styles.exampleDocumentFooter}>
-                <p>Sessions, timing and practitioners are discussed after we understand your group.</p>
-                <p>Sample programme · 01 / 01</p>
-              </footer>
-            </article>
+          <section id="method" className={cn(styles.section, styles.method)} aria-labelledby="method-heading">
+            <p className={styles.eyebrow}>Our approach</p>
+            <h2 id="method-heading" className={styles.displayHeading}>Start with the guest, not the activity.</h2>
+            <p className={styles.methodLead}>
+              Most retreats begin with a list of things to do: yoga, breathwork, meditation, massage, workshops. That alone doesn&apos;t give anyone a reason to travel. We begin with four questions.
+            </p>
+            <ol className={styles.questionGrid}>
+              {guestQuestions.map((question, index) => (
+                <li key={question}>
+                  <span aria-hidden="true">{index + 1}</span>
+                  <p>{question}</p>
+                </li>
+              ))}
+            </ol>
+            <p className={styles.methodLead}>
+              Only then do we decide what belongs in the programme and who should deliver it. Every practitioner, session, meal, setting and transition has a reason to be there.
+            </p>
+            <ol className={styles.methodSteps} aria-label="How a programme comes together">
+              {methodSteps.map((step, index) => (
+                <li key={step}>
+                  <span aria-hidden="true">{index + 1}</span>
+                  <p>{step}</p>
+                </li>
+              ))}
+            </ol>
+            <h3 className={styles.directionsHeading}>Programme directions we often develop</h3>
+            <ul className={styles.directionGrid}>
+              {programmeDirections.map((direction) => (
+                <li key={direction.title}>
+                  <h4>{direction.title}</h4>
+                  <p><span>For</span> {direction.for}</p>
+                  <p><span>Why attend</span> {direction.why}</p>
+                </li>
+              ))}
+            </ul>
           </section>
 
           <Suspense fallback={<PractitionerPreviewFallback />}>
