@@ -24,7 +24,7 @@ import {
   practiseWhatsAppHref,
   proofStats,
   SOLAS_LETTER_SIGNUP_FORM_URL,
-  SOLAS_TABLE_WAITLIST_FORM_URL,
+  SOLAS_TABLE_BOOKING_FORM_URL,
   testimonials,
 } from "@/lib/membership-content";
 import { cn } from "@/lib/utils";
@@ -133,8 +133,8 @@ function LetterClose() {
         Book a call with Jitesh
       </TrackedPractitionerLink>
       . The next Solas Table is {nextTable.when}, {nextTable.time.toLowerCase()}.{" "}
-      <a href={SOLAS_TABLE_WAITLIST_FORM_URL} className="text-foreground underline-offset-4 hover:underline">
-        Join the waitlist
+      <a href={SOLAS_TABLE_BOOKING_FORM_URL} className="text-foreground underline-offset-4 hover:underline">
+        Book your place
       </a>
       .
     </p>
@@ -235,29 +235,30 @@ export default function MembershipPage() {
                 <figcaption className="mt-3 text-xs tracking-wide text-background/65">The Solas Table, Bali</figcaption>
               </figure>
             </div>
-            <div id="table-waitlist-form" className={cn(sectionPad, "border-t border-background/15 lg:border-t-0 lg:border-l")}>
+            <div id="table-booking-form" className={cn(sectionPad, "border-t border-background/15 lg:border-t-0 lg:border-l")}>
               <p className="review-label text-background/55">Next table</p>
               <p className="mt-4 font-display text-3xl leading-tight">{nextTable.when}</p>
               <p className="mt-3 flex flex-wrap gap-x-2 gap-y-1 text-sm leading-6 text-background/75">
-                {[nextTable.seats, nextTable.time, nextTable.venue].map((item, index) => (
+                {[nextTable.time, nextTable.seats, nextTable.venue].map((item, index) => (
                   <span key={item} className="whitespace-nowrap">
                     {index > 0 ? <span aria-hidden="true">· </span> : null}
                     {item}
                   </span>
                 ))}
               </p>
+              <p className="mt-4 max-w-sm text-sm leading-7 text-background/85">{nextTable.support}. {nextTable.proceeds}</p>
               <div className="mt-8 bg-background p-6 text-foreground md:p-8">
-                <h3 className="font-display text-2xl leading-tight">Join the waitlist for the next Solas Table</h3>
+                <h3 className="font-display text-2xl leading-tight">Book the next Solas Table</h3>
                 <p className="mt-3 text-sm leading-7 text-muted-foreground">
-                  Seats are limited. We&apos;ll be in touch to confirm yours. {nextTable.confirmationNote}
+                  22 seats. The booking form confirms your place and takes payment. All proceeds go to Sari Hati School for Special Needs Children.
                 </p>
                 <div className="mt-6">
                   <FormPlaceholderLink
-                    href={SOLAS_TABLE_WAITLIST_FORM_URL}
+                    href={SOLAS_TABLE_BOOKING_FORM_URL}
                     className={cn(buttonVariants({ size: "lg" }), "w-full sm:w-auto")}
-                    pendingNote="The waitlist form is being set up. This button will open it once the form is ready."
+                    pendingNote="The booking form is being set up. This button will open it once the form is ready."
                   >
-                    Join the waitlist
+                    Book your place
                   </FormPlaceholderLink>
                 </div>
                 <p className="mt-5 text-sm leading-7 text-muted-foreground">

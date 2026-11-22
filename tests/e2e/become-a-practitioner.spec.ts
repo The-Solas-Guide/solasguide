@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import {
   SOLAS_LETTER_SIGNUP_FORM_URL,
-  SOLAS_TABLE_WAITLIST_FORM_URL,
+  SOLAS_TABLE_BOOKING_FORM_URL,
   practiseWhatsAppHref,
 } from "../../src/lib/membership-content";
 
@@ -30,7 +30,8 @@ test("explains practitioner membership", async ({ page }) => {
   await expect(page.getByText("A seat at every Solas Table")).toHaveCount(0);
   await expect(page.getByText("Members join every Solas Table free.")).toHaveCount(0);
   await expect(page.getByText("Venue to be confirmed")).toBeVisible();
-  await expect(page.getByText("Details shared when your seat is confirmed.")).toBeVisible();
+  await expect(page.getByText("Thursday 10 December 2026").first()).toBeVisible();
+  await expect(page.getByText("In support of Sari Hati School for Special Needs Children.").first()).toBeVisible();
   await expect(page.getByText("IDR 350k")).toHaveCount(0);
   await expect(page.getByText("Edition 01, September 2026, and Edition 02, October 2026, have already gone out to members and non-members.")).toBeVisible();
   await expect(page.getByRole("heading", { name: "Future editions." })).toBeVisible();
@@ -60,7 +61,7 @@ test("explains practitioner membership", async ({ page }) => {
   await expect(apply.first()).toHaveAttribute("href", "https://tally.so/r/XxQvJz");
   await expect(apply.first()).toHaveAttribute("target", "_blank");
   await expect(page.getByRole("link", { name: "Get in touch on WhatsApp" })).toHaveAttribute("href", practiseWhatsAppHref);
-  await expect(page.getByRole("link", { name: "Join the waitlist" }).first()).toHaveAttribute("href", SOLAS_TABLE_WAITLIST_FORM_URL);
+  await expect(page.getByRole("link", { name: "Book your place" }).first()).toHaveAttribute("href", SOLAS_TABLE_BOOKING_FORM_URL);
   await expect(page.getByRole("link", { name: "Get the Letter" })).toHaveAttribute("href", SOLAS_LETTER_SIGNUP_FORM_URL);
 
   await page.getByRole("button", { name: /Past edition · Edition 02/ }).click();

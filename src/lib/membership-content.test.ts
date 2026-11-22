@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
   SOLAS_LETTER_SIGNUP_FORM_URL,
-  SOLAS_TABLE_WAITLIST_FORM_URL,
+  SOLAS_TABLE_BOOKING_FORM_URL,
   isBusinessWorkshopUpcoming,
   isPlaceholderFormUrl,
   letters,
@@ -58,9 +58,9 @@ describe("membership public copy", () => {
   });
 
   it("names the form placeholders in one place and treats the sent letters as past editions", () => {
-    expect(SOLAS_TABLE_WAITLIST_FORM_URL).toBe("#table-waitlist-form");
+    expect(SOLAS_TABLE_BOOKING_FORM_URL).toBe("#table-booking-form");
     expect(SOLAS_LETTER_SIGNUP_FORM_URL).toBe("#letter-signup-form");
-    expect(isPlaceholderFormUrl(SOLAS_TABLE_WAITLIST_FORM_URL)).toBe(true);
+    expect(isPlaceholderFormUrl(SOLAS_TABLE_BOOKING_FORM_URL)).toBe(true);
     expect(isPlaceholderFormUrl("https://tally.so/r/example")).toBe(false);
     expect(letters.map((letter) => letter.summary)).toEqual([
       "Past edition · Edition 02 · October 2026 · The business of being a practitioner",

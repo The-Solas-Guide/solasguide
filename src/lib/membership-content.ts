@@ -3,7 +3,8 @@
  * Replace the two form URL constants when the Tally forms exist.
  * A same-page hash keeps each button on /membership until then.
  */
-export const SOLAS_TABLE_WAITLIST_FORM_URL = "#table-waitlist-form";
+/** Replace with the Tally booking form URL when it exists. */
+export const SOLAS_TABLE_BOOKING_FORM_URL = "#table-booking-form";
 export const SOLAS_LETTER_SIGNUP_FORM_URL = "#letter-signup-form";
 
 export const bookCallHref = "https://cal.com/solassolas/30min-private-conversation";
@@ -57,11 +58,12 @@ export const membershipFeeLine =
   "Your membership pays for your profile to be researched, written and kept up to date, for gatherings and workshops, and for the time it takes to consider introductions. It never buys a ranking, an endorsement, an introduction or what we write. We keep full editorial independence and only publish what we can verify.";
 
 export const nextTable = {
-  when: "Thursday 3 December",
-  time: "From 6pm",
+  when: "Thursday 10 December 2026",
+  time: "6pm",
   venue: "Venue to be confirmed",
   seats: "22 seats",
-  confirmationNote: "Details shared when your seat is confirmed.",
+  support: "In support of Sari Hati School for Special Needs Children",
+  proceeds: "All proceeds go to the school.",
 } as const;
 
 export const nikkiFacts = ["Mon 23 Nov", "7–8pm WITA", "Online", "Free"] as const;
@@ -125,7 +127,7 @@ export const membershipFaqs = [
   {
     question: "Are events only for members?",
     answer:
-      "No. Solas Tables are an intimate gathering every 6–8 weeks. Sometimes non-members are invited; at other times members contribute towards the cost too. The 3 December table is from 6pm, with 22 seats. The venue is still to be confirmed. Details are shared when your seat is confirmed. The Working in Bali briefing is open to read.",
+      "No. Solas Tables are an intimate gathering every 6–8 weeks. Sometimes non-members are invited; at other times members contribute towards the cost too. The next table is Thursday 10 December 2026 at 6pm, with 22 seats, in support of Sari Hati School for Special Needs Children. All proceeds go to the school. The venue is still to be confirmed. The Working in Bali briefing is open to read.",
   },
   {
     question: "Is the Bali briefing legal advice?",
