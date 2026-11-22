@@ -104,7 +104,7 @@ function FormPlaceholderLink({
   href: string;
   className: string;
   children: ReactNode;
-  pendingNote: string;
+  pendingNote?: string;
 }) {
   const pending = isPlaceholderFormUrl(href);
   return (
@@ -116,7 +116,7 @@ function FormPlaceholderLink({
       >
         {children} <ArrowRight />
       </a>
-      {pending ? <p className="mt-3 max-w-sm text-xs leading-5 text-muted-foreground">{pendingNote}</p> : null}
+      {pending && pendingNote ? <p className="mt-3 max-w-sm text-xs leading-5 text-muted-foreground">{pendingNote}</p> : null}
     </div>
   );
 }
@@ -389,7 +389,6 @@ export default function MembershipPage() {
                 <FormPlaceholderLink
                   href={SOLAS_LETTER_SIGNUP_FORM_URL}
                   className={cn(buttonVariants({ size: "lg" }), "w-full sm:w-auto")}
-                  pendingNote="The sign-up form for future editions is being set up. This button will open it once the form is ready."
                 >
                   Get the Letter
                 </FormPlaceholderLink>

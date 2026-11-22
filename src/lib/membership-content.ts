@@ -1,9 +1,8 @@
 /**
  * Public practitioner membership copy and outbound links.
- * The Letter sign-up stays a same-page hash until its Tally form exists.
  */
 export const SOLAS_TABLE_BOOKING_FORM_URL = "https://tally.so/r/1W9rXp";
-export const SOLAS_LETTER_SIGNUP_FORM_URL = "#letter-signup-form";
+export const SOLAS_LETTER_SIGNUP_FORM_URL = "https://tally.so/r/J1O22J";
 
 export const bookCallHref = "https://cal.com/solasguide/solas-discovery-call";
 export const applyHref = "https://tally.so/r/XxQvJz";
