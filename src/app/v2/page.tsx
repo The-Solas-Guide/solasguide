@@ -113,7 +113,7 @@ export default function HomePageV2() {
             <p className="mt-5 max-w-xl text-sm leading-6 text-foreground">
               For travel advisors, retreat organisers, venues and professional communities.
             </p>
-            <div className="mt-10 grid gap-4 md:grid-cols-3">
+            <div className="mt-10 grid gap-4 lg:grid-cols-3">
               {programmeOffers.map(([title, line]) => (
                 <a
                   key={title}

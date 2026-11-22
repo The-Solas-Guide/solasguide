@@ -153,23 +153,14 @@ export default function ProgrammesPage() {
                 Wellness programmes, designed and delivered.
               </h1>
               <p className={styles.heroIntro}>
-                We plan the sessions, select the practitioners, and can coordinate the programme.
+                We plan the sessions, select the practitioners, and coordinate the programme.
               </p>
               <div className={styles.heroActions}>
                 <DiscoveryCallButton className={styles.heroButton} />
                 <ArrowLink href="#contact">Tell us about your plans</ArrowLink>
               </div>
-              <span className={styles.heroNote}>Start with a complimentary 30-minute conversation.</span>
             </div>
           </section>
-
-          <div className={styles.audience} aria-label="Created for">
-            <span className={styles.eyebrow}>Created for</span>
-            <span>Retreat organisers</span>
-            <span>Leadership teams</span>
-            <span>Travel advisors</span>
-            <span>Hotels and private groups</span>
-          </div>
 
           <section id="approach" className={cn(styles.section, styles.proof)} aria-label="Recent work">
             <p className={styles.eyebrow}>Recent work</p>
@@ -275,17 +266,8 @@ export default function ProgrammesPage() {
                 <summary>What happens in the first conversation?</summary>
                 <p>We discuss your group, your plans and the support you need. Then we can agree the programme scope, practitioner selection and any coordination.</p>
               </details>
-              <details>
-                <summary>What should I do next?</summary>
-                <p>Send your group size, possible dates and what you want participants to get from the experience.</p>
-              </details>
             </div>
           </section>
-
-          <div className={styles.repeatCall}>
-            <DiscoveryCallButton />
-            <WhatsAppMessage className={styles.whatsappButton}>Message us on WhatsApp</WhatsAppMessage>
-          </div>
 
           <section id="contact" className={cn(styles.section, styles.contact)} aria-labelledby="contact-heading">
             <div className={styles.contactCopy}>
