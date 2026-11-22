@@ -113,7 +113,7 @@ export const nikkiMore =
 
 export const testimonials = [
   {
-    quote: "I've had the same offers for international communities, but it's never felt right. This one does.",
+    quote: "I've had the same offers for communities, but it's never felt right. This one does.",
     attribution: "Melanie Midegs, Founding Practitioner",
     initials: "MM",
   },

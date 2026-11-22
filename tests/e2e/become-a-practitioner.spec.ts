@@ -44,7 +44,7 @@ test("explains practitioner membership", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Future editions." })).toBeVisible();
   await expect(page.getByText("Sign up to receive the next Letter.")).toBeVisible();
   await expect(page.getByText("no newsletter has been sent")).toHaveCount(0);
-  await expect(page.getByText("I've had the same offers for international communities, but it's never felt right. This one does.", { exact: true })).toBeVisible();
+  await expect(page.getByText("I've had the same offers for communities, but it's never felt right. This one does.", { exact: true })).toBeVisible();
   await expect(page.getByText("Melanie Midegs, Founding Practitioner")).toHaveCount(1);
   await expect(page.getByText("After being in Bali for so many years")).toHaveCount(0);
   await expect(page.getByText("Face Reading Soirées")).toHaveCount(0);
