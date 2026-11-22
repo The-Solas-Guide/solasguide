@@ -23,6 +23,8 @@ test("explains practitioner membership", async ({ page }) => {
   await expect(page.getByText("59", { exact: true })).toBeVisible();
   await expect(page.getByText("practitioners have joined a Solas Table or signed up for our Bali briefing call")).toBeVisible();
   await expect(page.getByRole("heading", { name: "Solas Learning" })).toBeVisible();
+  await expect(page.getByText("Recently", { exact: true })).toBeVisible();
+  await expect(page.getByText("At the Ubud Writers & Readers Festival, with members Kartika and Ibu Ida Resi.")).toBeVisible();
   await expect(page.getByRole("heading", { name: "We can help you practise in Bali." })).toHaveCount(0);
   await expect(page.getByText("This week")).toBeVisible();
   await expect(page.getByRole("heading", { name: "Business Sustainability Blueprint" })).toBeVisible();

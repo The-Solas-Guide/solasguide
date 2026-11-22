@@ -5,6 +5,7 @@ import {
   SOLAS_LETTER_SIGNUP_FORM_URL,
   SOLAS_TABLE_BOOKING_FORM_URL,
   bookCallHref,
+  communityMoments,
   isBusinessWorkshopUpcoming,
   isPlaceholderFormUrl,
   learningSessions,
@@ -109,6 +110,15 @@ describe("membership public copy", () => {
       href: "/working-in-bali",
     });
     expect(learningSessions[1]?.disclaimer).toContain("does not provide immigration, legal or permit services");
+  });
+
+  it("mentions the Ubud festival without inventing a date or a photo", () => {
+    expect(communityMoments).toEqual([
+      {
+        id: "ubud-writers-readers-festival",
+        text: "At the Ubud Writers & Readers Festival, with members Kartika and Ibu Ida Resi.",
+      },
+    ]);
   });
 
   it("keeps the 23 November workshop upcoming until it ends in Bali", () => {

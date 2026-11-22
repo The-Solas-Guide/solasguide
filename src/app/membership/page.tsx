@@ -20,6 +20,7 @@ import {
   membershipNavLinks,
   membershipSteps,
   membershipTitle,
+  communityMoments,
   learningOffer,
   learningSessions,
   nextTable,
@@ -328,6 +329,23 @@ export default function MembershipPage() {
                 );
               })}
             </div>
+            {communityMoments.length > 0 ? (
+              <div className="mt-8 max-w-2xl">
+                <p className="review-label text-muted-foreground">Recently</p>
+                <ul className="mt-4 space-y-5">
+                  {communityMoments.map((moment) => (
+                    <li key={moment.id} className={cn("text-sm leading-7", moment.image && "grid grid-cols-[5.5rem_minmax(0,1fr)] items-start gap-4")}>
+                      {moment.image ? (
+                        <div className="relative aspect-[4/5] overflow-hidden bg-muted">
+                          <Image src={moment.image.src} alt={moment.image.alt} fill className="object-cover" sizes="88px" />
+                        </div>
+                      ) : null}
+                      <p>{moment.text}</p>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
             <p className="mt-6 max-w-2xl text-sm leading-7 text-muted-foreground">
               {learningOffer}{" "}
               <TrackedPractitionerLink

@@ -102,6 +102,20 @@ export const learningSessions: readonly LearningSession[] = [
 
 export const learningOffer = "Want to practise or host in Bali? Talk to us.";
 
+export type CommunityMoment = {
+  id: string;
+  text: string;
+  image?: { src: string; alt: string };
+};
+
+/** Quiet community notes. Add a photo later by setting image. */
+export const communityMoments: readonly CommunityMoment[] = [
+  {
+    id: "ubud-writers-readers-festival",
+    text: "At the Ubud Writers & Readers Festival, with members Kartika and Ibu Ida Resi.",
+  },
+];
+
 export const nikkiFacts = ["Mon 23 Nov", "7–8pm WITA", "Online", "Free"] as const;
 
 export const nikkiShortBio =
