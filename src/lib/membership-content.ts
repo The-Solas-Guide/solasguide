@@ -139,7 +139,7 @@ export const membershipFaqs = [
   {
     question: "What's included for USD $350 a year?",
     answer:
-      "A verified editorial profile, consideration for introductions where the fit makes sense, access to Solas Tables, workshops, the Letter, and help working out how to practise in Bali. Introductions aren't guaranteed. Solas Tables are an intimate gathering every 6–8 weeks. About USD 29 a month.",
+      "A verified editorial profile, consideration for introductions where the fit makes sense, access to Solas Tables, workshops, the Solas Guide Letter (our newsletter), and help working out how to practise in Bali. Introductions aren't guaranteed. Solas Tables are an intimate gathering every 6–8 weeks. About USD 29 a month.",
   },
   {
     question: "Is the fee refundable?",
@@ -200,7 +200,7 @@ export const letters: readonly {
 }[] = [
   {
     id: "edition-02",
-    summary: "Past edition · Edition 02 · October 2026 · The business of being a practitioner",
+    summary: "Past newsletter edition · Edition 02 · October 2026 · The business of being a practitioner",
     sent: "Sent to members and non-members.",
     blocks: [
       {
@@ -265,7 +265,7 @@ export const letters: readonly {
   },
   {
     id: "edition-01",
-    summary: "Past edition · Edition 01 · September 2026 · The bar is rising",
+    summary: "Past newsletter edition · Edition 01 · September 2026 · The bar is rising",
     sent: "Sent to members and non-members.",
     blocks: [
       {
