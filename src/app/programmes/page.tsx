@@ -37,26 +37,6 @@ const guestQuestions = [
   "What should feel different by the time they leave?",
 ] as const;
 
-const methodSteps = ["Audience", "Concept", "Programme", "People", "Delivery"] as const;
-
-const programmeDirections = [
-  {
-    title: "Rest and recovery",
-    for: "Founders, executives and people with demanding lives.",
-    why: "Dedicated time to recover and return with greater clarity.",
-  },
-  {
-    title: "Relationships and connection",
-    for: "Couples who want to strengthen a good relationship.",
-    why: "Practical relationship skills and time built around the relationship, not the holiday.",
-  },
-  {
-    title: "Life and direction",
-    for: "People facing a meaningful personal or professional transition.",
-    why: "Space and professional support to explore priorities and next steps.",
-  },
-] as const;
-
 const navLinks = [
   { label: "Why Solas", href: "#approach" },
   { label: "What we do", href: "#offer" },
@@ -228,35 +208,11 @@ export default function ProgrammesPage() {
             <p className={styles.eyebrow}>Our approach</p>
             <h2 id="method-heading" className={styles.displayHeading}>Start with the guest, not the activity.</h2>
             <p className={styles.methodLead}>
-              Most retreats begin with a list of things to do: yoga, breathwork, meditation, massage, workshops. That alone doesn&apos;t give anyone a reason to travel. We begin with four questions.
+              Most retreats begin with a list of activities. We begin with the people: who they are, what they need, and what should feel different when they leave. Only then do we choose the sessions and the practitioners.
             </p>
-            <ol className={styles.questionGrid}>
-              {guestQuestions.map((question, index) => (
-                <li key={question}>
-                  <span aria-hidden="true">{index + 1}</span>
-                  <p>{question}</p>
-                </li>
-              ))}
-            </ol>
-            <p className={styles.methodLead}>
-              Only then do we decide what belongs in the programme and who should deliver it. Every practitioner, session, meal, setting and transition has a reason to be there.
-            </p>
-            <ol className={styles.methodSteps} aria-label="How a programme comes together">
-              {methodSteps.map((step, index) => (
-                <li key={step}>
-                  <span aria-hidden="true">{index + 1}</span>
-                  <p>{step}</p>
-                </li>
-              ))}
-            </ol>
-            <h3 className={styles.directionsHeading}>Programme directions we often develop</h3>
-            <ul className={styles.directionGrid}>
-              {programmeDirections.map((direction) => (
-                <li key={direction.title}>
-                  <h4>{direction.title}</h4>
-                  <p><span>For</span> {direction.for}</p>
-                  <p><span>Why attend</span> {direction.why}</p>
-                </li>
+            <ul className={styles.questionList}>
+              {guestQuestions.map((question) => (
+                <li key={question}>{question}</li>
               ))}
             </ul>
           </section>

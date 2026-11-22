@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { WhatsAppMessage } from "@/components/contact/whatsapp-message";
 import { RegistryPreview } from "@/components/home/registry-preview";
 import { RegistryStandards } from "@/components/home/registry-standards";
 import { SiteFooter } from "@/components/layout/site-footer";
@@ -21,14 +20,6 @@ const navLinks = [
   { label: "Recognition", href: "#recognition" },
   { label: "The Guide", href: "/practitioners" },
   { label: "Programmes", href: "/programmes" },
-];
-
-const audiences: readonly { title: string; href?: string }[] = [
-  { title: "Individuals" },
-  { title: "Couples & Families" },
-  { title: "Retreat Organisers", href: "/programmes" },
-  { title: "Hotels & Travel Advisors", href: "/programmes" },
-  { title: "Organisations", href: "/programmes" },
 ];
 
 const homeJsonLd = {
@@ -114,39 +105,32 @@ export default function HomePageV2() {
             </div>
           </section>
 
-          <section id="programmes" className="border-x border-b border-border bg-muted px-5 py-12 text-foreground sm:px-8 md:px-12 md:py-16 lg:px-16">
-            <p className="review-label text-accent">Who the Guide is for</p>
+          <section id="programmes" className="border-x border-b border-border bg-muted px-5 py-16 text-foreground sm:px-8 md:px-12 md:py-20 lg:px-16 lg:py-24">
+            <p className="review-label text-accent">Programmes</p>
             <h2 className="mt-4 max-w-3xl font-display text-3xl leading-tight text-balance sm:text-4xl md:text-5xl">
               Wellness programmes, designed and delivered.
             </h2>
-            <p className="mt-5 flex flex-col sm:flex-row sm:flex-wrap sm:gap-x-4">
-              {audiences.map((audience) =>
-                audience.href ? (
-                  <Link key={audience.title} href={audience.href} className="inline-flex min-h-11 items-center text-sm text-foreground underline-offset-4 hover:underline">
-                    {audience.title}
-                  </Link>
-                ) : (
-                  <span key={audience.title} className="inline-flex min-h-11 items-center text-sm text-foreground">
-                    {audience.title}
-                  </span>
-                ),
-              )}
+            <p className="mt-5 max-w-xl text-sm leading-6 text-foreground">
+              For travel advisors, retreat organisers, venues and professional communities.
             </p>
-            <div className="mt-6 grid gap-3 md:grid-cols-3">
+            <div className="mt-10 grid gap-4 md:grid-cols-3">
               {programmeOffers.map(([title, line]) => (
                 <a
                   key={title}
                   href={discoveryCall.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex min-h-11 flex-col justify-center border border-border bg-card px-5 py-5 text-foreground transition-colors hover:bg-background"
+                  className="flex min-h-11 flex-col justify-center border border-border bg-card px-5 py-6 text-foreground transition-colors hover:bg-background"
                 >
                   <span className="font-display text-2xl leading-tight">{title}</span>
                   <span className="mt-3 text-sm leading-6">{line}</span>
                 </a>
               ))}
             </div>
-            <ul className="mt-8 grid gap-6 lg:grid-cols-3 lg:gap-8">
+            <Link href="/programmes#method" className="mt-6 inline-flex min-h-11 items-center text-sm text-foreground underline-offset-4 hover:underline">
+              How a programme comes together
+            </Link>
+            <ul className="mt-12 grid gap-8 lg:grid-cols-3 lg:gap-10">
               {programmeProof.map(({ src, alt, line, width, height }) => (
                 <li key={alt} className="flex items-start gap-4">
                   <Image
@@ -160,7 +144,7 @@ export default function HomePageV2() {
                 </li>
               ))}
             </ul>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+            <div className="mt-12 flex flex-col items-start gap-1 sm:flex-row sm:items-center sm:gap-6">
               <a
                 href={discoveryCall.href}
                 target="_blank"
@@ -169,21 +153,9 @@ export default function HomePageV2() {
               >
                 Book a discovery call <ArrowRight />
               </a>
-              <Link
-                href="/programmes#contact"
-                className={cn(buttonVariants({ size: "lg", variant: "outline" }), "w-full sm:w-auto")}
-              >
+              <Link href="/programmes#contact" className="inline-flex min-h-11 items-center text-sm text-foreground underline-offset-4 hover:underline">
                 Tell us about your plans
               </Link>
-              <Link
-                href="/programmes#method"
-                className={cn(buttonVariants({ size: "lg", variant: "outline" }), "w-full sm:w-auto")}
-              >
-                How a programme comes together
-              </Link>
-              <WhatsAppMessage className={cn(buttonVariants({ size: "lg", variant: "outline" }), "w-full sm:w-auto")}>
-                Message us on WhatsApp
-              </WhatsAppMessage>
             </div>
           </section>
 

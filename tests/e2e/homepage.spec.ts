@@ -45,7 +45,7 @@ test.describe("homepage", () => {
       "Why The Solas Guide Exists",
       "Recognition is earned through verification.",
       "Featured practitioners",
-      "Who the Guide is for",
+      "Programmes",
       "Need help choosing?",
       "Wellness programmes, designed and delivered.",
       "YPO leadership retreat: couples facilitation and practitioner sourcing",
@@ -67,9 +67,6 @@ test.describe("homepage", () => {
       "/find-a-match",
     );
     await expect(page.getByRole("link", { name: "Explore the Guide" })).toHaveAttribute("href", "/practitioners");
-    await expect(page.getByRole("link", { name: "Retreat Organisers" })).toHaveAttribute("href", "/programmes");
-    await expect(page.getByRole("link", { name: "Hotels & Travel Advisors" })).toHaveAttribute("href", "/programmes");
-    await expect(page.getByRole("link", { name: "Organisations", exact: true })).toHaveAttribute("href", "/programmes");
     await expect(page.getByRole("link", { name: "Tell us about your plans" })).toHaveAttribute("href", "/programmes#contact");
     await expect(page.getByRole("link", { name: "How a programme comes together" })).toHaveAttribute("href", "/programmes#method");
     await expect(page.getByRole("link", { name: "Group programmes" })).toHaveAttribute("href", "https://cal.com/solasguide/solas-discovery-call");
@@ -106,7 +103,6 @@ test.describe("homepage", () => {
       ),
     ).toBeVisible();
     await expect(page.getByRole("heading", { name: "Not sure who to speak to?" })).toBeVisible();
-    await expect(page.getByText("Organisations", { exact: true })).toBeVisible();
     await expect(page.getByText("Corporate Teams")).toHaveCount(0);
     await expect(page.locator("footer").getByRole("link", { name: "Practitioners can apply for membership", exact: true })).toHaveAttribute(
       "href",

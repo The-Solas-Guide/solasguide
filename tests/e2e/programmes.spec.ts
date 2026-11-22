@@ -31,6 +31,8 @@ for (const width of [1440, 390]) {
     await expect(page.getByText("YPO leadership retreat: couples facilitation and practitioner sourcing")).toBeVisible();
     await expect(page.getByText("December 2024")).toHaveCount(0);
     await expect(page.getByRole("heading", { name: "Start with the guest, not the activity." })).toBeVisible();
+    await expect(page.getByText("Programme directions we often develop")).toHaveCount(0);
+    await expect(page.getByText("Audience", { exact: true })).toHaveCount(0);
     await expect(page.getByRole("heading", { name: "How a three-day programme unfolds" })).toHaveCount(0);
     await expect(page.getByText("Sample timetable")).toHaveCount(0);
     await expect(page.getByText("Organiser's own time")).toHaveCount(0);
