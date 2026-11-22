@@ -40,9 +40,11 @@ test("explains practitioner membership", async ({ page }) => {
   await expect(page.getByText("Thursday 10 December 2026").first()).toBeVisible();
   await expect(page.getByText("In support of Sari Hati School for Special Needs Children.").first()).toBeVisible();
   await expect(page.getByText("IDR 350k")).toHaveCount(0);
-  await expect(page.getByText("Edition 01, September 2026, and Edition 02, October 2026, have already gone out to members and non-members.")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "The Solas Guide Letter" })).toBeVisible();
+  await expect(page.getByText("Our newsletter", { exact: true })).toBeVisible();
+  await expect(page.getByText("Edition 01, September 2026, and Edition 02, October 2026, are past newsletter editions.")).toBeVisible();
   await expect(page.getByRole("heading", { name: "Future editions." })).toBeVisible();
-  await expect(page.getByText("Sign up to receive the next Letter.")).toBeVisible();
+  await expect(page.getByText("Subscribe for the next edition of the Letter.")).toBeVisible();
   await expect(page.getByText("no newsletter has been sent")).toHaveCount(0);
   await expect(page.getByText("I've had the same offers for communities, but it's never felt right. This one does.", { exact: true })).toBeVisible();
   await expect(page.getByText("Melanie Midegs, Founding Practitioner")).toHaveCount(1);
@@ -84,9 +86,13 @@ test("explains practitioner membership", async ({ page }) => {
   await expect(book).toHaveAttribute("target", "_blank");
   await expect(book).toHaveAttribute("rel", "noopener noreferrer");
   await expect(page.getByText("The booking form is being set up.")).toHaveCount(0);
-  await expect(page.getByRole("link", { name: "Get the Letter" })).toHaveAttribute("href", SOLAS_LETTER_SIGNUP_FORM_URL);
+  const letter = page.getByRole("link", { name: "Subscribe to the newsletter" });
+  await expect(letter).toHaveAttribute("href", SOLAS_LETTER_SIGNUP_FORM_URL);
+  await expect(letter).toHaveAttribute("target", "_blank");
+  await expect(letter).toHaveAttribute("rel", "noopener noreferrer");
+  await expect(page.getByText("The sign-up form for future editions is being set up.")).toHaveCount(0);
 
-  await page.getByRole("button", { name: /Past edition · Edition 02/ }).click();
+  await page.getByRole("button", { name: /Past newsletter edition · Edition 02/ }).click();
   const letterBook = page.getByRole("link", { name: "Book your place" }).nth(1);
   await expect(letterBook).toHaveAttribute("href", SOLAS_TABLE_BOOKING_FORM_URL);
   await expect(letterBook).toHaveAttribute("target", "_blank");

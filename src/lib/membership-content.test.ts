@@ -63,12 +63,12 @@ describe("membership public copy", () => {
 
   it("names the form placeholders in one place and treats the sent letters as past editions", () => {
     expect(SOLAS_TABLE_BOOKING_FORM_URL).toBe("https://tally.so/r/1W9rXp");
-    expect(SOLAS_LETTER_SIGNUP_FORM_URL).toBe("#letter-signup-form");
+    expect(SOLAS_LETTER_SIGNUP_FORM_URL).toBe("https://tally.so/r/J1O22J");
     expect(isPlaceholderFormUrl(SOLAS_TABLE_BOOKING_FORM_URL)).toBe(false);
-    expect(isPlaceholderFormUrl(SOLAS_LETTER_SIGNUP_FORM_URL)).toBe(true);
+    expect(isPlaceholderFormUrl(SOLAS_LETTER_SIGNUP_FORM_URL)).toBe(false);
     expect(letters.map((letter) => letter.summary)).toEqual([
-      "Past edition · Edition 02 · October 2026 · The business of being a practitioner",
-      "Past edition · Edition 01 · September 2026 · The bar is rising",
+      "Past newsletter edition · Edition 02 · October 2026 · The business of being a practitioner",
+      "Past newsletter edition · Edition 01 · September 2026 · The bar is rising",
     ]);
     expect(letters.every((letter) => letter.sent === "Sent to members and non-members.")).toBe(true);
     expect(bookCallHref).toBe("https://cal.com/solasguide/solas-discovery-call");

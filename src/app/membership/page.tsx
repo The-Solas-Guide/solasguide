@@ -42,9 +42,9 @@ export const metadata: Metadata = {
     images: [
       {
         url: "/images/membership/solas-table-lunch.webp",
-        width: 777,
-        height: 1036,
-        alt: "Practitioners in conversation around a lunch table at a Solas Table in Bali",
+        width: 1600,
+        height: 1200,
+        alt: "Guests in conversation at a Solas Table dinner in Bali",
       },
     ],
   },
@@ -104,7 +104,7 @@ function FormPlaceholderLink({
   href: string;
   className: string;
   children: ReactNode;
-  pendingNote: string;
+  pendingNote?: string;
 }) {
   const pending = isPlaceholderFormUrl(href);
   return (
@@ -116,7 +116,7 @@ function FormPlaceholderLink({
       >
         {children} <ArrowRight />
       </a>
-      {pending ? <p className="mt-3 max-w-sm text-xs leading-5 text-muted-foreground">{pendingNote}</p> : null}
+      {pending && pendingNote ? <p className="mt-3 max-w-sm text-xs leading-5 text-muted-foreground">{pendingNote}</p> : null}
     </div>
   );
 }
@@ -183,10 +183,10 @@ export default function MembershipPage() {
             <div className="relative min-h-[24rem] border-t border-border lg:min-h-0 lg:border-t-0 lg:border-l">
               <Image
                 src="/images/membership/solas-table-lunch.webp"
-                alt="Practitioners in conversation around a lunch table at a Solas Table in Bali"
+                alt="Guests in conversation at a Solas Table dinner in Bali"
                 fill
                 priority
-                className="object-cover object-[center_30%]"
+                className="object-cover object-[74%_30%]"
                 sizes="(max-width: 1024px) 100vw, 48vw"
               />
             </div>
@@ -353,12 +353,12 @@ export default function MembershipPage() {
 
           <section id="letter" className="scroll-mt-6 grid border-x border-b border-border bg-card lg:grid-cols-[1.15fr_0.85fr]">
             <div className={cn(sectionPad, "lg:pr-10")}>
-              <p className="review-label text-muted-foreground">The Solas Letter</p>
+              <p className="review-label text-muted-foreground">Our newsletter</p>
               <h2 className="mt-5 max-w-xl text-balance font-display text-4xl leading-tight md:text-5xl">
-                Notes from Bali&apos;s wellness community.
+                The Solas Guide Letter
               </h2>
               <p className="mt-6 max-w-2xl text-sm leading-7 text-muted-foreground">
-                Edition 01, September 2026, and Edition 02, October 2026, have already gone out to members and non-members. Read them here. The sign-up is for future editions.
+                Edition 01, September 2026, and Edition 02, October 2026, are past newsletter editions. They have already gone out to members and non-members. Read them here. The newsletter sign-up is for future editions.
               </p>
               <div className="mt-8 border-b border-border">
                 {letters.map((letter) => (
@@ -380,18 +380,17 @@ export default function MembershipPage() {
               </div>
             </div>
             <div id="letter-signup-form" className={cn(sectionPad, "border-t border-border bg-muted/40 lg:border-t-0 lg:border-l")}>
-              <p className="review-label text-muted-foreground">Get the Letter</p>
+              <p className="review-label text-muted-foreground">Newsletter sign-up</p>
               <h3 className="mt-4 font-display text-3xl leading-tight">Future editions.</h3>
               <p className="mt-4 text-sm leading-7 text-muted-foreground">
-                Sign up to receive the next Letter. We&apos;ll send it when there&apos;s something useful to share, not every week.
+                Subscribe for the next edition of the Letter. We&apos;ll send it when there&apos;s something useful to share, not every week.
               </p>
               <div className="mt-6">
                 <FormPlaceholderLink
                   href={SOLAS_LETTER_SIGNUP_FORM_URL}
                   className={cn(buttonVariants({ size: "lg" }), "w-full sm:w-auto")}
-                  pendingNote="The sign-up form for future editions is being set up. This button will open it once the form is ready."
                 >
-                  Get the Letter
+                  Subscribe to the newsletter
                 </FormPlaceholderLink>
               </div>
             </div>

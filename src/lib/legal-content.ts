@@ -50,7 +50,7 @@ export const privacySections: readonly LegalSection[] = [
       "If you ask for help choosing a practitioner, the enquiry form asks who the support is for, what you would like support with, any preferences about the person or approach, when you would like to connect, anything else you choose to tell us, your name, your email address, and an optional WhatsApp number. You can also say whether you prefer email, phone, or WhatsApp. The form asks you to confirm that we may use these details to respond.",
       "A programme enquiry asks for your name, email address, an optional organisation, what you are planning, when you are thinking of, and what you would like a group to take away. You confirm that we may contact you about that enquiry.",
       "The membership application on this website asks about your practice, where you work, your experience and training, optional website links, your name, your email address, and a phone or WhatsApp number if you ask us to use one. You confirm that we may use these details to review the application. The form asks you not to include medical records or other sensitive personal information.",
-      "The public “Apply now” button and the Solas Table “Book your place” button open forms on Tally (tally.so). Those forms are not stored by this website. The Letter sign-up is not collecting details on this website yet.",
+      "The public “Apply now” button and the Solas Table “Book your place” button open forms on Tally (tally.so). The newsletter sign-up for the Solas Guide Letter also opens a form on Tally. Those forms are not stored by this website. The newsletter sign-up collects a first name, last name, primary modality, email address, and WhatsApp number.",
       "If you book a call, you leave this website for Cal.com. If you message us on WhatsApp, that conversation is handled by WhatsApp.",
     ],
   },
@@ -74,10 +74,10 @@ export const privacySections: readonly LegalSection[] = [
   },
   {
     id: "letter",
-    title: "The Letter",
+    title: "The Solas Guide Letter",
     paragraphs: [
-      "The Solas Letter is an occasional note for practitioners. Edition 01 (September 2026) and Edition 02 (October 2026) have already been sent to members and non-members. The sign-up for future editions is not open on this website yet, so this website is not collecting email addresses for the Letter.",
-      "When that sign-up opens, we will use the address only to send future editions, and each Letter will say how to stop them.",
+      "The Solas Guide Letter is our newsletter for practitioners. It is occasional, not weekly. Edition 01 (September 2026) and Edition 02 (October 2026) are past newsletter editions, already sent to members and non-members. The newsletter sign-up opens a form on Tally. Tally collects a first name, last name, primary modality, email address, and WhatsApp number. This website does not store those details.",
+      "We use those details only to send future editions. Each edition will say how to stop them.",
     ],
   },
   {
@@ -147,7 +147,7 @@ export const privacySections: readonly LegalSection[] = [
     id: "changes",
     title: "Changes to this policy",
     paragraphs: [
-      "We will update this page when the way we handle personal information changes, including when the Letter sign-up starts collecting details. The date at the top of the page is the date of the latest version.",
+      "We will update this page when the way we handle personal information changes. The date at the top of the page is the date of the latest version.",
     ],
   },
 ];
@@ -191,9 +191,9 @@ export const termsSections: readonly LegalSection[] = [
   },
   {
     id: "letter",
-    title: "The Letter",
+    title: "The Solas Guide Letter",
     paragraphs: [
-      "The Solas Letter is an occasional note. It is not a weekly newsletter. Two editions have already gone out. The sign-up for future editions is not open on this website yet. Each future Letter will say how to stop receiving them.",
+      "The Solas Guide Letter is our newsletter. It is occasional, not weekly. Two editions have already gone out. The newsletter sign-up is on Tally, which collects a first name, last name, primary modality, email address, and WhatsApp number. Each future edition will say how to stop receiving it.",
     ],
   },
   {

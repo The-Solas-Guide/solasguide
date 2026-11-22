@@ -1,9 +1,8 @@
 /**
  * Public practitioner membership copy and outbound links.
- * The Letter sign-up stays a same-page hash until its Tally form exists.
  */
 export const SOLAS_TABLE_BOOKING_FORM_URL = "https://tally.so/r/1W9rXp";
-export const SOLAS_LETTER_SIGNUP_FORM_URL = "#letter-signup-form";
+export const SOLAS_LETTER_SIGNUP_FORM_URL = "https://tally.so/r/J1O22J";
 
 export const bookCallHref = "https://cal.com/solasguide/solas-discovery-call";
 export const applyHref = "https://tally.so/r/XxQvJz";
@@ -140,7 +139,7 @@ export const membershipFaqs = [
   {
     question: "What's included for USD $350 a year?",
     answer:
-      "A verified editorial profile, consideration for introductions where the fit makes sense, access to Solas Tables, workshops, the Letter, and help working out how to practise in Bali. Introductions aren't guaranteed. Solas Tables are an intimate gathering every 6–8 weeks. About USD 29 a month.",
+      "A verified editorial profile, consideration for introductions where the fit makes sense, access to Solas Tables, workshops, the Solas Guide Letter (our newsletter), and help working out how to practise in Bali. Introductions aren't guaranteed. Solas Tables are an intimate gathering every 6–8 weeks. About USD 29 a month.",
   },
   {
     question: "Is the fee refundable?",
@@ -201,7 +200,7 @@ export const letters: readonly {
 }[] = [
   {
     id: "edition-02",
-    summary: "Past edition · Edition 02 · October 2026 · The business of being a practitioner",
+    summary: "Past newsletter edition · Edition 02 · October 2026 · The business of being a practitioner",
     sent: "Sent to members and non-members.",
     blocks: [
       {
@@ -266,7 +265,7 @@ export const letters: readonly {
   },
   {
     id: "edition-01",
-    summary: "Past edition · Edition 01 · September 2026 · The bar is rising",
+    summary: "Past newsletter edition · Edition 01 · September 2026 · The bar is rising",
     sent: "Sent to members and non-members.",
     blocks: [
       {

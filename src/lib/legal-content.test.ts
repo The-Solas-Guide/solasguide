@@ -13,6 +13,10 @@ describe("legal pages", () => {
     expect(text).not.toContain("jitesh@");
     expect(text).not.toContain("operations@example.com");
     expect(text).not.toContain("22 seats");
+    expect(text).toContain("newsletter sign-up");
+    expect(text).toContain("first name, last name, primary modality, email address, and WhatsApp number");
+    expect(text).not.toContain("The Letter sign-up is not collecting details");
+    expect(text).not.toContain("not open on this website yet");
   });
 
   it("describes the services the website actually uses", () => {
