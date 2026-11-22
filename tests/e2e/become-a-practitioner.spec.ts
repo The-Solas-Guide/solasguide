@@ -30,6 +30,7 @@ test("explains practitioner membership", async ({ page }) => {
   await expect(page.getByText("A seat at every Solas Table")).toHaveCount(0);
   await expect(page.getByText("Members join every Solas Table free.")).toHaveCount(0);
   await expect(page.getByText("Venue to be confirmed")).toBeVisible();
+  await expect(page.getByText("22 seats")).toHaveCount(0);
   await expect(page.getByText("Thursday 10 December 2026").first()).toBeVisible();
   await expect(page.getByText("In support of Sari Hati School for Special Needs Children.").first()).toBeVisible();
   await expect(page.getByText("IDR 350k")).toHaveCount(0);

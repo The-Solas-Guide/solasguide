@@ -31,6 +31,7 @@ const forbidden = [
   "no newsletter has been sent",
   "has not been emailed",
   "neither letter has been",
+  "22 seats",
 ];
 
 function sourceFiles(directory: string): string[] {

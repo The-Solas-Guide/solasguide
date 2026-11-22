@@ -184,7 +184,7 @@ export const termsSections: readonly LegalSection[] = [
     id: "events",
     title: "The Solas Table and other events",
     paragraphs: [
-      "The next Solas Table is Thursday 10 December 2026 at 6pm, with 22 seats, in support of Sari Hati School for Special Needs Children. All proceeds go to the school. The venue is still to be confirmed. Booking and payment happen on Tally. The price is not shown on this website.",
+      "The next Solas Table is Thursday 10 December 2026 at 6pm, in support of Sari Hati School for Special Needs Children. All proceeds go to the school. The venue is still to be confirmed. Booking and payment happen on Tally. The price is not shown on this website.",
       "Solas Tables are an intimate gathering every 6–8 weeks. Sometimes non-members are invited. At other times members contribute towards the cost too. Membership does not promise free attendance at every table.",
       "Nikki Heyder’s Business Sustainability Blueprint on Monday 23 November is an example of a practitioner session in Bali. A short write-up will be added after the event. This website is not taking bookings for it.",
     ],

@@ -244,7 +244,7 @@ export default function MembershipPage() {
               <p className="review-label text-background/55">Next table</p>
               <p className="mt-4 font-display text-3xl leading-tight">{nextTable.when}</p>
               <p className="mt-3 flex flex-wrap gap-x-2 gap-y-1 text-sm leading-6 text-background/75">
-                {[nextTable.time, nextTable.seats, nextTable.venue].map((item, index) => (
+                {[nextTable.time, nextTable.venue].map((item, index) => (
                   <span key={item} className="whitespace-nowrap">
                     {index > 0 ? <span aria-hidden="true">· </span> : null}
                     {item}
@@ -255,7 +255,7 @@ export default function MembershipPage() {
               <div className="mt-8 bg-background p-6 text-foreground md:p-8">
                 <h3 className="font-display text-2xl leading-tight">Book the next Solas Table</h3>
                 <p className="mt-3 text-sm leading-7 text-muted-foreground">
-                  22 seats. The booking form confirms your place and takes payment. All proceeds go to Sari Hati School for Special Needs Children.
+                  The booking form confirms your place and takes payment. All proceeds go to Sari Hati School for Special Needs Children.
                 </p>
                 <div className="mt-6">
                   <FormPlaceholderLink

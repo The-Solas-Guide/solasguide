@@ -12,6 +12,7 @@ describe("legal pages", () => {
     expect(text).not.toContain("governed by the laws of");
     expect(text).not.toContain("jitesh@");
     expect(text).not.toContain("operations@example.com");
+    expect(text).not.toContain("22 seats");
   });
 
   it("describes the services the website actually uses", () => {

@@ -59,7 +59,6 @@ export const nextTable = {
   when: "Thursday 10 December 2026",
   time: "6pm",
   venue: "Venue to be confirmed",
-  seats: "22 seats",
   support: "In support of Sari Hati School for Special Needs Children",
   proceeds: "All proceeds go to the school.",
 } as const;
@@ -125,7 +124,7 @@ export const membershipFaqs = [
   {
     question: "Are events only for members?",
     answer:
-      "No. Solas Tables are an intimate gathering every 6–8 weeks. Sometimes non-members are invited; at other times members contribute towards the cost too. The next table is Thursday 10 December 2026 at 6pm, with 22 seats, in support of Sari Hati School for Special Needs Children. All proceeds go to the school. The venue is still to be confirmed. The Working in Bali briefing is open to read.",
+      "No. Solas Tables are an intimate gathering every 6–8 weeks. Sometimes non-members are invited; at other times members contribute towards the cost too. The next table is Thursday 10 December 2026 at 6pm, in support of Sari Hati School for Special Needs Children. All proceeds go to the school. The venue is still to be confirmed. The Working in Bali briefing is open to read.",
   },
   {
     question: "Is the Bali briefing legal advice?",
