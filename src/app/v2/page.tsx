@@ -146,6 +146,12 @@ export default function HomePageV2() {
                 Book a discovery call <ArrowRight />
               </a>
               <Link
+                href="/programmes#contact"
+                className={cn(buttonVariants({ size: "lg", variant: "outline" }), "w-full border-accent-foreground/55 bg-transparent text-accent-foreground hover:bg-accent-foreground/10 sm:w-auto")}
+              >
+                Tell us about your plans
+              </Link>
+              <Link
                 href="/programmes"
                 className={cn(buttonVariants({ size: "lg", variant: "outline" }), "w-full border-accent-foreground/55 bg-transparent text-accent-foreground hover:bg-accent-foreground/10 sm:w-auto")}
               >

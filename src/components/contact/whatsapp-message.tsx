@@ -14,7 +14,7 @@ export function WhatsAppMessage({
       type="button"
       className={className}
       onClick={() => {
-        const digits = [52, 52, 55, 55, 57, 51, 48, 53, 48, 48, 57, 56]
+        const digits = [54, 50, 56, 49, 51, 51, 48, 54, 51, 49, 48, 51, 48]
           .map((code) => String.fromCharCode(code))
           .join("");
         const host = String.fromCharCode(119, 97, 46, 109, 101);

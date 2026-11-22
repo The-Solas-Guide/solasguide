@@ -5,6 +5,7 @@ import { Fraunces } from "next/font/google";
 import { ArrowUpRight } from "lucide-react";
 import { Suspense, type ReactNode } from "react";
 import { BrandWordmark } from "@/components/brand/brand-wordmark";
+import { WhatsAppMessage } from "@/components/contact/whatsapp-message";
 import { ProgrammeEnquiryForm } from "@/components/enquiry/programme-enquiry-form";
 import { SiteHeader } from "@/components/layout/site-header";
 import { PractitionerCard } from "@/components/practitioners/practitioner-card";
@@ -387,6 +388,7 @@ export default function ProgrammesPage() {
 
           <div className={styles.repeatCall}>
             <DiscoveryCallButton />
+            <WhatsAppMessage className={styles.whatsappButton}>Message us on WhatsApp</WhatsAppMessage>
           </div>
 
           <section id="contact" className={cn(styles.section, styles.contact)} aria-labelledby="contact-heading">
@@ -399,8 +401,9 @@ export default function ProgrammesPage() {
                 <p>We’ll contact you to arrange a conversation about your programme and how we can help.</p>
               </div>
               <DiscoveryCallButton />
+              <WhatsAppMessage className={styles.whatsappButton}>Message us on WhatsApp</WhatsAppMessage>
             </div>
-            <div className={styles.contactForm}>
+            <div className={styles.contactForm} id="programme-enquiry">
               <ProgrammeEnquiryForm />
             </div>
           </section>

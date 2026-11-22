@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { TrackedPractitionerLink } from "@/components/analytics/tracked-practitioner-link";
+import { WhatsAppMessage } from "@/components/contact/whatsapp-message";
 import { MembershipDisclosure } from "@/components/membership/disclosure";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
@@ -23,7 +24,6 @@ import {
   learningOffer,
   learningSessions,
   nextTable,
-  practiseWhatsAppHref,
   proofStats,
   SOLAS_LETTER_SIGNUP_FORM_URL,
   SOLAS_TABLE_BOOKING_FORM_URL,
@@ -340,14 +340,9 @@ export default function MembershipPage() {
                 Book a call with Jitesh
               </TrackedPractitionerLink>
               <span aria-hidden="true"> · </span>
-              <a
-                href={practiseWhatsAppHref}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex min-h-11 items-center text-foreground underline-offset-4 hover:underline"
-              >
+              <WhatsAppMessage className="inline-flex min-h-11 items-center text-foreground underline-offset-4 hover:underline">
                 WhatsApp
-              </a>
+              </WhatsAppMessage>
             </p>
           </section>
 

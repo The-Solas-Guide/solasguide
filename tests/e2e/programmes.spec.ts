@@ -39,7 +39,13 @@ for (const width of [1440, 390]) {
     await expect(page.locator("#contact").getByRole("link", { name: "Book a discovery call" })).toHaveAttribute("href", "https://cal.com/solasguide/solas-discovery-call");
     expect(await page.evaluate(() => window.scrollY)).toBe(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
-    await page.getByRole("link", { name: "Tell us about your plans", exact: true }).first().click();
+    await expect(page.getByRole("link", { name: "Tell us about your plans", exact: true })).toHaveAttribute("href", "#contact");
+    await page.getByRole("link", { name: "Tell us about your plans", exact: true }).click();
+    await expect(page.getByRole("form", { name: "Programme enquiry" })).toBeInViewport();
+    const programmeHtml = await page.content();
+    expect(programmeHtml).not.toContain("447793050098");
+    expect(programmeHtml).not.toContain("6281330631030");
+    expect(programmeHtml).not.toContain("wa.me");
     await page.getByRole("button", { name: "Start a conversation", exact: true }).click();
     expect(await page.getByLabel("Your name", { exact: true }).evaluate((input: HTMLInputElement) => input.validity.valueMissing)).toBe(true);
     expect(submissions).toHaveLength(0);

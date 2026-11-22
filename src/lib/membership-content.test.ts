@@ -12,7 +12,6 @@ import {
   membershipBenefits,
   membershipDescription,
   membershipFaqs,
-  practiseWhatsAppHref,
   testimonials,
 } from "@/lib/membership-content";
 
@@ -26,6 +25,8 @@ const forbidden = [
   "USD $200",
   "$200",
   "wa.me/6285939817503",
+  "wa.me",
+  "447793050098",
   "6281330631030",
   "Manu Ashwalayan",
   "jitesh@solassolas.com",
@@ -72,9 +73,6 @@ describe("membership public copy", () => {
     ]);
     expect(letters.every((letter) => letter.sent === "Sent to members and non-members.")).toBe(true);
     expect(bookCallHref).toBe("https://cal.com/solasguide/solas-discovery-call");
-    expect(practiseWhatsAppHref).toBe(
-      "https://wa.me/447793050098?text=Hi%20Jitesh%2C%20I%27d%20like%20to%20talk%20about%20practising%20in%20Bali.",
-    );
     expect(membershipDescription).toContain("Introductions aren't guaranteed");
     expect(membershipBenefits[1]).toEqual({
       title: "Be put forward for work",
