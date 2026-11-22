@@ -69,7 +69,7 @@ test.describe("homepage", () => {
     await expect(page.getByRole("link", { name: "Explore the Guide" })).toHaveAttribute("href", "/practitioners");
     await expect(page.getByRole("link", { name: "Retreat Organisers" })).toHaveAttribute("href", "/programmes");
     await expect(page.getByRole("link", { name: "Hotels & Travel Advisors" })).toHaveAttribute("href", "/programmes");
-    await expect(page.getByRole("link", { name: "Organisations Finding" })).toHaveAttribute("href", "/programmes");
+    await expect(page.getByRole("link", { name: "Organisations Practitioners" })).toHaveAttribute("href", "/programmes");
     await expect(page.getByRole("link", { name: "How a programme comes together" })).toHaveAttribute("href", "/programmes");
     await expect(page.getByRole("link", { name: "Group programmes" })).toHaveAttribute("href", "https://cal.com/solasguide/solas-discovery-call");
     await expect(page.getByRole("link", { name: "Are you a practitioner? Membership is by application." })).toHaveAttribute("href", "/membership");
@@ -126,12 +126,6 @@ test.describe("homepage", () => {
     await expect(
       registry.getByText(
         "Volume One brings together practitioners recognised for the quality of their work, depth of practice and professional standing.",
-        { exact: true },
-      ),
-    ).toBeVisible();
-    await expect(
-      registry.getByText(
-        "Browse the Guide to explore their work, experience and approach.",
         { exact: true },
       ),
     ).toBeVisible();

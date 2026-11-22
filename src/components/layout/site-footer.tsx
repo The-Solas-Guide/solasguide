@@ -25,7 +25,7 @@ export function SiteFooter() {
           </div>
         </div>
         <div>
-          <p className="review-label text-background/50">Explore</p>
+          <p className="review-label text-background/80">Explore</p>
           <div className="mt-4 grid gap-1 text-background/85">
             <Link href={browseTheGuide.href} className={linkClassName}>
               {browseTheGuide.label}
@@ -52,7 +52,7 @@ export function SiteFooter() {
           </div>
         </div>
         <div>
-          <p className="review-label text-background/50">Contact</p>
+          <p className="review-label text-background/80">Contact</p>
           <div className="mt-4 grid gap-1 text-background/85">
             <a href={discoveryCall.href} target="_blank" rel="noopener noreferrer" className={linkClassName}>
               {discoveryCall.label}
@@ -65,7 +65,7 @@ export function SiteFooter() {
             </WhatsAppMessage>
           </div>
           <div className="mt-6 border-t border-background/20 pt-4">
-            <p className="review-label opacity-50">Legal</p>
+            <p className="review-label text-background/80">Legal</p>
             <div className="mt-3 grid text-sm">
               <Link href="/privacy" className={linkClassName}>Privacy</Link>
               <Link href="/terms" className={linkClassName}>Website terms</Link>

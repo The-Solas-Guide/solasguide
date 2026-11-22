@@ -35,12 +35,9 @@ export async function RegistryPreview() {
             Featured practitioners
           </h2>
         </div>
-        <div className="max-w-xl space-y-4 text-sm leading-7 text-muted-foreground lg:max-w-sm">
+        <div className="max-w-xl text-sm leading-7 text-foreground lg:max-w-sm">
           <p>
             Volume One brings together practitioners recognised for the quality of their work, depth of practice and professional standing.
-          </p>
-          <p>
-            Browse the Guide to explore their work, experience and approach.
           </p>
         </div>
       </div>

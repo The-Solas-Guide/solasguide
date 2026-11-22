@@ -24,11 +24,11 @@ const navLinks = [
 ];
 
 const audiences: readonly { title: string; copy: string; href?: string }[] = [
-  { title: "Individuals", copy: "Trusted support for your wellbeing, health and personal development." },
-  { title: "Couples & Families", copy: "Finding the right person for the people who matter most." },
-  { title: "Retreat Organisers", copy: "Building thoughtful programmes with trusted practitioners.", href: "/programmes" },
-  { title: "Hotels & Travel Advisors", copy: "Making considered introductions for guests and clients.", href: "/programmes" },
-  { title: "Organisations", copy: "Finding practitioners for leadership, wellbeing and team programmes.", href: "/programmes" },
+  { title: "Individuals", copy: "Support for your own wellbeing." },
+  { title: "Couples & Families", copy: "A considered choice for the people closest to you." },
+  { title: "Retreat Organisers", copy: "Programmes with trusted practitioners.", href: "/programmes" },
+  { title: "Hotels & Travel Advisors", copy: "Introductions for guests and clients.", href: "/programmes" },
+  { title: "Organisations", copy: "Practitioners for leadership and team programmes.", href: "/programmes" },
 ];
 
 const homeJsonLd = {
@@ -80,22 +80,22 @@ export default function HomePageV2() {
             <div className="absolute inset-0 bg-gradient-to-t from-foreground/90 via-foreground/48 to-foreground/15" />
             <div className="relative flex min-h-[min(780px,calc(100svh-2rem))] items-end px-5 pt-24 pb-14 text-background sm:px-8 sm:pb-20 md:p-14 lg:p-20">
               <div className="max-w-4xl">
-                <p className="review-label text-white/75" data-reveal>
+                <p className="review-label text-background" data-reveal>
                   Volume One <span aria-hidden="true">•</span> Southeast Asia
                 </p>
-                <p className="mt-5 font-display text-2xl tracking-tight text-white sm:text-3xl" data-reveal>
+                <p className="mt-5 font-display text-2xl tracking-tight text-background sm:text-3xl" data-reveal>
                   The Solas Guide
                 </p>
                 <h1
                   id="hero-heading"
-                  className="mt-5 max-w-4xl font-display text-[2.6rem] leading-[0.98] tracking-tight text-balance text-white sm:text-5xl md:text-6xl lg:text-7xl"
+                  className="mt-5 max-w-4xl font-display text-[2.35rem] leading-[0.98] tracking-tight text-balance text-background sm:text-5xl md:text-6xl lg:text-7xl"
                   data-reveal
                   data-reveal-delay="1"
                 >
                   Finding someone isn&apos;t difficult. Knowing who to trust is.
                 </h1>
-                <p className="mt-7 max-w-2xl text-base leading-8 text-white sm:text-lg" data-reveal data-reveal-delay="2">
-                  An independent guide to exceptional wellness practitioners, and the team that designs, staffs and delivers wellness programmes for travel advisors, retreat organisers, venues and professional communities.
+                <p className="mt-6 max-w-2xl text-base leading-7 text-background sm:text-lg" data-reveal data-reveal-delay="2">
+                  An independent guide to exceptional wellness practitioners. We design, staff and deliver programmes for retreats, venues and professional groups.
                 </p>
                 <div className="mt-8 flex flex-col gap-3 sm:flex-row" data-reveal data-reveal-delay="3">
                   <a
@@ -106,20 +106,20 @@ export default function HomePageV2() {
                   >
                     Book a discovery call <ArrowRight />
                   </a>
-                  <Link href="/practitioners" className={cn(buttonVariants({ variant: "outline" }), "w-full border-white/50 bg-transparent text-white hover:bg-white/10 sm:w-auto")}>
+                  <Link href="/practitioners" className={cn(buttonVariants({ variant: "outline" }), "w-full border-background/80 bg-transparent text-background hover:bg-background/10 sm:w-auto")}>
                     Explore the Guide
                   </Link>
                 </div>
-                <Link href={needHelpChoosing.href} className="mt-4 inline-flex min-h-11 items-center text-sm text-white/80 underline-offset-4 hover:text-white hover:underline">
+                <Link href={needHelpChoosing.href} className="mt-4 inline-flex min-h-11 items-center text-sm text-background underline-offset-4 hover:underline">
                   {needHelpChoosing.label}
                 </Link>
               </div>
             </div>
           </section>
 
-          <section id="programmes" className="border-x border-b border-border bg-foreground px-5 py-12 text-background sm:px-8 md:px-12 md:py-16 lg:px-16">
-            <p className="review-label text-background/55">For travel advisors, retreat organisers, venues and professional communities</p>
-            <h2 className="mt-5 max-w-3xl font-display text-4xl leading-tight text-balance sm:text-5xl">
+          <section id="programmes" className="border-x border-b border-border bg-accent px-5 py-12 text-accent-foreground sm:px-8 md:px-12 md:py-16 lg:px-16">
+            <p className="review-label text-accent-foreground">For retreats, venues and professional groups</p>
+            <h2 className="mt-4 max-w-3xl font-display text-3xl leading-tight text-balance sm:text-4xl md:text-5xl">
               Wellness programmes, designed and delivered.
             </h2>
             <div className="mt-8 grid gap-3 md:grid-cols-3">
@@ -129,10 +129,10 @@ export default function HomePageV2() {
                   href={discoveryCall.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex min-h-11 flex-col justify-center border border-background/20 bg-background/5 px-5 py-5 transition-colors hover:bg-background/10"
+                  className="flex min-h-11 flex-col justify-center border border-accent-foreground/35 bg-accent-foreground/8 px-5 py-5 transition-colors hover:bg-accent-foreground/14"
                 >
                   <span className="font-display text-2xl leading-tight">{title}</span>
-                  <span className="mt-3 text-sm leading-6 text-background/75">{line}</span>
+                  <span className="mt-3 text-sm leading-6 text-accent-foreground">{line}</span>
                 </a>
               ))}
             </div>
@@ -147,18 +147,18 @@ export default function HomePageV2() {
               </a>
               <Link
                 href="/programmes"
-                className={cn(buttonVariants({ size: "lg", variant: "outline" }), "w-full border-background/40 bg-transparent text-background hover:bg-background/10 sm:w-auto")}
+                className={cn(buttonVariants({ size: "lg", variant: "outline" }), "w-full border-accent-foreground/55 bg-transparent text-accent-foreground hover:bg-accent-foreground/10 sm:w-auto")}
               >
                 How a programme comes together
               </Link>
-              <WhatsAppMessage className={cn(buttonVariants({ size: "lg", variant: "outline" }), "w-full border-background/40 bg-transparent text-background hover:bg-background/10 sm:w-auto")}>
+              <WhatsAppMessage className={cn(buttonVariants({ size: "lg", variant: "outline" }), "w-full border-accent-foreground/55 bg-transparent text-accent-foreground hover:bg-accent-foreground/10 sm:w-auto")}>
                 Message us on WhatsApp
               </WhatsAppMessage>
             </div>
           </section>
 
           <section aria-label="Recent work" className="border-x border-b border-border bg-card px-5 py-8 sm:px-8 md:px-12 lg:px-16">
-            <p className="review-label text-muted-foreground">Recent work</p>
+            <p className="review-label text-accent">Recent work</p>
             <ul className="mt-5 grid gap-6 lg:grid-cols-3 lg:gap-8">
               {programmeProof.map(({ src, alt, line, width, height }) => (
                 <li key={alt} className="flex items-start gap-4">
@@ -167,12 +167,38 @@ export default function HomePageV2() {
                     alt={alt}
                     width={width}
                     height={height}
-                    className="h-10 w-auto max-w-32 shrink-0 object-contain opacity-70"
+                    className="h-10 w-auto max-w-32 shrink-0 object-contain"
                   />
-                  <p className="text-sm leading-6 text-muted-foreground">{line}</p>
+                  <p className="text-sm leading-6 text-foreground">{line}</p>
                 </li>
               ))}
             </ul>
+          </section>
+
+          <section id="who-its-for" className="border-x border-b border-border bg-background px-5 py-12 sm:px-8 md:px-12 md:py-16 lg:px-16">
+            <p className="review-label text-accent" data-reveal>Who the Guide is for</p>
+            <h2 className="mt-4 max-w-3xl font-display text-3xl leading-tight text-balance sm:text-4xl md:text-5xl" data-reveal>
+              Who we work with.
+            </h2>
+            <div className="mt-8 grid gap-px border border-border bg-border md:grid-cols-2 lg:grid-cols-5" data-reveal data-reveal-delay="1">
+              {audiences.map((audience) => {
+                const card = (
+                  <>
+                    <p className="font-display text-2xl leading-tight">{audience.title}</p>
+                    <p className="mt-4 text-sm leading-6 text-foreground">{audience.copy}</p>
+                  </>
+                );
+                return audience.href ? (
+                  <Link key={audience.title} href={audience.href} className="min-h-11 bg-card p-6 transition-colors hover:bg-muted/40 lg:min-h-48">
+                    {card}
+                  </Link>
+                ) : (
+                  <article key={audience.title} className="min-h-11 bg-card p-6 lg:min-h-48">
+                    {card}
+                  </article>
+                );
+              })}
+            </div>
           </section>
 
           <section id="why-solas" className="border-x border-b border-border">
@@ -187,14 +213,14 @@ export default function HomePageV2() {
                 />
               </div>
               <div className="flex flex-col justify-center bg-muted/35 p-7 sm:p-10 lg:p-16" data-reveal data-reveal-delay="1">
-                <p className="review-label text-muted-foreground">Why The Solas Guide Exists</p>
-                <h2 className="mt-6 max-w-xl font-display text-4xl leading-tight sm:text-5xl">
+                <p className="review-label text-accent">Why The Solas Guide Exists</p>
+                <h2 className="mt-4 max-w-xl font-display text-3xl leading-tight sm:text-4xl md:text-5xl">
                   Wellness has grown rapidly. Trust hasn&apos;t always kept pace.
                 </h2>
-                <p className="mt-7 max-w-xl text-sm leading-7 text-muted-foreground">
+                <p className="mt-6 max-w-xl text-sm leading-7 text-foreground">
                   The Solas Guide is an independent editorial guide to exceptional wellness practitioners across Southeast Asia.
                 </p>
-                <p className="mt-4 max-w-xl text-sm leading-7 text-muted-foreground">
+                <p className="mt-4 max-w-xl text-sm leading-7 text-foreground">
                   We recognise practitioners through a careful review process, verify the claims we publish, and introduce their work to people looking for someone they can trust.
                 </p>
                 <div className="mt-7 space-y-2 border-l border-accent pl-5 text-sm leading-6">
@@ -208,7 +234,7 @@ export default function HomePageV2() {
               {[["20+", "Founding Practitioners"], ["8", "Practice Disciplines"], ["100%", "Independently Reviewed"]].map(([value, label]) => (
                 <div key={label} className="bg-card px-6 py-8 text-center">
                   <p className="font-display text-4xl">{value}</p>
-                  <p className="review-label mt-3 text-muted-foreground">{label}</p>
+                  <p className="review-label mt-3 text-accent">{label}</p>
                 </div>
               ))}
             </div>
@@ -217,43 +243,14 @@ export default function HomePageV2() {
           <RegistryStandards />
           <RegistryPreview />
 
-          <section id="who-its-for" className="border-x border-b border-border bg-card px-5 py-14 sm:px-8 md:px-12 md:py-20 lg:px-16">
-            <p className="review-label text-muted-foreground" data-reveal>Who the Guide is for</p>
-            <h2 className="mt-5 max-w-3xl font-display text-4xl leading-tight text-balance sm:text-5xl" data-reveal>
-              Built for people looking beyond reviews and recommendations.
-            </h2>
-            <div className="mt-10 grid gap-px border border-border bg-border md:grid-cols-2 lg:grid-cols-5" data-reveal data-reveal-delay="1">
-              {audiences.map((audience) => {
-                const card = (
-                  <>
-                    <p className="font-display text-2xl leading-tight">{audience.title}</p>
-                    <p className="mt-5 text-sm leading-7 text-muted-foreground">{audience.copy}</p>
-                  </>
-                );
-                return audience.href ? (
-                  <Link key={audience.title} href={audience.href} className="min-h-48 bg-background p-6 transition-colors hover:bg-muted/40 lg:min-h-64">
-                    {card}
-                  </Link>
-                ) : (
-                  <article key={audience.title} className="min-h-48 bg-background p-6 lg:min-h-64">
-                    {card}
-                  </article>
-                );
-              })}
-            </div>
-          </section>
-
           <section id="questionnaire" className="review-section relative isolate overflow-hidden border-x border-b border-border text-center">
             <Image src="/images/editorial/bali-rice-field-pavilion.webp" alt="" fill sizes="100vw" className="pointer-events-none -z-20 object-cover object-center opacity-[0.26]" />
             <div className="pointer-events-none absolute inset-0 -z-10 bg-background/78" />
             <div className="relative mx-auto max-w-3xl px-6" data-reveal>
-              <p className="review-label text-muted-foreground">Need help choosing?</p>
-              <h2 className="mt-5 font-display text-4xl leading-tight text-balance sm:text-5xl">Not sure who to speak to?</h2>
-              <p className="mx-auto mt-6 max-w-2xl text-sm leading-7 text-muted-foreground">
-                Tell us a little about what you are looking for.
-              </p>
-              <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-muted-foreground">
-                We&apos;ll review your enquiry personally and suggest the practitioners we think may be worth considering.
+              <p className="review-label text-accent">Need help choosing?</p>
+              <h2 className="mt-4 font-display text-3xl leading-tight text-balance sm:text-4xl md:text-5xl">Not sure who to speak to?</h2>
+              <p className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-foreground">
+                Tell us what you are looking for. We&apos;ll review your enquiry and suggest practitioners worth considering.
               </p>
               <Link href={needHelpChoosing.href} className={cn(buttonVariants(), "mt-8 w-full sm:w-auto")}>
                 {needHelpChoosing.label} <ArrowRight />

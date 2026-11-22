@@ -145,7 +145,7 @@ export default function ProgrammesPage() {
                 Wellness programmes, designed and delivered.
               </h1>
               <p className={styles.heroIntro}>
-                We plan the wellness sessions for your retreat or group experience. We select practitioners and can coordinate the programme.
+                We plan the sessions, select the practitioners, and can coordinate the programme.
               </p>
               <div className={styles.heroActions}>
                 <DiscoveryCallButton className={styles.heroButton} />
@@ -180,7 +180,7 @@ export default function ProgrammesPage() {
               <div>
                 <p className={styles.eyebrow}>What we do</p>
                 <h2 id="offer-heading" className={styles.displayHeading}>
-                  Wellness programmes, designed and delivered.
+                  The work we take on.
                 </h2>
               </div>
             </div>
@@ -203,7 +203,7 @@ export default function ProgrammesPage() {
                 What your programme could look like.
               </h2>
               <p>
-                Every programme begins with your group and your plans. This is one illustrative starting point.
+                One example of how shared sessions and free time can sit together.
               </p>
             </div>
             <article className={styles.examplePlan} aria-label="Illustrative three-day programme document">

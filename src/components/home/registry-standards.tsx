@@ -22,7 +22,7 @@ export function RegistryStandards() {
     >
       <div className="grid gap-10 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-16">
         <div data-reveal>
-          <p className="review-label text-muted-foreground">Recognition</p>
+          <p className="review-label text-accent">Recognition</p>
           <h2
             id="recognition-heading"
             className="mt-4 max-w-xl font-display text-3xl leading-[1.08] text-balance sm:text-4xl md:text-5xl md:leading-[1.05]"
@@ -60,7 +60,7 @@ export function RegistryStandards() {
             <h3 className="font-display text-2xl leading-tight md:text-3xl">
               {standard.title}
             </h3>
-            <p className="mt-4 text-sm leading-7 text-muted-foreground">{standard.copy}</p>
+            <p className="mt-4 text-sm leading-7 text-foreground">{standard.copy}</p>
           </article>
         ))}
       </div>

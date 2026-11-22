@@ -215,10 +215,10 @@ footer a:focus-visible {
 }
 
 .review-label {
-  font-size: 0.625rem;
+  font-size: 0.6875rem;
   font-weight: 600;
-  letter-spacing: 0.2em;
-  line-height: 1.4;
+  letter-spacing: 0.14em;
+  line-height: 1.45;
   text-transform: uppercase;
 }
 
