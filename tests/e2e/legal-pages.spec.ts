@@ -26,7 +26,7 @@ for (const legalPage of legalPages) {
     await expect(page.locator('meta[name="description"]')).toHaveAttribute("content", legalPage.description);
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", `http://localhost:3000${legalPage.path}`);
     await expect(page.getByRole("heading", { name: legalPage.heading, exact: true })).toBeVisible();
-    await expect(page.getByText("Last updated 15 November 2026")).toBeVisible();
+    await expect(page.getByText("Last updated 22 November 2026")).toBeVisible();
     await expect(page.getByRole("link", { name: "info@solassolas.com" }).first()).toHaveAttribute("href", "mailto:info@solassolas.com");
     await expect(page.getByText("PT PMA Lejit Connections Bali").first()).toBeVisible();
     await expect(page.getByText("To be confirmed: legal entity name.")).toHaveCount(0);

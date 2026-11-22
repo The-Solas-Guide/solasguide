@@ -1,4 +1,4 @@
-export const legalUpdated = "15 November 2026";
+export const legalUpdated = "22 November 2026";
 
 export const legalEmail = "info@solassolas.com";
 
@@ -50,7 +50,7 @@ export const privacySections: readonly LegalSection[] = [
       "If you ask for help choosing a practitioner, the enquiry form asks who the support is for, what you would like support with, any preferences about the person or approach, when you would like to connect, anything else you choose to tell us, your name, your email address, and an optional WhatsApp number. You can also say whether you prefer email, phone, or WhatsApp. The form asks you to confirm that we may use these details to respond.",
       "A programme enquiry asks for your name, email address, an optional organisation, what you are planning, when you are thinking of, and what you would like a group to take away. You confirm that we may contact you about that enquiry.",
       "The membership application on this website asks about your practice, where you work, your experience and training, optional website links, your name, your email address, and a phone or WhatsApp number if you ask us to use one. You confirm that we may use these details to review the application. The form asks you not to include medical records or other sensitive personal information.",
-      "The public “Apply now” button opens a form on Tally (tally.so). That form is not stored by this website. The Letter sign-up and the Solas Table booking form are not collecting details on this website yet.",
+      "The public “Apply now” button and the Solas Table “Book your place” button open forms on Tally (tally.so). Those forms are not stored by this website. The Letter sign-up is not collecting details on this website yet.",
       "If you book a call, you leave this website for Cal.com. If you message us on WhatsApp, that conversation is handled by WhatsApp.",
     ],
   },
@@ -147,7 +147,7 @@ export const privacySections: readonly LegalSection[] = [
     id: "changes",
     title: "Changes to this policy",
     paragraphs: [
-      "We will update this page when the way we handle personal information changes, including when the Letter sign-up or the Solas Table booking form starts collecting details. The date at the top of the page is the date of the latest version.",
+      "We will update this page when the way we handle personal information changes, including when the Letter sign-up starts collecting details. The date at the top of the page is the date of the latest version.",
     ],
   },
 ];
@@ -184,7 +184,7 @@ export const termsSections: readonly LegalSection[] = [
     id: "events",
     title: "The Solas Table and other events",
     paragraphs: [
-      "The next Solas Table is Thursday 10 December 2026 at 6pm, with 22 seats, in support of Sari Hati School for Special Needs Children. All proceeds go to the school. The venue is still to be confirmed. The booking form takes payment and is not open on this website yet. The price is not shown here.",
+      "The next Solas Table is Thursday 10 December 2026 at 6pm, with 22 seats, in support of Sari Hati School for Special Needs Children. All proceeds go to the school. The venue is still to be confirmed. Booking and payment happen on Tally. The price is not shown on this website.",
       "Solas Tables are an intimate gathering every 6–8 weeks. Sometimes non-members are invited. At other times members contribute towards the cost too. Membership does not promise free attendance at every table.",
       "Nikki Heyder’s Business Sustainability Blueprint on Monday 23 November is an example of a practitioner session in Bali. A short write-up will be added after the event. This website is not taking bookings for it.",
     ],

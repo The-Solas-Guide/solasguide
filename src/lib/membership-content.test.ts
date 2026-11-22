@@ -58,10 +58,10 @@ describe("membership public copy", () => {
   });
 
   it("names the form placeholders in one place and treats the sent letters as past editions", () => {
-    expect(SOLAS_TABLE_BOOKING_FORM_URL).toBe("#table-booking-form");
+    expect(SOLAS_TABLE_BOOKING_FORM_URL).toBe("https://tally.so/r/1W9rXp");
     expect(SOLAS_LETTER_SIGNUP_FORM_URL).toBe("#letter-signup-form");
-    expect(isPlaceholderFormUrl(SOLAS_TABLE_BOOKING_FORM_URL)).toBe(true);
-    expect(isPlaceholderFormUrl("https://tally.so/r/example")).toBe(false);
+    expect(isPlaceholderFormUrl(SOLAS_TABLE_BOOKING_FORM_URL)).toBe(false);
+    expect(isPlaceholderFormUrl(SOLAS_LETTER_SIGNUP_FORM_URL)).toBe(true);
     expect(letters.map((letter) => letter.summary)).toEqual([
       "Past edition · Edition 02 · October 2026 · The business of being a practitioner",
       "Past edition · Edition 01 · September 2026 · The bar is rising",

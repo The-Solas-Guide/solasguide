@@ -133,7 +133,12 @@ function LetterClose() {
         Book a call with Jitesh
       </TrackedPractitionerLink>
       . The next Solas Table is {nextTable.when}, {nextTable.time.toLowerCase()}.{" "}
-      <a href={SOLAS_TABLE_BOOKING_FORM_URL} className="text-foreground underline-offset-4 hover:underline">
+      <a
+        href={SOLAS_TABLE_BOOKING_FORM_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-foreground underline-offset-4 hover:underline"
+      >
         Book your place
       </a>
       .

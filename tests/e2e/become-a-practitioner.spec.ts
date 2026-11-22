@@ -61,10 +61,19 @@ test("explains practitioner membership", async ({ page }) => {
   await expect(apply.first()).toHaveAttribute("href", "https://tally.so/r/XxQvJz");
   await expect(apply.first()).toHaveAttribute("target", "_blank");
   await expect(page.getByRole("link", { name: "Get in touch on WhatsApp" })).toHaveAttribute("href", practiseWhatsAppHref);
-  await expect(page.getByRole("link", { name: "Book your place" }).first()).toHaveAttribute("href", SOLAS_TABLE_BOOKING_FORM_URL);
+  const book = page.getByRole("link", { name: "Book your place" });
+  await expect(book).toHaveCount(1);
+  await expect(book).toHaveAttribute("href", SOLAS_TABLE_BOOKING_FORM_URL);
+  await expect(book).toHaveAttribute("target", "_blank");
+  await expect(book).toHaveAttribute("rel", "noopener noreferrer");
+  await expect(page.getByText("The booking form is being set up.")).toHaveCount(0);
   await expect(page.getByRole("link", { name: "Get the Letter" })).toHaveAttribute("href", SOLAS_LETTER_SIGNUP_FORM_URL);
 
   await page.getByRole("button", { name: /Past edition · Edition 02/ }).click();
+  const letterBook = page.getByRole("link", { name: "Book your place" }).nth(1);
+  await expect(letterBook).toHaveAttribute("href", SOLAS_TABLE_BOOKING_FORM_URL);
+  await expect(letterBook).toHaveAttribute("target", "_blank");
+  await expect(letterBook).toHaveAttribute("rel", "noopener noreferrer");
   await expect(page.getByText("Sent to members and non-members.").first()).toBeVisible();
   await expect(page.getByText("You can't be everything to everyone")).toBeVisible();
 
