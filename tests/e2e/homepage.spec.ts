@@ -48,7 +48,7 @@ test.describe("homepage", () => {
       "Who the Guide is for",
       "Need help choosing?",
       "Wellness programmes, designed and delivered.",
-      "YPO leadership retreat, December 2024: couples facilitation and practitioner sourcing",
+      "YPO leadership retreat: couples facilitation and practitioner sourcing",
       "Couples facilitation for Green School parents and staff",
       "Ubud Writers & Readers Festival, with Solas Guide members",
     ];

@@ -9,6 +9,7 @@ import { ProgrammeEnquiryForm } from "@/components/enquiry/programme-enquiry-for
 import { SiteHeader } from "@/components/layout/site-header";
 import { PractitionerCard } from "@/components/practitioners/practitioner-card";
 import { Button } from "@/components/ui/button";
+import { programmeOffers, programmeProof } from "@/lib/programme-proof";
 import { discoveryCall } from "@/lib/public-journeys";
 import { emptyDirectoryFilters, getPublishedPractitioners } from "@/lib/practitioners";
 import { cn } from "@/lib/utils";
@@ -21,9 +22,9 @@ const fraunces = Fraunces({
 });
 
 export const metadata: Metadata = {
-  title: "Wellness programmes for retreats in Bali",
+  title: "Wellness programmes, designed and delivered",
   description:
-    "We design wellness programmes for retreats and groups in Bali, select practitioners, and offer coordination and on-site support.",
+    "We design, staff and deliver wellness programmes for retreats, venues, travel advisors and professional groups.",
 };
 
 export const dynamic = "force-dynamic";
@@ -34,6 +35,16 @@ const navLinks = [
   { label: "How to get started", href: "#process" },
   { label: "The Guide", href: "/practitioners" },
 ] as const;
+
+function DiscoveryCallButton({ className }: { className?: string }) {
+  return (
+    <Button asChild size="lg" className={cn(styles.substantialButton, styles.discoveryButton, className)}>
+      <a href={discoveryCall.href} target="_blank" rel="noopener noreferrer">
+        Book a discovery call <ArrowUpRight aria-hidden="true" />
+      </a>
+    </Button>
+  );
+}
 
 function ArrowLink({ href, children }: { href: string; children: React.ReactNode }) {
   return (
@@ -129,18 +140,17 @@ export default function ProgrammesPage() {
             />
             <div className={styles.heroOverlay} aria-hidden="true" />
             <div className={styles.heroCopy}>
-              <p className={styles.eyebrow}>Wellness programme design · Bali</p>
+              <p className={styles.eyebrow}>For retreats, venues and professional groups</p>
               <h1 id="hero-heading" className={styles.heroHeading}>
-                Wellness programmes for retreats in Bali.
+                Wellness programmes, designed and delivered.
               </h1>
               <p className={styles.heroIntro}>
                 We plan the wellness sessions for your retreat or group experience. We select practitioners and can coordinate the programme.
               </p>
-              <Button asChild size="lg" className={cn(styles.substantialButton, styles.heroButton)}>
-                <Link href="#contact">
-                  Tell us about your plans <ArrowUpRight aria-hidden="true" />
-                </Link>
-              </Button>
+              <div className={styles.heroActions}>
+                <DiscoveryCallButton className={styles.heroButton} />
+                <ArrowLink href="#contact">Tell us about your plans</ArrowLink>
+              </div>
               <span className={styles.heroNote}>Start with a complimentary 30-minute conversation.</span>
             </div>
           </section>
@@ -150,30 +160,19 @@ export default function ProgrammesPage() {
             <span>Retreat organisers</span>
             <span>Leadership teams</span>
             <span>Travel advisors</span>
-            <span>Hotels &amp; private groups</span>
+            <span>Hotels and private groups</span>
           </div>
 
-          <section id="approach" className={cn(styles.section, styles.intro)} aria-labelledby="approach-heading">
-            <div className={styles.introImage}>
-              <Image
-                src="/images/programmes/place.webp"
-                alt="A pavilion overlooking the green landscape of Bali"
-                fill
-                loading="lazy"
-                className={styles.coverImage}
-                sizes="(max-width: 800px) 100vw, 52vw"
-              />
-              <p className={styles.imageCaption}>Wellness programmes for retreats and groups in Bali.</p>
-            </div>
-            <div className={styles.introStory}>
-              <p className={styles.eyebrow}>Planning a retreat?</p>
-              <h2 id="approach-heading" className={styles.displayHeading}>
-                Finding practitioners is only part of the job.
-              </h2>
-              <p>You need to choose the activities, find suitable practitioners and fit everything into your schedule.</p>
-              <p>We help you make those decisions and build a programme around your group.</p>
-              <ArrowLink href="#contact">Tell us about your plans</ArrowLink>
-            </div>
+          <section id="approach" className={cn(styles.section, styles.proof)} aria-label="Recent work">
+            <p className={styles.eyebrow}>Recent work</p>
+            <ul className={styles.proofList}>
+              {programmeProof.map(({ src, alt, line, width, height }) => (
+                <li key={alt}>
+                  <Image src={src} alt={alt} width={width} height={height} className={styles.proofLogo} />
+                  <p>{line}</p>
+                </li>
+              ))}
+            </ul>
           </section>
 
           <section id="offer" className={cn(styles.section, styles.offer)} aria-labelledby="offer-heading">
@@ -181,64 +180,20 @@ export default function ProgrammesPage() {
               <div>
                 <p className={styles.eyebrow}>What we do</p>
                 <h2 id="offer-heading" className={styles.displayHeading}>
-                  Plan the sessions.
-                  <br />
-                  Find the practitioners.
+                  Wellness programmes, designed and delivered.
                 </h2>
               </div>
-              <p>We combine programme design with practitioner selection from the Solas network in Bali.</p>
             </div>
-
-            <div className={styles.serviceGrid}>
-              <article className={styles.serviceFeature}>
-                <Image
-                  src="/images/programmes/practice.webp"
-                  alt="Materials prepared for a wellness practice"
-                  fill
-                  loading="lazy"
-                  className={styles.coverImage}
-                  sizes="(max-width: 800px) 100vw, 50vw"
-                />
-                <div className={styles.serviceOverlay}>
-                  <p className={styles.eyebrow}>01 / Programme design</p>
-                  <h3>
-                    A programme built around your group.
-                  </h3>
-                  <p>We recommend sessions and activities based on your group’s goals, then plan how they fit into your schedule.</p>
-                </div>
-              </article>
-
-              <div className={styles.serviceStack}>
-                <article className={styles.servicePeople}>
-                  <div className={styles.serviceCopy}>
-                    <p className={styles.eyebrow}>02 / Practitioner selection</p>
-                    <h3>
-                      People to lead each session.
-                    </h3>
-                    <p>We select practitioners from the Solas network to deliver the sessions in your programme.</p>
-                  </div>
-                  <div className={styles.peopleMedia}>
-                    <Image
-                      src="/images/programmes/people.webp"
-                      alt="A person walking towards a pavilion along a garden path"
-                      fill
-                      loading="lazy"
-                      className={styles.peopleImage}
-                      sizes="(max-width: 800px) 45vw, 20vw"
-                    />
-                  </div>
-                </article>
-
-                <article className={styles.serviceDelivery}>
-                  <p className={styles.eyebrow}>03 / Optional coordination</p>
-                  <h3>
-                    Help organising the programme.
-                  </h3>
-                  <p>We can brief practitioners, coordinate schedules and direct the programme on-site.</p>
-                  <span className={styles.deliveryMark} aria-hidden="true">↗</span>
-                </article>
-              </div>
-            </div>
+            <ul className={styles.offerCards}>
+              {programmeOffers.map(([title, line]) => (
+                <li key={title}>
+                  <a href={discoveryCall.href} target="_blank" rel="noopener noreferrer" className={styles.offerCard}>
+                    <span className={styles.offerTitle}>{title}</span>
+                    <span className={styles.offerLine}>{line}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
           </section>
 
           <section className={cn(styles.section, styles.programmeExample)} aria-labelledby="programme-example-heading">
@@ -263,7 +218,7 @@ export default function ProgrammesPage() {
               <div className={styles.exampleDocumentLead}>
                 <div className={styles.exampleTitle}>
                   <p className={styles.eyebrow}>Three days in Bali</p>
-                  <h3>Leadership retreat programme</h3>
+                  <h3>A three-day group programme</h3>
                   <p>This sample shows how shared sessions and personal time could sit together. Every programme is shaped around your group.</p>
                 </div>
                 <div className={styles.exampleMedia}>
@@ -430,6 +385,10 @@ export default function ProgrammesPage() {
             </div>
           </section>
 
+          <div className={styles.repeatCall}>
+            <DiscoveryCallButton />
+          </div>
+
           <section id="contact" className={cn(styles.section, styles.contact)} aria-labelledby="contact-heading">
             <div className={styles.contactCopy}>
               <p className={styles.eyebrow}>Enquire about a programme</p>
@@ -439,9 +398,7 @@ export default function ProgrammesPage() {
                 <p className={styles.eyebrow}>What happens next</p>
                 <p>We’ll contact you to arrange a conversation about your programme and how we can help.</p>
               </div>
-              <a href={discoveryCall.href} target="_blank" rel="noopener noreferrer" className={styles.textLink}>
-                Book a discovery call <ArrowUpRight aria-hidden="true" />
-              </a>
+              <DiscoveryCallButton />
             </div>
             <div className={styles.contactForm}>
               <ProgrammeEnquiryForm />
@@ -450,7 +407,7 @@ export default function ProgrammesPage() {
         </main>
 
         <footer className={styles.footer}>
-          <BrandWordmark caption="Wellness programme design · Bali" className={styles.footerBrand} />
+          <BrandWordmark caption="For retreats, venues and professional groups" className={styles.footerBrand} />
           <nav aria-label="Legal" className={styles.footerLinks}>
             <Link href="/privacy">Privacy</Link>
             <Link href="/terms">Website terms</Link>

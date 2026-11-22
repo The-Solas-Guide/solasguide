@@ -113,8 +113,25 @@
   text-transform: none;
 }
 
-.heroButton {
+.heroActions {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.35rem;
   margin-top: 1.9rem;
+}
+
+.heroActions .textLink {
+  align-self: flex-start;
+  margin-top: 0.35rem;
+}
+
+.discoveryButton {
+  width: 100%;
+  justify-content: center;
+}
+
+.heroButton {
   border-color: var(--background);
   background: var(--background);
   color: var(--foreground);
@@ -134,13 +151,13 @@
 
 .audience {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1.5rem;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.85rem;
   border-bottom: 1px solid var(--border);
-  padding: 1.8rem 0;
+  padding: 1.5rem 0.25rem;
   color: var(--muted-foreground);
-  font-size: 0.75rem;
+  font-size: 0.875rem;
 }
 
 .audience .eyebrow {
@@ -216,8 +233,79 @@
   color: var(--accent);
 }
 
+.proof {
+  padding: 1.75rem 0.25rem 2rem;
+}
+
+.proofList {
+  display: grid;
+  gap: 1.35rem;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.proofList li {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.proofList p {
+  color: var(--muted-foreground);
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.proofLogo {
+  height: 2.5rem;
+  width: auto;
+  max-width: 8rem;
+  object-fit: contain;
+  opacity: 0.7;
+}
+
 .offer {
-  padding: 4.4rem 0 5rem;
+  padding: 3.2rem 0.25rem 3.6rem;
+}
+
+.offerCards {
+  display: grid;
+  gap: 0.75rem;
+  margin: 1.75rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.offerCard {
+  display: flex;
+  min-height: 2.75rem;
+  flex-direction: column;
+  justify-content: center;
+  border: 1px solid var(--border);
+  background: var(--card);
+  padding: 1.25rem 1.15rem;
+}
+
+.offerCard:hover {
+  background: var(--muted);
+}
+
+.offerTitle {
+  font-family: var(--font-programmes-display), var(--font-display), Georgia, serif;
+  font-size: 1.65rem;
+  line-height: 1.15;
+}
+
+.offerLine {
+  margin-top: 0.7rem;
+  color: var(--muted-foreground);
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.repeatCall {
+  padding: 0 0.25rem 2.5rem;
 }
 
 .sectionHead {
@@ -828,8 +916,40 @@
   font-size: 0.75rem;
 }
 
+.footerLinks a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+}
+
 .footerLinks a:hover {
   color: var(--foreground);
+}
+
+@media (min-width: 800px) {
+  .audience {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: 1.8rem 0;
+    font-size: 0.75rem;
+  }
+
+  .proofList,
+  .offerCards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.5rem;
+  }
+
+  .heroActions {
+    align-items: flex-start;
+    max-width: 24rem;
+  }
+
+  .repeatCall {
+    max-width: 24rem;
+  }
 }
 
 @media (min-width: 768px) {
@@ -889,13 +1009,6 @@
 
   .introImage {
     min-height: 20rem;
-  }
-
-  .audience {
-    justify-content: flex-start;
-    gap: 1.1rem 1.6rem;
-    flex-wrap: wrap;
-    font-size: 0.6875rem;
   }
 
   .audience .eyebrow {

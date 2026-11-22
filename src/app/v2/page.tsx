@@ -9,6 +9,7 @@ import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { RevealObserver } from "@/components/motion/reveal-observer";
 import { buttonVariants } from "@/components/ui/button";
+import { programmeOffers, programmeProof } from "@/lib/programme-proof";
 import { discoveryCall, needHelpChoosing } from "@/lib/public-journeys";
 import { getAbsoluteUrl, homepageDescription, homepageMetadata } from "@/lib/site-config";
 import { cn } from "@/lib/utils";
@@ -122,11 +123,7 @@ export default function HomePageV2() {
               Wellness programmes, designed and delivered.
             </h2>
             <div className="mt-8 grid gap-3 md:grid-cols-3">
-              {[
-                ["Group programmes", "Retreats, leadership groups and professional communities, designed, staffed and run on site."],
-                ["Private work", "Individuals, couples and families, discreetly arranged."],
-                ["Workshops and talks", "For schools, venues and organisations."],
-              ].map(([title, line]) => (
+              {programmeOffers.map(([title, line]) => (
                 <a
                   key={title}
                   href={discoveryCall.href}
@@ -163,11 +160,7 @@ export default function HomePageV2() {
           <section aria-label="Recent work" className="border-x border-b border-border bg-card px-5 py-8 sm:px-8 md:px-12 lg:px-16">
             <p className="review-label text-muted-foreground">Recent work</p>
             <ul className="mt-5 grid gap-6 lg:grid-cols-3 lg:gap-8">
-              {([
-                { src: "/brand/proof/ypo.png", alt: "YPO", line: "YPO leadership retreat, December 2024: couples facilitation and practitioner sourcing", width: 253, height: 96 },
-                { src: "/brand/proof/green-school.png", alt: "Green School", line: "Couples facilitation for Green School parents and staff", width: 196, height: 96 },
-                { src: "/brand/proof/ubud-writers-festival.png", alt: "Ubud Writers & Readers Festival", line: "Ubud Writers & Readers Festival, with Solas Guide members", width: 246, height: 128 },
-              ] as const).map(({ src, alt, line, width, height }) => (
+              {programmeProof.map(({ src, alt, line, width, height }) => (
                 <li key={alt} className="flex items-start gap-4">
                   <Image
                     src={src}

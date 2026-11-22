@@ -133,7 +133,7 @@ export function ProgrammeEnquiryForm() {
             {submitting ? "Sending…" : "Start a conversation"}<ArrowUpRight aria-hidden="true" />
           </Button>
           <p id="programme-privacy" className="mt-4 text-xs leading-relaxed text-muted-foreground">
-            We use your details to respond to your enquiry. Read our <Link href="/privacy" className="underline underline-offset-4">privacy policy</Link>.
+            We use your details to respond to your enquiry. Read our <Link href="/privacy" className="inline-flex min-h-11 items-center underline underline-offset-4">privacy policy</Link>.
           </p>
         </div>
       </fieldset>
