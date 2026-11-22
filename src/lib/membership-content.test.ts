@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import {
   SOLAS_LETTER_SIGNUP_FORM_URL,
   SOLAS_TABLE_BOOKING_FORM_URL,
+  bookCallHref,
   isBusinessWorkshopUpcoming,
   isPlaceholderFormUrl,
   learningSessions,
@@ -33,6 +34,7 @@ const forbidden = [
   "has not been emailed",
   "neither letter has been",
   "22 seats",
+  "30min-private-conversation",
 ];
 
 function sourceFiles(directory: string): string[] {
@@ -69,6 +71,7 @@ describe("membership public copy", () => {
       "Past edition · Edition 01 · September 2026 · The bar is rising",
     ]);
     expect(letters.every((letter) => letter.sent === "Sent to members and non-members.")).toBe(true);
+    expect(bookCallHref).toBe("https://cal.com/solasguide/solas-discovery-call");
     expect(practiseWhatsAppHref).toBe(
       "https://wa.me/447793050098?text=Hi%20Jitesh%2C%20I%27d%20like%20to%20talk%20about%20practising%20in%20Bali.",
     );

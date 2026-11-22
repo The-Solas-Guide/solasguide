@@ -65,8 +65,14 @@ test("explains practitioner membership", async ({ page }) => {
   const call = page.getByRole("link", { name: "Book a call with Jitesh" });
   const apply = page.getByRole("link", { name: "Apply now · USD $350 a year" });
   await expect(apply).toHaveCount(2);
-  await expect(call.first()).toHaveAttribute("href", "https://cal.com/solassolas/30min-private-conversation");
-  await expect(call.first()).toHaveAttribute("target", "_blank");
+  await expect(page.locator('a[href="https://cal.com/solasguide/solas-discovery-call"]')).toHaveCount(6);
+  await expect(page.locator('a[href="https://cal.com/solassolas/30min-private-conversation"]')).toHaveCount(0);
+  await expect(call).toHaveCount(4);
+  for (const link of await call.all()) {
+    await expect(link).toHaveAttribute("href", "https://cal.com/solasguide/solas-discovery-call");
+    await expect(link).toHaveAttribute("target", "_blank");
+    await expect(link).toHaveAttribute("rel", "noopener noreferrer");
+  }
   await expect(apply.first()).toHaveAttribute("href", "https://tally.so/r/XxQvJz");
   await expect(apply.first()).toHaveAttribute("target", "_blank");
   await expect(page.getByRole("link", { name: "Get in touch on WhatsApp" })).toHaveCount(0);

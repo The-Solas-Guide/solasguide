@@ -5,7 +5,7 @@
 export const SOLAS_TABLE_BOOKING_FORM_URL = "https://tally.so/r/1W9rXp";
 export const SOLAS_LETTER_SIGNUP_FORM_URL = "#letter-signup-form";
 
-export const bookCallHref = "https://cal.com/solassolas/30min-private-conversation";
+export const bookCallHref = "https://cal.com/solasguide/solas-discovery-call";
 export const applyHref = "https://tally.so/r/XxQvJz";
 export const practiseWhatsAppHref =
   "https://wa.me/447793050098?text=Hi%20Jitesh%2C%20I%27d%20like%20to%20talk%20about%20practising%20in%20Bali.";
