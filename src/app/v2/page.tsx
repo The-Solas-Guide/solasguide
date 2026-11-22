@@ -127,10 +127,13 @@ export default function HomePageV2() {
                 </a>
               ))}
             </div>
-            <Link href="/programmes#method" className="mt-6 inline-flex min-h-11 items-center text-sm text-foreground underline-offset-4 hover:underline">
-              How a programme comes together
-            </Link>
-            <ul className="mt-12 grid gap-8 lg:grid-cols-3 lg:gap-10">
+            <p className="mt-8">
+              <Link href="/programmes#method" className="inline-flex min-h-11 items-center gap-1.5 text-sm text-foreground underline decoration-foreground/40 underline-offset-4 hover:text-accent hover:decoration-accent">
+                How a programme comes together
+                <ArrowRight className="size-3.5" aria-hidden="true" />
+              </Link>
+            </p>
+            <ul className="mt-14 grid gap-8 lg:grid-cols-3 lg:gap-10">
               {programmeProof.map(({ src, alt, line, width, height }) => (
                 <li key={alt} className="flex items-start gap-4">
                   <Image
@@ -138,13 +141,13 @@ export default function HomePageV2() {
                     alt={alt}
                     width={width}
                     height={height}
-                    className="h-10 w-auto max-w-32 shrink-0 object-contain"
+                    className={alt.includes("Ubud") ? "h-14 w-auto max-w-32 shrink-0 object-contain" : "h-10 w-auto max-w-32 shrink-0 object-contain"}
                   />
                   <p className="text-sm leading-6 text-foreground">{line}</p>
                 </li>
               ))}
             </ul>
-            <div className="mt-12 flex flex-col items-start gap-1 sm:flex-row sm:items-center sm:gap-6">
+            <div className="mt-14 flex flex-col items-center gap-2 sm:flex-row sm:items-center sm:justify-start sm:gap-6">
               <a
                 href={discoveryCall.href}
                 target="_blank"
@@ -153,8 +156,9 @@ export default function HomePageV2() {
               >
                 Book a discovery call <ArrowRight />
               </a>
-              <Link href="/programmes#contact" className="inline-flex min-h-11 items-center text-sm text-foreground underline-offset-4 hover:underline">
+              <Link href="/programmes#contact" className="inline-flex min-h-11 w-full items-center justify-center gap-1.5 text-sm text-foreground underline decoration-foreground/40 underline-offset-4 hover:text-accent hover:decoration-accent sm:w-auto sm:justify-start">
                 Tell us about your plans
+                <ArrowRight className="size-3.5" aria-hidden="true" />
               </Link>
             </div>
           </section>

@@ -167,7 +167,7 @@ export default function ProgrammesPage() {
             <ul className={styles.proofList}>
               {programmeProof.map(({ src, alt, line, width, height }) => (
                 <li key={alt}>
-                  <Image src={src} alt={alt} width={width} height={height} className={styles.proofLogo} />
+                  <Image src={src} alt={alt} width={width} height={height} className={alt.includes("Ubud") ? styles.proofLogoTall : styles.proofLogo} />
                   <p>{line}</p>
                 </li>
               ))}

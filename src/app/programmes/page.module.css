@@ -258,11 +258,16 @@
   line-height: 1.6;
 }
 
-.proofLogo {
+.proofLogo,
+.proofLogoTall {
   height: 2.5rem;
   width: auto;
   max-width: 8rem;
   object-fit: contain;
+}
+
+.proofLogoTall {
+  height: 3.5rem;
 }
 
 .offer {

@@ -14,11 +14,11 @@ export const programmeProof = [
     height: 96,
   },
   {
-    src: "/brand/proof/ubud-writers-festival.png",
+    src: "/brand/proof/ubud-writers-festival-wordmark.png",
     alt: "Ubud Writers & Readers Festival",
     line: "Ubud Writers & Readers Festival, with Solas Guide members",
-    width: 246,
-    height: 128,
+    width: 127,
+    height: 122,
   },
 ] as const;
 
