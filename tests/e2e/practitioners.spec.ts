@@ -19,8 +19,8 @@ test.describe("published practitioner directory", () => {
         name: "The founding practitioners of The Solas Guide.",
       }),
     ).toBeVisible();
-    await expect(page.getByText("Showing 3 of 3 practitioners")).toBeVisible();
-    await expect(cards(page)).toHaveCount(3);
+    await expect(page.getByText("Showing 5 of 5 practitioners")).toBeVisible();
+    await expect(cards(page)).toHaveCount(5);
     await expect(cards(page).getByRole("heading", { level: 2, name: "Kartika Alexandra" })).toBeVisible();
     await expect(cards(page).getByRole("heading", { level: 2, name: "Sandra Echemendia" })).toBeVisible();
     await expect(cards(page).getByRole("heading", { level: 2, name: "Indri Hapsari" })).toBeVisible();
@@ -52,7 +52,7 @@ test.describe("published practitioner directory", () => {
     await expect(cards(page).getByRole("heading", { name: "Sandra Echemendia" })).toBeVisible();
 
     await search.fill("Bali");
-    await expect(cards(page)).toHaveCount(3);
+    await expect(cards(page)).toHaveCount(5);
     await expect(page.locator("main ul li article").getByText("Bali", { exact: true })).toHaveCount(0);
   });
 
@@ -89,12 +89,12 @@ test.describe("published practitioner directory", () => {
         .selectOption({ label: optionLabel });
       await dialog.getByRole("button", { name: /Show .* results/ }).click();
 
-      await expect(cards(page)).toHaveCount(expectedName ? 1 : 3);
+      await expect(cards(page)).toHaveCount(expectedName ? 1 : 5);
       if (expectedName) {
         await expect(cards(page).getByRole("heading", { name: expectedName })).toBeVisible();
       }
       await page.getByRole("button", { name: "Clear all" }).click();
-      await expect(cards(page)).toHaveCount(3);
+      await expect(cards(page)).toHaveCount(5);
     }
   });
 
@@ -103,7 +103,7 @@ test.describe("published practitioner directory", () => {
   }) => {
     await page.goto("/practitioners?locations=bali");
 
-    await expect(cards(page)).toHaveCount(3);
+    await expect(cards(page)).toHaveCount(5);
     await expect(page.locator("main ul li article").getByText("Bali", { exact: true })).toHaveCount(0);
     await expect(page.getByRole("heading", { name: "Kartika Alexandra" })).toBeVisible();
   });
@@ -155,7 +155,7 @@ test.describe("published practitioner directory", () => {
 
     await page.getByRole("button", { name: "Clear all" }).click();
     await expect(page).toHaveURL("http://127.0.0.1:3100/practitioners");
-    await expect(cards(page)).toHaveCount(3);
+    await expect(cards(page)).toHaveCount(5);
     await expect(search).toHaveValue("");
     await expect(page.getByRole("button", { name: /Filters/ })).not.toContainText("1");
     await expect(page.getByRole("button", { name: "Clear all" })).toHaveCount(0);
@@ -184,7 +184,7 @@ test.describe("published practitioner directory", () => {
 
     await page.goForward();
     await expect(page).toHaveURL("http://127.0.0.1:3100/practitioners");
-    await expect(cards(page)).toHaveCount(3);
+    await expect(cards(page)).toHaveCount(5);
     await expect(search).toHaveValue("");
     await expect(page.getByRole("button", { name: /Filters/ })).not.toContainText("1");
     await expect(
@@ -211,7 +211,7 @@ test.describe("published practitioner directory", () => {
         { exact: true },
       ),
     ).toBeVisible();
-    await expect(cards(page)).toHaveCount(3);
+    await expect(cards(page)).toHaveCount(5);
     await expect(page.locator("main")).not.toContainText(unknown);
   });
 
@@ -221,7 +221,7 @@ test.describe("published practitioner directory", () => {
     await page.getByRole("button", { name: "Clear all" }).click();
 
     await expect(page).toHaveURL("http://127.0.0.1:3100/practitioners?ref=campaign");
-    await expect(cards(page)).toHaveCount(3);
+    await expect(cards(page)).toHaveCount(5);
   });
 
   test("supports keyboard close and trigger focus restoration for filters", async ({ page }) => {
@@ -540,7 +540,7 @@ test.describe("published practitioner directory at 390px", () => {
 
   test("stacks cards, keeps the profile usable, and contains the filter dialog", async ({ page }) => {
     await page.goto("/practitioners");
-    await expect(cards(page)).toHaveCount(3);
+    await expect(cards(page)).toHaveCount(5);
 
     const firstCard = await cards(page).nth(0).boundingBox();
     const secondCard = await cards(page).nth(1).boundingBox();

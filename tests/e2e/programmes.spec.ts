@@ -29,6 +29,12 @@ for (const width of [1440, 390]) {
     expect(await page.title()).not.toMatch(/Bali/i);
     expect(await page.locator('meta[name="description"]').getAttribute("content")).not.toMatch(/Bali/i);
     await expect(page.getByText("YPO leadership retreat: workshop facilitation and practitioner sourcing")).toBeVisible();
+    const sessionLeads = page.locator("#practitioner-heading").locator("xpath=ancestor::section[1]").getByRole("heading", { level: 3 });
+    await expect(sessionLeads).toHaveText([
+      "Sandra Echemendia",
+      "Rajiv Arapurakal",
+      "Cherlene Wilson",
+    ]);
     await expect(page.getByText("December 2024")).toHaveCount(0);
     await expect(page.getByRole("heading", { name: "Start with the guest, not the activity." })).toBeVisible();
     await expect(page.getByText("Programme directions we often develop")).toHaveCount(0);

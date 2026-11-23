@@ -10,9 +10,10 @@ import { ProgrammeEnquiryForm } from "@/components/enquiry/programme-enquiry-for
 import { SiteHeader } from "@/components/layout/site-header";
 import { PractitionerCard } from "@/components/practitioners/practitioner-card";
 import { Button } from "@/components/ui/button";
+import { selectProgrammeSessionLeads } from "@/lib/programme-practitioners";
 import { programmeOffers, programmeProof } from "@/lib/programme-proof";
 import { discoveryCall } from "@/lib/public-journeys";
-import { emptyDirectoryFilters, getPublishedPractitioners } from "@/lib/practitioners";
+import { getPublishedPractitioners } from "@/lib/practitioners";
 import { cn } from "@/lib/utils";
 import styles from "./page.module.css";
 
@@ -94,12 +95,8 @@ function PractitionerPreviewFallback() {
 }
 
 async function PractitionerPreview() {
-  const practitionerResult = await getPublishedPractitioners({
-    ...emptyDirectoryFilters,
-    locations: ["bali"],
-    format: ["in-person"],
-  });
-  const practitioners = practitionerResult.data.slice(0, 3);
+  const practitionerResult = await getPublishedPractitioners();
+  const practitioners = selectProgrammeSessionLeads(practitionerResult.data);
 
   return (
     <PractitionerSectionFrame>
