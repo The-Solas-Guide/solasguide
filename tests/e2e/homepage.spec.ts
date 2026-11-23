@@ -48,8 +48,8 @@ test.describe("homepage", () => {
       "Programmes",
       "Need help choosing?",
       "Wellness programmes, designed and delivered.",
-      "YPO leadership retreat: couples facilitation and practitioner sourcing",
-      "Couples facilitation for Green School parents and staff",
+      "YPO leadership retreat: workshop facilitation and practitioner sourcing",
+      "Workshop facilitation for Green School parents and staff",
       "Ubud Writers & Readers Festival, with Solas Guide members",
     ];
 

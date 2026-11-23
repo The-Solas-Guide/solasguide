@@ -28,7 +28,7 @@ for (const width of [1440, 390]) {
     await expect(page).toHaveTitle(/Wellness programmes, designed and delivered/);
     expect(await page.title()).not.toMatch(/Bali/i);
     expect(await page.locator('meta[name="description"]').getAttribute("content")).not.toMatch(/Bali/i);
-    await expect(page.getByText("YPO leadership retreat: couples facilitation and practitioner sourcing")).toBeVisible();
+    await expect(page.getByText("YPO leadership retreat: workshop facilitation and practitioner sourcing")).toBeVisible();
     await expect(page.getByText("December 2024")).toHaveCount(0);
     await expect(page.getByRole("heading", { name: "Start with the guest, not the activity." })).toBeVisible();
     await expect(page.getByText("Programme directions we often develop")).toHaveCount(0);

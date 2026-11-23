@@ -2,14 +2,14 @@ export const programmeProof = [
   {
     src: "/brand/proof/ypo.png",
     alt: "YPO",
-    line: "YPO leadership retreat: couples facilitation and practitioner sourcing",
+    line: "YPO leadership retreat: workshop facilitation and practitioner sourcing",
     width: 253,
     height: 96,
   },
   {
     src: "/brand/proof/green-school.png",
     alt: "Green School",
-    line: "Couples facilitation for Green School parents and staff",
+    line: "Workshop facilitation for Green School parents and staff",
     width: 196,
     height: 96,
   },
