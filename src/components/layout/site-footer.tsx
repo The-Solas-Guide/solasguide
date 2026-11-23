@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { BrandWordmark } from "@/components/brand/brand-wordmark";
 import { TrackedPractitionerLink } from "@/components/analytics/tracked-practitioner-link";
-import { browseTheGuide, makeAnEnquiry, needHelpChoosing } from "@/lib/public-journeys";
+import { WhatsAppMessage } from "@/components/contact/whatsapp-message";
+import { browseTheGuide, discoveryCall, guideEmail, needHelpChoosing } from "@/lib/public-journeys";
 
 const linkClassName =
-  "inline-flex min-h-10 items-center text-sm transition-colors hover:text-background focus-visible:text-background";
+  "inline-flex min-h-11 items-center text-sm transition-colors hover:text-background focus-visible:text-background";
 
 export function SiteFooter() {
   return (
@@ -24,7 +25,7 @@ export function SiteFooter() {
           </div>
         </div>
         <div>
-          <p className="review-label text-background/50">Explore</p>
+          <p className="review-label text-background/80">Explore</p>
           <div className="mt-4 grid gap-1 text-background/85">
             <Link href={browseTheGuide.href} className={linkClassName}>
               {browseTheGuide.label}
@@ -43,7 +44,7 @@ export function SiteFooter() {
               href="/membership"
               className={linkClassName}
             >
-              Practitioner membership
+              Practitioners can apply for membership
             </TrackedPractitionerLink>
             <Link href="/working-in-bali" className={linkClassName}>
               Working in Bali briefing
@@ -51,17 +52,23 @@ export function SiteFooter() {
           </div>
         </div>
         <div>
-          <p className="review-label text-background/50">Contact</p>
+          <p className="review-label text-background/80">Contact</p>
           <div className="mt-4 grid gap-1 text-background/85">
-            <Link href={makeAnEnquiry.href} className={linkClassName}>
-              {makeAnEnquiry.label}
-            </Link>
+            <a href={discoveryCall.href} target="_blank" rel="noopener noreferrer" className={linkClassName}>
+              {discoveryCall.label}
+            </a>
+            <a href={`mailto:${guideEmail}`} className={linkClassName}>
+              {guideEmail}
+            </a>
+            <WhatsAppMessage className={linkClassName}>
+              Message us on WhatsApp
+            </WhatsAppMessage>
           </div>
           <div className="mt-6 border-t border-background/20 pt-4">
-            <p className="review-label opacity-50">Legal</p>
-            <div className="mt-3 grid gap-3 text-sm">
-              <Link href="/privacy">Privacy</Link>
-              <Link href="/terms">Website terms</Link>
+            <p className="review-label text-background/80">Legal</p>
+            <div className="mt-3 grid text-sm">
+              <Link href="/privacy" className={linkClassName}>Privacy</Link>
+              <Link href="/terms" className={linkClassName}>Website terms</Link>
             </div>
           </div>
         </div>

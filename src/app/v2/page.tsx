@@ -1,16 +1,16 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowDown, ArrowRight } from "lucide-react";
-import { TrackedPractitionerLink } from "@/components/analytics/tracked-practitioner-link";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { RegistryPreview } from "@/components/home/registry-preview";
 import { RegistryStandards } from "@/components/home/registry-standards";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { RevealObserver } from "@/components/motion/reveal-observer";
 import { buttonVariants } from "@/components/ui/button";
-import { makeAnEnquiry, needHelpChoosing } from "@/lib/public-journeys";
-import { homepageMetadata } from "@/lib/site-config";
+import { programmeOffers, programmeProof } from "@/lib/programme-proof";
+import { discoveryCall, needHelpChoosing } from "@/lib/public-journeys";
+import { getAbsoluteUrl, homepageDescription, homepageMetadata } from "@/lib/site-config";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = homepageMetadata;
@@ -22,16 +22,24 @@ const navLinks = [
   { label: "Programmes", href: "/programmes" },
 ];
 
-const audiences = [
-  ["Individuals", "Trusted support for your wellbeing, health and personal development."],
-  ["Couples & Families", "Finding the right person for the people who matter most."],
-  ["Retreat Organisers", "Building thoughtful programmes with trusted practitioners."],
-  ["Hotels & Travel Advisors", "Making considered introductions for guests and clients."],
-  [
-    "Organisations",
-    "Finding practitioners for leadership, wellbeing and team programmes.",
+const homeJsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      name: "The Solas Guide",
+      url: getAbsoluteUrl("/"),
+      email: "info@solassolas.com",
+      description: homepageDescription,
+    },
+    {
+      "@type": "WebSite",
+      name: "The Solas Guide",
+      url: getAbsoluteUrl("/"),
+      description: homepageDescription,
+    },
   ],
-] as const;
+};
 
 export default function HomePageV2() {
   return (
@@ -45,6 +53,7 @@ export default function HomePageV2() {
       <div className="mx-auto w-full max-w-[1440px] overflow-x-hidden px-3 py-3 md:px-5 md:py-5">
         <SiteHeader links={navLinks} />
         <RevealObserver />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(homeJsonLd) }} />
 
         <main id="main-content">
           <section
@@ -53,7 +62,7 @@ export default function HomePageV2() {
           >
             <Image
               src="/images/editorial/solas-hero-pavilion.webp"
-              alt=""
+              alt="A person preparing a mat in an open wooden pavilion above a green valley"
               fill
               preload
               className="object-cover object-[68%_center] md:object-center"
@@ -62,35 +71,95 @@ export default function HomePageV2() {
             <div className="absolute inset-0 bg-gradient-to-t from-foreground/90 via-foreground/48 to-foreground/15" />
             <div className="relative flex min-h-[min(780px,calc(100svh-2rem))] items-end px-5 pt-24 pb-14 text-background sm:px-8 sm:pb-20 md:p-14 lg:p-20">
               <div className="max-w-4xl">
-                <p className="review-label text-white/75" data-reveal>
-                  Volume One <span aria-hidden="true">•</span> Southeast Asia
+                <p className="review-label text-background" data-reveal>
+                  Volume One <span aria-hidden="true">•</span> Bali
                 </p>
-                <p className="mt-5 font-display text-2xl tracking-tight text-white sm:text-3xl" data-reveal>
+                <p className="mt-5 font-display text-2xl tracking-tight text-background sm:text-3xl" data-reveal>
                   The Solas Guide
                 </p>
                 <h1
                   id="hero-heading"
-                  className="mt-5 max-w-4xl font-display text-[2.6rem] leading-[0.98] tracking-tight text-balance text-white sm:text-5xl md:text-6xl lg:text-7xl"
+                  className="mt-5 max-w-4xl font-display text-[2.35rem] leading-[0.98] tracking-tight text-balance text-background sm:text-5xl md:text-6xl lg:text-7xl"
                   data-reveal
                   data-reveal-delay="1"
                 >
                   Finding someone isn&apos;t difficult. Knowing who to trust is.
                 </h1>
-                <p className="mt-7 max-w-2xl text-lg leading-8 text-white sm:text-xl" data-reveal data-reveal-delay="2">
-                  A trusted guide to exceptional wellness practitioners.
-                </p>
-                <p className="mt-2 max-w-2xl text-sm leading-7 text-white/80 sm:text-base" data-reveal data-reveal-delay="2">
-                  Independently recognised. Editorially profiled. Carefully selected.
+                <p className="mt-6 max-w-2xl text-base leading-7 text-background sm:text-lg" data-reveal data-reveal-delay="2">
+                  An independent guide to exceptional wellness practitioners.
                 </p>
                 <div className="mt-8 flex flex-col gap-3 sm:flex-row" data-reveal data-reveal-delay="3">
-                  <a href="#registry" className={cn(buttonVariants(), "w-full border-background bg-background text-foreground hover:bg-background/85 sm:w-auto")}>
-                    Browse the Guide <ArrowDown />
+                  <a
+                    href={discoveryCall.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={cn(buttonVariants(), "w-full border-background bg-background text-foreground hover:bg-background/85 sm:w-auto")}
+                  >
+                    Book a discovery call <ArrowUpRight />
                   </a>
-                  <Link href={needHelpChoosing.href} className="inline-flex min-h-11 items-center justify-center px-4 text-xs font-semibold uppercase tracking-[0.13em] text-white hover:text-white/75">
-                    {needHelpChoosing.label} <ArrowRight />
+                  <Link href="/practitioners" className={cn(buttonVariants({ variant: "outline" }), "w-full border-background/80 bg-transparent text-background hover:bg-background/10 sm:w-auto")}>
+                    Explore the Guide
                   </Link>
                 </div>
               </div>
+            </div>
+          </section>
+
+          <section id="programmes" className="border-x border-b border-border bg-muted px-5 py-16 text-foreground sm:px-8 md:px-12 md:py-20 lg:px-16 lg:py-24">
+            <p className="review-label text-accent">Programmes</p>
+            <h2 className="mt-4 max-w-3xl font-display text-3xl leading-tight text-balance sm:text-4xl md:text-5xl">
+              Wellness programmes, designed and delivered.
+            </h2>
+            <p className="mt-5 max-w-xl text-sm leading-6 text-foreground">
+              For travel advisors, retreat organisers, venues and professional communities.
+            </p>
+            <div className="mt-10 grid gap-4 lg:grid-cols-3">
+              {programmeOffers.map(([title, line]) => (
+                <a
+                  key={title}
+                  href={discoveryCall.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex min-h-11 flex-col justify-center border border-border bg-card px-5 py-6 text-foreground transition-colors hover:bg-background"
+                >
+                  <span className="font-display text-2xl leading-tight">{title}</span>
+                  <span className="mt-3 text-sm leading-6">{line}</span>
+                </a>
+              ))}
+            </div>
+            <p className="mt-8">
+              <Link href="/programmes#method" className="inline-flex min-h-11 items-center gap-1.5 text-sm text-foreground underline decoration-foreground/40 underline-offset-4 hover:text-accent hover:decoration-accent">
+                How a programme comes together
+                <ArrowRight className="size-3.5" aria-hidden="true" />
+              </Link>
+            </p>
+            <ul className="mt-14 grid gap-8 lg:grid-cols-3 lg:gap-10">
+              {programmeProof.map(({ src, alt, line, width, height }) => (
+                <li key={alt} className="flex items-start gap-4">
+                  <Image
+                    src={src}
+                    alt={alt}
+                    width={width}
+                    height={height}
+                    className={alt.includes("Ubud") ? "h-14 w-auto max-w-32 shrink-0 object-contain" : "h-10 w-auto max-w-32 shrink-0 object-contain"}
+                  />
+                  <p className="text-sm leading-6 text-foreground">{line}</p>
+                </li>
+              ))}
+            </ul>
+            <div className="mt-14 flex flex-col items-center gap-2 sm:flex-row sm:items-center sm:justify-start sm:gap-6">
+              <a
+                href={discoveryCall.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={cn(buttonVariants({ size: "lg" }), "w-full sm:w-auto")}
+              >
+                Book a discovery call <ArrowUpRight />
+              </a>
+              <Link href="/programmes#contact" className="inline-flex min-h-11 w-full items-center justify-center gap-1.5 text-sm text-foreground underline decoration-foreground/40 underline-offset-4 hover:text-accent hover:decoration-accent sm:w-auto sm:justify-start">
+                Tell us about your plans
+                <ArrowRight className="size-3.5" aria-hidden="true" />
+              </Link>
             </div>
           </section>
 
@@ -106,14 +175,14 @@ export default function HomePageV2() {
                 />
               </div>
               <div className="flex flex-col justify-center bg-muted/35 p-7 sm:p-10 lg:p-16" data-reveal data-reveal-delay="1">
-                <p className="review-label text-muted-foreground">Why The Solas Guide Exists</p>
-                <h2 className="mt-6 max-w-xl font-display text-4xl leading-tight sm:text-5xl">
+                <p className="review-label text-accent">Why The Solas Guide Exists</p>
+                <h2 className="mt-4 max-w-xl font-display text-3xl leading-tight sm:text-4xl md:text-5xl">
                   Wellness has grown rapidly. Trust hasn&apos;t always kept pace.
                 </h2>
-                <p className="mt-7 max-w-xl text-sm leading-7 text-muted-foreground">
+                <p className="mt-6 max-w-xl text-sm leading-7 text-foreground">
                   The Solas Guide is an independent editorial guide to exceptional wellness practitioners across Southeast Asia.
                 </p>
-                <p className="mt-4 max-w-xl text-sm leading-7 text-muted-foreground">
+                <p className="mt-4 max-w-xl text-sm leading-7 text-foreground">
                   We recognise practitioners through a careful review process, verify the claims we publish, and introduce their work to people looking for someone they can trust.
                 </p>
                 <div className="mt-7 space-y-2 border-l border-accent pl-5 text-sm leading-6">
@@ -127,7 +196,7 @@ export default function HomePageV2() {
               {[["20+", "Founding Practitioners"], ["8", "Practice Disciplines"], ["100%", "Independently Reviewed"]].map(([value, label]) => (
                 <div key={label} className="bg-card px-6 py-8 text-center">
                   <p className="font-display text-4xl">{value}</p>
-                  <p className="review-label mt-3 text-muted-foreground">{label}</p>
+                  <p className="review-label mt-3 text-accent">{label}</p>
                 </div>
               ))}
             </div>
@@ -136,32 +205,14 @@ export default function HomePageV2() {
           <RegistryStandards />
           <RegistryPreview />
 
-          <section id="who-its-for" className="border-x border-b border-border bg-card px-5 py-14 sm:px-8 md:px-12 md:py-20 lg:px-16">
-            <p className="review-label text-muted-foreground" data-reveal>Who the Guide is for</p>
-            <h2 className="mt-5 max-w-3xl font-display text-4xl leading-tight text-balance sm:text-5xl" data-reveal>
-              Built for people looking beyond reviews and recommendations.
-            </h2>
-            <div className="mt-10 grid gap-px border border-border bg-border md:grid-cols-2 lg:grid-cols-5" data-reveal data-reveal-delay="1">
-              {audiences.map(([title, copy]) => (
-                <article key={title} className="min-h-48 bg-background p-6 lg:min-h-64">
-                  <p className="font-display text-2xl leading-tight">{title}</p>
-                  <p className="mt-5 text-sm leading-7 text-muted-foreground">{copy}</p>
-                </article>
-              ))}
-            </div>
-          </section>
-
           <section id="questionnaire" className="review-section relative isolate overflow-hidden border-x border-b border-border text-center">
             <Image src="/images/editorial/bali-rice-field-pavilion.webp" alt="" fill sizes="100vw" className="pointer-events-none -z-20 object-cover object-center opacity-[0.26]" />
             <div className="pointer-events-none absolute inset-0 -z-10 bg-background/78" />
             <div className="relative mx-auto max-w-3xl px-6" data-reveal>
-              <p className="review-label text-muted-foreground">Need help choosing?</p>
-              <h2 className="mt-5 font-display text-4xl leading-tight text-balance sm:text-5xl">Not sure who to speak to?</h2>
-              <p className="mx-auto mt-6 max-w-2xl text-sm leading-7 text-muted-foreground">
-                Tell us a little about what you are looking for.
-              </p>
-              <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-muted-foreground">
-                We&apos;ll review your enquiry personally and suggest the practitioners we think may be worth considering.
+              <p className="review-label text-accent">Need help choosing?</p>
+              <h2 className="mt-4 font-display text-3xl leading-tight text-balance sm:text-4xl md:text-5xl">Not sure who to speak to?</h2>
+              <p className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-foreground">
+                Tell us what you are looking for. We&apos;ll review your enquiry and suggest practitioners worth considering.
               </p>
               <Link href={needHelpChoosing.href} className={cn(buttonVariants(), "mt-8 w-full sm:w-auto")}>
                 {needHelpChoosing.label} <ArrowRight />
@@ -169,42 +220,6 @@ export default function HomePageV2() {
             </div>
           </section>
 
-          <section id="professional-enquiries" className="border-x border-b border-border bg-foreground px-5 py-16 text-background sm:px-8 md:px-12 md:py-24 lg:px-16">
-            <div className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end" data-reveal>
-              <div>
-                <p className="review-label text-background/55">Professional enquiries</p>
-                <h2 className="mt-5 max-w-3xl font-display text-4xl leading-tight sm:text-5xl">Looking for something more tailored?</h2>
-                <p className="mt-6 max-w-3xl text-sm leading-7 text-background/70">
-                  Planning a retreat, leadership programme, private client experience or looking for practitioners for your organisation?
-                </p>
-                <p className="mt-4 max-w-3xl text-sm leading-7 text-background/70">
-                  Solas works with retreat organisers, hotels, travel advisors and organisations to identify practitioners, shape programmes and make thoughtful introductions.
-                </p>
-              </div>
-              <Link href={makeAnEnquiry.href} className={cn(buttonVariants(), "w-full border-background bg-background text-foreground hover:bg-background/85 sm:w-auto")}>
-                {makeAnEnquiry.label} <ArrowRight />
-              </Link>
-            </div>
-          </section>
-
-          <section id="practitioner-applications" className="border-x border-b border-border bg-card px-5 py-16 sm:px-8 md:px-12 md:py-24 lg:px-16">
-            <div className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end" data-reveal>
-              <div>
-                <p className="review-label text-muted-foreground">For practitioners</p>
-                <h2 className="mt-5 max-w-2xl font-display text-4xl leading-tight sm:text-5xl">Practitioner membership is by application.</h2>
-                <p className="mt-6 max-w-3xl text-sm leading-7 text-muted-foreground">
-                  An independently written profile with verified claims, consideration for introductions where there&apos;s a fit, and a community of practitioners who take their work seriously. Introductions aren&apos;t guaranteed.
-                </p>
-              </div>
-              <TrackedPractitionerLink
-                source="homepage"
-                href="/membership"
-                className="inline-flex min-h-11 items-center text-sm text-foreground underline-offset-4 hover:underline"
-              >
-                About practitioner membership →
-              </TrackedPractitionerLink>
-            </div>
-          </section>
         </main>
 
         <SiteFooter />

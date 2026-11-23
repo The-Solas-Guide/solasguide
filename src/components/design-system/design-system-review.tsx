@@ -57,7 +57,7 @@ export function DesignSystemReview() {
     <main>
       <ThemeReviewControl full />
 
-      <section className="relative flex min-h-[78svh] items-end overflow-hidden bg-foreground px-6 py-16 text-white md:min-h-[88svh] md:px-12 md:py-20 lg:px-[8vw]">
+      <section className="relative flex min-h-[78svh] items-end overflow-hidden bg-foreground px-6 py-16 text-background md:min-h-[88svh] md:px-12 md:py-20 lg:px-[8vw]">
         <Image
           src="/images/solas-imagery/exec-02d0c4f5-376a-4a94-8501-b88ac59a9932.png"
           alt="Architecture set within a tropical landscape"
@@ -66,13 +66,13 @@ export function DesignSystemReview() {
           className="object-cover"
           sizes="100vw"
         />
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(8,13,10,0.08)_15%,rgba(8,13,10,0.78)_100%)]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-foreground/10 to-foreground/80" />
         <div className="relative z-10 max-w-5xl">
-          <p className="review-label text-white/65">Internal review · provisional</p>
-          <h1 className="mt-6 max-w-4xl font-display text-5xl leading-[0.96] text-white md:text-7xl lg:text-8xl">
+          <p className="review-label text-background">Internal review · provisional</p>
+          <h1 className="mt-6 max-w-4xl font-display text-5xl leading-[0.96] text-background md:text-7xl lg:text-8xl">
             The Solas Guide design foundation
           </h1>
-          <p className="mt-7 max-w-xl text-base leading-relaxed text-white/80 md:text-lg">
+          <p className="mt-7 max-w-xl text-base leading-relaxed text-background md:text-lg">
             A visual language tested through real page composition, editorial
             imagery, controls, forms, and the focused MVP journeys.
           </p>
@@ -80,7 +80,7 @@ export function DesignSystemReview() {
             href="/"
             className={cn(
               buttonVariants(),
-              "mt-8 w-full border-white bg-white text-black hover:bg-white/85 sm:w-auto",
+              "mt-8 w-full border-background bg-background text-foreground hover:bg-background/85 sm:w-auto",
             )}
           >
             View the representative homepage <ArrowRight />
@@ -253,8 +253,8 @@ export function DesignSystemReview() {
             <div className="mt-12 grid gap-3 lg:grid-cols-[1.15fr_0.85fr]">
               <div className="relative min-h-[34rem] overflow-hidden">
                 <Image src="/images/solas-imagery/exec-0d9fb98c-c711-4865-bdba-64d9d5bb91d3.png" alt="River and tropical landscape" fill className="object-cover" sizes="(max-width: 1024px) 100vw, 58vw" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent" />
-                <div className="absolute right-0 bottom-0 left-0 p-7 text-white md:p-10"><p className="review-label text-white/65">Place-led hero direction</p><p className="mt-4 max-w-xl font-display text-4xl leading-tight md:text-5xl">The setting creates atmosphere before the interface asks for action.</p></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-foreground/65 via-transparent to-transparent" />
+                <div className="absolute right-0 bottom-0 left-0 p-7 text-background md:p-10"><p className="review-label text-background">Place-led hero direction</p><p className="mt-4 max-w-xl font-display text-4xl leading-tight md:text-5xl">The setting creates atmosphere before the interface asks for action.</p></div>
               </div>
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
                 <div className="relative min-h-64 overflow-hidden"><Image src="/images/solas-imagery/exec-1430506b-6ab6-4bc3-8f24-b0a816abc9a3.png" alt="Natural materials in an open-air interior" fill className="object-cover" sizes="(max-width: 1024px) 50vw, 35vw" /></div>

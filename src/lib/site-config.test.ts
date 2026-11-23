@@ -8,15 +8,25 @@ describe("public site metadata configuration", () => {
   });
 
   it("keeps homepage metadata scoped to the homepage", async () => {
-    const { homepageMetadata, siteDescription, siteTitle } = await import(
+    const { homepageDescription, homepageMetadata, homepageTitle, siteDescription, siteTitle } = await import(
       "@/lib/site-config"
     );
 
     expect(homepageMetadata.alternates).toEqual({ canonical: "/" });
-    expect(homepageMetadata.description).toBe(siteDescription);
-    // Inherit the full social metadata, including images, from the root layout.
-    expect(homepageMetadata.openGraph).toBeUndefined();
-    expect(homepageMetadata.twitter).toBeUndefined();
+    expect(homepageMetadata.title).toEqual({ absolute: homepageTitle });
+    expect(homepageMetadata.description).toBe(homepageDescription);
+    expect(homepageMetadata.openGraph).toMatchObject({
+      title: homepageTitle,
+      description: homepageDescription,
+      url: "/",
+      images: [{ url: "/brand/solas-facebook.png" }],
+    });
+    expect(homepageMetadata.twitter).toMatchObject({
+      title: homepageTitle,
+      description: homepageDescription,
+    });
+    expect(homepageTitle).toBe("The Solas Guide | Trusted wellness practitioners and programmes");
+    expect(`${homepageTitle} ${homepageDescription}`).not.toMatch(/Bali/i);
     expect(siteDescription).not.toMatch(/venues|events/i);
     expect(siteDescription).not.toMatch(/Bali/i);
     expect(siteTitle).toBe("The Solas Guide | Curated wellness experiences");

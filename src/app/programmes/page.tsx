@@ -2,14 +2,18 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { Fraunces } from "next/font/google";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { Suspense, type ReactNode } from "react";
 import { BrandWordmark } from "@/components/brand/brand-wordmark";
+import { WhatsAppMessage } from "@/components/contact/whatsapp-message";
 import { ProgrammeEnquiryForm } from "@/components/enquiry/programme-enquiry-form";
 import { SiteHeader } from "@/components/layout/site-header";
 import { PractitionerCard } from "@/components/practitioners/practitioner-card";
 import { Button } from "@/components/ui/button";
-import { emptyDirectoryFilters, getPublishedPractitioners } from "@/lib/practitioners";
+import { selectProgrammeSessionLeads } from "@/lib/programme-practitioners";
+import { programmeOffers, programmeProof } from "@/lib/programme-proof";
+import { discoveryCall } from "@/lib/public-journeys";
+import { getPublishedPractitioners } from "@/lib/practitioners";
 import { cn } from "@/lib/utils";
 import styles from "./page.module.css";
 
@@ -20,12 +24,19 @@ const fraunces = Fraunces({
 });
 
 export const metadata: Metadata = {
-  title: "Wellness programmes for retreats in Bali",
+  title: "Wellness programmes, designed and delivered",
   description:
-    "We design wellness programmes for retreats and groups in Bali, select practitioners, and offer coordination and on-site support.",
+    "We design, staff and deliver wellness programmes for retreats, venues, travel advisors and professional groups.",
 };
 
 export const dynamic = "force-dynamic";
+
+const guestQuestions = [
+  "Who is this for?",
+  "What are they looking for?",
+  "Why would they choose this programme?",
+  "What should feel different by the time they leave?",
+] as const;
 
 const navLinks = [
   { label: "Why Solas", href: "#approach" },
@@ -34,11 +45,21 @@ const navLinks = [
   { label: "The Guide", href: "/practitioners" },
 ] as const;
 
+function DiscoveryCallButton({ className }: { className?: string }) {
+  return (
+    <Button asChild size="lg" className={cn(styles.substantialButton, styles.discoveryButton, className)}>
+      <a href={discoveryCall.href} target="_blank" rel="noopener noreferrer">
+        Book a discovery call <ArrowUpRight aria-hidden="true" />
+      </a>
+    </Button>
+  );
+}
+
 function ArrowLink({ href, children }: { href: string; children: React.ReactNode }) {
   return (
     <Link href={href} className={styles.textLink}>
       {children}
-      <ArrowUpRight aria-hidden="true" />
+      <ArrowRight aria-hidden="true" />
     </Link>
   );
 }
@@ -54,7 +75,7 @@ function PractitionerSectionFrame({ children }: { children: ReactNode }) {
           </h2>
         </div>
         <p>
-          Explore practitioners who offer in-person work in Bali. We discuss suitability and availability for your programme.
+          Explore practitioners who offer in-person work. We discuss suitability and availability for your programme.
         </p>
       </div>
       {children}
@@ -74,12 +95,8 @@ function PractitionerPreviewFallback() {
 }
 
 async function PractitionerPreview() {
-  const practitionerResult = await getPublishedPractitioners({
-    ...emptyDirectoryFilters,
-    locations: ["bali"],
-    format: ["in-person"],
-  });
-  const practitioners = practitionerResult.data.slice(0, 3);
+  const practitionerResult = await getPublishedPractitioners();
+  const practitioners = selectProgrammeSessionLeads(practitionerResult.data);
 
   return (
     <PractitionerSectionFrame>
@@ -128,51 +145,30 @@ export default function ProgrammesPage() {
             />
             <div className={styles.heroOverlay} aria-hidden="true" />
             <div className={styles.heroCopy}>
-              <p className={styles.eyebrow}>Wellness programme design · Bali</p>
+              <p className={styles.eyebrow}>For retreats, venues and professional groups</p>
               <h1 id="hero-heading" className={styles.heroHeading}>
-                Wellness programmes for retreats in Bali.
+                Wellness programmes, designed and delivered.
               </h1>
               <p className={styles.heroIntro}>
-                We plan the wellness sessions for your retreat or group experience. We select practitioners and can coordinate the programme.
+                We plan the sessions, select the practitioners, and coordinate the programme.
               </p>
-              <Button asChild size="lg" className={cn(styles.substantialButton, styles.heroButton)}>
-                <Link href="#contact">
-                  Tell us about your plans <ArrowUpRight aria-hidden="true" />
-                </Link>
-              </Button>
-              <span className={styles.heroNote}>Start with a complimentary 30-minute conversation.</span>
+              <div className={styles.heroActions}>
+                <DiscoveryCallButton className={styles.heroButton} />
+                <ArrowLink href="#contact">Tell us about your plans</ArrowLink>
+              </div>
             </div>
           </section>
 
-          <div className={styles.audience} aria-label="Created for">
-            <span className={styles.eyebrow}>Created for</span>
-            <span>Retreat organisers</span>
-            <span>Leadership teams</span>
-            <span>Travel advisors</span>
-            <span>Hotels &amp; private groups</span>
-          </div>
-
-          <section id="approach" className={cn(styles.section, styles.intro)} aria-labelledby="approach-heading">
-            <div className={styles.introImage}>
-              <Image
-                src="/images/programmes/place.webp"
-                alt="A pavilion overlooking the green landscape of Bali"
-                fill
-                loading="lazy"
-                className={styles.coverImage}
-                sizes="(max-width: 800px) 100vw, 52vw"
-              />
-              <p className={styles.imageCaption}>Wellness programmes for retreats and groups in Bali.</p>
-            </div>
-            <div className={styles.introStory}>
-              <p className={styles.eyebrow}>Planning a retreat?</p>
-              <h2 id="approach-heading" className={styles.displayHeading}>
-                Finding practitioners is only part of the job.
-              </h2>
-              <p>You need to choose the activities, find suitable practitioners and fit everything into your schedule.</p>
-              <p>We help you make those decisions and build a programme around your group.</p>
-              <ArrowLink href="#contact">Tell us about your plans</ArrowLink>
-            </div>
+          <section id="approach" className={cn(styles.section, styles.proof)} aria-label="Recent work">
+            <p className={styles.eyebrow}>Recent work</p>
+            <ul className={styles.proofList}>
+              {programmeProof.map(({ src, alt, line, width, height }) => (
+                <li key={alt}>
+                  <Image src={src} alt={alt} width={width} height={height} className={alt.includes("Ubud") ? styles.proofLogoTall : styles.proofLogo} />
+                  <p>{line}</p>
+                </li>
+              ))}
+            </ul>
           </section>
 
           <section id="offer" className={cn(styles.section, styles.offer)} aria-labelledby="offer-heading">
@@ -180,188 +176,33 @@ export default function ProgrammesPage() {
               <div>
                 <p className={styles.eyebrow}>What we do</p>
                 <h2 id="offer-heading" className={styles.displayHeading}>
-                  Plan the sessions.
-                  <br />
-                  Find the practitioners.
+                  The work we take on.
                 </h2>
               </div>
-              <p>We combine programme design with practitioner selection from the Solas network in Bali.</p>
             </div>
-
-            <div className={styles.serviceGrid}>
-              <article className={styles.serviceFeature}>
-                <Image
-                  src="/images/programmes/practice.webp"
-                  alt="Materials prepared for a wellness practice"
-                  fill
-                  loading="lazy"
-                  className={styles.coverImage}
-                  sizes="(max-width: 800px) 100vw, 50vw"
-                />
-                <div className={styles.serviceOverlay}>
-                  <p className={styles.eyebrow}>01 / Programme design</p>
-                  <h3>
-                    A programme built around your group.
-                  </h3>
-                  <p>We recommend sessions and activities based on your group’s goals, then plan how they fit into your schedule.</p>
-                </div>
-              </article>
-
-              <div className={styles.serviceStack}>
-                <article className={styles.servicePeople}>
-                  <div className={styles.serviceCopy}>
-                    <p className={styles.eyebrow}>02 / Practitioner selection</p>
-                    <h3>
-                      People to lead each session.
-                    </h3>
-                    <p>We select practitioners from the Solas network to deliver the sessions in your programme.</p>
-                  </div>
-                  <div className={styles.peopleMedia}>
-                    <Image
-                      src="/images/programmes/people.webp"
-                      alt="A person walking towards a pavilion along a garden path"
-                      fill
-                      loading="lazy"
-                      className={styles.peopleImage}
-                      sizes="(max-width: 800px) 45vw, 20vw"
-                    />
-                  </div>
-                </article>
-
-                <article className={styles.serviceDelivery}>
-                  <p className={styles.eyebrow}>03 / Optional coordination</p>
-                  <h3>
-                    Help organising the programme.
-                  </h3>
-                  <p>We can brief practitioners, coordinate schedules and direct the programme on-site.</p>
-                  <span className={styles.deliveryMark} aria-hidden="true">↗</span>
-                </article>
-              </div>
-            </div>
+            <ul className={styles.offerCards}>
+              {programmeOffers.map(([title, line]) => (
+                <li key={title}>
+                  <a href={discoveryCall.href} target="_blank" rel="noopener noreferrer" className={styles.offerCard}>
+                    <span className={styles.offerTitle}>{title}</span>
+                    <span className={styles.offerLine}>{line}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
           </section>
 
-          <section className={cn(styles.section, styles.programmeExample)} aria-labelledby="programme-example-heading">
-            <div className={styles.exampleIntro}>
-              <p className={styles.eyebrow}>An illustrative example</p>
-              <h2 id="programme-example-heading" className={styles.displayHeading}>
-                What your programme could look like.
-              </h2>
-              <p>
-                Every programme begins with your group and your plans. This is one illustrative starting point.
-              </p>
-            </div>
-            <article className={styles.examplePlan} aria-label="Illustrative three-day programme document">
-              <header className={styles.exampleDocumentHeader}>
-                <div>
-                  <p className={styles.exampleBrand}>The Solas Guide</p>
-                  <p className={styles.exampleDocumentType}>Programme outline</p>
-                </div>
-                <p className={styles.exampleSampleLabel}>Illustrative sample</p>
-              </header>
-
-              <div className={styles.exampleDocumentLead}>
-                <div className={styles.exampleTitle}>
-                  <p className={styles.eyebrow}>Three days in Bali</p>
-                  <h3>Leadership retreat programme</h3>
-                  <p>This sample shows how shared sessions and personal time could sit together. Every programme is shaped around your group.</p>
-                </div>
-                <div className={styles.exampleMedia}>
-                  <Image
-                    src="/images/programmes/place.webp"
-                    alt="A pavilion overlooking the green landscape of Bali"
-                    fill
-                    loading="lazy"
-                    className={styles.coverImage}
-                    sizes="(max-width: 800px) 100vw, 32vw"
-                  />
-                </div>
-              </div>
-
-              <dl className={styles.exampleDetails}>
-                <div>
-                  <dt>Group</dt>
-                  <dd>12-person leadership team</dd>
-                </div>
-                <div>
-                  <dt>Location</dt>
-                  <dd>Bali</dd>
-                </div>
-                <div>
-                  <dt>Duration</dt>
-                  <dd>3 days</dd>
-                </div>
-              </dl>
-
-              <div className={styles.exampleSchedule}>
-                <div className={styles.exampleScheduleHeader}>
-                  <div>
-                    <p className={styles.eyebrow}>Sample timetable</p>
-                    <h4>Your three-day schedule</h4>
-                  </div>
-                  <p>Times and session types are examples only.</p>
-                </div>
-                <table>
-                  <caption className="sr-only">Illustrative three-day wellness programme timetable</caption>
-                  <thead>
-                    <tr>
-                      <th scope="col">Day</th>
-                      <th scope="col">Time</th>
-                      <th scope="col">Session</th>
-                      <th scope="col">Duration</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <th scope="row" data-label="Day">Day 01</th>
-                      <td data-label="Time">15:30</td>
-                      <td data-label="Session"><strong>Arrival and settle-in</strong><span>Organiser&apos;s own time</span></td>
-                      <td data-label="Duration">Flexible</td>
-                    </tr>
-                    <tr>
-                      <th scope="row" data-label="Day">Day 01</th>
-                      <td data-label="Time">17:00</td>
-                      <td data-label="Session"><strong>Gentle movement session</strong><span>An easy shared start to the programme.</span></td>
-                      <td data-label="Duration">45 mins</td>
-                    </tr>
-                    <tr>
-                      <th scope="row" data-label="Day">Day 02</th>
-                      <td data-label="Time">07:30</td>
-                      <td data-label="Session"><strong>Guided meditation</strong><span>A quiet morning practice for the group.</span></td>
-                      <td data-label="Duration">30 mins</td>
-                    </tr>
-                    <tr>
-                      <th scope="row" data-label="Day">Day 02</th>
-                      <td data-label="Time">09:00</td>
-                      <td data-label="Session"><strong>Breakfast and free time</strong><span>Organiser&apos;s own time</span></td>
-                      <td data-label="Duration">Flexible</td>
-                    </tr>
-                    <tr>
-                      <th scope="row" data-label="Day">Day 02</th>
-                      <td data-label="Time">16:30</td>
-                      <td data-label="Session"><strong>Group reflection</strong><span>Time to pause and reflect together.</span></td>
-                      <td data-label="Duration">60 mins</td>
-                    </tr>
-                    <tr>
-                      <th scope="row" data-label="Day">Day 03</th>
-                      <td data-label="Time">08:00</td>
-                      <td data-label="Session"><strong>Breathing practice</strong><span>A calm start before the final day.</span></td>
-                      <td data-label="Duration">30 mins</td>
-                    </tr>
-                    <tr>
-                      <th scope="row" data-label="Day">Day 03</th>
-                      <td data-label="Time">10:00</td>
-                      <td data-label="Session"><strong>Closing conversation</strong><span>An example group session to bring the programme together.</span></td>
-                      <td data-label="Duration">45 mins</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-
-              <footer className={styles.exampleDocumentFooter}>
-                <p>Sessions, timing and practitioners are discussed after we understand your group.</p>
-                <p>Sample programme · 01 / 01</p>
-              </footer>
-            </article>
+          <section id="method" className={cn(styles.section, styles.method)} aria-labelledby="method-heading">
+            <p className={styles.eyebrow}>Our approach</p>
+            <h2 id="method-heading" className={styles.displayHeading}>Start with the guest, not the activity.</h2>
+            <p className={styles.methodLead}>
+              Most retreats begin with a list of activities. We begin with the people: who they are, what they need, and what should feel different when they leave. Only then do we choose the sessions and the practitioners.
+            </p>
+            <ul className={styles.questionList}>
+              {guestQuestions.map((question) => (
+                <li key={question}>{question}</li>
+              ))}
+            </ul>
           </section>
 
           <Suspense fallback={<PractitionerPreviewFallback />}>
@@ -422,10 +263,6 @@ export default function ProgrammesPage() {
                 <summary>What happens in the first conversation?</summary>
                 <p>We discuss your group, your plans and the support you need. Then we can agree the programme scope, practitioner selection and any coordination.</p>
               </details>
-              <details>
-                <summary>What should I do next?</summary>
-                <p>Send your group size, possible dates and what you want participants to get from the experience.</p>
-              </details>
             </div>
           </section>
 
@@ -438,15 +275,23 @@ export default function ProgrammesPage() {
                 <p className={styles.eyebrow}>What happens next</p>
                 <p>We’ll contact you to arrange a conversation about your programme and how we can help.</p>
               </div>
+              <div className={styles.quietActions}>
+                <a href={discoveryCall.href} target="_blank" rel="noopener noreferrer" className={styles.textLink}>
+                  Book a discovery call <ArrowUpRight aria-hidden="true" />
+                </a>
+                <WhatsAppMessage className={styles.textLink}>
+                  Message us on WhatsApp <ArrowUpRight aria-hidden="true" />
+                </WhatsAppMessage>
+              </div>
             </div>
-            <div className={styles.contactForm}>
+            <div className={styles.contactForm} id="programme-enquiry">
               <ProgrammeEnquiryForm />
             </div>
           </section>
         </main>
 
         <footer className={styles.footer}>
-          <BrandWordmark caption="Wellness programme design · Bali" className={styles.footerBrand} />
+          <BrandWordmark caption="For retreats, venues and professional groups" className={styles.footerBrand} />
           <nav aria-label="Legal" className={styles.footerLinks}>
             <Link href="/privacy">Privacy</Link>
             <Link href="/terms">Website terms</Link>

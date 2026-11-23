@@ -10,8 +10,21 @@ test.describe("homepage", () => {
     await page.goto("/");
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", /^http:\/\/localhost:3000\/?$/);
     await expect(page.locator('meta[property="og:url"]')).toHaveAttribute("content", /^http:\/\/localhost:3000\/?$/);
-    await expect(page.locator('meta[property="og:description"]')).toHaveAttribute("content", "The Solas Guide is a trusted guide to exceptional wellness practitioners across Southeast Asia.");
-    await expect(page.locator('meta[name="twitter:description"]')).toHaveAttribute("content", "The Solas Guide is a trusted guide to exceptional wellness practitioners across Southeast Asia.");
+    await expect(page).toHaveTitle("The Solas Guide | Trusted wellness practitioners and programmes");
+    await expect(page.locator('meta[name="description"]')).toHaveAttribute(
+      "content",
+      "An independent editorial guide to exceptional wellness practitioners across Southeast Asia. We also design, staff and deliver wellness programmes for retreats, venues, travel advisors and professional groups.",
+    );
+    await expect(page.locator('meta[property="og:description"]')).toHaveAttribute(
+      "content",
+      "An independent editorial guide to exceptional wellness practitioners across Southeast Asia. We also design, staff and deliver wellness programmes for retreats, venues, travel advisors and professional groups.",
+    );
+    await expect(page.locator('meta[name="twitter:description"]')).toHaveAttribute(
+      "content",
+      "An independent editorial guide to exceptional wellness practitioners across Southeast Asia. We also design, staff and deliver wellness programmes for retreats, venues, travel advisors and professional groups.",
+    );
+    await expect(page.locator('meta[property="og:title"]')).toHaveAttribute("content", "The Solas Guide | Trusted wellness practitioners and programmes");
+    expect(await page.locator('script[type="application/ld+json"]').textContent()).not.toContain("Bali");
     await expect(page.locator('meta[property="og:image"]')).toHaveAttribute("content", /solas-facebook\.png$/);
     await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute("content", "summary_large_image");
     await page.goto("/practitioners");
@@ -31,11 +44,13 @@ test.describe("homepage", () => {
     const sections = [
       "Why The Solas Guide Exists",
       "Recognition is earned through verification.",
-      "Meet the Founding Practitioners",
-      "Who the Guide is for",
+      "Featured practitioners",
+      "Programmes",
       "Need help choosing?",
-      "Professional enquiries",
-      "Practitioner membership is by application.",
+      "Wellness programmes, designed and delivered.",
+      "YPO leadership retreat: workshop facilitation and practitioner sourcing",
+      "Workshop facilitation for Green School parents and staff",
+      "Ubud Writers & Readers Festival, with Solas Guide members",
     ];
 
     for (const section of sections) {
@@ -43,14 +58,30 @@ test.describe("homepage", () => {
     }
 
     await expect(page.getByText("Recognised venues", { exact: false })).toHaveCount(0);
+    await expect(page.getByRole("link", { name: "Book a discovery call" }).first()).toHaveAttribute(
+      "href",
+      "https://cal.com/solasguide/solas-discovery-call",
+    );
     await expect(page.getByRole("link", { name: "Need Help Choosing?" }).first()).toHaveAttribute(
       "href",
       "/find-a-match",
     );
-    await expect(page.getByRole("link", { name: "Make an Enquiry" }).first()).toHaveAttribute(
-      "href",
-      "/find-a-match?intent=professional",
-    );
+    await expect(page.getByRole("link", { name: "Explore the Guide" })).toHaveAttribute("href", "/practitioners");
+    await expect(page.getByRole("link", { name: "Tell us about your plans" })).toHaveAttribute("href", "/programmes#contact");
+    await expect(page.getByRole("link", { name: "How a programme comes together" })).toHaveAttribute("href", "/programmes#method");
+    await expect(page.getByRole("link", { name: "Group programmes" })).toHaveAttribute("href", "https://cal.com/solasguide/solas-discovery-call");
+    await expect(page.getByRole("link", { name: "Are you a practitioner? Membership is by application." })).toHaveAttribute("href", "/membership");
+    const html = await page.content();
+    expect(html).not.toContain("447793050098");
+    expect(html).not.toContain("6281330631030");
+    expect(html).not.toContain("wa.me");
+    const whatsApp = page.getByRole("button", { name: "Message us on WhatsApp" }).first();
+    await expect(whatsApp).toBeVisible();
+    const popupPromise = page.waitForEvent("popup");
+    await whatsApp.click();
+    const popup = await popupPromise;
+    await expect(popup).toHaveURL(/phone=6281330631030/);
+    await popup.close();
     await expect(page.getByText("Volume One").first()).toBeVisible();
     await expect(page.getByText("Southeast Asia").first()).toBeVisible();
     await expect(
@@ -72,36 +103,27 @@ test.describe("homepage", () => {
       ),
     ).toBeVisible();
     await expect(page.getByRole("heading", { name: "Not sure who to speak to?" })).toBeVisible();
-    await expect(page.getByText("Organisations", { exact: true })).toBeVisible();
     await expect(page.getByText("Corporate Teams")).toHaveCount(0);
-    await expect(page.locator("footer").getByRole("link", { name: "Practitioner membership", exact: true })).toHaveAttribute(
+    await expect(page.locator("footer").getByRole("link", { name: "Practitioners can apply for membership", exact: true })).toHaveAttribute(
       "href",
       "/membership",
     );
-    await expect(page.getByRole("link", { name: "About practitioner membership" })).toHaveAttribute(
+    await expect(page.locator("footer").getByRole("link", { name: "info@solassolas.com" })).toHaveAttribute(
       "href",
-      "/membership",
+      "mailto:info@solassolas.com",
     );
-    await expect(page.getByRole("navigation", { name: "Primary navigation" }).getByRole("link", { name: "For practitioners" })).toHaveAttribute(
-      "href",
-      "/membership",
-    );
+    await expect(page.getByRole("heading", { name: "Practitioner membership is by application." })).toHaveCount(0);
+    await expect(page.getByRole("navigation", { name: "Primary navigation" }).getByRole("link", { name: "For practitioners" })).toHaveCount(0);
   });
 
   test("shows published practitioner cards in the dynamic preview", async ({ page }) => {
     await page.goto("/");
 
-    const registry = page.getByRole("region", { name: "Meet the Founding Practitioners" });
+    const registry = page.getByRole("region", { name: "Featured practitioners" });
     await expect(registry).toBeVisible();
     await expect(
       registry.getByText(
         "Volume One brings together practitioners recognised for the quality of their work, depth of practice and professional standing.",
-        { exact: true },
-      ),
-    ).toBeVisible();
-    await expect(
-      registry.getByText(
-        "Browse the Guide to explore their work, experience and approach.",
         { exact: true },
       ),
     ).toBeVisible();
@@ -117,7 +139,7 @@ test.describe("homepage", () => {
       "href",
       "/practitioners/kartika-alexandra",
     );
-    await expect(registry.getByRole("link", { name: "View All Practitioners" })).toHaveAttribute(
+    await expect(registry.getByRole("link", { name: "Browse the full Guide" })).toHaveAttribute(
       "href",
       "/practitioners",
     );
@@ -132,23 +154,23 @@ test.describe("homepage", () => {
     await expect(registry.getByText("Build Your Retreat", { exact: true })).toHaveCount(0);
   });
 
-  test("shows practitioner membership in the mobile menu", async ({ page }) => {
+  test("keeps practitioner membership out of the mobile menu", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
     await page.getByRole("button", { name: "Toggle navigation" }).click();
     await expect(
       page.getByRole("navigation", { name: "Mobile navigation" }).getByRole("link", { name: "For practitioners" }),
-    ).toBeVisible();
+    ).toHaveCount(0);
     await expect(
-      page.getByRole("navigation", { name: "Mobile navigation" }).getByRole("link", { name: "For practitioners" }),
-    ).toHaveAttribute("href", "/membership");
+      page.getByRole("navigation", { name: "Mobile navigation" }).getByRole("link", { name: "Book a discovery call" }),
+    ).toHaveAttribute("href", "https://cal.com/solasguide/solas-discovery-call");
   });
 
   test("keeps the published practitioner preview usable at 390px", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
 
-    const registry = page.getByRole("region", { name: "Meet the Founding Practitioners" });
+    const registry = page.getByRole("region", { name: "Featured practitioners" });
     await expect(registry.locator("article")).toHaveCount(3);
     await expect(registry.getByRole("heading", { name: "Kartika Alexandra" })).toBeVisible();
 
@@ -163,7 +185,7 @@ test.describe("homepage", () => {
     await page.setViewportSize({ width: 1104, height: 1157 });
     await page.goto("/");
 
-    const registry = page.getByRole("region", { name: "Meet the Founding Practitioners" });
+    const registry = page.getByRole("region", { name: "Featured practitioners" });
     await expect(registry.locator("article")).toHaveCount(3);
     await expect(registry.getByRole("heading", { name: "Kartika Alexandra" })).toBeVisible();
   });

@@ -27,20 +27,17 @@ export async function RegistryPreview() {
     >
       <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
         <div>
-          <p className="review-label text-accent">Volume One</p>
+          <p className="review-label text-accent">Featured practitioners</p>
           <h2
             id="registry-heading"
             className="mt-4 max-w-3xl font-display text-3xl leading-[1.08] text-balance sm:text-4xl md:text-5xl md:leading-[1.05]"
           >
-            Meet the Founding Practitioners
+            Featured practitioners
           </h2>
         </div>
-        <div className="max-w-xl space-y-4 text-sm leading-7 text-muted-foreground lg:max-w-sm">
+        <div className="max-w-xl text-sm leading-7 text-foreground lg:max-w-sm">
           <p>
             Volume One brings together practitioners recognised for the quality of their work, depth of practice and professional standing.
-          </p>
-          <p>
-            Browse the Guide to explore their work, experience and approach.
           </p>
         </div>
       </div>
@@ -68,11 +65,16 @@ export async function RegistryPreview() {
           </div>
           <div className="mt-8 flex justify-center">
             <Button asChild>
-              <Link href="/practitioners">View All Practitioners</Link>
+              <Link href="/practitioners">Browse the full Guide</Link>
             </Button>
           </div>
         </>
       )}
+      <p className="mt-6 text-center">
+        <Link href="/membership" className="inline-flex min-h-11 items-center text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline">
+          Are you a practitioner? Membership is by application.
+        </Link>
+      </p>
     </section>
   );
 }

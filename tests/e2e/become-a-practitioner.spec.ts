@@ -2,7 +2,6 @@ import { expect, test } from "@playwright/test";
 import {
   SOLAS_LETTER_SIGNUP_FORM_URL,
   SOLAS_TABLE_BOOKING_FORM_URL,
-  practiseWhatsAppHref,
 } from "../../src/lib/membership-content";
 
 test("explains practitioner membership", async ({ page }) => {
@@ -67,7 +66,9 @@ test("explains practitioner membership", async ({ page }) => {
   const call = page.getByRole("link", { name: "Book a call with Jitesh" });
   const apply = page.getByRole("link", { name: "Apply now · USD $350 a year" });
   await expect(apply).toHaveCount(2);
-  await expect(page.locator('a[href="https://cal.com/solasguide/solas-discovery-call"]')).toHaveCount(6);
+  await expect(page.locator('a[href="https://cal.com/solasguide/solas-discovery-call"]')).toHaveCount(8);
+  await expect(page.locator("header").getByRole("link", { name: "Book a discovery call" })).toHaveAttribute("href", "https://cal.com/solasguide/solas-discovery-call");
+  await expect(page.getByRole("contentinfo").getByRole("link", { name: "Book a discovery call" })).toHaveAttribute("href", "https://cal.com/solasguide/solas-discovery-call");
   await expect(page.locator('a[href="https://cal.com/solassolas/30min-private-conversation"]')).toHaveCount(0);
   await expect(call).toHaveCount(4);
   for (const link of await call.all()) {
@@ -78,7 +79,12 @@ test("explains practitioner membership", async ({ page }) => {
   await expect(apply.first()).toHaveAttribute("href", "https://tally.so/r/XxQvJz");
   await expect(apply.first()).toHaveAttribute("target", "_blank");
   await expect(page.getByRole("link", { name: "Get in touch on WhatsApp" })).toHaveCount(0);
-  await expect(page.getByRole("link", { name: "WhatsApp" })).toHaveAttribute("href", practiseWhatsAppHref);
+  await expect(page.getByRole("link", { name: "WhatsApp" })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "WhatsApp", exact: true })).toBeVisible();
+  const membershipHtml = await page.content();
+  expect(membershipHtml).not.toContain("447793050098");
+  expect(membershipHtml).not.toContain("6281330631030");
+  expect(membershipHtml).not.toContain("wa.me");
   await expect(page.locator('a[href="https://tally.so/r/bZqJ5o"]')).toHaveCount(0);
   const book = page.getByRole("link", { name: "Book your place" });
   await expect(book).toHaveCount(1);
@@ -121,7 +127,9 @@ test("explains practitioner membership", async ({ page }) => {
   expect(html).not.toContain("Human Library");
   expect(html).not.toContain("27 Sep");
   expect(html).not.toContain("27 September");
-  expect(html).not.toContain("wa.me/6285939817503");
+  expect(html).not.toContain("wa.me");
+  expect(html).not.toContain("447793050098");
+  expect(html).not.toContain("6281330631030");
   expect(html).not.toContain("Manu Ashwalayan");
   expect(text).not.toContain("USD 200");
   expect(text).not.toContain("$200");

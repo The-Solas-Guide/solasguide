@@ -42,7 +42,30 @@ export function getAbsoluteUrl(path: string) {
   return url.toString();
 }
 
+export const homepageTitle = "The Solas Guide | Trusted wellness practitioners and programmes";
+export const homepageDescription =
+  "An independent editorial guide to exceptional wellness practitioners across Southeast Asia. We also design, staff and deliver wellness programmes for retreats, venues, travel advisors and professional groups.";
+
 export const homepageMetadata: Metadata = {
-  description: siteDescription,
+  title: { absolute: homepageTitle },
+  description: homepageDescription,
   alternates: { canonical: "/" },
+  openGraph: {
+    title: homepageTitle,
+    description: homepageDescription,
+    url: "/",
+    images: [
+      {
+        url: "/brand/solas-facebook.png",
+        width: 1200,
+        height: 630,
+        alt: "The Solas Guide logo",
+      },
+    ],
+  },
+  twitter: {
+    title: homepageTitle,
+    description: homepageDescription,
+    images: ["/brand/solas-facebook.png"],
+  },
 };

@@ -34,7 +34,7 @@ test("admin control styles also reach elements mounted outside the page wrapper"
   await expect(portalButton).toHaveCSS("font-size", "13px");
   const email = page.getByLabel("Email", { exact: true });
   await email.focus();
-  await expect(email).toHaveCSS("border-top-color", "rgb(82, 117, 99)");
+  await expect(email).toHaveCSS("border-top-color", "rgb(46, 66, 56)");
   await button.focus();
-  await expect(email).toHaveCSS("border-top-color", "rgb(211, 221, 214)");
+  await expect(email).toHaveCSS("border-top-color", "rgb(207, 198, 183)");
 });

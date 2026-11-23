@@ -1,7 +1,7 @@
 "use client";
 
 import { track } from "@vercel/analytics";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { FormFeedback } from "@/components/forms/form-feedback";
@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { programmeExperienceOptions } from "@/lib/enquiries/programme-enquiry";
 
 const fieldClass = "min-h-12 bg-card";
-const buttonClass = "min-h-[58px] w-full gap-5 border-2 bg-accent px-6 text-sm normal-case tracking-normal text-accent-foreground hover:bg-accent/90 sm:w-auto";
+const buttonClass = "w-full sm:w-auto";
 
 export function ProgrammeEnquiryForm() {
   const [submitting, setSubmitting] = useState(false);
@@ -130,10 +130,10 @@ export function ProgrammeEnquiryForm() {
         </label>
         <div className="sm:col-span-2">
           <Button type="submit" disabled={submitting || conflict} className={buttonClass}>
-            {submitting ? "Sending…" : "Start a conversation"}<ArrowUpRight aria-hidden="true" />
+            {submitting ? "Sending…" : "Start a conversation"} <ArrowRight aria-hidden="true" />
           </Button>
           <p id="programme-privacy" className="mt-4 text-xs leading-relaxed text-muted-foreground">
-            We use your details to respond to your enquiry. Read our <Link href="/privacy" className="underline underline-offset-4">privacy policy</Link>.
+            We use your details to respond to your enquiry. Read our <Link href="/privacy" className="inline-flex min-h-11 items-center underline underline-offset-4">privacy policy</Link>.
           </p>
         </div>
       </fieldset>

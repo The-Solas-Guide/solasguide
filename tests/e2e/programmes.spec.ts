@@ -24,12 +24,40 @@ for (const width of [1440, 390]) {
       });
     });
     await page.goto("/programmes");
+    await expect(page.getByRole("heading", { level: 1, name: "Wellness programmes, designed and delivered." })).toBeVisible();
+    await expect(page).toHaveTitle(/Wellness programmes, designed and delivered/);
+    expect(await page.title()).not.toMatch(/Bali/i);
+    expect(await page.locator('meta[name="description"]').getAttribute("content")).not.toMatch(/Bali/i);
+    await expect(page.getByText("YPO leadership retreat: workshop facilitation and practitioner sourcing")).toBeVisible();
+    const sessionLeads = page.locator("#practitioner-heading").locator("xpath=ancestor::section[1]").getByRole("heading", { level: 3 });
+    await expect(sessionLeads).toHaveText([
+      "Sandra Echemendia",
+      "Rajiv Arapurakal",
+      "Cherlene Wilson",
+    ]);
+    await expect(page.getByText("December 2024")).toHaveCount(0);
+    await expect(page.getByRole("heading", { name: "Start with the guest, not the activity." })).toBeVisible();
+    await expect(page.getByText("Programme directions we often develop")).toHaveCount(0);
+    await expect(page.getByText("Audience", { exact: true })).toHaveCount(0);
+    await expect(page.getByRole("heading", { name: "How a three-day programme unfolds" })).toHaveCount(0);
+    await expect(page.getByText("Sample timetable")).toHaveCount(0);
+    await expect(page.getByText("Organiser's own time")).toHaveCount(0);
+    await expect(page.locator("#method")).toBeVisible();
+    await expect(page.getByText("Finding practitioners is only part of the job")).toHaveCount(0);
+    await expect(page.getByRole("link", { name: "Group programmes" })).toHaveAttribute("href", "https://cal.com/solasguide/solas-discovery-call");
     await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
     await expect(page.getByRole("main")).toHaveCount(1);
     await expect(page.getByRole("link", { name: "Begin your enquiry" })).toHaveCount(0);
+    await expect(page.locator("#contact").getByRole("link", { name: "Book a discovery call" })).toHaveAttribute("href", "https://cal.com/solasguide/solas-discovery-call");
     expect(await page.evaluate(() => window.scrollY)).toBe(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
-    await page.getByRole("link", { name: "Tell us about your plans", exact: true }).first().click();
+    await expect(page.getByRole("link", { name: "Tell us about your plans", exact: true })).toHaveAttribute("href", "#contact");
+    await page.getByRole("link", { name: "Tell us about your plans", exact: true }).click();
+    await expect(page.getByRole("form", { name: "Programme enquiry" })).toBeInViewport();
+    const programmeHtml = await page.content();
+    expect(programmeHtml).not.toContain("447793050098");
+    expect(programmeHtml).not.toContain("6281330631030");
+    expect(programmeHtml).not.toContain("wa.me");
     await page.getByRole("button", { name: "Start a conversation", exact: true }).click();
     expect(await page.getByLabel("Your name", { exact: true }).evaluate((input: HTMLInputElement) => input.validity.valueMissing)).toBe(true);
     expect(submissions).toHaveLength(0);

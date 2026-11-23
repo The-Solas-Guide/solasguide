@@ -6,8 +6,6 @@ export const SOLAS_LETTER_SIGNUP_FORM_URL = "https://tally.so/r/J1O22J";
 
 export const bookCallHref = "https://cal.com/solasguide/solas-discovery-call";
 export const applyHref = "https://tally.so/r/XxQvJz";
-export const practiseWhatsAppHref =
-  "https://wa.me/447793050098?text=Hi%20Jitesh%2C%20I%27d%20like%20to%20talk%20about%20practising%20in%20Bali.";
 export const workshopReserveHref = "https://tally.so/r/bZqJ5o";
 
 export const membershipTitle = "Practitioner membership · The Solas Guide, Bali";

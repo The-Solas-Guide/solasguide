@@ -88,12 +88,12 @@ export function PractitionerPublicationControls({
                   {requirement.complete ? (
                     <CheckIcon
                       aria-hidden="true"
-                      className="mt-0.5 size-4 shrink-0 text-emerald-700"
+                      className="mt-0.5 size-4 shrink-0 text-accent"
                     />
                   ) : (
                     <CircleAlertIcon
                       aria-hidden="true"
-                      className="mt-0.5 size-4 shrink-0 text-amber-700"
+                      className="mt-0.5 size-4 shrink-0 text-destructive"
                     />
                   )}
                   <span className={requirement.complete ? "" : "text-muted-foreground"}>

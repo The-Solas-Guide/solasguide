@@ -8,6 +8,7 @@ import {
 const staticPaths = [
   "/",
   "/find-a-match",
+  "/programmes",
   "/membership",
   "/working-in-bali",
   "/privacy",

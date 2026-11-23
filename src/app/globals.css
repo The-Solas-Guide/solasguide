@@ -215,10 +215,10 @@ footer a:focus-visible {
 }
 
 .review-label {
-  font-size: 0.625rem;
+  font-size: 0.6875rem;
   font-weight: 600;
-  letter-spacing: 0.2em;
-  line-height: 1.4;
+  letter-spacing: 0.14em;
+  line-height: 1.45;
   text-transform: uppercase;
 }
 
@@ -298,32 +298,7 @@ html[data-motion-ready="true"] [data-reveal][data-reveal-state="visible"] {
 body:has([data-admin]) {
   --font-body: var(--font-admin), system-ui, sans-serif;
   --font-display: var(--font-admin), system-ui, sans-serif;
-  --background: #f5f7f6;
-  --foreground: #1e2a25;
-  --card: #ffffff;
-  --card-foreground: #1e2a25;
-  --popover: #ffffff;
-  --popover-foreground: #1e2a25;
-  --primary: #294e3e;
-  --primary-foreground: #ffffff;
-  --secondary: #edf1ee;
-  --secondary-foreground: #294e3e;
-  --muted: #eef2ef;
-  --muted-foreground: #637269;
-  --accent: #294e3e;
-  --accent-foreground: #ffffff;
-  --border: #dfe6e1;
-  --input: #d3ddd6;
-  --ring: #527563;
   --radius: 0.5rem;
-  --sidebar: #ffffff;
-  --sidebar-foreground: #3d4d43;
-  --sidebar-primary: #294e3e;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #eaf1ec;
-  --sidebar-accent-foreground: #294e3e;
-  --sidebar-border: #dfe6e1;
-  --sidebar-ring: #527563;
 }
 
 body:has([data-admin]) .uppercase { text-transform: none; letter-spacing: 0; }
